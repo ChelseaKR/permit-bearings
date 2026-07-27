@@ -31,3 +31,18 @@ jobs:
             --title "Source currency alert: a watched legal source changed ($(date -u +%F))" \
             --body "$(printf 'The weekly currency check found changed or unreachable watched sources. Dependent rules are stale until re-verified against the new text.\n\n```\n%s\n```' "$(cat report.txt)")" \
             --label "currency"
+      - name: Check HCD HAU letters dashboard for new letters
+        id: letters
+        run: |
+          set +e
+          python scripts/pull_hau_letters.py --check | tee letters.txt
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+      - name: Open an issue if the letters dataset drifted
+        if: steps.letters.outputs.exit_code == '3'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "HCD HAU letters dataset drifted ($(date -u +%F))" \
+            --body "$(printf 'HCD published new or changed accountability letters. Refresh with:\n\n    python3 scripts/pull_hau_letters.py\n    python3 scripts/build_hcd_letters.py <today>\n\n```\n%s\n```' "$(cat letters.txt)")" \
+            --label "currency"

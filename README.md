@@ -84,7 +84,8 @@ A period detail that proves the concept: state ADU law was renumbered from
 Gov. Code § 65852.2 et seq. to §§ 66310–66342 by SB 477 (2024), with further
 renumbering in 2025 legislation. Any tool that cited the old sections — as
 this repo's own first-day placeholder did — is exactly the staleness the
-harness is built to catch.
+harness is built to catch. (HCD's own first finding against Santa Clara
+County's ordinance was this renumbering; see the conformance scanner below.)
 
 ## Run it
 

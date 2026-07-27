@@ -13,10 +13,11 @@
 :root {
   color-scheme: light;
   --surface: #fcfcfb; --page: #f9f9f7;
-  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #6e6c66;
   --grid: #e1e0d9; --border: rgba(11,11,11,0.10);
-  --accent: #2a78d6;
+  --accent: #1c5cab;
   --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
+  --good-text: #006300; --bad-text: #991b1b;
   --good-bg: #e9f6e9; --warn-bg: #fdf3dc; --crit-bg: #fbe7e7;
 }
 @media (prefers-color-scheme: dark) {
@@ -26,6 +27,7 @@
     --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
     --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
     --accent: #3987e5;
+    --good-text: #4ade80; --bad-text: #f87171;
     --good-bg: #12310f; --warn-bg: #33270a; --crit-bg: #351212;
   }
 }
@@ -35,6 +37,7 @@
   --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
   --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
   --accent: #3987e5;
+  --good-text: #4ade80; --bad-text: #f87171;
   --good-bg: #12310f; --warn-bg: #33270a; --crit-bg: #351212;
 }
 * { box-sizing: border-box; }
@@ -63,9 +66,9 @@ button.ghost { background: transparent; color: var(--accent);
 .card h3 { margin: 0 0 .3rem; font-size: 1.02rem; }
 .badge { display: inline-block; font-size: .78rem; font-weight: 600;
   padding: .12rem .55rem; border-radius: 999px; white-space: nowrap; }
-.badge.ok   { background: var(--good-bg); color: var(--good); }
+.badge.ok   { background: var(--good-bg); color: var(--good-text); }
 .badge.warn { background: var(--warn-bg); color: #92400e; }
-.badge.bad  { background: var(--crit-bg); color: var(--critical); }
+.badge.bad  { background: var(--crit-bg); color: var(--bad-text); }
 :root[data-theme="dark"] .badge.warn { color: var(--warning); }
 @media (prefers-color-scheme: dark) {
   :root:where(:not([data-theme="light"])) .badge.warn { color: var(--warning); } }
@@ -113,11 +116,12 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
     <fieldset>
       <legend id="t-juris">Where is the property?</legend>
       <input id="jurisInput" name="jurisdiction_name" list="jurisList"
-             autocomplete="off" placeholder="Type any California city or county…"
+             autocomplete="off" aria-label="California city or county"
+             placeholder="Type any California city or county…"
              style="width:100%;font-size:1rem;padding:.45rem;border:1px solid var(--grid);
                     border-radius:6px;background:var(--surface);color:var(--ink)">
       <datalist id="jurisList"></datalist>
-      <p class="small" id="jurisStatus"></p>
+      <p class="small" id="jurisStatus" aria-live="polite"></p>
     </fieldset>
     <fieldset>
       <legend id="t-project">What are you proposing?</legend>
@@ -130,7 +134,7 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
     <fieldset id="factBoxes"></fieldset>
     <button type="submit" id="t-submit">Find my pathway</button>
   </form>
-  <div id="results"></div>
+  <div id="results" aria-live="polite"></div>
 </section>
 
 <section id="conformance">
@@ -145,21 +149,23 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
   Clara County: the scanner independently re-derives HCD's findings from the
   ordinance provisions quoted in the letter.
   <a href="#" id="loadSample">Load two of those provisions as a sample</a>.</p>
-  <textarea id="ordText" rows="8" style="width:100%;font-size:.9rem;
+  <textarea id="ordText" rows="8" aria-label="Ordinance text to scan"
+    style="width:100%;font-size:.9rem;
     border:1px solid var(--grid);border-radius:8px;background:var(--surface);
     color:var(--ink);padding:.6rem" placeholder="Paste ordinance text here…"></textarea>
   <p><button id="scanBtn">Scan</button></p>
-  <div id="scanResults"></div>
+  <div id="scanResults" aria-live="polite"></div>
 </section>
 
 <section id="clocks">
   <h2>Statutory review clocks</h2>
   <p class="small">State law puts the permitting agency on a clock. Enter the
   date a complete ADU/JADU application was received:</p>
-  <p><input type="date" id="recvDate" style="font-size:1rem;padding:.35rem;
+  <p><input type="date" id="recvDate" aria-label="Date the application was received"
+    style="font-size:1rem;padding:.35rem;
     border:1px solid var(--grid);border-radius:6px;background:var(--surface);
     color:var(--ink)"> <button class="ghost" id="clockBtn">Compute deadlines</button></p>
-  <div id="clockResults"></div>
+  <div id="clockResults" aria-live="polite"></div>
 </section>
 
 <section id="trust">
@@ -445,7 +451,7 @@ function renderJurisStatus() {
   if (scanRec) {
     html += `<br><span class="badge ok"><span class="status-ico">✓</span>scanned</span> ` +
       `Ordinance screened ${esc(scanRec.scanned_on)}: ${scanRec.findings} provision(s) ` +
-      `flagged for review — <a href="data/conformance/results/${esc(j.slug)}.json" rel="noopener">details</a>.`;
+      `flagged for review — <a href="data/conformance/results/${esc(j.slug)}.json" rel="noopener">view scan findings (JSON)</a>.`;
   }
   const history = LETTERS[j.slug] || [];
   if (history.length) {
@@ -528,9 +534,39 @@ document.getElementById("clockBtn").addEventListener("click", () => {
   const el = document.getElementById("clockResults");
   if (!v) { el.innerHTML = ""; return; }
   const received = new Date(v + "T12:00:00");
+  const nthWeekday = (y, m, wd, n) => {
+    const d = new Date(y, m, 1);
+    return new Date(y, m, 1 + ((wd - d.getDay() + 7) % 7) + 7 * (n - 1));
+  };
+  const lastWeekday = (y, m, wd) => {
+    const d = new Date(y, m + 1, 0);
+    return new Date(y, m, d.getDate() - ((d.getDay() - wd + 7) % 7));
+  };
+  const observed = d => {
+    const out = new Date(d);
+    if (d.getDay() === 6) out.setDate(d.getDate() - 1);
+    if (d.getDay() === 0) out.setDate(d.getDate() + 1);
+    return out;
+  };
+  const caHolidays = y => {
+    const tg = nthWeekday(y, 10, 4, 4);
+    const dayAfterTg = new Date(tg); dayAfterTg.setDate(tg.getDate() + 1);
+    return new Set([
+      observed(new Date(y, 0, 1)), observed(new Date(y, 2, 31)),
+      observed(new Date(y, 6, 4)), observed(new Date(y, 10, 11)),
+      observed(new Date(y, 11, 25)),
+      nthWeekday(y, 0, 1, 3), nthWeekday(y, 1, 1, 3), lastWeekday(y, 4, 1),
+      nthWeekday(y, 8, 1, 1), tg, dayAfterTg,
+    ].map(d => d.toDateString()));
+  };
+  const hols = new Set([...caHolidays(received.getFullYear()),
+                        ...caHolidays(received.getFullYear() + 1)]);
   const addBiz = (d, n) => {
     const out = new Date(d);
-    while (n > 0) { out.setDate(out.getDate() + 1); if (out.getDay() % 6 !== 0) n--; }
+    while (n > 0) {
+      out.setDate(out.getDate() + 1);
+      if (out.getDay() % 6 !== 0 && !hols.has(out.toDateString())) n--;
+    }
     return out;
   };
   const addCal = (d, n) => { const out = new Date(d); out.setDate(out.getDate() + n); return out; };
@@ -545,9 +581,10 @@ document.getElementById("clockBtn").addEventListener("click", () => {
     <tr><td>Approve/deny decision due (once complete)</td><td>${fmt(addCal(received, 60))}</td>
         <td class="mutedtxt">Gov. Code § 66317(a)(3) — 60 days</td></tr>
   </table>
-  <p class="small mutedtxt">Business days exclude weekends only; a production
-  deployment loads the jurisdiction's holiday calendar. SB 9 applications share
-  the 60-day decision clock (Gov. Code §§ 65852.21, 66411.7).</p>`;
+  <p class="small mutedtxt">Business days exclude weekends and California state
+  holidays (Gov. Code § 6700, as observed by state offices); jurisdictions may
+  observe additional local holidays. SB 9 applications share the 60-day
+  decision clock (Gov. Code §§ 65852.21, 66411.7).</p>`;
 });
 
 document.getElementById("simBtn").addEventListener("click", () => { simulating = true; renderDashboard(); });

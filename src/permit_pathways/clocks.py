@@ -13,10 +13,11 @@ stands. Encodes:
   the lot); same 60-day clock for SB 9 (§§ 65852.21, 66411.7 per the
   April 2026 HCD fact sheet).
 
-California state holidays are not modeled — business days here exclude
-weekends only, which is the conservative (earlier) reading for the
-agency's deadline. A production deployment should load the jurisdiction's
-observed-holiday calendar.
+Business days exclude weekends and California state holidays (Gov. Code
+§ 6700 list, as observed by state offices: Saturday holidays shift to
+Friday, Sunday holidays to Monday). Jurisdictions may observe additional
+local holidays — a deployment should confirm the local calendar; the
+state list is the floor.
 """
 
 from __future__ import annotations
@@ -28,12 +29,51 @@ COMPLETENESS_BUSINESS_DAYS = 15   # § 66317(a)(2)(A)
 DECISION_CALENDAR_DAYS = 60       # §§ 66317(a)(3), 66335(a)(3); SB 9
 
 
-def add_business_days(start: date, days: int) -> date:
+def _nth_weekday(year: int, month: int, weekday: int, n: int) -> date:
+    d = date(year, month, 1)
+    offset = (weekday - d.weekday()) % 7
+    return d + timedelta(days=offset + 7 * (n - 1))
+
+
+def _last_weekday(year: int, month: int, weekday: int) -> date:
+    d = date(year + (month == 12), (month % 12) + 1, 1) - timedelta(days=1)
+    return d - timedelta(days=(d.weekday() - weekday) % 7)
+
+
+def _observed(d: date) -> date:
+    if d.weekday() == 5:            # Saturday -> Friday
+        return d - timedelta(days=1)
+    if d.weekday() == 6:            # Sunday -> Monday
+        return d + timedelta(days=1)
+    return d
+
+
+def ca_holidays(year: int) -> set[date]:
+    """California state holidays per Gov. Code § 6700 as observed by state
+    offices (including the day after Thanksgiving)."""
+    thanksgiving = _nth_weekday(year, 11, 3, 4)
+    fixed = [date(year, 1, 1), date(year, 3, 31), date(year, 7, 4),
+             date(year, 11, 11), date(year, 12, 25)]
+    floating = [
+        _nth_weekday(year, 1, 0, 3),   # Martin Luther King Jr. Day
+        _nth_weekday(year, 2, 0, 3),   # Presidents' Day
+        _last_weekday(year, 5, 0),     # Memorial Day
+        _nth_weekday(year, 9, 0, 1),   # Labor Day
+        thanksgiving,
+        thanksgiving + timedelta(days=1),  # day after Thanksgiving
+    ]
+    return {_observed(d) for d in fixed} | set(floating)
+
+
+def add_business_days(start: date, days: int,
+                      holidays: set[date] | None = None) -> date:
+    if holidays is None:
+        holidays = ca_holidays(start.year) | ca_holidays(start.year + 1)
     current = start
     remaining = days
     while remaining > 0:
         current += timedelta(days=1)
-        if current.weekday() < 5:
+        if current.weekday() < 5 and current not in holidays:
             remaining -= 1
     return current
 

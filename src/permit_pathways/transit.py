@@ -157,6 +157,39 @@ def _is_major_stop(stop: StopService, all_stops: list[StopService]) -> bool:
 
 
 @dataclass(frozen=True)
+class HQStop:
+    """A stop from the Caltrans/Cal-ITP statewide High Quality Transit
+    Stops dataset — the state's own PRC § 21064.3 / § 21155 analysis,
+    covering every agency (including rail and ferry the local feed may
+    lack). Used alongside, not instead of, live-feed headway analysis:
+    the two sources cross-check each other."""
+    lat: float
+    lon: float
+    hqta_type: str    # major_stop_rail | major_stop_brt | major_stop_ferry
+                      # | major_stop_bus | hq_corridor_bus
+    details: str
+    agency: str
+
+    @property
+    def is_major(self) -> bool:
+        return self.hqta_type.startswith("major_stop")
+
+
+def load_hq_stops(path: Path) -> list[HQStop]:
+    import json
+    data = json.loads(Path(path).read_text())
+    seen, out = set(), []
+    for lat, lon, hqta_type, details, agency, _peak in data["stops"]:
+        key = (lat, lon, hqta_type)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(HQStop(lat=lat, lon=lon, hqta_type=hqta_type,
+                          details=details or "", agency=agency or ""))
+    return out
+
+
+@dataclass(frozen=True)
 class Determination:
     nearest_stop: StopService | None
     nearest_miles: float | None
@@ -194,24 +227,46 @@ class Determination:
         return "\n".join(lines)
 
 
-def determine(lat: float, lon: float, stops: list[StopService]) -> Determination:
-    if not stops:
+def determine(lat: float, lon: float, stops: list[StopService],
+              hq_stops: list[HQStop] | None = None) -> Determination:
+    if not stops and not hq_stops:
         return Determination(None, None, "no", "no", [])
     with_dist = sorted(
         ((s, haversine_miles(lat, lon, s.lat, s.lon)) for s in stops),
         key=lambda x: x[1])
-    nearest, nearest_miles = with_dist[0]
-    parking = "candidate" if nearest_miles <= HALF_MILE else "no"
+    nearest, nearest_miles = with_dist[0] if with_dist else (None, None)
 
     qualifying = []
     for stop, miles in with_dist:
         if miles > HALF_MILE:
             break
         if _is_major_stop(stop, stops):
-            qualifying.append((stop, miles, "major transit stop (PRC § 21064.3)"))
+            qualifying.append(
+                (stop, miles, "major transit stop (PRC § 21064.3, from feed headways)"))
         elif stop.hqtc_routes():
             qualifying.append(
-                (stop, miles, "high-quality transit corridor stop (PRC § 21155(b))"))
+                (stop, miles,
+                 "high-quality transit corridor stop (PRC § 21155(b), from feed headways)"))
+
+    hq_within = []
+    for hq in hq_stops or []:
+        miles = haversine_miles(lat, lon, hq.lat, hq.lon)
+        if miles > HALF_MILE:
+            continue
+        hq_within.append((hq, miles))
+        label = ("major transit stop" if hq.is_major
+                 else "high-quality transit corridor stop")
+        stop_view = StopService(stop_id=f"hq:{hq.hqta_type}",
+                                name=f"{hq.agency} ({hq.hqta_type})",
+                                lat=hq.lat, lon=hq.lon)
+        qualifying.append(
+            (stop_view, miles,
+             f"{label} (Caltrans HQ Transit Stops dataset: {hq.hqta_type})"))
+
+    qualifying.sort(key=lambda x: x[1])
+    parking = "candidate" if (
+        (nearest_miles is not None and nearest_miles <= HALF_MILE) or hq_within
+    ) else "no"
     return Determination(
         nearest_stop=nearest, nearest_miles=nearest_miles,
         parking_exemption=parking,
@@ -228,14 +283,19 @@ def main() -> int:
     parser.add_argument("--gtfs", type=Path, required=True)
     parser.add_argument("--lat", type=float, required=True)
     parser.add_argument("--lon", type=float, required=True)
+    default_hq = (Path(__file__).resolve().parents[2]
+                  / "corpus" / "transit" / "ca-hq-transit-stops.json")
+    parser.add_argument("--hq-stops", type=Path,
+                        default=default_hq if default_hq.exists() else None)
     args = parser.parse_args()
 
     stops = load_feed(args.gtfs)
-    print(f"Loaded {len(stops)} stops; "
+    hq = load_hq_stops(args.hq_stops) if args.hq_stops else []
+    print(f"Loaded {len(stops)} feed stops; "
           f"{sum(1 for s in stops if s.hqtc_routes())} with ≤15-min peak routes, "
           f"{sum(1 for s in stops if len(s.major_candidate_routes()) >= 1)} with "
-          f"≤20-min peak routes.\n")
-    print(determine(args.lat, args.lon, stops).summary())
+          f"≤20-min peak routes; {len(hq)} Caltrans HQ dataset stops.\n")
+    print(determine(args.lat, args.lon, stops, hq_stops=hq).summary())
     return 0
 
 

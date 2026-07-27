@@ -10,5 +10,82 @@
     "local_copy": "corpus/hcd/sb9-fact-sheet.pdf",
     "sha256": "91a6d75d99e1afeeb96d05d970fa53356597085f621d8fc500bea816d51d71e3",
     "fetched_on": "2026-07-27"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66311.7": {
+    "label": "Gov. Code \u00a7 66311.7 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-66311.7.html",
+    "sha256": "43d7a2ed3538d3c29109b64dda9798ce4edcc22082dae6cdce919437b3379710",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66313": {
+    "label": "Gov. Code \u00a7 66313 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-66313.html",
+    "sha256": "9933723556394e7ba9139c40416b96ee0df0e1dbe8aca056e956179e0ee3de2c",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66314": {
+    "label": "Gov. Code \u00a7 66314 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-66314.html",
+    "sha256": "3a20838500c90f26f5ba7bf79d1bd4b42f6f11fbbfd0c6bd533c1e24e0ab1a9a",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66315": {
+    "label": "Gov. Code \u00a7 66315 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-66315.html",
+    "sha256": "620bffb6f86ea40b8fe0019d1f3eeaba13cc265226d260fbb65a3ebaaff7fd3c",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66317": {
+    "label": "Gov. Code \u00a7 66317 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-66317.html",
+    "sha256": "10f931b210d739fc3460bb5e5f8099609c82445f33c5343fc94751ae0e0d6405",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66321": {
+    "label": "Gov. Code \u00a7 66321 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-66321.html",
+    "sha256": "7d2d48ef8c0b694d0e4a0cb748fd4c322a73bc19b49deb4e41c016db51c6df3e",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66322": {
+    "label": "Gov. Code \u00a7 66322 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-66322.html",
+    "sha256": "c7055a44abbd2eb2c5c434d7f2c0ce6a1e2c57c47297a229f89ab4990b2783f1",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66323": {
+    "label": "Gov. Code \u00a7 66323 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-66323.html",
+    "sha256": "85c482354a72243a7850918f129aaf1edff448e07db7480203c0641639d3044f",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66333": {
+    "label": "Gov. Code \u00a7 66333 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-66333.html",
+    "sha256": "20bea23f07f1519b45cedeb56570e107d3fd04e19f206172a37464e23dc37823",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=65852.21": {
+    "label": "Gov. Code \u00a7 65852.21 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-65852.21.html",
+    "sha256": "6e158b622952f048802726ad984c712e40c9851898a6b06ac68decad5c8d45d9",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
+  },
+  "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66411.7": {
+    "label": "Gov. Code \u00a7 66411.7 (leginfo.legislature.ca.gov, official statute text)",
+    "local_copy": "corpus/leginfo/gov-66411.7.html",
+    "sha256": "bdb3734436abff97b14916708fab2edc01a04ca0f5d4276f4513664bc6a6ad34",
+    "fetched_on": "2026-07-27",
+    "normalize": "html-text"
   }
 }

@@ -93,3 +93,30 @@ def test_remote_point_is_conclusively_no(stops):
 def test_haversine_sanity():
     # Davis to Sacramento is roughly 11 miles.
     assert 9 < haversine_miles(38.5449, -121.7405, 38.5816, -121.4944) < 14
+
+
+def test_hq_dataset_supplies_missing_rail_major_stop(stops):
+    from permit_pathways.transit import HQStop, determine
+    # A rail station absent from the local bus feed (the Davis Amtrak
+    # problem): the Caltrans HQ dataset supplies it, flipping both
+    # determinations near the depot.
+    hq = [HQStop(lat=38.5436, lon=-121.7377, hqta_type="major_stop_rail",
+                 details="major_stop_rail_single_operator", agency="Amtrak")]
+    d = determine(38.5449, -121.7405, [s for s in stops if s.stop_id == "FAR"],
+                  hq_stops=hq)
+    assert d.parking_exemption == "candidate"
+    assert d.height_18ft == "candidate"
+    assert "Caltrans HQ Transit Stops dataset" in d.qualifying_stops[0][2]
+
+
+def test_corpus_hq_dataset_loads_and_contains_davis_amtrak():
+    from pathlib import Path
+    from permit_pathways.transit import haversine_miles, load_hq_stops
+    path = (Path(__file__).parent.parent / "corpus" / "transit"
+            / "ca-hq-transit-stops.json")
+    hq = load_hq_stops(path)
+    assert len(hq) > 10000
+    depot = [s for s in hq
+             if s.hqta_type == "major_stop_rail"
+             and haversine_miles(s.lat, s.lon, 38.5436, -121.7377) < 0.2]
+    assert depot, "Davis Amtrak depot present as a major rail stop"

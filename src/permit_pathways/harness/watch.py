@@ -20,6 +20,23 @@ FETCH_TIMEOUT_SECONDS = 30
 USER_AGENT = "permit-pathways-currency-watch/0.1"
 
 
+def normalized_digest(content: bytes, mode: str | None) -> str:
+    """Hash a fetched source. mode=None hashes raw bytes (stable documents
+    like PDFs). mode="html-text" hashes the page's extracted text — needed
+    for pages like leginfo statute views whose raw HTML embeds per-request
+    tokens; tag stripping removes those, so the hash tracks only what the
+    statute actually says."""
+    if mode == "html-text":
+        import re
+        text = content.decode("utf-8", "replace")
+        text = re.sub(r"<(script|style)\b.*?</\1>", " ", text,
+                      flags=re.IGNORECASE | re.DOTALL)
+        text = re.sub(r"<[^>]+>", " ", text)
+        text = " ".join(text.split())
+        content = text.encode("utf-8")
+    return hashlib.sha256(content).hexdigest()
+
+
 @dataclass
 class WatchResult:
     unchanged: list[str] = field(default_factory=list)   # source URLs
@@ -48,7 +65,7 @@ def check_sources(sources_path: Path) -> WatchResult:
         try:
             request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
             with urllib.request.urlopen(request, timeout=FETCH_TIMEOUT_SECONDS) as resp:
-                digest = hashlib.sha256(resp.read()).hexdigest()
+                digest = normalized_digest(resp.read(), meta.get("normalize"))
         except Exception as exc:  # noqa: BLE001 — any fetch failure is reportable
             result.errors[url] = str(exc)
             continue
