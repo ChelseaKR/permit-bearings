@@ -3,6 +3,8 @@
 **Citation-grounded housing-permit guidance for California jurisdictions, with a
 built-in verification harness that keeps every answer current with state law.**
 
+**Live demo:** https://chelseakr.github.io/permit-pathways/
+
 Working title. Conceived 2026-07-27 for the California AI Permitting Innovation
 Showcase (ODI / GovOps / CHHA / GO-Biz). See [PROVENANCE.md](PROVENANCE.md).
 
