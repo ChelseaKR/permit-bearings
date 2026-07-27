@@ -69,11 +69,21 @@ harness is built to catch.
 ## Run it
 
 ```sh
-python3 -m pytest                                   # 7 tests
+python3 -m pytest                                   # test suite
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
+PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff
 PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed 66321
 PYTHONPATH=src python3 demo/app.py                  # demo at localhost:8765
 ```
+
+The rule base currently covers, statewide: ADU ministerial review and the
+15-business-day/60-day clocks, protected minimum unit, size allowances,
+height allowances, parking limits and exemptions, the owner-occupancy
+prohibition, conversion exemptions, pre-2020 unpermitted-unit legalization,
+multifamily-lot 66323 allowances, JADU standards, SB 9 two-unit developments,
+SB 9 urban lot splits, and the SB 9 × ADU unit-count interaction — plus
+pilot local layers for the Cities of Davis and Woodland. A weekly GitHub
+Action re-fetches the watched HCD sources and opens an issue if any changed.
 
 The demo serves a bilingual (EN/ES) structured intake, pathway results with
 inline statutory citations and verification badges, an abstention path

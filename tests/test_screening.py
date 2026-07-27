@@ -18,12 +18,29 @@ def rules():
     return load_rules(RULES)
 
 
+ADU_GENERIC = {
+    "adu-ministerial-review", "adu-protected-minimum", "adu-height-standards",
+    "adu-size-allowances", "adu-parking-limits", "adu-no-owner-occupancy-rental",
+    "adu-conversion-exemptions",
+}
+
+
 def test_adu_intake_matches_adu_rules(rules):
     results = screen(ADU_INTAKE, rules)
-    assert {r.rule.rule_id for r in results} == {
-        "adu-ministerial-review",
-        "adu-protected-minimum",
-        "adu-height-standards",
+    assert {r.rule.rule_id for r in results} == ADU_GENERIC
+
+
+def test_unpermitted_flag_adds_legalization_pathway(rules):
+    results = screen({**ADU_INTAKE, "unpermitted_existing": True}, rules)
+    assert {r.rule.rule_id for r in results} == ADU_GENERIC | {
+        "adu-unpermitted-legalization"
+    }
+
+
+def test_multifamily_lot_adds_66323_allowances(rules):
+    results = screen({**ADU_INTAKE, "dwelling_type": "multifamily"}, rules)
+    assert {r.rule.rule_id for r in results} == ADU_GENERIC | {
+        "adu-multifamily-66323"
     }
 
 

@@ -42,8 +42,12 @@ STRINGS = {
             ("woodland", "City of Woodland"),
             ("example-city", "Another California city"),
         ],
+        "dwelling": "What kind of home is on the lot?",
+        "dwellings": [("single_family", "Single-family house"),
+                      ("multifamily", "Multifamily building"),
+                      ("other", "Other / no home yet")],
         "has_primary": "There is (or will be) a home on the lot",
-        "sfr": "My house is a single-family residence",
+        "unpermitted": "The unit already exists but was built without permits (before 2020)",
         "urbanized": "The property is in a city / urbanized area",
         "sf_zone": "The property is zoned single-family residential",
         "screens": "None of these apply: demolishing rent-restricted or "
@@ -79,8 +83,12 @@ STRINGS = {
             ("woodland", "Ciudad de Woodland"),
             ("example-city", "Otra ciudad de California"),
         ],
+        "dwelling": "¿Qué tipo de vivienda hay en el lote?",
+        "dwellings": [("single_family", "Casa unifamiliar"),
+                      ("multifamily", "Edificio multifamiliar"),
+                      ("other", "Otro / aún no hay vivienda")],
         "has_primary": "Hay (o habrá) una vivienda en el lote",
-        "sfr": "Mi casa es una residencia unifamiliar",
+        "unpermitted": "La unidad ya existe pero se construyó sin permisos (antes de 2020)",
         "urbanized": "La propiedad está en una ciudad / área urbanizada",
         "sf_zone": "La propiedad tiene zonificación residencial unifamiliar",
         "screens": "Ninguno de estos aplica: demoler vivienda de renta "
@@ -161,11 +169,14 @@ def intake_form(lang):
 <fieldset><legend>{s['jurisdiction']}</legend>
 <select name="jurisdiction">{juris}</select></fieldset>
 <fieldset><legend>{s['project_type']}</legend>{radios}</fieldset>
+<fieldset><legend>{s['dwelling']}</legend>
+<select name="dwelling_type">{"".join(f'<option value="{v}">{html.escape(t)}</option>' for v, t in s['dwellings'])}</select>
+</fieldset>
 <fieldset>
 <label><input type="checkbox" name="has_primary_dwelling" checked> {s['has_primary']}</label>
-<label><input type="checkbox" name="sfr" checked> {s['sfr']}</label>
 <label><input type="checkbox" name="in_urbanized_area" checked> {s['urbanized']}</label>
 <label><input type="checkbox" name="sf_zone" checked> {s['sf_zone']}</label>
+<label><input type="checkbox" name="unpermitted_existing"> {s['unpermitted']}</label>
 <label><input type="checkbox" name="no_exclusions" checked> {s['screens']}</label>
 </fieldset>
 <button type="submit">{s['submit']}</button>
@@ -178,7 +189,8 @@ def result_page(form, lang):
     intake = {
         "project_type": form.get("project_type", [""])[0],
         "has_primary_dwelling": "has_primary_dwelling" in form,
-        "dwelling_type": "single_family" if "sfr" in form else "other",
+        "dwelling_type": form.get("dwelling_type", ["other"])[0],
+        "unpermitted_existing": "unpermitted_existing" in form,
         "in_urbanized_area": "in_urbanized_area" in form,
         "zone_class": "single_family_residential" if "sf_zone" in form else "other",
         "demolishes_protected_housing": not no_excl,

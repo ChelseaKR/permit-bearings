@@ -1,0 +1,33 @@
+name: Source currency watch
+on:
+  schedule:
+    - cron: "0 15 * * 1"  # Mondays 15:00 UTC (~8am Pacific)
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Re-fetch watched sources and diff hashes
+        id: watch
+        run: |
+          set +e
+          PYTHONPATH=src python -m permit_pathways.harness --fetch | tee report.txt
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+      - name: Open an issue if a source changed
+        if: steps.watch.outputs.exit_code != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Source currency alert: a watched legal source changed ($(date -u +%F))" \
+            --body "$(printf 'The weekly currency check found changed or unreachable watched sources. Dependent rules are stale until re-verified against the new text.\n\n```\n%s\n```' "$(cat report.txt)")" \
+            --label "currency"

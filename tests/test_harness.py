@@ -16,7 +16,7 @@ def test_report_is_honest_about_the_unverified_davis_rule():
     # the rule base trustworthy, even though every golden case passes.
     assert report.unverified == ["davis-local-adu-process"]
     assert report.stale == []
-    assert len(report.verified) == 7
+    assert len(report.verified) == 14
     assert report.golden_failed == []
     assert not report.trustworthy
 
@@ -27,7 +27,8 @@ def test_changed_source_flips_dependent_rules_to_stale():
     # stale; unrelated rules stay verified.
     report = verify_rules(RULES, GOLDEN, today=AS_OF,
                           changed_sources=["66321"])
-    assert set(report.stale) == {"adu-protected-minimum", "adu-height-standards"}
+    assert set(report.stale) == {"adu-protected-minimum", "adu-height-standards",
+                                 "adu-size-allowances"}
     assert "sb9-two-unit-ministerial" in report.verified
     assert not report.trustworthy
 
@@ -35,7 +36,7 @@ def test_changed_source_flips_dependent_rules_to_stale():
 def test_verification_goes_stale_after_max_age():
     report = verify_rules(RULES, GOLDEN, today=date(2027, 7, 27))
     assert report.verified == []
-    assert len(report.stale) == 7
+    assert len(report.stale) == 14
 
 
 def test_jurisdiction_layers_ride_on_the_statewide_base():

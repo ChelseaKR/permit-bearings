@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Permit Pathways — cited housing-permit guidance for California jurisdictions</title>
+<meta name="description" content="Citation-grounded ADU, JADU, and SB 9 pathway guidance for California jurisdictions, with a verification harness that flags stale guidance when state housing law changes.">
+<meta property="og:title" content="Permit Pathways">
+<meta property="og:description" content="Every answer cites its source. Every source is watched for change. ADU, JADU, and SB 9 guidance with a public trust dashboard.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
 <style>
 :root {
   color-scheme: light;
@@ -111,6 +116,10 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
       <legend id="t-project">What are you proposing?</legend>
       <div id="typeRadios"></div>
     </fieldset>
+    <fieldset>
+      <legend id="t-dwelling">What kind of home is on the lot?</legend>
+      <select name="dwelling_type" id="dwellingSel"></select>
+    </fieldset>
     <fieldset id="factBoxes"></fieldset>
     <button type="submit" id="t-submit">Find my pathway</button>
   </form>
@@ -167,16 +176,21 @@ const STRINGS = {
             ["jadu","Junior ADU (small unit inside my house)"],
             ["two_unit","Two homes on my single-family lot (SB 9)"],
             ["lot_split","Split my lot into two parcels (SB 9)"]],
-    facts: [["has_primary_dwelling","There is (or will be) a home on the lot"],
-            ["sfr","My house is a single-family residence"],
-            ["in_urbanized_area","The property is in a city / urbanized area"],
-            ["sf_zone","The property is zoned single-family residential"],
-            ["no_exclusions","None of these apply: demolishing rent-restricted or affordable housing · a tenant lived there in the last 3 years · historic district · wetlands or other protected site · parcel already created by an SB 9 lot split"]],
+    dwelling: "What kind of home is on the lot?",
+    dwellings: [["single_family","Single-family house"],
+                ["multifamily","Multifamily building (apartments, attached units)"],
+                ["other","Other / no home yet"]],
+    facts: [["has_primary_dwelling","There is (or will be) a home on the lot",true],
+            ["in_urbanized_area","The property is in a city / urbanized area",true],
+            ["sf_zone","The property is zoned single-family residential",true],
+            ["unpermitted_existing","The unit already exists but was built without permits (before 2020)",false],
+            ["no_exclusions","None of these apply: demolishing rent-restricted or affordable housing · a tenant lived there in the last 3 years · historic district · wetlands or other protected site · parcel already created by an SB 9 lot split",true]],
     submit: "Find my pathway",
     results: "Candidate pathways",
     none: "No state pathway matched your answers. This does not mean your project is impossible — it means it needs staff review. Contact your jurisdiction's planning counter.",
     docs: "Typical documents", source: "Source",
     verifiedOn: "verified", unverified: "UNVERIFIED — pending source check",
+    ministerial: "ministerial — approved on objective standards, no public hearing",
     langBtn: "Español",
   },
   es: {
@@ -188,16 +202,21 @@ const STRINGS = {
             ["jadu","ADU júnior (unidad pequeña dentro de mi casa)"],
             ["two_unit","Dos viviendas en mi lote unifamiliar (SB 9)"],
             ["lot_split","Dividir mi lote en dos parcelas (SB 9)"]],
-    facts: [["has_primary_dwelling","Hay (o habrá) una vivienda en el lote"],
-            ["sfr","Mi casa es una residencia unifamiliar"],
-            ["in_urbanized_area","La propiedad está en una ciudad / área urbanizada"],
-            ["sf_zone","La propiedad tiene zonificación residencial unifamiliar"],
-            ["no_exclusions","Ninguno de estos aplica: demoler vivienda de renta restringida o asequible · un inquilino vivió allí en los últimos 3 años · distrito histórico · humedales u otro sitio protegido · parcela ya creada por una división SB 9"]],
+    dwelling: "¿Qué tipo de vivienda hay en el lote?",
+    dwellings: [["single_family","Casa unifamiliar"],
+                ["multifamily","Edificio multifamiliar (apartamentos, unidades adosadas)"],
+                ["other","Otro / aún no hay vivienda"]],
+    facts: [["has_primary_dwelling","Hay (o habrá) una vivienda en el lote",true],
+            ["in_urbanized_area","La propiedad está en una ciudad / área urbanizada",true],
+            ["sf_zone","La propiedad tiene zonificación residencial unifamiliar",true],
+            ["unpermitted_existing","La unidad ya existe pero se construyó sin permisos (antes de 2020)",false],
+            ["no_exclusions","Ninguno de estos aplica: demoler vivienda de renta restringida o asequible · un inquilino vivió allí en los últimos 3 años · distrito histórico · humedales u otro sitio protegido · parcela ya creada por una división SB 9",true]],
     submit: "Encontrar mi trámite",
     results: "Trámites posibles",
     none: "Ninguna vía estatal coincidió con sus respuestas. Esto no significa que su proyecto sea imposible — significa que necesita revisión del personal. Contacte a su departamento de planificación.",
     docs: "Documentos típicos", source: "Fuente",
     verifiedOn: "verificado", unverified: "SIN VERIFICAR — pendiente de revisión",
+    ministerial: "ministerial — se aprueba con estándares objetivos, sin audiencia pública",
     langBtn: "English",
   },
 };
@@ -241,8 +260,11 @@ function renderForm() {
     s.jurisdictions.map(([v,t]) => `<option value="${v}">${esc(t)}</option>`).join("");
   document.getElementById("typeRadios").innerHTML =
     s.types.map(([v,t],i) => `<label><input type="radio" name="project_type" value="${v}" ${i===0?"checked":""}> ${esc(t)}</label>`).join("");
+  document.getElementById("t-dwelling").textContent = s.dwelling;
+  document.getElementById("dwellingSel").innerHTML =
+    s.dwellings.map(([v,t]) => `<option value="${v}">${esc(t)}</option>`).join("");
   document.getElementById("factBoxes").innerHTML =
-    s.facts.map(([v,t]) => `<label><input type="checkbox" name="${v}" checked> ${esc(t)}</label>`).join("");
+    s.facts.map(([v,t,on]) => `<label><input type="checkbox" name="${v}" ${on?"checked":""}> ${esc(t)}</label>`).join("");
 }
 
 function renderResults(list) {
@@ -259,8 +281,11 @@ function renderResults(list) {
       ? `<span class="badge ok"><span class="status-ico">✓</span>${esc(s.verifiedOn)} ${esc(c.verified_on)}</span>`
       : `<span class="badge warn"><span class="status-ico">⚠</span>${esc(s.unverified)}</span>`;
     const docs = (r.required_documents||[]).map(d => `<li>${esc(d)}</li>`).join("");
+    const route = r.route_class === "ministerial"
+      ? `<p class="small mutedtxt">${esc(s.ministerial)}</p>` : "";
     return `<div class="card ${ok?"":"unverified"}">
       <h3>${esc(r.pathway)} ${badge}</h3>
+      ${route}
       <p class="small">${esc(r.notes)}</p>
       ${c.excerpt ? `<blockquote>${esc(c.excerpt)}</blockquote>` : ""}
       <p class="small">${esc(s.source)}: <a href="${esc(c.url)}" rel="noopener">${esc(c.source)}</a></p>
@@ -324,7 +349,8 @@ document.getElementById("intake").addEventListener("submit", e => {
   renderResults(screen({
     project_type: f.get("project_type"),
     has_primary_dwelling: f.has("has_primary_dwelling"),
-    dwelling_type: f.has("sfr") ? "single_family" : "other",
+    dwelling_type: f.get("dwelling_type"),
+    unpermitted_existing: f.has("unpermitted_existing"),
     in_urbanized_area: f.has("in_urbanized_area"),
     zone_class: f.has("sf_zone") ? "single_family_residential" : "other",
     demolishes_protected_housing: !noExcl,

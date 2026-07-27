@@ -58,7 +58,10 @@ def main() -> int:
         for rule_id in report.stale:
             print(f"  STALE until re-verified: {rule_id}")
     print("\ntrustworthy:", "yes" if report.trustworthy else "NO — review queue is not empty")
-    return 0 if report.trustworthy else 1
+    # Exit nonzero only on NEW problems (stale rules or golden regressions).
+    # Known-unverified rules are a standing backlog, not a fresh alarm — a
+    # scheduled currency check should page on change, not on every run.
+    return 1 if (report.stale or report.golden_failed) else 0
 
 
 if __name__ == "__main__":

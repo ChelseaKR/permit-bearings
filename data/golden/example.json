@@ -10,7 +10,11 @@
     "expected_rule_ids": [
       "adu-ministerial-review",
       "adu-protected-minimum",
-      "adu-height-standards"
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental",
+      "adu-conversion-exemptions"
     ]
   },
   {
@@ -39,7 +43,8 @@
       "jurisdiction": "example-city"
     },
     "expected_rule_ids": [
-      "sb9-two-unit-ministerial"
+      "sb9-two-unit-ministerial",
+      "sb9-adu-interaction"
     ]
   },
   {
@@ -72,7 +77,8 @@
       "jurisdiction": "example-city"
     },
     "expected_rule_ids": [
-      "sb9-urban-lot-split"
+      "sb9-urban-lot-split",
+      "sb9-adu-interaction"
     ]
   },
   {
@@ -87,6 +93,10 @@
       "adu-ministerial-review",
       "adu-protected-minimum",
       "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental",
+      "adu-conversion-exemptions",
       "davis-local-adu-process"
     ]
   },
@@ -102,7 +112,51 @@
       "adu-ministerial-review",
       "adu-protected-minimum",
       "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental",
+      "adu-conversion-exemptions",
       "woodland-adu-ordinance-2026"
+    ]
+  },
+  {
+    "case_id": "adu-multifamily-lot",
+    "question": "We own a small apartment building \u2014 can we add ADUs?",
+    "intake": {
+      "project_type": "adu",
+      "has_primary_dwelling": true,
+      "dwelling_type": "multifamily",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental",
+      "adu-conversion-exemptions",
+      "adu-multifamily-66323"
+    ]
+  },
+  {
+    "case_id": "adu-unpermitted-legalize",
+    "question": "My garage was converted to a unit years ago without permits. Can I make it legal?",
+    "intake": {
+      "project_type": "adu",
+      "has_primary_dwelling": true,
+      "unpermitted_existing": true,
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental",
+      "adu-conversion-exemptions",
+      "adu-unpermitted-legalization"
     ]
   }
 ]
