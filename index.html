@@ -66,10 +66,13 @@ nav a { color: var(--accent); text-decoration: none; margin-right: .9rem; }
 fieldset { border: 1px solid var(--grid); border-radius: 10px;
   margin: 1rem 0; padding: .9rem 1rem; background: var(--surface); }
 legend { font-weight: 600; font-size: .92rem; padding: 0 .35rem; }
-label { display: block; padding: .5rem 0; }
+label { display: flex; align-items: flex-start; gap: .6rem;
+  min-height: 44px; padding: .3rem 0; }
+label > input[type="radio"], label > input[type="checkbox"] {
+  flex: none; width: 1.25rem; height: 1.25rem; margin-top: .15rem; }
 select { font-size: 1rem; padding: .5rem; min-height: 44px; border-radius: 4px;
   border: 1px solid var(--grid); background: var(--surface); color: var(--ink); }
-input, textarea { min-height: 44px; }
+input[type="text"], input[type="date"], input[list], textarea { min-height: 44px; }
 button { background: var(--accent); color: var(--page); border: 0;
   border-radius: 4px; min-height: 44px; padding: .6rem 1.3rem;
   font-size: 1rem; font-weight: 600; cursor: pointer; }
