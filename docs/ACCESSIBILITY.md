@@ -1,58 +1,78 @@
-# Accessibility audit — static pass, 2026-07-27
+# Accessibility audit — static pass, updated 2026-07-27
 
-Scope: the public demo page (`index.html`). Target: WCAG 2.1 AA. This is a
-static (code-level) audit with computed contrast; the items under "Remaining"
-require a human with assistive technology and have not been done.
+Scope: the public demo page (`index.html`). **Target: WCAG 2.2 Level AAA.**
+Styling uses the open-source **California Design System** ("cagov" theme
+tokens from `@cagov/ds-base-css`, Public Sans type); token steps were chosen
+to meet AAA contrast on these surfaces, and the dark theme derives from the
+same hues (CDS ships light-only). No state branding, logo, or header is
+used — the design system is open source and its use does not imply
+affiliation.
+
+This is a static (code-level) audit with computed contrast; items under
+"Remaining" require a human with assistive technology.
 
 ## Checked and passing
 
-**Semantics & structure.** Single `<main>` landmark; one `<h1>`; sections
-with `<h2>` headings; data tables use `<th>` header rows; all interactive
-elements are native controls (`button`, `input`, `select`, `textarea`,
-`a`) — no div-buttons, so keyboard operability and focus come from the
-platform. Default focus outlines are not suppressed anywhere.
+**Semantics & structure.** Single `<main>`; one `<h1>`; sectioned `<h2>`s;
+`<th>` header rows; all interactive elements are native controls, so
+keyboard operability and focus order come from the platform.
 
-**Labels.** Every form control has a programmatic name: visible `<label>`
-wrappers for radios/checkboxes; `aria-label` on the jurisdiction combobox,
-ordinance textarea, and date input (their `<legend>`/heading context is not
-programmatically associated, so the explicit name is required). The trust
-meter has `role="img"` with a descriptive `aria-label`.
+**Focus appearance (2.4.13, AAA-new).** Global `:focus-visible` indicator:
+3px solid accent outline with 2px offset — ≥2px perimeter, ≥3:1 against
+adjacent colors in both themes (10.6:1 light / 10.3:1 dark vs page).
 
-**Dynamic updates.** Results, scan findings, clock output, and the
-jurisdiction status line carry `aria-live="polite"` so screen-reader users
-hear updates without losing focus.
+**Target size (2.5.5 AAA / 2.5.8 AA).** Buttons, selects, inputs, and
+textareas have `min-height: 44px`; checkbox/radio rows get ≥44px hit areas
+via label padding. Inline text links fall under the in-text exception.
 
-**Language.** `<html lang>` reflects the active language and is updated by
-the EN/ES toggle; the toggle is a real link with `role="button"` semantics
-via activation handling.
+**Motion (2.3.3).** The only animation (smooth scroll to results) is
+disabled under `prefers-reduced-motion: reduce`.
 
-**Not color-alone.** Every status is a badge with an icon glyph (✓ ⚠ ✕) and
-a text word; verified/stale/unverified never rely on hue only.
+**Labels & names.** Visible `<label>` wrappers for radios/checkboxes;
+`aria-label` on the jurisdiction combobox, ordinance textarea, and date
+input; the trust meter has `role="img"` with a descriptive label.
 
-**Contrast (computed, WCAG relative-luminance method).** All text pairs meet
-≥ 4.5:1 in both themes after the 2026-07-27 fixes:
+**Dynamic updates.** Results, scan findings, clock output, and jurisdiction
+status carry `aria-live="polite"`.
+
+**Link purpose (2.4.9 AAA).** Every link's text alone states its target
+("view scan findings (JSON)", full source citations, named statutes).
+
+**Language.** `<html lang>` tracks the EN/ES toggle.
+
+**Not color-alone.** Statuses are icon + word badges; hue never carries
+meaning by itself.
+
+**Contrast — 1.4.6 Enhanced (7:1 normal text), computed both themes:**
 
 | Pair | Light | Dark |
 |---|---|---|
 | Body ink / page | 18.7 | 19.4 |
 | Secondary ink / page | 7.5 | 10.9 |
-| Muted ink / page | 5.0 (was 3.4, darkened) | 5.4 |
-| Links & buttons (accent) | 6.3 (was 4.2, darkened) | 5.3 |
-| Badge "ok" text/bg | 6.8 (was 3.0, → success-text token) | 8.2 (→ #4ade80) |
-| Badge "warn" text/bg | 6.4 | 8.0 |
-| Badge "bad" text/bg | 7.0 (was 4.1, → #991b1b) | 6.1 (→ #f87171) |
+| Muted ink / page·surface | 7.1 / 7.3 | 8.2 / 7.3 |
+| Links & accent (CDS primary-900 / primary-300) | 10.6 | 10.3 / 9.2 |
+| Button text on accent | 11.2 | 10.3 |
+| Badge ok text/bg | 8.0 | 8.2 |
+| Badge warn text/bg (CDS accent2-900/accent2-100) | 9.6 | 8.0 |
+| Badge bad text/bg | 7.8 | 8.9 |
 
-Status *fill* colors on the meter remain the reserved status palette; the
-adjacent count badges carry the text.
+Status *fill* colors (meter segments) are graphical objects (1.4.11, 3:1
+with text badges adjacent); ok/bad badge pairs are supplemental to CDS,
+which defines no status green/red in its theme tokens.
 
-**Reflow.** Layout is a single column with `max-width`; tables are the only
-wide content and scroll within the viewport at 320 px width.
+**Visual presentation (1.4.8, partial).** Line height 1.55; single column
+capped near 80 characters; no justified text; wide tables scroll in their
+own container (no page horizontal scroll at 320px). User-selectable
+colors/spacing beyond browser and OS mechanisms are not provided.
 
-## Remaining (human/AT pass — not yet done)
+## Remaining (human/AT pass — not done)
 
 - Screen-reader walkthrough (VoiceOver/NVDA): reading order, datalist
-  combobox behavior across browsers, live-region verbosity.
-- 200% zoom and 320 px reflow visual check on real devices.
-- `forced-colors` / Windows High Contrast mode spot check.
-- Spanish-language screen-reader pronunciation check.
+  combobox behavior, live-region verbosity.
+- 200% zoom and 320px reflow visual check on real devices.
+- `forced-colors` / high-contrast mode spot check.
+- Spanish screen-reader pronunciation check.
 - Keyboard-only end-to-end run of all four flows.
+- AAA content-level judgments (3.1.5 reading level — plain language and a
+  full Spanish interface are design goals, but no formal readability
+  assessment has been done).

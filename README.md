@@ -69,7 +69,10 @@ Permit Pathways treats that question as the product:
   Act (Civil Code § 1798 et seq.) respected in any applicant-data flow.
 - Deployable and affordable for low-capacity jurisdictions; sits alongside
   existing permitting systems rather than replacing them.
-- Accessible and bilingual (English/Spanish) by default.
+- Accessible and bilingual (English/Spanish) by default — WCAG 2.2 AAA
+  target with a computed-contrast audit (docs/ACCESSIBILITY.md), styled
+  with the open-source California Design System's cagov theme tokens (no
+  state branding; use implies no affiliation).
 
 ## Status
 
