@@ -88,8 +88,29 @@ harness is built to catch.
 
 ## Run it
 
+## Transit-proximity determinations (GTFS)
+
+Two ADU standards turn on transit proximity, and both are computable from a
+jurisdiction's GTFS feed instead of applicant self-attestation: the
+§ 66322(a)(1) parking exemption (half-mile walking distance of public
+transit) and the § 66321(b)(4)(B) 18-ft height allowance (half-mile of a
+major transit stop, PRC § 21064.3, or a high-quality transit corridor,
+PRC § 21155(b) — both requiring peak-headway analysis). `transit.py` parses
+the feed, measures worst peak-window gaps per stop/route, clusters corner
+stops into intersections, and returns candidate/conclusive determinations
+(straight-line distance is conclusive only for "no" — walking distance can
+only be longer).
+
+Run against the live Unitrans (Davis) feed it surfaces a finding worth a
+demo on its own: under the current **summer** service calendar, zero stops
+carry ≤15/≤20-minute peak service, so the 18-ft height allowance is
+unavailable citywide — while academic-year service would qualify several
+corridors. Transit-based entitlements are time-varying, exactly like the
+statutes; determinations need re-verification, not caching.
+
 ```sh
 python3 -m pytest                                   # test suite
+PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip --lat 38.5449 --lon -121.7442
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
 PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff

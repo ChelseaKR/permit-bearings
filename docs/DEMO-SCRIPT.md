@@ -56,6 +56,18 @@ observers. Goal: be the vendor they remember for *trust*, not features.
 - Golden-question replay running in the browser — the jurisdiction's own
   acceptance test, re-run on every change.
 
+### 3b. Data-driven determinations, not self-attestation (3 min)
+- The parking exemption and 18-ft height allowance both turn on transit
+  proximity. Run the GTFS module live against the Unitrans feed for a
+  downtown Davis address: parking exemption CANDIDATE at 0.04 mi;
+  edge-of-town address: conclusive NO (straight-line already exceeds a half
+  mile, and walking distance can only be longer — honest asymmetry).
+- The reveal: under Davis's current *summer* feed, zero stops carry
+  ≤15/20-minute peak service — the 18-ft allowance is unavailable citywide
+  until academic-year service resumes. "Even the map is time-varying. A tool
+  that cached this answer in April is wrong in July. This is why everything
+  we ship re-verifies."
+
 ### 4. Fit and posture (5 min)
 - Jurisdiction owns everything: rules, corpus, golden set — plain JSON,
   exportable, no lock-in. CPRA-aware; minimal data collection (the demo
