@@ -1,0 +1,22 @@
+[
+  {
+    "rule_id": "davis-local-adu-process",
+    "pathway": "City of Davis — local ADU permit process (Municipal Code § 40.26.450)",
+    "route_class": "ministerial",
+    "jurisdiction_scope": "davis",
+    "criteria": [
+      {"field": "project_type", "op": "in", "value": ["adu", "jadu"]}
+    ],
+    "citation": {
+      "source": "Davis Municipal Code § 40.26.450 — Ministerial accessory dwelling units and junior accessory dwelling units",
+      "url": "https://ecode360.com/44652967",
+      "excerpt": null,
+      "verified_on": null
+    },
+    "required_documents": [
+      "City of Davis ADU permit application (or building-permit-only where state law allows)",
+      "site plan and floor plan"
+    ],
+    "notes": "PENDING VERIFICATION: the code host (ecode360) and city site block automated retrieval, so this rule has not been verified against source text and displays as unverified by design. Publicly indexed excerpts of § 40.26.450 reference Government Code § 65852.2(e)(1) — numbering superseded by SB 477 (2024), which moved ADU law to §§ 66310–66342. Flag for staff review: if confirmed, the local code cites state law that no longer exists at that citation."
+  }
+]

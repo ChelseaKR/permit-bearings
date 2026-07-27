@@ -22,7 +22,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from permit_pathways.harness import verify_rules  # noqa: E402
 from permit_pathways.screening import load_rules, screen  # noqa: E402
 
-RULES_PATH = ROOT / "data" / "rules" / "statewide.json"
+RULES_PATH = ROOT / "data" / "rules"
 GOLDEN_PATH = ROOT / "data" / "golden" / "example.json"
 
 STRINGS = {
@@ -35,6 +35,12 @@ STRINGS = {
             ("jadu", "Junior ADU (small unit inside my house)"),
             ("two_unit", "Two homes on my single-family lot (SB 9)"),
             ("lot_split", "Split my lot into two parcels (SB 9)"),
+        ],
+        "jurisdiction": "Where is the property?",
+        "jurisdictions": [
+            ("davis", "City of Davis"),
+            ("woodland", "City of Woodland"),
+            ("example-city", "Another California city"),
         ],
         "has_primary": "There is (or will be) a home on the lot",
         "sfr": "My house is a single-family residence",
@@ -66,6 +72,12 @@ STRINGS = {
             ("jadu", "ADU júnior (unidad pequeña dentro de mi casa)"),
             ("two_unit", "Dos viviendas en mi lote unifamiliar (SB 9)"),
             ("lot_split", "Dividir mi lote en dos parcelas (SB 9)"),
+        ],
+        "jurisdiction": "¿Dónde está la propiedad?",
+        "jurisdictions": [
+            ("davis", "Ciudad de Davis"),
+            ("woodland", "Ciudad de Woodland"),
+            ("example-city", "Otra ciudad de California"),
         ],
         "has_primary": "Hay (o habrá) una vivienda en el lote",
         "sfr": "Mi casa es una residencia unifamiliar",
@@ -139,9 +151,15 @@ def intake_form(lang):
         f'<label><input type="radio" name="project_type" value="{v}" required> {html.escape(t)}</label>'
         for v, t in s["types"]
     )
+    juris = "".join(
+        f'<option value="{v}">{html.escape(t)}</option>'
+        for v, t in s["jurisdictions"]
+    )
     return page(s["title"], f"""
 <h1>{s['title']}</h1><p class="tag">{s['tagline']}</p>
 <form method="post" action="/screen?lang={lang}">
+<fieldset><legend>{s['jurisdiction']}</legend>
+<select name="jurisdiction">{juris}</select></fieldset>
 <fieldset><legend>{s['project_type']}</legend>{radios}</fieldset>
 <fieldset>
 <label><input type="checkbox" name="has_primary_dwelling" checked> {s['has_primary']}</label>
@@ -168,7 +186,7 @@ def result_page(form, lang):
         "in_historic_district": not no_excl,
         "on_protected_site": not no_excl,
         "parcel_created_by_sb9_split": not no_excl,
-        "jurisdiction": "example-city",
+        "jurisdiction": form.get("jurisdiction", ["example-city"])[0],
     }
     results = screen(intake, load_rules(RULES_PATH))
     if not results:

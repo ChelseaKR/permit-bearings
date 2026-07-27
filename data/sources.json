@@ -1,0 +1,14 @@
+{
+  "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf": {
+    "label": "HCD ADU Handbook (March 2026)",
+    "local_copy": "corpus/hcd/adu-handbook.pdf",
+    "sha256": "ec499e12c08974d8e25af352539b23afc8c26bc7dd200453bd35796de3188e6a",
+    "fetched_on": "2026-07-27"
+  },
+  "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/lot-splits-and-duplexes-sb-9.pdf": {
+    "label": "HCD Housing Law Fact Sheet: Duplexes and Lot Splits (SB 9), April 2026",
+    "local_copy": "corpus/hcd/sb9-fact-sheet.pdf",
+    "sha256": "91a6d75d99e1afeeb96d05d970fa53356597085f621d8fc500bea816d51d71e3",
+    "fetched_on": "2026-07-27"
+  }
+}

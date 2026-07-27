@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Permit Pathways — cited housing-permit guidance for California jurisdictions</title>
+<style>
+:root {
+  color-scheme: light;
+  --surface: #fcfcfb; --page: #f9f9f7;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --border: rgba(11,11,11,0.10);
+  --accent: #2a78d6;
+  --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
+  --good-bg: #e9f6e9; --warn-bg: #fdf3dc; --crit-bg: #fbe7e7;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --surface: #1a1a19; --page: #0d0d0d;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+    --accent: #3987e5;
+    --good-bg: #12310f; --warn-bg: #33270a; --crit-bg: #351212;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #1a1a19; --page: #0d0d0d;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+  --accent: #3987e5;
+  --good-bg: #12310f; --warn-bg: #33270a; --crit-bg: #351212;
+}
+* { box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  margin: 0; background: var(--page); color: var(--ink); line-height: 1.55; }
+main { max-width: 46rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+h1 { font-size: 1.45rem; margin: .4rem 0 .2rem; }
+h2 { font-size: 1.15rem; margin-top: 2rem; }
+.tag { color: var(--ink-2); margin-top: 0; }
+nav { font-size: .85rem; }
+nav a { color: var(--accent); text-decoration: none; margin-right: .9rem; }
+fieldset { border: 1px solid var(--grid); border-radius: 10px;
+  margin: 1rem 0; padding: .9rem 1rem; background: var(--surface); }
+legend { font-weight: 600; font-size: .92rem; padding: 0 .35rem; }
+label { display: block; margin: .45rem 0; }
+select { font-size: 1rem; padding: .35rem; border-radius: 6px;
+  border: 1px solid var(--grid); background: var(--surface); color: var(--ink); }
+button { background: var(--accent); color: #fff; border: 0; border-radius: 8px;
+  padding: .6rem 1.3rem; font-size: 1rem; cursor: pointer; }
+button.ghost { background: transparent; color: var(--accent);
+  border: 1px solid var(--grid); }
+.card { background: var(--surface); border: 1px solid var(--border);
+  border-left: 5px solid var(--good); border-radius: 10px;
+  padding: 1rem 1.1rem; margin: 1rem 0; }
+.card.unverified { border-left-color: var(--warning); }
+.card h3 { margin: 0 0 .3rem; font-size: 1.02rem; }
+.badge { display: inline-block; font-size: .78rem; font-weight: 600;
+  padding: .12rem .55rem; border-radius: 999px; white-space: nowrap; }
+.badge.ok   { background: var(--good-bg); color: var(--good); }
+.badge.warn { background: var(--warn-bg); color: #92400e; }
+.badge.bad  { background: var(--crit-bg); color: var(--critical); }
+:root[data-theme="dark"] .badge.warn { color: var(--warning); }
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .badge.warn { color: var(--warning); } }
+blockquote { font-size: .86rem; color: var(--ink-2);
+  border-left: 3px solid var(--grid); margin: .6rem 0; padding-left: .8rem; }
+.small { font-size: .85rem; color: var(--ink-2); }
+.mutedtxt { color: var(--muted); }
+a { color: var(--accent); }
+.notice { background: var(--surface); border: 1px solid var(--grid);
+  border-radius: 10px; padding: .8rem 1rem; font-size: .9rem; }
+.hero { font-size: 2.4rem; font-weight: 700; margin: 0; }
+.meter { display: flex; height: 14px; border-radius: 7px; overflow: hidden;
+  background: var(--grid); margin: .5rem 0 .3rem; }
+.meter > div { height: 100%; }
+.meter .m-good { background: var(--good); }
+.meter .m-bad  { background: var(--critical); }
+.meter .m-warn { background: var(--warning); }
+table { border-collapse: collapse; width: 100%; background: var(--surface);
+  border-radius: 10px; font-size: .88rem; }
+td, th { border-bottom: 1px solid var(--grid); padding: .45rem .6rem;
+  text-align: left; vertical-align: top; }
+th { color: var(--ink-2); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+.status-ico { font-weight: 700; margin-right: .25rem; }
+footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+<main>
+<nav>
+  <a href="#screen">Find a pathway</a>
+  <a href="#trust">Trust dashboard</a>
+  <a href="#sources">Watched sources</a>
+  <a id="langToggle" href="#" role="button">Español</a>
+</nav>
+
+<h1 id="t-title">Permit Pathways</h1>
+<p class="tag" id="t-tagline">Every answer cites its source. Every source is watched for change.</p>
+
+<section id="screen">
+  <form id="intake">
+    <fieldset>
+      <legend id="t-juris">Where is the property?</legend>
+      <select name="jurisdiction" id="jurisSel"></select>
+    </fieldset>
+    <fieldset>
+      <legend id="t-project">What are you proposing?</legend>
+      <div id="typeRadios"></div>
+    </fieldset>
+    <fieldset id="factBoxes"></fieldset>
+    <button type="submit" id="t-submit">Find my pathway</button>
+  </form>
+  <div id="results"></div>
+</section>
+
+<section id="trust">
+  <h2 id="t-dash">Trust dashboard</h2>
+  <p class="small" id="t-dashsub">What a jurisdiction sees before deciding to rely on this guidance.</p>
+  <p class="hero"><span id="pct">–</span><span style="font-size:1.2rem">%</span></p>
+  <p class="small" id="t-pctlabel">of guidance rules verified-current against their cited sources</p>
+  <div class="meter" id="meter" role="img" aria-label="share of rules verified, stale, and unverified"></div>
+  <p class="small" id="meterLegend"></p>
+  <p class="small"><span id="goldenLine"></span></p>
+  <p>
+    <button class="ghost" id="simBtn">Rehearse a legislative amendment to Gov. Code § 66321</button>
+    <button class="ghost hidden" id="resetBtn">Reset</button>
+  </p>
+  <div class="notice hidden" id="simNote">
+    Simulating: Gov. Code § 66321 (ADU size, setback, and height standards) has been
+    amended. Every rule citing it is <b>stale</b> until staff re-verify it against the
+    new text — this is the review queue a real amendment produces.
+  </div>
+  <table id="ruleTable" aria-describedby="t-dash"><thead>
+    <tr><th>Rule</th><th>Scope</th><th>Status</th></tr>
+  </thead><tbody></tbody></table>
+</section>
+
+<section id="sources">
+  <h2 id="t-sources">Watched sources</h2>
+  <p class="small" id="t-sourcesub">Each source document's content hash is recorded at verification time;
+  the harness re-fetches and diffs them, so a revised handbook or fact sheet
+  flags every dependent rule.</p>
+  <table id="sourceTable"><thead>
+    <tr><th>Source</th><th>Recorded</th><th>SHA-256</th></tr>
+  </thead><tbody></tbody></table>
+</section>
+
+<footer>
+  <p id="t-disclaimer">Decision support only — not legal advice and not a substitute for your
+  jurisdiction's review. Prototype for the California AI Permitting Innovation
+  Showcase (2026).</p>
+</footer>
+</main>
+
+<script>
+const STRINGS = {
+  en: {
+    tagline: "Every answer cites its source. Every source is watched for change.",
+    juris: "Where is the property?",
+    jurisdictions: [["davis","City of Davis"],["woodland","City of Woodland"],["example-city","Another California city"]],
+    project: "What are you proposing?",
+    types: [["adu","Accessory dwelling unit (backyard cottage, garage conversion)"],
+            ["jadu","Junior ADU (small unit inside my house)"],
+            ["two_unit","Two homes on my single-family lot (SB 9)"],
+            ["lot_split","Split my lot into two parcels (SB 9)"]],
+    facts: [["has_primary_dwelling","There is (or will be) a home on the lot"],
+            ["sfr","My house is a single-family residence"],
+            ["in_urbanized_area","The property is in a city / urbanized area"],
+            ["sf_zone","The property is zoned single-family residential"],
+            ["no_exclusions","None of these apply: demolishing rent-restricted or affordable housing · a tenant lived there in the last 3 years · historic district · wetlands or other protected site · parcel already created by an SB 9 lot split"]],
+    submit: "Find my pathway",
+    results: "Candidate pathways",
+    none: "No state pathway matched your answers. This does not mean your project is impossible — it means it needs staff review. Contact your jurisdiction's planning counter.",
+    docs: "Typical documents", source: "Source",
+    verifiedOn: "verified", unverified: "UNVERIFIED — pending source check",
+    langBtn: "Español",
+  },
+  es: {
+    tagline: "Cada respuesta cita su fuente. Cada fuente se vigila por cambios.",
+    juris: "¿Dónde está la propiedad?",
+    jurisdictions: [["davis","Ciudad de Davis"],["woodland","Ciudad de Woodland"],["example-city","Otra ciudad de California"]],
+    project: "¿Qué propone construir?",
+    types: [["adu","Vivienda accesoria (casita de patio, conversión de garaje)"],
+            ["jadu","ADU júnior (unidad pequeña dentro de mi casa)"],
+            ["two_unit","Dos viviendas en mi lote unifamiliar (SB 9)"],
+            ["lot_split","Dividir mi lote en dos parcelas (SB 9)"]],
+    facts: [["has_primary_dwelling","Hay (o habrá) una vivienda en el lote"],
+            ["sfr","Mi casa es una residencia unifamiliar"],
+            ["in_urbanized_area","La propiedad está en una ciudad / área urbanizada"],
+            ["sf_zone","La propiedad tiene zonificación residencial unifamiliar"],
+            ["no_exclusions","Ninguno de estos aplica: demoler vivienda de renta restringida o asequible · un inquilino vivió allí en los últimos 3 años · distrito histórico · humedales u otro sitio protegido · parcela ya creada por una división SB 9"]],
+    submit: "Encontrar mi trámite",
+    results: "Trámites posibles",
+    none: "Ninguna vía estatal coincidió con sus respuestas. Esto no significa que su proyecto sea imposible — significa que necesita revisión del personal. Contacte a su departamento de planificación.",
+    docs: "Documentos típicos", source: "Fuente",
+    verifiedOn: "verificado", unverified: "SIN VERIFICAR — pendiente de revisión",
+    langBtn: "English",
+  },
+};
+let lang = "en";
+let RULES = [], GOLDEN = [], SOURCES = {};
+const OPS = {
+  eq: (a,b) => a === b,
+  lte: (a,b) => a != null && a <= b,
+  gte: (a,b) => a != null && a >= b,
+  in: (a,b) => b.includes(a),
+};
+const MAX_AGE_DAYS = 180;
+
+function matches(rule, intake) {
+  return rule.criteria.every(c => OPS[c.op](intake[c.field], c.value));
+}
+function screen(intake) {
+  return RULES.filter(r =>
+    (r.jurisdiction_scope === "statewide" || r.jurisdiction_scope === intake.jurisdiction)
+    && matches(r, intake));
+}
+function ruleStatus(rule, changedMarkers) {
+  const c = rule.citation;
+  if (changedMarkers.some(m => (c.source||"").includes(m) || (c.url||"").includes(m)))
+    return "stale";
+  if (!c.verified_on) return "unverified";
+  const age = (Date.now() - new Date(c.verified_on)) / 86400000;
+  return age > MAX_AGE_DAYS ? "stale" : "verified";
+}
+
+function esc(s) { const d = document.createElement("span"); d.textContent = s ?? ""; return d.innerHTML; }
+
+function renderForm() {
+  const s = STRINGS[lang];
+  document.getElementById("t-tagline").textContent = s.tagline;
+  document.getElementById("t-juris").textContent = s.juris;
+  document.getElementById("t-project").textContent = s.project;
+  document.getElementById("t-submit").textContent = s.submit;
+  document.getElementById("langToggle").textContent = s.langBtn;
+  document.getElementById("jurisSel").innerHTML =
+    s.jurisdictions.map(([v,t]) => `<option value="${v}">${esc(t)}</option>`).join("");
+  document.getElementById("typeRadios").innerHTML =
+    s.types.map(([v,t],i) => `<label><input type="radio" name="project_type" value="${v}" ${i===0?"checked":""}> ${esc(t)}</label>`).join("");
+  document.getElementById("factBoxes").innerHTML =
+    s.facts.map(([v,t]) => `<label><input type="checkbox" name="${v}" checked> ${esc(t)}</label>`).join("");
+}
+
+function renderResults(list) {
+  const s = STRINGS[lang];
+  const el = document.getElementById("results");
+  if (!list.length) {
+    el.innerHTML = `<h2>${esc(s.results)}</h2><div class="notice">${esc(s.none)}</div>`;
+    return;
+  }
+  el.innerHTML = `<h2>${esc(s.results)}</h2>` + list.map(r => {
+    const c = r.citation;
+    const ok = !!c.verified_on;
+    const badge = ok
+      ? `<span class="badge ok"><span class="status-ico">✓</span>${esc(s.verifiedOn)} ${esc(c.verified_on)}</span>`
+      : `<span class="badge warn"><span class="status-ico">⚠</span>${esc(s.unverified)}</span>`;
+    const docs = (r.required_documents||[]).map(d => `<li>${esc(d)}</li>`).join("");
+    return `<div class="card ${ok?"":"unverified"}">
+      <h3>${esc(r.pathway)} ${badge}</h3>
+      <p class="small">${esc(r.notes)}</p>
+      ${c.excerpt ? `<blockquote>${esc(c.excerpt)}</blockquote>` : ""}
+      <p class="small">${esc(s.source)}: <a href="${esc(c.url)}" rel="noopener">${esc(c.source)}</a></p>
+      ${docs ? `<p class="small"><b>${esc(s.docs)}:</b></p><ul class="small">${docs}</ul>` : ""}
+    </div>`;
+  }).join("");
+}
+
+let simulating = false;
+function renderDashboard() {
+  const changed = simulating ? ["66321"] : [];
+  const statuses = RULES.map(r => ({ rule: r, st: ruleStatus(r, changed) }));
+  const n = { verified: 0, stale: 0, unverified: 0 };
+  statuses.forEach(x => n[x.st]++);
+  const total = RULES.length;
+  const pct = total ? Math.round(100 * n.verified / total) : 0;
+  document.getElementById("pct").textContent = pct;
+  const meter = document.getElementById("meter");
+  meter.innerHTML =
+    `<div class="m-good" style="width:${100*n.verified/total}%"></div>` +
+    `<div class="m-bad" style="width:${100*n.stale/total}%"></div>` +
+    `<div class="m-warn" style="width:${100*n.unverified/total}%"></div>`;
+  document.getElementById("meterLegend").innerHTML =
+    `<span class="badge ok"><span class="status-ico">✓</span>current ${n.verified}</span> ` +
+    `<span class="badge bad"><span class="status-ico">✕</span>stale ${n.stale}</span> ` +
+    `<span class="badge warn"><span class="status-ico">⚠</span>never verified ${n.unverified}</span>`;
+  // Golden replay runs live in the page: same matcher, same data.
+  let pass = 0;
+  GOLDEN.forEach(g => {
+    const got = screen(g.intake).map(r => r.rule_id).sort().join(",");
+    if (got === [...g.expected_rule_ids].sort().join(",")) pass++;
+  });
+  document.getElementById("goldenLine").textContent =
+    `${pass}/${GOLDEN.length} golden question cases replayed and passing in this browser`;
+  document.querySelector("#ruleTable tbody").innerHTML = statuses.map(({rule, st}) => {
+    const b = st === "verified"
+      ? `<span class="badge ok"><span class="status-ico">✓</span>current</span>`
+      : st === "stale"
+      ? `<span class="badge bad"><span class="status-ico">✕</span>STALE — re-verify</span>`
+      : `<span class="badge warn"><span class="status-ico">⚠</span>never verified</span>`;
+    return `<tr><td>${esc(rule.pathway)}</td><td class="mutedtxt">${esc(rule.jurisdiction_scope)}</td><td>${b}</td></tr>`;
+  }).join("");
+  document.getElementById("simNote").classList.toggle("hidden", !simulating);
+  document.getElementById("simBtn").classList.toggle("hidden", simulating);
+  document.getElementById("resetBtn").classList.toggle("hidden", !simulating);
+}
+
+function renderSources() {
+  document.querySelector("#sourceTable tbody").innerHTML =
+    Object.entries(SOURCES).map(([url, m]) =>
+      `<tr><td><a href="${esc(url)}" rel="noopener">${esc(m.label)}</a></td>
+       <td class="mutedtxt">${esc(m.fetched_on)}</td>
+       <td class="mutedtxt" style="font-family:ui-monospace,monospace;font-size:.75rem">${esc(m.sha256.slice(0,16))}…</td></tr>`
+    ).join("");
+}
+
+document.getElementById("intake").addEventListener("submit", e => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const noExcl = f.has("no_exclusions");
+  renderResults(screen({
+    project_type: f.get("project_type"),
+    has_primary_dwelling: f.has("has_primary_dwelling"),
+    dwelling_type: f.has("sfr") ? "single_family" : "other",
+    in_urbanized_area: f.has("in_urbanized_area"),
+    zone_class: f.has("sf_zone") ? "single_family_residential" : "other",
+    demolishes_protected_housing: !noExcl,
+    tenant_occupied_last_3_years: !noExcl,
+    in_historic_district: !noExcl,
+    on_protected_site: !noExcl,
+    parcel_created_by_sb9_split: !noExcl,
+    jurisdiction: f.get("jurisdiction"),
+  }));
+  document.getElementById("results").scrollIntoView({behavior: "smooth"});
+});
+document.getElementById("simBtn").addEventListener("click", () => { simulating = true; renderDashboard(); });
+document.getElementById("resetBtn").addEventListener("click", () => { simulating = false; renderDashboard(); });
+document.getElementById("langToggle").addEventListener("click", e => {
+  e.preventDefault(); lang = lang === "en" ? "es" : "en";
+  document.documentElement.lang = lang;
+  renderForm(); document.getElementById("results").innerHTML = "";
+});
+
+Promise.all([
+  fetch("data/rules/statewide.json").then(r => r.json()),
+  fetch("data/rules/davis.json").then(r => r.json()),
+  fetch("data/rules/woodland.json").then(r => r.json()),
+  fetch("data/golden/example.json").then(r => r.json()),
+  fetch("data/sources.json").then(r => r.json()),
+]).then(([a, b, c, golden, sources]) => {
+  RULES = [...a, ...b, ...c]; GOLDEN = golden; SOURCES = sources;
+  renderForm(); renderDashboard(); renderSources();
+}).catch(() => {
+  document.getElementById("results").innerHTML =
+    `<div class="notice">This page loads its rule data from the repository — serve it over HTTP (e.g. <code>python3 -m http.server</code>) or view the hosted demo.</div>`;
+});
+</script>
+</body>
+</html>

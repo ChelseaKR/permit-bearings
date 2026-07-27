@@ -4,7 +4,7 @@ import pytest
 
 from permit_pathways.screening import load_rules, screen
 
-RULES = Path(__file__).parent.parent / "data" / "rules" / "statewide.json"
+RULES = Path(__file__).parent.parent / "data" / "rules"
 
 ADU_INTAKE = {
     "project_type": "adu",
@@ -27,13 +27,21 @@ def test_adu_intake_matches_adu_rules(rules):
     }
 
 
-def test_all_shipped_rules_are_verified_and_cited(rules):
+def test_statewide_rules_are_verified_and_cited(rules):
     for rule in rules:
-        assert rule.citation.is_verified, rule.rule_id
-        assert rule.citation.excerpt, rule.rule_id
+        if rule.jurisdiction_scope == "statewide":
+            assert rule.citation.is_verified, rule.rule_id
+            assert rule.citation.excerpt, rule.rule_id
     results = screen(ADU_INTAKE, rules)
     assert all(r.verified for r in results)
     assert "verified" in results[0].summary()
+
+
+def test_davis_intake_includes_local_layer_flagged_unverified(rules):
+    results = screen({**ADU_INTAKE, "jurisdiction": "davis"}, rules)
+    by_id = {r.rule.rule_id: r for r in results}
+    assert "davis-local-adu-process" in by_id
+    assert not by_id["davis-local-adu-process"].verified
 
 
 def test_sb9_exclusion_screens_out_tenant_occupied(rules):

@@ -21,7 +21,9 @@
       "dwelling_type": "single_family",
       "jurisdiction": "example-city"
     },
-    "expected_rule_ids": ["jadu-standards"]
+    "expected_rule_ids": [
+      "jadu-standards"
+    ]
   },
   {
     "case_id": "sb9-duplex-clean",
@@ -36,7 +38,9 @@
       "on_protected_site": false,
       "jurisdiction": "example-city"
     },
-    "expected_rule_ids": ["sb9-two-unit-ministerial"]
+    "expected_rule_ids": [
+      "sb9-two-unit-ministerial"
+    ]
   },
   {
     "case_id": "sb9-duplex-tenant-occupied",
@@ -67,6 +71,38 @@
       "parcel_created_by_sb9_split": false,
       "jurisdiction": "example-city"
     },
-    "expected_rule_ids": ["sb9-urban-lot-split"]
+    "expected_rule_ids": [
+      "sb9-urban-lot-split"
+    ]
+  },
+  {
+    "case_id": "davis-adu-local-layer",
+    "question": "What does Davis require for my backyard ADU?",
+    "intake": {
+      "project_type": "adu",
+      "has_primary_dwelling": true,
+      "jurisdiction": "davis"
+    },
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "davis-local-adu-process"
+    ]
+  },
+  {
+    "case_id": "woodland-adu-local-layer",
+    "question": "Is Woodland's ADU ordinance up to date with state law?",
+    "intake": {
+      "project_type": "adu",
+      "has_primary_dwelling": true,
+      "jurisdiction": "woodland"
+    },
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "woodland-adu-ordinance-2026"
+    ]
   }
 ]

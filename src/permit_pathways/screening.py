@@ -79,8 +79,11 @@ class PathwayResult:
 
 
 def load_rules(path: Path) -> list[Rule]:
+    """Load rules from a JSON file, or from every *.json file in a
+    directory (sorted by filename: statewide plus per-jurisdiction files)."""
+    files = sorted(path.glob("*.json")) if path.is_dir() else [path]
     rules = []
-    for record in json.loads(path.read_text()):
+    for record in (r for f in files for r in json.loads(f.read_text())):
         citation = Citation(**record.pop("citation"))
         rule = Rule(citation=citation, **record)
         if rule.route_class not in ROUTE_CLASSES:

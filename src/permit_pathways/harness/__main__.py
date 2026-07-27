@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[3]
 def main() -> int:
     parser = argparse.ArgumentParser(prog="permit_pathways.harness")
     parser.add_argument("--rules", type=Path,
-                        default=ROOT / "data" / "rules" / "statewide.json")
+                        default=ROOT / "data" / "rules")
     parser.add_argument("--golden", type=Path,
                         default=ROOT / "data" / "golden" / "example.json")
     parser.add_argument("--as-of", type=date.fromisoformat, default=None,
@@ -30,12 +30,27 @@ def main() -> int:
     parser.add_argument("--assume-changed", action="append", default=[],
                         metavar="SOURCE_SUBSTRING",
                         help="Treat sources matching this substring as changed")
+    parser.add_argument("--fetch", action="store_true",
+                        help="Re-fetch watched sources and treat any whose "
+                             "content hash changed as changed")
+    parser.add_argument("--sources", type=Path,
+                        default=ROOT / "data" / "sources.json")
     args = parser.parse_args()
+
+    changed = list(args.assume_changed)
+    if args.fetch:
+        from .watch import check_sources, load_sources
+        watch = check_sources(args.sources)
+        labels = {u: m["label"] for u, m in load_sources(args.sources).items()}
+        print(watch.summary(labels), end="\n\n")
+        changed.extend(watch.changed)
+        # A source we can't reach can't be verified as current either.
+        changed.extend(watch.errors)
 
     report = verify_rules(
         args.rules, args.golden,
         today=args.as_of or date.today(),
-        changed_sources=args.assume_changed,
+        changed_sources=changed,
     )
     print(report.summary())
     if args.assume_changed:
