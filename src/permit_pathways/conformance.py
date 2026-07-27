@@ -22,6 +22,9 @@ from pathlib import Path
 EXCERPT_WINDOW = 120  # characters of context on each side of a match
 
 
+CONTEXT_WINDOW = 300  # chars around a match searched for context patterns
+
+
 @dataclass(frozen=True)
 class Check:
     check_id: str
@@ -32,6 +35,7 @@ class Check:
     explanation: str
     hcd_precedent: str
     exclude_patterns: list[str] | None = None
+    context_patterns: list[str] | None = None  # one must appear near the match
 
 
 @dataclass(frozen=True)
@@ -63,6 +67,19 @@ def _excluded(match: re.Match, text: str, check: Check) -> bool:
     return False
 
 
+def _in_context(match: re.Match, text: str, check: Check) -> bool:
+    """When a check declares context patterns (e.g. the size-cap screen only
+    applies near ADU language), at least one must appear within the window —
+    otherwise a multi-topic code chapter produces noise from unrelated uses."""
+    if not check.context_patterns:
+        return True
+    start = max(0, match.start() - CONTEXT_WINDOW)
+    end = min(len(text), match.end() + CONTEXT_WINDOW)
+    window = text[start:end]
+    return any(re.search(p, window, re.IGNORECASE)
+               for p in check.context_patterns)
+
+
 def scan(text: str, checks: list[Check]) -> list[Finding]:
     findings = []
     for check in checks:
@@ -70,6 +87,8 @@ def scan(text: str, checks: list[Check]) -> list[Finding]:
         for pattern in check.patterns:
             for match in re.finditer(pattern, text, re.IGNORECASE):
                 if _excluded(match, text, check):
+                    continue
+                if not _in_context(match, text, check):
                     continue
                 if any(s <= match.start() < e for s, e in seen_spans):
                     continue

@@ -49,3 +49,32 @@ def test_finding_summary_carries_state_law_and_precedent(checks):
     summary = findings[0].summary()
     assert "SB 477" in summary
     assert "Santa Clara" in summary
+
+
+def test_committed_scan_results_are_valid(checks):
+    import json
+    results_dir = DATA / "results"
+    index = json.loads((results_dir / "index.json").read_text())
+    check_ids = {c.check_id for c in checks}
+    registry_slugs = {
+        j["slug"] for j in json.loads(
+            (DATA.parent / "jurisdictions" / "registry.json").read_text()
+        )["jurisdictions"]}
+    assert index, "at least one ordinance scan is committed"
+    for slug, meta in index.items():
+        assert slug in registry_slugs
+        rec = json.loads((results_dir / f"{slug}.json").read_text())
+        assert rec["source"]["url"]
+        assert len(rec["findings"]) == meta["findings"]
+        for f in rec["findings"]:
+            assert f["check_id"] in check_ids
+
+
+def test_san_diego_scan_reproduces():
+    from permit_pathways.conformance import scan_file
+    root = Path(__file__).parent.parent
+    findings = scan_file(root / "corpus" / "ordinances" / "san-diego.txt",
+                         DATA / "checks.json")
+    # One review flag: the 1,200 sq ft detached-ADU size cap — the same
+    # failure pattern as HCD's Santa Clara County Finding 7.
+    assert [f.check.check_id for f in findings] == ["size-cap-conflict"]

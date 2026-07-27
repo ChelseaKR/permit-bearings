@@ -1,0 +1,21 @@
+{
+ "slug": "san-diego",
+ "source": {
+  "title": "San Diego Municipal Code, Ch. 14, Art. 1, Div. 3 \u2014 Accessory Dwelling Units (ADUs) and Junior Accessory Dwelling Units (JADUs) (\u00a7 141.0302 et seq.)",
+  "url": "https://docs.sandiego.gov/municode/MuniCodeChapter14/Ch14Art01Division03.pdf",
+  "retrieved": "2026-07-27",
+  "note": "Official city PDF; text extracted with pdftotext. Ordinance last amended 7-23-2025 (O-21989 N.S.), effective 8-22-2025 per the document's own history note."
+ },
+ "scanned_on": "2026-07-27",
+ "disclaimer": "Presence-based screening for staff/counsel review; not a certification of compliance and silence is not a clean bill of health.",
+ "findings": [
+  {
+   "check_id": "size-cap-conflict",
+   "title": "Size cap that may preclude protected units or conversions",
+   "severity": "review",
+   "excerpt": "area of an ADU shall not be less than 150 square feet. (B) The gross floor area of an attached or detached ADU shall not exceed 1,200 square feet. (C) An ADU constructed within an existing or proposed single dwelling unit structure shall not have a maximum gross",
+   "state_law": "Gov. Code \u00a7 66321(b)(2): local maximums must allow at least 850 sq ft (1,000 sq ft for 2+ bedrooms) of interior livable space; \u00a7 66323(a)(1): conversions of existing space are not subject to size limits at all.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 7 (Size Maximums); HCD letter to City of Fort Bragg, Feb. 19, 2025 (overly restrictive ADU size limits)."
+  }
+ ]
+}

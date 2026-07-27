@@ -266,7 +266,7 @@ const STRINGS = {
   },
 };
 let lang = "en";
-let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [], JURIS = [], LETTERS = {};
+let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [], JURIS = [], LETTERS = {}, SCANS = {};
 let jurisByName = new Map();
 const SAMPLE_ORDINANCE =
   "Accessory dwelling units shall not exceed sixteen (16) feet in height if " +
@@ -441,6 +441,12 @@ function renderJurisStatus() {
   let html = j.has_local_layer
     ? `<span class="badge ok"><span class="status-ico">✓</span>local layer</span> ${esc(s.statusLocal)}`
     : `${esc(s.statusBaseline)} (${localCount} of ${JURIS.length} jurisdictions have one).`;
+  const scanRec = SCANS[j.slug];
+  if (scanRec) {
+    html += `<br><span class="badge ok"><span class="status-ico">✓</span>scanned</span> ` +
+      `Ordinance screened ${esc(scanRec.scanned_on)}: ${scanRec.findings} provision(s) ` +
+      `flagged for review — <a href="data/conformance/results/${esc(j.slug)}.json" rel="noopener">details</a>.`;
+  }
   const history = LETTERS[j.slug] || [];
   if (history.length) {
     html += `<br><span class="badge warn"><span class="status-ico">⚠</span>HCD</span> ` +
@@ -472,6 +478,11 @@ function scanOrdinance(text) {
           return false;
         });
         if (excluded || seen.some(([s, e]) => s <= m.index && m.index < e)) continue;
+        if (check.context_patterns) {
+          const ws = Math.max(0, m.index - 300);
+          const win = text.slice(ws, m.index + m[0].length + 300);
+          if (!check.context_patterns.some(p => new RegExp(p, "i").test(win))) continue;
+        }
         seen.push([m.index, m.index + m[0].length]);
         const start = Math.max(0, m.index - 120);
         const end = Math.min(text.length, m.index + m[0].length + 120);
@@ -556,9 +567,10 @@ Promise.all([
   fetch("data/conformance/checks.json").then(r => r.json()),
   fetch("data/jurisdictions/registry.json").then(r => r.json()),
   fetch("data/jurisdictions/hcd-letters.json").then(r => r.json()),
-]).then(([a, b, c, golden, sources, checks, registry, letters]) => {
+  fetch("data/conformance/results/index.json").then(r => r.json()).catch(() => ({})),
+]).then(([a, b, c, golden, sources, checks, registry, letters, scans]) => {
   RULES = [...a, ...b, ...c]; GOLDEN = golden; SOURCES = sources; CHECKS = checks;
-  LETTERS = letters.letters;
+  LETTERS = letters.letters; SCANS = scans;
   const localSlugs = new Set(RULES.filter(r => r.jurisdiction_scope !== "statewide")
                                   .map(r => r.jurisdiction_scope));
   JURIS = registry.jurisdictions.map(j => ({...j, has_local_layer: localSlugs.has(j.slug)}));

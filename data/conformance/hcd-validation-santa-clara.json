@@ -1,39 +1,51 @@
 {
-  "source": "Provisions of County of Santa Clara ADU and SB 9 Ordinance No. NS-1200.383 as quoted verbatim in HCD's findings letter of June 24, 2025 (corpus/hcd/letters/santa-clara-county-findings-2025-06.pdf). The scanner is validated by re-deriving HCD's findings from the same quoted text.",
-  "provisions": [
-    {
-      "hcd_finding": "ADU Finding 5 footprint (letter quotes ordinance citing deleted section)",
-      "text": "No standard ADU or junior ADU may be sold separately from the primary residence or the real property upon which the primary residence is located. This provision does not apply to property built or developed by a qualified nonprofit corporation described in Government Code Section 65852.26.",
-      "expected_checks": ["stale-statutory-citation"]
-    },
-    {
-      "hcd_finding": "ADU Finding 3 (Unit Allowance)",
-      "text": "Only one accessory dwelling unit and one junior accessory dwelling unit are allowed per legal lot. For properties with a multifamily dwelling, no more than two detached accessory dwelling units may be located on the same property.",
-      "expected_checks": ["unit-count-undercount"]
-    },
-    {
-      "hcd_finding": "ADU Finding 6 (Height)",
-      "text": "Accessory dwelling units shall not exceed sixteen (16) feet in height if the dwelling unit does not comply with the setback limitations for a single-family residence, prescribed by the applicable zoning district.",
-      "expected_checks": ["height-cap-below-state"]
-    },
-    {
-      "hcd_finding": "ADU Finding 7 (Size Maximums)",
-      "text": "Detached accessory dwelling units shall have a maximum floor area not exceeding 1,200 square feet. The cumulative square footage of both accessory dwelling units shall not exceed 1,700 square feet.",
-      "expected_checks": ["size-cap-conflict"]
-    },
-    {
-      "hcd_finding": "ADU Finding 8 (Subjective Standard)",
-      "text": "Detached accessory dwelling units exceeding sixteen (16) feet in height shall incorporate a hip, gable, or other similar styled roof design.",
-      "expected_checks": ["subjective-design-standard"]
-    },
-    {
-      "hcd_finding": "SB 9 Finding 3 (Fire Hazard Zones, pre-SB 450 language)",
-      "text": "The parcel is not in a high or very high fire hazard severity zone as determined by the California Department of Forestry and Fire Protection unless the parcel will comply with fire hazard mitigation measures adopted pursuant to existing building standards or state fire mitigation measures applicable to the development.",
-      "expected_checks": ["sb9-outdated-fire-exclusion"]
-    }
-  ],
-  "control": {
-    "description": "Modern, conformant phrasing — the scanner must stay quiet on it.",
-    "text": "Accessory dwelling units are approved ministerially pursuant to Government Code sections 66310 through 66342. Side and rear setbacks of no more than four feet shall be required. Height allowances follow Government Code section 66321, subdivision (b)(4), including the eighteen and twenty-five foot allowances. Parking shall not exceed one space per unit or bedroom, whichever is less, subject to the exemptions of section 66322, subdivision (a). Unit combinations follow section 66323. Objective standards are set forth in the checklist adopted under section 66314."
+ "source": "Provisions of County of Santa Clara ADU and SB 9 Ordinance No. NS-1200.383 as quoted verbatim in HCD's findings letter of June 24, 2025 (corpus/hcd/letters/santa-clara-county-findings-2025-06.pdf). The scanner is validated by re-deriving HCD's findings from the same quoted text.",
+ "provisions": [
+  {
+   "hcd_finding": "ADU Finding 5 footprint (letter quotes ordinance citing deleted section)",
+   "text": "No standard ADU or junior ADU may be sold separately from the primary residence or the real property upon which the primary residence is located. This provision does not apply to property built or developed by a qualified nonprofit corporation described in Government Code Section 65852.26.",
+   "expected_checks": [
+    "stale-statutory-citation"
+   ]
+  },
+  {
+   "hcd_finding": "ADU Finding 3 (Unit Allowance)",
+   "text": "Only one accessory dwelling unit and one junior accessory dwelling unit are allowed per legal lot. For properties with a multifamily dwelling, no more than two detached accessory dwelling units may be located on the same property.",
+   "expected_checks": [
+    "unit-count-undercount"
+   ]
+  },
+  {
+   "hcd_finding": "ADU Finding 6 (Height)",
+   "text": "Accessory dwelling units shall not exceed sixteen (16) feet in height if the dwelling unit does not comply with the setback limitations for a single-family residence, prescribed by the applicable zoning district.",
+   "expected_checks": [
+    "height-cap-below-state"
+   ]
+  },
+  {
+   "hcd_finding": "ADU Finding 7 (Size Maximums)",
+   "text": "Detached accessory dwelling units shall have a maximum floor area not exceeding 1,200 square feet. The cumulative square footage of both accessory dwelling units shall not exceed 1,700 square feet.",
+   "expected_checks": [
+    "size-cap-conflict"
+   ]
+  },
+  {
+   "hcd_finding": "ADU Finding 8 (Subjective Standard)",
+   "text": "Detached accessory dwelling units exceeding sixteen (16) feet in height shall incorporate a hip, gable, or other similar styled roof design.",
+   "expected_checks": [
+    "subjective-design-standard"
+   ]
+  },
+  {
+   "hcd_finding": "SB 9 Finding 3 (Fire Hazard Zones, pre-SB 450 language)",
+   "text": "The County Code contains site exclusions applicable to urban lot splits and urban primary unit development. The Code states, The parcel is not in a high or very high fire hazard severity zone as determined by the California Department of Forestry and Fire Protection unless the parcel will comply with fire hazard mitigation measures adopted pursuant to existing building standards or state fire mitigation measures applicable to the development.",
+   "expected_checks": [
+    "sb9-outdated-fire-exclusion"
+   ]
   }
+ ],
+ "control": {
+  "description": "Modern, conformant phrasing \u2014 the scanner must stay quiet on it.",
+  "text": "Accessory dwelling units are approved ministerially pursuant to Government Code sections 66310 through 66342. Side and rear setbacks of no more than four feet shall be required. Height allowances follow Government Code section 66321, subdivision (b)(4), including the eighteen and twenty-five foot allowances. Parking shall not exceed one space per unit or bedroom, whichever is less, subject to the exemptions of section 66322, subdivision (a). Unit combinations follow section 66323. Objective standards are set forth in the checklist adopted under section 66314."
+ }
 }

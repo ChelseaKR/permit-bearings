@@ -1,84 +1,141 @@
 [
-  {
-    "check_id": "stale-statutory-citation",
-    "title": "Cites Government Code sections deleted by SB 477 (2024)",
-    "severity": "definite",
-    "patterns": ["65852\\.2(?:2|3|6)?\\b"],
-    "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code §§ 65852.2, 65852.22, 65852.26 to §§ 66310–66342, effective March 25, 2024. (SB 9's §§ 65852.21 and 66411.7 remain current.)",
-    "exclude_patterns": ["65852\\.21\\b"],
-    "explanation": "References to the deleted sections must be amended to the relocated sections. HCD's first finding against Santa Clara County's ordinance was exactly this.",
-    "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
-  },
-  {
-    "check_id": "adu-owner-occupancy-requirement",
-    "title": "Owner-occupancy requirement on ADUs",
-    "severity": "review",
-    "patterns": ["owner[\\s-]*occup\\w*"],
-    "state_law": "Gov. Code § 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under § 66341(c)(3)). JADUs with shared sanitation are a lawful exception (§ 66333(b)).",
-    "explanation": "Flags owner-occupancy language for review: prohibited for ADUs and for SB 9 two-unit developments; lawful only for shared-sanitation JADUs and SB 9 lot-split affidavits.",
-    "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
-  },
-  {
-    "check_id": "height-cap-below-state",
-    "title": "Height cap below state-mandated allowances",
-    "severity": "review",
-    "patterns": ["(?:not|shall not|may not)\\s+exceed\\s+(?:sixteen|16)\\s*(?:\\(16\\)\\s*)?feet", "maximum\\s+height\\s+of\\s+(?:sixteen|16)\\b"],
-    "state_law": "Gov. Code § 66321(b)(4): 16 ft is only the base for detached ADUs; 18 ft applies near a major transit stop / high-quality transit corridor or on multistory-multifamily lots (+2 ft roof pitch), and attached ADUs must be allowed up to 25 ft.",
-    "explanation": "A blanket 16-foot cap omits the mandatory 18/20/25-foot allowances.",
-    "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 6 (Height)."
-  },
-  {
-    "check_id": "unit-count-undercount",
-    "title": "Allows fewer ADUs/JADUs than state law guarantees",
-    "severity": "review",
-    "patterns": ["only\\s+one\\s+(?:accessory\\s+dwelling\\s+unit|adu)", "no\\s+more\\s+than\\s+(?:one|two)\\s+(?:detached\\s+)?(?:accessory\\s+dwelling\\s+units?|adus?)"],
-    "state_law": "Gov. Code § 66323(a): on a single-family lot, a converted ADU, a detached new-construction ADU, and a JADU may be combined; on multifamily lots, up to eight detached ADUs (not exceeding existing unit count) plus conversion ADUs up to 25% of existing units.",
-    "explanation": "\"Only one ADU per lot\" or \"no more than two detached ADUs\" style limits conflict with the § 66323 guaranteed combinations.",
-    "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 3 (Unit Allowance)."
-  },
-  {
-    "check_id": "size-cap-conflict",
-    "title": "Size cap that may preclude protected units or conversions",
-    "severity": "review",
-    "patterns": ["(?:maximum|not\\s+(?:to\\s+)?exceed(?:ing)?)[^.]{0,60}?(?:1,?200|1,?000|850|800|750|700|640|600|500)\\s*square\\s+feet", "cumulative\\s+square\\s+footage[^.]{0,80}(?:not|shall\\s+not)\\s+exceed"],
-    "state_law": "Gov. Code § 66321(b)(2): local maximums must allow at least 850 sq ft (1,000 sq ft for 2+ bedrooms) of interior livable space; § 66323(a)(1): conversions of existing space are not subject to size limits at all.",
-    "explanation": "Size caps are lawful only above the state minimums and cannot reach § 66323(a)(1) conversions; cumulative caps across units are a common conflict.",
-    "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 7 (Size Maximums); HCD letter to City of Fort Bragg, Feb. 19, 2025 (overly restrictive ADU size limits)."
-  },
-  {
-    "check_id": "subjective-design-standard",
-    "title": "Subjective design standard (must be objective)",
-    "severity": "review",
-    "patterns": ["similar\\s+styled", "compatib\\w+\\s+with", "harmon(?:y|ious)", "high[\\s-]quality\\s+materials", "character\\s+of\\s+the\\s+neighborhood", "\\bprivacy\\b"],
-    "state_law": "Gov. Code §§ 66314(b)(1), 66313(i): only objective standards — uniformly verifiable by an external benchmark knowable before submittal — may be imposed on ADUs.",
-    "explanation": "Words like \"compatible,\" \"harmony,\" \"similar styled,\" or \"privacy\" require judgment and are not objective standards.",
-    "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 8 (Subjective Standard: \"similar styled roof design\")."
-  },
-  {
-    "check_id": "setback-above-four-feet",
-    "title": "Side/rear setback above the 4-foot state maximum",
-    "severity": "review",
-    "patterns": ["(?:side|rear)[^.]{0,60}?(?:five|six|seven|eight|ten|fifteen|5|6|7|8|10|15)\\s*(?:\\(\\d+\\)\\s*)?(?:feet|foot|ft)"],
-    "state_law": "Gov. Code § 66314(d)(7): no more than four feet side and rear setbacks may be required for an ADU; no setback for conversions or same-footprint rebuilds. SB 9: §§ 65852.21(b)(2)(B), 66411.7(c)(3) — max four feet, none for existing structures.",
-    "explanation": "Flags side/rear setback figures above four feet for review (front setbacks are permitted but cannot preclude an 800 sq ft unit, § 66321(b)(3)).",
-    "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, SB 9 Finding 6 (setback requirements must reflect the 4-foot statutory allowance); HCD letter to City of Riverside, Mar. 21, 2025."
-  },
-  {
-    "check_id": "parking-above-one-space",
-    "title": "Parking requirement above one space per unit/bedroom",
-    "severity": "review",
-    "patterns": ["(?:two|2)\\s+(?:off[\\s-]street\\s+)?(?:parking\\s+)?spaces", "guest\\s+parking"],
-    "state_law": "Gov. Code § 66314(d)(10): maximum one space per unit or bedroom, whichever is less; tandem allowed; guest parking may never be required; § 66322(a) exempts many ADUs from parking entirely.",
-    "explanation": "Two-space requirements or any guest-parking requirement conflict with the state cap.",
-    "hcd_precedent": "HCD ADU Handbook (March 2026), Parking Requirements."
-  },
-  {
-    "check_id": "sb9-outdated-fire-exclusion",
-    "title": "SB 9 fire-hazard exclusion not updated for SB 450 (2024)",
-    "severity": "review",
-    "patterns": ["high\\s+or\\s+very\\s+high\\s+fire\\s+hazard\\s+severity\\s+zone"],
-    "state_law": "Gov. Code §§ 65852.21/66411.7 as amended by SB 450 (2024): the exclusion now distinguishes very-high zones per § 51178 from high/very-high zones on § 4202 maps, with exceptions for § 51179(b) exclusions and mitigated sites.",
-    "explanation": "Pre-SB 450 fire-exclusion language is likely outdated; flag for comparison against the amended statute.",
-    "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, SB 9 Finding 3 (fire-hazard exclusion language must comply with SB 450)."
-  }
+ {
+  "check_id": "stale-statutory-citation",
+  "title": "Cites Government Code sections deleted by SB 477 (2024)",
+  "severity": "definite",
+  "patterns": [
+   "65852\\.2(?:2|3|6)?\\b"
+  ],
+  "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+  "exclude_patterns": [
+   "65852\\.21\\b"
+  ],
+  "explanation": "References to the deleted sections must be amended to the relocated sections. HCD's first finding against Santa Clara County's ordinance was exactly this.",
+  "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+ },
+ {
+  "check_id": "adu-owner-occupancy-requirement",
+  "title": "Owner-occupancy requirement on ADUs",
+  "severity": "review",
+  "patterns": [
+   "owner[\\s-]*occup\\w*"
+  ],
+  "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+  "explanation": "Flags owner-occupancy language for review: prohibited for ADUs and for SB 9 two-unit developments; lawful only for shared-sanitation JADUs and SB 9 lot-split affidavits.",
+  "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy.",
+  "context_patterns": [
+   "accessory\\s+dwelling|\\badus?\\b|\\bjadu"
+  ]
+ },
+ {
+  "check_id": "height-cap-below-state",
+  "title": "Height cap below state-mandated allowances",
+  "severity": "review",
+  "patterns": [
+   "(?:not|shall not|may not)\\s+exceed\\s+(?:sixteen|16)\\s*(?:\\(16\\)\\s*)?feet",
+   "maximum\\s+height\\s+of\\s+(?:sixteen|16)\\b"
+  ],
+  "state_law": "Gov. Code \u00a7 66321(b)(4): 16 ft is only the base for detached ADUs; 18 ft applies near a major transit stop / high-quality transit corridor or on multistory-multifamily lots (+2 ft roof pitch), and attached ADUs must be allowed up to 25 ft.",
+  "explanation": "A blanket 16-foot cap omits the mandatory 18/20/25-foot allowances.",
+  "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 6 (Height).",
+  "context_patterns": [
+   "accessory\\s+dwelling|\\badus?\\b|\\bjadu"
+  ]
+ },
+ {
+  "check_id": "unit-count-undercount",
+  "title": "Allows fewer ADUs/JADUs than state law guarantees",
+  "severity": "review",
+  "patterns": [
+   "only\\s+one\\s+(?:accessory\\s+dwelling\\s+unit|adu)",
+   "no\\s+more\\s+than\\s+(?:one|two)\\s+(?:detached\\s+)?(?:accessory\\s+dwelling\\s+units?|adus?)"
+  ],
+  "state_law": "Gov. Code \u00a7 66323(a): on a single-family lot, a converted ADU, a detached new-construction ADU, and a JADU may be combined; on multifamily lots, up to eight detached ADUs (not exceeding existing unit count) plus conversion ADUs up to 25% of existing units.",
+  "explanation": "\"Only one ADU per lot\" or \"no more than two detached ADUs\" style limits conflict with the \u00a7 66323 guaranteed combinations.",
+  "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 3 (Unit Allowance).",
+  "context_patterns": [
+   "accessory\\s+dwelling|\\badus?\\b|\\bjadu"
+  ]
+ },
+ {
+  "check_id": "size-cap-conflict",
+  "title": "Size cap that may preclude protected units or conversions",
+  "severity": "review",
+  "patterns": [
+   "(?:maximum|not\\s+(?:to\\s+)?exceed(?:ing)?)[^.]{0,60}?(?:1,?200|1,?000|850|800|750|700|640|600)\\s*square\\s+feet",
+   "cumulative\\s+square\\s+footage[^.]{0,80}(?:not|shall\\s+not)\\s+exceed"
+  ],
+  "state_law": "Gov. Code \u00a7 66321(b)(2): local maximums must allow at least 850 sq ft (1,000 sq ft for 2+ bedrooms) of interior livable space; \u00a7 66323(a)(1): conversions of existing space are not subject to size limits at all.",
+  "explanation": "Size caps are lawful only above the state minimums and cannot reach \u00a7 66323(a)(1) conversions; cumulative caps across units are a common conflict.",
+  "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 7 (Size Maximums); HCD letter to City of Fort Bragg, Feb. 19, 2025 (overly restrictive ADU size limits).",
+  "context_patterns": [
+   "accessory\\s+dwelling|\\badus?\\b|\\bjadu"
+  ]
+ },
+ {
+  "check_id": "subjective-design-standard",
+  "title": "Subjective design standard (must be objective)",
+  "severity": "review",
+  "patterns": [
+   "similar\\s+styled",
+   "compatib\\w+\\s+with",
+   "harmon(?:y|ious)",
+   "high[\\s-]quality\\s+materials",
+   "character\\s+of\\s+the\\s+neighborhood",
+   "\\bprivacy\\b"
+  ],
+  "state_law": "Gov. Code \u00a7\u00a7 66314(b)(1), 66313(i): only objective standards \u2014 uniformly verifiable by an external benchmark knowable before submittal \u2014 may be imposed on ADUs.",
+  "explanation": "Words like \"compatible,\" \"harmony,\" \"similar styled,\" or \"privacy\" require judgment and are not objective standards.",
+  "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 8 (Subjective Standard: \"similar styled roof design\").",
+  "context_patterns": [
+   "accessory\\s+dwelling|\\badus?\\b|\\bjadu"
+  ]
+ },
+ {
+  "check_id": "setback-above-four-feet",
+  "title": "Side/rear setback above the 4-foot state maximum",
+  "severity": "review",
+  "patterns": [
+   "(?:side|rear)[^.]{0,60}?(?:five|six|seven|eight|ten|fifteen|5|6|7|8|10|15)\\s*(?:\\(\\d+\\)\\s*)?(?:feet|foot|ft)"
+  ],
+  "state_law": "Gov. Code \u00a7 66314(d)(7): no more than four feet side and rear setbacks may be required for an ADU; no setback for conversions or same-footprint rebuilds. SB 9: \u00a7\u00a7 65852.21(b)(2)(B), 66411.7(c)(3) \u2014 max four feet, none for existing structures.",
+  "explanation": "Flags side/rear setback figures above four feet for review (front setbacks are permitted but cannot preclude an 800 sq ft unit, \u00a7 66321(b)(3)).",
+  "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, SB 9 Finding 6 (setback requirements must reflect the 4-foot statutory allowance); HCD letter to City of Riverside, Mar. 21, 2025.",
+  "context_patterns": [
+   "accessory\\s+dwelling|\\badus?\\b|\\bjadu"
+  ]
+ },
+ {
+  "check_id": "parking-above-one-space",
+  "title": "Parking requirement above one space per unit/bedroom",
+  "severity": "review",
+  "patterns": [
+   "(?:two|2)\\s+(?:off[\\s-]street\\s+)?(?:parking\\s+)?spaces",
+   "guest\\s+parking"
+  ],
+  "state_law": "Gov. Code \u00a7 66314(d)(10): maximum one space per unit or bedroom, whichever is less; tandem allowed; guest parking may never be required; \u00a7 66322(a) exempts many ADUs from parking entirely.",
+  "explanation": "Two-space requirements or any guest-parking requirement conflict with the state cap.",
+  "hcd_precedent": "HCD ADU Handbook (March 2026), Parking Requirements.",
+  "context_patterns": [
+   "accessory\\s+dwelling|\\badus?\\b|\\bjadu"
+  ]
+ },
+ {
+  "check_id": "sb9-outdated-fire-exclusion",
+  "title": "SB 9 fire-hazard exclusion not updated for SB 450 (2024)",
+  "severity": "review",
+  "patterns": [
+   "high\\s+or\\s+very\\s+high\\s+fire\\s+hazard\\s+severity\\s+zone"
+  ],
+  "state_law": "Gov. Code \u00a7\u00a7 65852.21/66411.7 as amended by SB 450 (2024): the exclusion now distinguishes very-high zones per \u00a7 51178 from high/very-high zones on \u00a7 4202 maps, with exceptions for \u00a7 51179(b) exclusions and mitigated sites.",
+  "explanation": "Pre-SB 450 fire-exclusion language is likely outdated; flag for comparison against the amended statute.",
+  "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, SB 9 Finding 3 (fire-hazard exclusion language must comply with SB 450).",
+  "context_patterns": [
+   "urban\\s+lot\\s+split",
+   "\\bsb\\s*9\\b",
+   "65852\\.21",
+   "66411\\.7",
+   "two\\s+(?:primary\\s+)?(?:residential\\s+)?(?:dwelling\\s+)?units?"
+  ]
+ }
 ]
