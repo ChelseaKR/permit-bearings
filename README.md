@@ -118,6 +118,15 @@ PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed 66321
 PYTHONPATH=src python3 demo/app.py                  # demo at localhost:8765
 ```
 
+**Statewide coverage:** all 540 California jurisdictions (482 incorporated
+cities + 58 counties, from the Census 2020 FIPS registry) are first-class in
+the system — every one carries the verified statewide baseline, is selectable
+on the demo with per-jurisdiction status, and shows its known HCD
+accountability-letter history. Coverage claims stay honest by construction:
+"statewide baseline" and "local layer encoded" (currently Davis and
+Woodland) are labeled distinctly, because pretending 540 local codes are
+encoded is exactly the kind of overclaim the harness exists to prevent.
+
 The rule base currently covers, statewide: ADU ministerial review and the
 15-business-day/60-day clocks, protected minimum unit, size allowances,
 height allowances, parking limits and exemptions, the owner-occupancy

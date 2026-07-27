@@ -1,0 +1,3786 @@
+{
+ "source": "U.S. Census Bureau, 2020 FIPS place-by-county codes for California (st06_ca_place_by_county2020.txt); incorporated places with active functional status, plus all 58 counties.",
+ "generated_from_census_vintage": "2020",
+ "jurisdictions": [
+  {
+   "slug": "adelanto",
+   "name": "Adelanto",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "agoura-hills",
+   "name": "Agoura Hills",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "alameda",
+   "name": "Alameda",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "albany",
+   "name": "Albany",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "alhambra",
+   "name": "Alhambra",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "aliso-viejo",
+   "name": "Aliso Viejo",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "alturas",
+   "name": "Alturas",
+   "kind": "city",
+   "county": "Modoc County",
+   "multi_county": null
+  },
+  {
+   "slug": "amador-city",
+   "name": "Amador City",
+   "kind": "city",
+   "county": "Amador County",
+   "multi_county": null
+  },
+  {
+   "slug": "american-canyon",
+   "name": "American Canyon",
+   "kind": "city",
+   "county": "Napa County",
+   "multi_county": null
+  },
+  {
+   "slug": "anaheim",
+   "name": "Anaheim",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "anderson",
+   "name": "Anderson",
+   "kind": "city",
+   "county": "Shasta County",
+   "multi_county": null
+  },
+  {
+   "slug": "angels",
+   "name": "Angels",
+   "kind": "city",
+   "county": "Calaveras County",
+   "multi_county": null
+  },
+  {
+   "slug": "antioch",
+   "name": "Antioch",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "apple-valley",
+   "name": "Apple Valley",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "arcadia",
+   "name": "Arcadia",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "arcata",
+   "name": "Arcata",
+   "kind": "city",
+   "county": "Humboldt County",
+   "multi_county": null
+  },
+  {
+   "slug": "arroyo-grande",
+   "name": "Arroyo Grande",
+   "kind": "city",
+   "county": "San Luis Obispo County",
+   "multi_county": null
+  },
+  {
+   "slug": "artesia",
+   "name": "Artesia",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "arvin",
+   "name": "Arvin",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "atascadero",
+   "name": "Atascadero",
+   "kind": "city",
+   "county": "San Luis Obispo County",
+   "multi_county": null
+  },
+  {
+   "slug": "atherton",
+   "name": "Atherton",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "atwater",
+   "name": "Atwater",
+   "kind": "city",
+   "county": "Merced County",
+   "multi_county": null
+  },
+  {
+   "slug": "auburn",
+   "name": "Auburn",
+   "kind": "city",
+   "county": "Placer County",
+   "multi_county": null
+  },
+  {
+   "slug": "avalon",
+   "name": "Avalon",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "avenal",
+   "name": "Avenal",
+   "kind": "city",
+   "county": "Kings County",
+   "multi_county": null
+  },
+  {
+   "slug": "azusa",
+   "name": "Azusa",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "bakersfield",
+   "name": "Bakersfield",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "baldwin-park",
+   "name": "Baldwin Park",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "banning",
+   "name": "Banning",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "barstow",
+   "name": "Barstow",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "beaumont",
+   "name": "Beaumont",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "bell",
+   "name": "Bell",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "bell-gardens",
+   "name": "Bell Gardens",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "bellflower",
+   "name": "Bellflower",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "belmont",
+   "name": "Belmont",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "belvedere",
+   "name": "Belvedere",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "benicia",
+   "name": "Benicia",
+   "kind": "city",
+   "county": "Solano County",
+   "multi_county": null
+  },
+  {
+   "slug": "berkeley",
+   "name": "Berkeley",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "beverly-hills",
+   "name": "Beverly Hills",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "big-bear-lake",
+   "name": "Big Bear Lake",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "biggs",
+   "name": "Biggs",
+   "kind": "city",
+   "county": "Butte County",
+   "multi_county": null
+  },
+  {
+   "slug": "bishop",
+   "name": "Bishop",
+   "kind": "city",
+   "county": "Inyo County",
+   "multi_county": null
+  },
+  {
+   "slug": "blue-lake",
+   "name": "Blue Lake",
+   "kind": "city",
+   "county": "Humboldt County",
+   "multi_county": null
+  },
+  {
+   "slug": "blythe",
+   "name": "Blythe",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "bradbury",
+   "name": "Bradbury",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "brawley",
+   "name": "Brawley",
+   "kind": "city",
+   "county": "Imperial County",
+   "multi_county": null
+  },
+  {
+   "slug": "brea",
+   "name": "Brea",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "brentwood",
+   "name": "Brentwood",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "brisbane",
+   "name": "Brisbane",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "buellton",
+   "name": "Buellton",
+   "kind": "city",
+   "county": "Santa Barbara County",
+   "multi_county": null
+  },
+  {
+   "slug": "buena-park",
+   "name": "Buena Park",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "burbank",
+   "name": "Burbank",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "burlingame",
+   "name": "Burlingame",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "calabasas",
+   "name": "Calabasas",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "calexico",
+   "name": "Calexico",
+   "kind": "city",
+   "county": "Imperial County",
+   "multi_county": null
+  },
+  {
+   "slug": "california-city",
+   "name": "California City",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "calimesa",
+   "name": "Calimesa",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "calipatria",
+   "name": "Calipatria",
+   "kind": "city",
+   "county": "Imperial County",
+   "multi_county": null
+  },
+  {
+   "slug": "calistoga",
+   "name": "Calistoga",
+   "kind": "city",
+   "county": "Napa County",
+   "multi_county": null
+  },
+  {
+   "slug": "camarillo",
+   "name": "Camarillo",
+   "kind": "city",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "campbell",
+   "name": "Campbell",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "canyon-lake",
+   "name": "Canyon Lake",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "capitola",
+   "name": "Capitola",
+   "kind": "city",
+   "county": "Santa Cruz County",
+   "multi_county": null
+  },
+  {
+   "slug": "carlsbad",
+   "name": "Carlsbad",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "carmel-by-the-sea",
+   "name": "Carmel-by-the-Sea",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "carpinteria",
+   "name": "Carpinteria",
+   "kind": "city",
+   "county": "Santa Barbara County",
+   "multi_county": null
+  },
+  {
+   "slug": "carson",
+   "name": "Carson",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "cathedral-city",
+   "name": "Cathedral City",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "ceres",
+   "name": "Ceres",
+   "kind": "city",
+   "county": "Stanislaus County",
+   "multi_county": null
+  },
+  {
+   "slug": "cerritos",
+   "name": "Cerritos",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "chico",
+   "name": "Chico",
+   "kind": "city",
+   "county": "Butte County",
+   "multi_county": null
+  },
+  {
+   "slug": "chino",
+   "name": "Chino",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "chino-hills",
+   "name": "Chino Hills",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "chowchilla",
+   "name": "Chowchilla",
+   "kind": "city",
+   "county": "Madera County",
+   "multi_county": null
+  },
+  {
+   "slug": "chula-vista",
+   "name": "Chula Vista",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "citrus-heights",
+   "name": "Citrus Heights",
+   "kind": "city",
+   "county": "Sacramento County",
+   "multi_county": null
+  },
+  {
+   "slug": "claremont",
+   "name": "Claremont",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "clayton",
+   "name": "Clayton",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "clearlake",
+   "name": "Clearlake",
+   "kind": "city",
+   "county": "Lake County",
+   "multi_county": null
+  },
+  {
+   "slug": "cloverdale",
+   "name": "Cloverdale",
+   "kind": "city",
+   "county": "Sonoma County",
+   "multi_county": null
+  },
+  {
+   "slug": "clovis",
+   "name": "Clovis",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "coachella",
+   "name": "Coachella",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "coalinga",
+   "name": "Coalinga",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "colfax",
+   "name": "Colfax",
+   "kind": "city",
+   "county": "Placer County",
+   "multi_county": null
+  },
+  {
+   "slug": "colma",
+   "name": "Colma",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "colton",
+   "name": "Colton",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "colusa",
+   "name": "Colusa",
+   "kind": "city",
+   "county": "Colusa County",
+   "multi_county": null
+  },
+  {
+   "slug": "commerce",
+   "name": "Commerce",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "compton",
+   "name": "Compton",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "concord",
+   "name": "Concord",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "corcoran",
+   "name": "Corcoran",
+   "kind": "city",
+   "county": "Kings County",
+   "multi_county": null
+  },
+  {
+   "slug": "corning",
+   "name": "Corning",
+   "kind": "city",
+   "county": "Tehama County",
+   "multi_county": null
+  },
+  {
+   "slug": "corona",
+   "name": "Corona",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "coronado",
+   "name": "Coronado",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "corte-madera",
+   "name": "Corte Madera",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "costa-mesa",
+   "name": "Costa Mesa",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "cotati",
+   "name": "Cotati",
+   "kind": "city",
+   "county": "Sonoma County",
+   "multi_county": null
+  },
+  {
+   "slug": "covina",
+   "name": "Covina",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "crescent-city",
+   "name": "Crescent City",
+   "kind": "city",
+   "county": "Del Norte County",
+   "multi_county": null
+  },
+  {
+   "slug": "cudahy",
+   "name": "Cudahy",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "culver-city",
+   "name": "Culver City",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "cupertino",
+   "name": "Cupertino",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "cypress",
+   "name": "Cypress",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "daly-city",
+   "name": "Daly City",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "dana-point",
+   "name": "Dana Point",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "danville",
+   "name": "Danville",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "davis",
+   "name": "Davis",
+   "kind": "city",
+   "county": "Yolo County",
+   "multi_county": null
+  },
+  {
+   "slug": "del-mar",
+   "name": "Del Mar",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "del-rey-oaks",
+   "name": "Del Rey Oaks",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "delano",
+   "name": "Delano",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "desert-hot-springs",
+   "name": "Desert Hot Springs",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "diamond-bar",
+   "name": "Diamond Bar",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "dinuba",
+   "name": "Dinuba",
+   "kind": "city",
+   "county": "Tulare County",
+   "multi_county": null
+  },
+  {
+   "slug": "dixon",
+   "name": "Dixon",
+   "kind": "city",
+   "county": "Solano County",
+   "multi_county": null
+  },
+  {
+   "slug": "dorris",
+   "name": "Dorris",
+   "kind": "city",
+   "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "dos-palos",
+   "name": "Dos Palos",
+   "kind": "city",
+   "county": "Merced County",
+   "multi_county": null
+  },
+  {
+   "slug": "downey",
+   "name": "Downey",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "duarte",
+   "name": "Duarte",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "dublin",
+   "name": "Dublin",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "dunsmuir",
+   "name": "Dunsmuir",
+   "kind": "city",
+   "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "east-palo-alto",
+   "name": "East Palo Alto",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "eastvale",
+   "name": "Eastvale",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "el-cajon",
+   "name": "El Cajon",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "el-centro",
+   "name": "El Centro",
+   "kind": "city",
+   "county": "Imperial County",
+   "multi_county": null
+  },
+  {
+   "slug": "el-cerrito",
+   "name": "El Cerrito",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "el-monte",
+   "name": "El Monte",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "el-paso-de-robles-paso-robles",
+   "name": "El Paso de Robles (Paso Robles)",
+   "kind": "city",
+   "county": "San Luis Obispo County",
+   "multi_county": null
+  },
+  {
+   "slug": "el-segundo",
+   "name": "El Segundo",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "elk-grove",
+   "name": "Elk Grove",
+   "kind": "city",
+   "county": "Sacramento County",
+   "multi_county": null
+  },
+  {
+   "slug": "emeryville",
+   "name": "Emeryville",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "encinitas",
+   "name": "Encinitas",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "escalon",
+   "name": "Escalon",
+   "kind": "city",
+   "county": "San Joaquin County",
+   "multi_county": null
+  },
+  {
+   "slug": "escondido",
+   "name": "Escondido",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "etna",
+   "name": "Etna",
+   "kind": "city",
+   "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "eureka",
+   "name": "Eureka",
+   "kind": "city",
+   "county": "Humboldt County",
+   "multi_county": null
+  },
+  {
+   "slug": "exeter",
+   "name": "Exeter",
+   "kind": "city",
+   "county": "Tulare County",
+   "multi_county": null
+  },
+  {
+   "slug": "fairfax",
+   "name": "Fairfax",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "fairfield",
+   "name": "Fairfield",
+   "kind": "city",
+   "county": "Solano County",
+   "multi_county": null
+  },
+  {
+   "slug": "farmersville",
+   "name": "Farmersville",
+   "kind": "city",
+   "county": "Tulare County",
+   "multi_county": null
+  },
+  {
+   "slug": "ferndale",
+   "name": "Ferndale",
+   "kind": "city",
+   "county": "Humboldt County",
+   "multi_county": null
+  },
+  {
+   "slug": "fillmore",
+   "name": "Fillmore",
+   "kind": "city",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "firebaugh",
+   "name": "Firebaugh",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "folsom",
+   "name": "Folsom",
+   "kind": "city",
+   "county": "Sacramento County",
+   "multi_county": null
+  },
+  {
+   "slug": "fontana",
+   "name": "Fontana",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "fort-bragg",
+   "name": "Fort Bragg",
+   "kind": "city",
+   "county": "Mendocino County",
+   "multi_county": null
+  },
+  {
+   "slug": "fort-jones",
+   "name": "Fort Jones",
+   "kind": "city",
+   "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "fortuna",
+   "name": "Fortuna",
+   "kind": "city",
+   "county": "Humboldt County",
+   "multi_county": null
+  },
+  {
+   "slug": "foster-city",
+   "name": "Foster City",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "fountain-valley",
+   "name": "Fountain Valley",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "fowler",
+   "name": "Fowler",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "fremont",
+   "name": "Fremont",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "fresno",
+   "name": "Fresno",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "fullerton",
+   "name": "Fullerton",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "galt",
+   "name": "Galt",
+   "kind": "city",
+   "county": "Sacramento County",
+   "multi_county": null
+  },
+  {
+   "slug": "garden-grove",
+   "name": "Garden Grove",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "gardena",
+   "name": "Gardena",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "gilroy",
+   "name": "Gilroy",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "glendale",
+   "name": "Glendale",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "glendora",
+   "name": "Glendora",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "goleta",
+   "name": "Goleta",
+   "kind": "city",
+   "county": "Santa Barbara County",
+   "multi_county": null
+  },
+  {
+   "slug": "gonzales",
+   "name": "Gonzales",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "grand-terrace",
+   "name": "Grand Terrace",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "grass-valley",
+   "name": "Grass Valley",
+   "kind": "city",
+   "county": "Nevada County",
+   "multi_county": null
+  },
+  {
+   "slug": "greenfield",
+   "name": "Greenfield",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "gridley",
+   "name": "Gridley",
+   "kind": "city",
+   "county": "Butte County",
+   "multi_county": null
+  },
+  {
+   "slug": "grover-beach",
+   "name": "Grover Beach",
+   "kind": "city",
+   "county": "San Luis Obispo County",
+   "multi_county": null
+  },
+  {
+   "slug": "guadalupe",
+   "name": "Guadalupe",
+   "kind": "city",
+   "county": "Santa Barbara County",
+   "multi_county": null
+  },
+  {
+   "slug": "gustine",
+   "name": "Gustine",
+   "kind": "city",
+   "county": "Merced County",
+   "multi_county": null
+  },
+  {
+   "slug": "half-moon-bay",
+   "name": "Half Moon Bay",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "hanford",
+   "name": "Hanford",
+   "kind": "city",
+   "county": "Kings County",
+   "multi_county": null
+  },
+  {
+   "slug": "hawaiian-gardens",
+   "name": "Hawaiian Gardens",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "hawthorne",
+   "name": "Hawthorne",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "hayward",
+   "name": "Hayward",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "healdsburg",
+   "name": "Healdsburg",
+   "kind": "city",
+   "county": "Sonoma County",
+   "multi_county": null
+  },
+  {
+   "slug": "hemet",
+   "name": "Hemet",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "hercules",
+   "name": "Hercules",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "hermosa-beach",
+   "name": "Hermosa Beach",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "hesperia",
+   "name": "Hesperia",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "hidden-hills",
+   "name": "Hidden Hills",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "highland",
+   "name": "Highland",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "hillsborough",
+   "name": "Hillsborough",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "hollister",
+   "name": "Hollister",
+   "kind": "city",
+   "county": "San Benito County",
+   "multi_county": null
+  },
+  {
+   "slug": "holtville",
+   "name": "Holtville",
+   "kind": "city",
+   "county": "Imperial County",
+   "multi_county": null
+  },
+  {
+   "slug": "hughson",
+   "name": "Hughson",
+   "kind": "city",
+   "county": "Stanislaus County",
+   "multi_county": null
+  },
+  {
+   "slug": "huntington-beach",
+   "name": "Huntington Beach",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "huntington-park",
+   "name": "Huntington Park",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "huron",
+   "name": "Huron",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "imperial",
+   "name": "Imperial",
+   "kind": "city",
+   "county": "Imperial County",
+   "multi_county": null
+  },
+  {
+   "slug": "imperial-beach",
+   "name": "Imperial Beach",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "indian-wells",
+   "name": "Indian Wells",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "indio",
+   "name": "Indio",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "industry",
+   "name": "Industry",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "inglewood",
+   "name": "Inglewood",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "ione",
+   "name": "Ione",
+   "kind": "city",
+   "county": "Amador County",
+   "multi_county": null
+  },
+  {
+   "slug": "irvine",
+   "name": "Irvine",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "irwindale",
+   "name": "Irwindale",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "isleton",
+   "name": "Isleton",
+   "kind": "city",
+   "county": "Sacramento County",
+   "multi_county": null
+  },
+  {
+   "slug": "jackson",
+   "name": "Jackson",
+   "kind": "city",
+   "county": "Amador County",
+   "multi_county": null
+  },
+  {
+   "slug": "jurupa-valley",
+   "name": "Jurupa Valley",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "kerman",
+   "name": "Kerman",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "king-city",
+   "name": "King City",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "kingsburg",
+   "name": "Kingsburg",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "la-ca-ada-flintridge",
+   "name": "La Ca\u00f1ada Flintridge",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "la-habra",
+   "name": "La Habra",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "la-habra-heights",
+   "name": "La Habra Heights",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "la-mesa",
+   "name": "La Mesa",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "la-mirada",
+   "name": "La Mirada",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "la-palma",
+   "name": "La Palma",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "la-puente",
+   "name": "La Puente",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "la-quinta",
+   "name": "La Quinta",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "la-verne",
+   "name": "La Verne",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "lafayette",
+   "name": "Lafayette",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "laguna-beach",
+   "name": "Laguna Beach",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "laguna-hills",
+   "name": "Laguna Hills",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "laguna-niguel",
+   "name": "Laguna Niguel",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "laguna-woods",
+   "name": "Laguna Woods",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "lake-elsinore",
+   "name": "Lake Elsinore",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "lake-forest",
+   "name": "Lake Forest",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "lakeport",
+   "name": "Lakeport",
+   "kind": "city",
+   "county": "Lake County",
+   "multi_county": null
+  },
+  {
+   "slug": "lakewood",
+   "name": "Lakewood",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "lancaster",
+   "name": "Lancaster",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "larkspur",
+   "name": "Larkspur",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "lathrop",
+   "name": "Lathrop",
+   "kind": "city",
+   "county": "San Joaquin County",
+   "multi_county": null
+  },
+  {
+   "slug": "lawndale",
+   "name": "Lawndale",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "lemon-grove",
+   "name": "Lemon Grove",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "lemoore",
+   "name": "Lemoore",
+   "kind": "city",
+   "county": "Kings County",
+   "multi_county": null
+  },
+  {
+   "slug": "lincoln",
+   "name": "Lincoln",
+   "kind": "city",
+   "county": "Placer County",
+   "multi_county": null
+  },
+  {
+   "slug": "lindsay",
+   "name": "Lindsay",
+   "kind": "city",
+   "county": "Tulare County",
+   "multi_county": null
+  },
+  {
+   "slug": "live-oak",
+   "name": "Live Oak",
+   "kind": "city",
+   "county": "Sutter County",
+   "multi_county": null
+  },
+  {
+   "slug": "livermore",
+   "name": "Livermore",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "livingston",
+   "name": "Livingston",
+   "kind": "city",
+   "county": "Merced County",
+   "multi_county": null
+  },
+  {
+   "slug": "lodi",
+   "name": "Lodi",
+   "kind": "city",
+   "county": "San Joaquin County",
+   "multi_county": null
+  },
+  {
+   "slug": "loma-linda",
+   "name": "Loma Linda",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "lomita",
+   "name": "Lomita",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "lompoc",
+   "name": "Lompoc",
+   "kind": "city",
+   "county": "Santa Barbara County",
+   "multi_county": null
+  },
+  {
+   "slug": "long-beach",
+   "name": "Long Beach",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "loomis",
+   "name": "Loomis",
+   "kind": "city",
+   "county": "Placer County",
+   "multi_county": null
+  },
+  {
+   "slug": "los-alamitos",
+   "name": "Los Alamitos",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "los-altos",
+   "name": "Los Altos",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "los-altos-hills",
+   "name": "Los Altos Hills",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "los-angeles",
+   "name": "Los Angeles",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "los-banos",
+   "name": "Los Banos",
+   "kind": "city",
+   "county": "Merced County",
+   "multi_county": null
+  },
+  {
+   "slug": "los-gatos",
+   "name": "Los Gatos",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "loyalton",
+   "name": "Loyalton",
+   "kind": "city",
+   "county": "Sierra County",
+   "multi_county": null
+  },
+  {
+   "slug": "lynwood",
+   "name": "Lynwood",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "madera",
+   "name": "Madera",
+   "kind": "city",
+   "county": "Madera County",
+   "multi_county": null
+  },
+  {
+   "slug": "malibu",
+   "name": "Malibu",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "mammoth-lakes",
+   "name": "Mammoth Lakes",
+   "kind": "city",
+   "county": "Mono County",
+   "multi_county": null
+  },
+  {
+   "slug": "manhattan-beach",
+   "name": "Manhattan Beach",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "manteca",
+   "name": "Manteca",
+   "kind": "city",
+   "county": "San Joaquin County",
+   "multi_county": null
+  },
+  {
+   "slug": "maricopa",
+   "name": "Maricopa",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "marina",
+   "name": "Marina",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "martinez",
+   "name": "Martinez",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "marysville",
+   "name": "Marysville",
+   "kind": "city",
+   "county": "Yuba County",
+   "multi_county": null
+  },
+  {
+   "slug": "maywood",
+   "name": "Maywood",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "mcfarland",
+   "name": "McFarland",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "mendota",
+   "name": "Mendota",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "menifee",
+   "name": "Menifee",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "menlo-park",
+   "name": "Menlo Park",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "merced",
+   "name": "Merced",
+   "kind": "city",
+   "county": "Merced County",
+   "multi_county": null
+  },
+  {
+   "slug": "mill-valley",
+   "name": "Mill Valley",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "millbrae",
+   "name": "Millbrae",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "milpitas",
+   "name": "Milpitas",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "mission-viejo",
+   "name": "Mission Viejo",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "modesto",
+   "name": "Modesto",
+   "kind": "city",
+   "county": "Stanislaus County",
+   "multi_county": null
+  },
+  {
+   "slug": "monrovia",
+   "name": "Monrovia",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "montague",
+   "name": "Montague",
+   "kind": "city",
+   "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "montclair",
+   "name": "Montclair",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "monte-sereno",
+   "name": "Monte Sereno",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "montebello",
+   "name": "Montebello",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "monterey",
+   "name": "Monterey",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "monterey-park",
+   "name": "Monterey Park",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "moorpark",
+   "name": "Moorpark",
+   "kind": "city",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "moraga",
+   "name": "Moraga",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "moreno-valley",
+   "name": "Moreno Valley",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "morgan-hill",
+   "name": "Morgan Hill",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "morro-bay",
+   "name": "Morro Bay",
+   "kind": "city",
+   "county": "San Luis Obispo County",
+   "multi_county": null
+  },
+  {
+   "slug": "mount-shasta",
+   "name": "Mount Shasta",
+   "kind": "city",
+   "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "mountain-view",
+   "name": "Mountain View",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "murrieta",
+   "name": "Murrieta",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "napa",
+   "name": "Napa",
+   "kind": "city",
+   "county": "Napa County",
+   "multi_county": null
+  },
+  {
+   "slug": "national-city",
+   "name": "National City",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "needles",
+   "name": "Needles",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "nevada-city",
+   "name": "Nevada City",
+   "kind": "city",
+   "county": "Nevada County",
+   "multi_county": null
+  },
+  {
+   "slug": "newark",
+   "name": "Newark",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "newman",
+   "name": "Newman",
+   "kind": "city",
+   "county": "Stanislaus County",
+   "multi_county": null
+  },
+  {
+   "slug": "newport-beach",
+   "name": "Newport Beach",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "norco",
+   "name": "Norco",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "norwalk",
+   "name": "Norwalk",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "novato",
+   "name": "Novato",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "oakdale",
+   "name": "Oakdale",
+   "kind": "city",
+   "county": "Stanislaus County",
+   "multi_county": null
+  },
+  {
+   "slug": "oakland",
+   "name": "Oakland",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "oakley",
+   "name": "Oakley",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "oceanside",
+   "name": "Oceanside",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "ojai",
+   "name": "Ojai",
+   "kind": "city",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "ontario",
+   "name": "Ontario",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "orange",
+   "name": "Orange",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "orange-cove",
+   "name": "Orange Cove",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "orinda",
+   "name": "Orinda",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "orland",
+   "name": "Orland",
+   "kind": "city",
+   "county": "Glenn County",
+   "multi_county": null
+  },
+  {
+   "slug": "oroville",
+   "name": "Oroville",
+   "kind": "city",
+   "county": "Butte County",
+   "multi_county": null
+  },
+  {
+   "slug": "oxnard",
+   "name": "Oxnard",
+   "kind": "city",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "pacific-grove",
+   "name": "Pacific Grove",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "pacifica",
+   "name": "Pacifica",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "palm-desert",
+   "name": "Palm Desert",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "palm-springs",
+   "name": "Palm Springs",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "palmdale",
+   "name": "Palmdale",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "palo-alto",
+   "name": "Palo Alto",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "palos-verdes-estates",
+   "name": "Palos Verdes Estates",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "paradise",
+   "name": "Paradise",
+   "kind": "city",
+   "county": "Butte County",
+   "multi_county": null
+  },
+  {
+   "slug": "paramount",
+   "name": "Paramount",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "parlier",
+   "name": "Parlier",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "pasadena",
+   "name": "Pasadena",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "patterson",
+   "name": "Patterson",
+   "kind": "city",
+   "county": "Stanislaus County",
+   "multi_county": null
+  },
+  {
+   "slug": "perris",
+   "name": "Perris",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "petaluma",
+   "name": "Petaluma",
+   "kind": "city",
+   "county": "Sonoma County",
+   "multi_county": null
+  },
+  {
+   "slug": "pico-rivera",
+   "name": "Pico Rivera",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "piedmont",
+   "name": "Piedmont",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "pinole",
+   "name": "Pinole",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "pismo-beach",
+   "name": "Pismo Beach",
+   "kind": "city",
+   "county": "San Luis Obispo County",
+   "multi_county": null
+  },
+  {
+   "slug": "pittsburg",
+   "name": "Pittsburg",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "placentia",
+   "name": "Placentia",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "placerville",
+   "name": "Placerville",
+   "kind": "city",
+   "county": "El Dorado County",
+   "multi_county": null
+  },
+  {
+   "slug": "pleasant-hill",
+   "name": "Pleasant Hill",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "pleasanton",
+   "name": "Pleasanton",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "plymouth",
+   "name": "Plymouth",
+   "kind": "city",
+   "county": "Amador County",
+   "multi_county": null
+  },
+  {
+   "slug": "point-arena",
+   "name": "Point Arena",
+   "kind": "city",
+   "county": "Mendocino County",
+   "multi_county": null
+  },
+  {
+   "slug": "pomona",
+   "name": "Pomona",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "port-hueneme",
+   "name": "Port Hueneme",
+   "kind": "city",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "porterville",
+   "name": "Porterville",
+   "kind": "city",
+   "county": "Tulare County",
+   "multi_county": null
+  },
+  {
+   "slug": "portola",
+   "name": "Portola",
+   "kind": "city",
+   "county": "Plumas County",
+   "multi_county": null
+  },
+  {
+   "slug": "portola-valley",
+   "name": "Portola Valley",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "poway",
+   "name": "Poway",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "rancho-cordova",
+   "name": "Rancho Cordova",
+   "kind": "city",
+   "county": "Sacramento County",
+   "multi_county": null
+  },
+  {
+   "slug": "rancho-cucamonga",
+   "name": "Rancho Cucamonga",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "rancho-mirage",
+   "name": "Rancho Mirage",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "rancho-palos-verdes",
+   "name": "Rancho Palos Verdes",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "rancho-santa-margarita",
+   "name": "Rancho Santa Margarita",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "red-bluff",
+   "name": "Red Bluff",
+   "kind": "city",
+   "county": "Tehama County",
+   "multi_county": null
+  },
+  {
+   "slug": "redding",
+   "name": "Redding",
+   "kind": "city",
+   "county": "Shasta County",
+   "multi_county": null
+  },
+  {
+   "slug": "redlands",
+   "name": "Redlands",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "redondo-beach",
+   "name": "Redondo Beach",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "redwood-city",
+   "name": "Redwood City",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "reedley",
+   "name": "Reedley",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "rialto",
+   "name": "Rialto",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "richmond",
+   "name": "Richmond",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "ridgecrest",
+   "name": "Ridgecrest",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "rio-dell",
+   "name": "Rio Dell",
+   "kind": "city",
+   "county": "Humboldt County",
+   "multi_county": null
+  },
+  {
+   "slug": "rio-vista",
+   "name": "Rio Vista",
+   "kind": "city",
+   "county": "Solano County",
+   "multi_county": null
+  },
+  {
+   "slug": "ripon",
+   "name": "Ripon",
+   "kind": "city",
+   "county": "San Joaquin County",
+   "multi_county": null
+  },
+  {
+   "slug": "riverbank",
+   "name": "Riverbank",
+   "kind": "city",
+   "county": "Stanislaus County",
+   "multi_county": null
+  },
+  {
+   "slug": "riverside",
+   "name": "Riverside",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "rocklin",
+   "name": "Rocklin",
+   "kind": "city",
+   "county": "Placer County",
+   "multi_county": null
+  },
+  {
+   "slug": "rohnert-park",
+   "name": "Rohnert Park",
+   "kind": "city",
+   "county": "Sonoma County",
+   "multi_county": null
+  },
+  {
+   "slug": "rolling-hills",
+   "name": "Rolling Hills",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "rolling-hills-estates",
+   "name": "Rolling Hills Estates",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "rosemead",
+   "name": "Rosemead",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "roseville",
+   "name": "Roseville",
+   "kind": "city",
+   "county": "Placer County",
+   "multi_county": null
+  },
+  {
+   "slug": "ross",
+   "name": "Ross",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "sacramento",
+   "name": "Sacramento",
+   "kind": "city",
+   "county": "Sacramento County",
+   "multi_county": null
+  },
+  {
+   "slug": "salinas",
+   "name": "Salinas",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-anselmo",
+   "name": "San Anselmo",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-bernardino",
+   "name": "San Bernardino",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-bruno",
+   "name": "San Bruno",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-buenaventura-ventura",
+   "name": "San Buenaventura (Ventura)",
+   "kind": "city",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-carlos",
+   "name": "San Carlos",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-clemente",
+   "name": "San Clemente",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-diego",
+   "name": "San Diego",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-dimas",
+   "name": "San Dimas",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-fernando",
+   "name": "San Fernando",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-francisco",
+   "name": "San Francisco",
+   "kind": "city",
+   "county": "San Francisco County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-gabriel",
+   "name": "San Gabriel",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-jacinto",
+   "name": "San Jacinto",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-joaquin",
+   "name": "San Joaquin",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-jose",
+   "name": "San Jose",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-juan-bautista",
+   "name": "San Juan Bautista",
+   "kind": "city",
+   "county": "San Benito County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-juan-capistrano",
+   "name": "San Juan Capistrano",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-leandro",
+   "name": "San Leandro",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-luis-obispo",
+   "name": "San Luis Obispo",
+   "kind": "city",
+   "county": "San Luis Obispo County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-marcos",
+   "name": "San Marcos",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-marino",
+   "name": "San Marino",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-mateo",
+   "name": "San Mateo",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-pablo",
+   "name": "San Pablo",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-rafael",
+   "name": "San Rafael",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-ramon",
+   "name": "San Ramon",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "sand-city",
+   "name": "Sand City",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "sanger",
+   "name": "Sanger",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-ana",
+   "name": "Santa Ana",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-barbara",
+   "name": "Santa Barbara",
+   "kind": "city",
+   "county": "Santa Barbara County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-clara",
+   "name": "Santa Clara",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-clarita",
+   "name": "Santa Clarita",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-cruz",
+   "name": "Santa Cruz",
+   "kind": "city",
+   "county": "Santa Cruz County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-fe-springs",
+   "name": "Santa Fe Springs",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-maria",
+   "name": "Santa Maria",
+   "kind": "city",
+   "county": "Santa Barbara County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-monica",
+   "name": "Santa Monica",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-paula",
+   "name": "Santa Paula",
+   "kind": "city",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-rosa",
+   "name": "Santa Rosa",
+   "kind": "city",
+   "county": "Sonoma County",
+   "multi_county": null
+  },
+  {
+   "slug": "santee",
+   "name": "Santee",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "saratoga",
+   "name": "Saratoga",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "sausalito",
+   "name": "Sausalito",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "scotts-valley",
+   "name": "Scotts Valley",
+   "kind": "city",
+   "county": "Santa Cruz County",
+   "multi_county": null
+  },
+  {
+   "slug": "seal-beach",
+   "name": "Seal Beach",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "seaside",
+   "name": "Seaside",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "sebastopol",
+   "name": "Sebastopol",
+   "kind": "city",
+   "county": "Sonoma County",
+   "multi_county": null
+  },
+  {
+   "slug": "selma",
+   "name": "Selma",
+   "kind": "city",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "shafter",
+   "name": "Shafter",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "shasta-lake",
+   "name": "Shasta Lake",
+   "kind": "city",
+   "county": "Shasta County",
+   "multi_county": null
+  },
+  {
+   "slug": "sierra-madre",
+   "name": "Sierra Madre",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "signal-hill",
+   "name": "Signal Hill",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "simi-valley",
+   "name": "Simi Valley",
+   "kind": "city",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "solana-beach",
+   "name": "Solana Beach",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "soledad",
+   "name": "Soledad",
+   "kind": "city",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "solvang",
+   "name": "Solvang",
+   "kind": "city",
+   "county": "Santa Barbara County",
+   "multi_county": null
+  },
+  {
+   "slug": "sonoma",
+   "name": "Sonoma",
+   "kind": "city",
+   "county": "Sonoma County",
+   "multi_county": null
+  },
+  {
+   "slug": "sonora",
+   "name": "Sonora",
+   "kind": "city",
+   "county": "Tuolumne County",
+   "multi_county": null
+  },
+  {
+   "slug": "south-el-monte",
+   "name": "South El Monte",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "south-gate",
+   "name": "South Gate",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "south-lake-tahoe",
+   "name": "South Lake Tahoe",
+   "kind": "city",
+   "county": "El Dorado County",
+   "multi_county": null
+  },
+  {
+   "slug": "south-pasadena",
+   "name": "South Pasadena",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "south-san-francisco",
+   "name": "South San Francisco",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "st-helena",
+   "name": "St. Helena",
+   "kind": "city",
+   "county": "Napa County",
+   "multi_county": null
+  },
+  {
+   "slug": "stanton",
+   "name": "Stanton",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "stockton",
+   "name": "Stockton",
+   "kind": "city",
+   "county": "San Joaquin County",
+   "multi_county": null
+  },
+  {
+   "slug": "suisun-city",
+   "name": "Suisun City",
+   "kind": "city",
+   "county": "Solano County",
+   "multi_county": null
+  },
+  {
+   "slug": "sunnyvale",
+   "name": "Sunnyvale",
+   "kind": "city",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "susanville",
+   "name": "Susanville",
+   "kind": "city",
+   "county": "Lassen County",
+   "multi_county": null
+  },
+  {
+   "slug": "sutter-creek",
+   "name": "Sutter Creek",
+   "kind": "city",
+   "county": "Amador County",
+   "multi_county": null
+  },
+  {
+   "slug": "taft",
+   "name": "Taft",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "tehachapi",
+   "name": "Tehachapi",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "tehama",
+   "name": "Tehama",
+   "kind": "city",
+   "county": "Tehama County",
+   "multi_county": null
+  },
+  {
+   "slug": "temecula",
+   "name": "Temecula",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "temple-city",
+   "name": "Temple City",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "thousand-oaks",
+   "name": "Thousand Oaks",
+   "kind": "city",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "tiburon",
+   "name": "Tiburon",
+   "kind": "city",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "torrance",
+   "name": "Torrance",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "tracy",
+   "name": "Tracy",
+   "kind": "city",
+   "county": "San Joaquin County",
+   "multi_county": null
+  },
+  {
+   "slug": "trinidad",
+   "name": "Trinidad",
+   "kind": "city",
+   "county": "Humboldt County",
+   "multi_county": null
+  },
+  {
+   "slug": "truckee",
+   "name": "Truckee",
+   "kind": "city",
+   "county": "Nevada County",
+   "multi_county": null
+  },
+  {
+   "slug": "tulare",
+   "name": "Tulare",
+   "kind": "city",
+   "county": "Tulare County",
+   "multi_county": null
+  },
+  {
+   "slug": "tulelake",
+   "name": "Tulelake",
+   "kind": "city",
+   "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "turlock",
+   "name": "Turlock",
+   "kind": "city",
+   "county": "Stanislaus County",
+   "multi_county": null
+  },
+  {
+   "slug": "tustin",
+   "name": "Tustin",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "twentynine-palms",
+   "name": "Twentynine Palms",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "ukiah",
+   "name": "Ukiah",
+   "kind": "city",
+   "county": "Mendocino County",
+   "multi_county": null
+  },
+  {
+   "slug": "union-city",
+   "name": "Union City",
+   "kind": "city",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "upland",
+   "name": "Upland",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "vacaville",
+   "name": "Vacaville",
+   "kind": "city",
+   "county": "Solano County",
+   "multi_county": null
+  },
+  {
+   "slug": "vallejo",
+   "name": "Vallejo",
+   "kind": "city",
+   "county": "Solano County",
+   "multi_county": null
+  },
+  {
+   "slug": "vernon",
+   "name": "Vernon",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "victorville",
+   "name": "Victorville",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "villa-park",
+   "name": "Villa Park",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "visalia",
+   "name": "Visalia",
+   "kind": "city",
+   "county": "Tulare County",
+   "multi_county": null
+  },
+  {
+   "slug": "vista",
+   "name": "Vista",
+   "kind": "city",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "walnut",
+   "name": "Walnut",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "walnut-creek",
+   "name": "Walnut Creek",
+   "kind": "city",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "wasco",
+   "name": "Wasco",
+   "kind": "city",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "waterford",
+   "name": "Waterford",
+   "kind": "city",
+   "county": "Stanislaus County",
+   "multi_county": null
+  },
+  {
+   "slug": "watsonville",
+   "name": "Watsonville",
+   "kind": "city",
+   "county": "Santa Cruz County",
+   "multi_county": null
+  },
+  {
+   "slug": "weed",
+   "name": "Weed",
+   "kind": "city",
+   "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "west-covina",
+   "name": "West Covina",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "west-hollywood",
+   "name": "West Hollywood",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "west-sacramento",
+   "name": "West Sacramento",
+   "kind": "city",
+   "county": "Yolo County",
+   "multi_county": null
+  },
+  {
+   "slug": "westlake-village",
+   "name": "Westlake Village",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "westminster",
+   "name": "Westminster",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "westmorland",
+   "name": "Westmorland",
+   "kind": "city",
+   "county": "Imperial County",
+   "multi_county": null
+  },
+  {
+   "slug": "wheatland",
+   "name": "Wheatland",
+   "kind": "city",
+   "county": "Yuba County",
+   "multi_county": null
+  },
+  {
+   "slug": "whittier",
+   "name": "Whittier",
+   "kind": "city",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "wildomar",
+   "name": "Wildomar",
+   "kind": "city",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "williams",
+   "name": "Williams",
+   "kind": "city",
+   "county": "Colusa County",
+   "multi_county": null
+  },
+  {
+   "slug": "willits",
+   "name": "Willits",
+   "kind": "city",
+   "county": "Mendocino County",
+   "multi_county": null
+  },
+  {
+   "slug": "willows",
+   "name": "Willows",
+   "kind": "city",
+   "county": "Glenn County",
+   "multi_county": null
+  },
+  {
+   "slug": "windsor",
+   "name": "Windsor",
+   "kind": "city",
+   "county": "Sonoma County",
+   "multi_county": null
+  },
+  {
+   "slug": "winters",
+   "name": "Winters",
+   "kind": "city",
+   "county": "Yolo County",
+   "multi_county": null
+  },
+  {
+   "slug": "woodlake",
+   "name": "Woodlake",
+   "kind": "city",
+   "county": "Tulare County",
+   "multi_county": null
+  },
+  {
+   "slug": "woodland",
+   "name": "Woodland",
+   "kind": "city",
+   "county": "Yolo County",
+   "multi_county": null
+  },
+  {
+   "slug": "woodside",
+   "name": "Woodside",
+   "kind": "city",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "yorba-linda",
+   "name": "Yorba Linda",
+   "kind": "city",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "yountville",
+   "name": "Yountville",
+   "kind": "city",
+   "county": "Napa County",
+   "multi_county": null
+  },
+  {
+   "slug": "yreka",
+   "name": "Yreka",
+   "kind": "city",
+   "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "yuba-city",
+   "name": "Yuba City",
+   "kind": "city",
+   "county": "Sutter County",
+   "multi_county": null
+  },
+  {
+   "slug": "yucaipa",
+   "name": "Yucaipa",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "yucca-valley",
+   "name": "Yucca Valley",
+   "kind": "city",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "alameda-county",
+   "name": "Alameda County",
+   "kind": "county",
+   "county": "Alameda County",
+   "multi_county": null
+  },
+  {
+   "slug": "alpine-county",
+   "name": "Alpine County",
+   "kind": "county",
+   "county": "Alpine County",
+   "multi_county": null
+  },
+  {
+   "slug": "amador-county",
+   "name": "Amador County",
+   "kind": "county",
+   "county": "Amador County",
+   "multi_county": null
+  },
+  {
+   "slug": "butte-county",
+   "name": "Butte County",
+   "kind": "county",
+   "county": "Butte County",
+   "multi_county": null
+  },
+  {
+   "slug": "calaveras-county",
+   "name": "Calaveras County",
+   "kind": "county",
+   "county": "Calaveras County",
+   "multi_county": null
+  },
+  {
+   "slug": "colusa-county",
+   "name": "Colusa County",
+   "kind": "county",
+   "county": "Colusa County",
+   "multi_county": null
+  },
+  {
+   "slug": "contra-costa-county",
+   "name": "Contra Costa County",
+   "kind": "county",
+   "county": "Contra Costa County",
+   "multi_county": null
+  },
+  {
+   "slug": "del-norte-county",
+   "name": "Del Norte County",
+   "kind": "county",
+   "county": "Del Norte County",
+   "multi_county": null
+  },
+  {
+   "slug": "el-dorado-county",
+   "name": "El Dorado County",
+   "kind": "county",
+   "county": "El Dorado County",
+   "multi_county": null
+  },
+  {
+   "slug": "fresno-county",
+   "name": "Fresno County",
+   "kind": "county",
+   "county": "Fresno County",
+   "multi_county": null
+  },
+  {
+   "slug": "glenn-county",
+   "name": "Glenn County",
+   "kind": "county",
+   "county": "Glenn County",
+   "multi_county": null
+  },
+  {
+   "slug": "humboldt-county",
+   "name": "Humboldt County",
+   "kind": "county",
+   "county": "Humboldt County",
+   "multi_county": null
+  },
+  {
+   "slug": "imperial-county",
+   "name": "Imperial County",
+   "kind": "county",
+   "county": "Imperial County",
+   "multi_county": null
+  },
+  {
+   "slug": "inyo-county",
+   "name": "Inyo County",
+   "kind": "county",
+   "county": "Inyo County",
+   "multi_county": null
+  },
+  {
+   "slug": "kern-county",
+   "name": "Kern County",
+   "kind": "county",
+   "county": "Kern County",
+   "multi_county": null
+  },
+  {
+   "slug": "kings-county",
+   "name": "Kings County",
+   "kind": "county",
+   "county": "Kings County",
+   "multi_county": null
+  },
+  {
+   "slug": "lake-county",
+   "name": "Lake County",
+   "kind": "county",
+   "county": "Lake County",
+   "multi_county": null
+  },
+  {
+   "slug": "lassen-county",
+   "name": "Lassen County",
+   "kind": "county",
+   "county": "Lassen County",
+   "multi_county": null
+  },
+  {
+   "slug": "los-angeles-county",
+   "name": "Los Angeles County",
+   "kind": "county",
+   "county": "Los Angeles County",
+   "multi_county": null
+  },
+  {
+   "slug": "madera-county",
+   "name": "Madera County",
+   "kind": "county",
+   "county": "Madera County",
+   "multi_county": null
+  },
+  {
+   "slug": "marin-county",
+   "name": "Marin County",
+   "kind": "county",
+   "county": "Marin County",
+   "multi_county": null
+  },
+  {
+   "slug": "mariposa-county",
+   "name": "Mariposa County",
+   "kind": "county",
+   "county": "Mariposa County",
+   "multi_county": null
+  },
+  {
+   "slug": "mendocino-county",
+   "name": "Mendocino County",
+   "kind": "county",
+   "county": "Mendocino County",
+   "multi_county": null
+  },
+  {
+   "slug": "merced-county",
+   "name": "Merced County",
+   "kind": "county",
+   "county": "Merced County",
+   "multi_county": null
+  },
+  {
+   "slug": "modoc-county",
+   "name": "Modoc County",
+   "kind": "county",
+   "county": "Modoc County",
+   "multi_county": null
+  },
+  {
+   "slug": "mono-county",
+   "name": "Mono County",
+   "kind": "county",
+   "county": "Mono County",
+   "multi_county": null
+  },
+  {
+   "slug": "monterey-county",
+   "name": "Monterey County",
+   "kind": "county",
+   "county": "Monterey County",
+   "multi_county": null
+  },
+  {
+   "slug": "napa-county",
+   "name": "Napa County",
+   "kind": "county",
+   "county": "Napa County",
+   "multi_county": null
+  },
+  {
+   "slug": "nevada-county",
+   "name": "Nevada County",
+   "kind": "county",
+   "county": "Nevada County",
+   "multi_county": null
+  },
+  {
+   "slug": "orange-county",
+   "name": "Orange County",
+   "kind": "county",
+   "county": "Orange County",
+   "multi_county": null
+  },
+  {
+   "slug": "placer-county",
+   "name": "Placer County",
+   "kind": "county",
+   "county": "Placer County",
+   "multi_county": null
+  },
+  {
+   "slug": "plumas-county",
+   "name": "Plumas County",
+   "kind": "county",
+   "county": "Plumas County",
+   "multi_county": null
+  },
+  {
+   "slug": "riverside-county",
+   "name": "Riverside County",
+   "kind": "county",
+   "county": "Riverside County",
+   "multi_county": null
+  },
+  {
+   "slug": "sacramento-county",
+   "name": "Sacramento County",
+   "kind": "county",
+   "county": "Sacramento County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-benito-county",
+   "name": "San Benito County",
+   "kind": "county",
+   "county": "San Benito County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-bernardino-county",
+   "name": "San Bernardino County",
+   "kind": "county",
+   "county": "San Bernardino County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-diego-county",
+   "name": "San Diego County",
+   "kind": "county",
+   "county": "San Diego County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-francisco-county",
+   "name": "San Francisco County",
+   "kind": "county",
+   "county": "San Francisco County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-joaquin-county",
+   "name": "San Joaquin County",
+   "kind": "county",
+   "county": "San Joaquin County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-luis-obispo-county",
+   "name": "San Luis Obispo County",
+   "kind": "county",
+   "county": "San Luis Obispo County",
+   "multi_county": null
+  },
+  {
+   "slug": "san-mateo-county",
+   "name": "San Mateo County",
+   "kind": "county",
+   "county": "San Mateo County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-barbara-county",
+   "name": "Santa Barbara County",
+   "kind": "county",
+   "county": "Santa Barbara County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-clara-county",
+   "name": "Santa Clara County",
+   "kind": "county",
+   "county": "Santa Clara County",
+   "multi_county": null
+  },
+  {
+   "slug": "santa-cruz-county",
+   "name": "Santa Cruz County",
+   "kind": "county",
+   "county": "Santa Cruz County",
+   "multi_county": null
+  },
+  {
+   "slug": "shasta-county",
+   "name": "Shasta County",
+   "kind": "county",
+   "county": "Shasta County",
+   "multi_county": null
+  },
+  {
+   "slug": "sierra-county",
+   "name": "Sierra County",
+   "kind": "county",
+   "county": "Sierra County",
+   "multi_county": null
+  },
+  {
+   "slug": "siskiyou-county",
+   "name": "Siskiyou County",
+   "kind": "county",
+   "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "solano-county",
+   "name": "Solano County",
+   "kind": "county",
+   "county": "Solano County",
+   "multi_county": null
+  },
+  {
+   "slug": "sonoma-county",
+   "name": "Sonoma County",
+   "kind": "county",
+   "county": "Sonoma County",
+   "multi_county": null
+  },
+  {
+   "slug": "stanislaus-county",
+   "name": "Stanislaus County",
+   "kind": "county",
+   "county": "Stanislaus County",
+   "multi_county": null
+  },
+  {
+   "slug": "sutter-county",
+   "name": "Sutter County",
+   "kind": "county",
+   "county": "Sutter County",
+   "multi_county": null
+  },
+  {
+   "slug": "tehama-county",
+   "name": "Tehama County",
+   "kind": "county",
+   "county": "Tehama County",
+   "multi_county": null
+  },
+  {
+   "slug": "trinity-county",
+   "name": "Trinity County",
+   "kind": "county",
+   "county": "Trinity County",
+   "multi_county": null
+  },
+  {
+   "slug": "tulare-county",
+   "name": "Tulare County",
+   "kind": "county",
+   "county": "Tulare County",
+   "multi_county": null
+  },
+  {
+   "slug": "tuolumne-county",
+   "name": "Tuolumne County",
+   "kind": "county",
+   "county": "Tuolumne County",
+   "multi_county": null
+  },
+  {
+   "slug": "ventura-county",
+   "name": "Ventura County",
+   "kind": "county",
+   "county": "Ventura County",
+   "multi_county": null
+  },
+  {
+   "slug": "yolo-county",
+   "name": "Yolo County",
+   "kind": "county",
+   "county": "Yolo County",
+   "multi_county": null
+  },
+  {
+   "slug": "yuba-county",
+   "name": "Yuba County",
+   "kind": "county",
+   "county": "Yuba County",
+   "multi_county": null
+  }
+ ]
+}

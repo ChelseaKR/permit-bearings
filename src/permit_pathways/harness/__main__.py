@@ -53,6 +53,14 @@ def main() -> int:
         changed_sources=changed,
     )
     print(report.summary())
+
+    registry_path = ROOT / "data" / "jurisdictions" / "registry.json"
+    if registry_path.exists() and args.rules.is_dir():
+        from ..jurisdictions import coverage, load_registry
+        cov = coverage(load_registry(
+            registry_path, args.rules,
+            ROOT / "data" / "jurisdictions" / "hcd-letters.json"))
+        print("\n" + cov.summary())
     if args.assume_changed:
         print(f"\n(simulating changed sources: {', '.join(args.assume_changed)})")
         for rule_id in report.stale:

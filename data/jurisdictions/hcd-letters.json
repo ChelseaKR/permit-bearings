@@ -1,0 +1,33 @@
+{
+  "source": "Seed set of HCD Housing Accountability Unit letters, taken from HCD's Housing Law Fact Sheet: Duplexes and Lot Splits (SB 9), April 2026 ('Recent HCD Technical Assistance Letters') and letters retrieved directly from hcd.ca.gov. Not a complete index; full letter-index integration is roadmap work.",
+  "letters": {
+    "santa-clara-county": [
+      {"date": "2025-06-24", "kind": "findings", "subject": "ADU and SB 9 ordinance — 9 ADU findings and 6 SB 9 findings, including SB 477 statutory renumbering, height caps, unit undercounts, size maximums, and subjective standards",
+       "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/santa-clara-cou-adu-sb-9-findings-062425.pdf"}
+    ],
+    "riverside": [
+      {"date": "2025-03-21", "kind": "technical-assistance", "subject": "SB 9 — uniform standards, noticing, setbacks above the first floor",
+       "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/riverside-hau-1143-ta-sb9-03212025.pdf"}
+    ],
+    "fort-bragg": [
+      {"date": "2025-02-19", "kind": "technical-assistance", "subject": "SB 9 ordinance — omitted legal provisions, non-uniform restrictions, overly restrictive ADU size limits, conflicting site exclusions",
+       "url": null}
+    ],
+    "laguna-beach": [
+      {"date": "2024-09-19", "kind": "technical-assistance", "subject": "SB 9 — improper zone exclusion, misapplied hazard criteria, unlawful owner-occupancy requirement",
+       "url": null}
+    ],
+    "long-beach": [
+      {"date": "2024-08-09", "kind": "technical-assistance", "subject": "SB 9 — objective standards may not preclude urban lot splits; lot access",
+       "url": null}
+    ],
+    "menlo-park": [
+      {"date": "2024-07-11", "kind": "technical-assistance", "subject": "SB 9 — park in-lieu (Quimby) fees may not condition urban lot splits",
+       "url": null}
+    ],
+    "placer-county": [
+      {"date": "2025-04-09", "kind": "technical-assistance", "subject": "SB 9 — eligible single-family residential zones",
+       "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/placer-co-hau-1462-sb-9-04092025.pdf"}
+    ]
+  }
+}

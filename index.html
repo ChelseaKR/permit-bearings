@@ -112,7 +112,12 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
   <form id="intake">
     <fieldset>
       <legend id="t-juris">Where is the property?</legend>
-      <select name="jurisdiction" id="jurisSel"></select>
+      <input id="jurisInput" name="jurisdiction_name" list="jurisList"
+             autocomplete="off" placeholder="Type any California city or county…"
+             style="width:100%;font-size:1rem;padding:.45rem;border:1px solid var(--grid);
+                    border-radius:6px;background:var(--surface);color:var(--ink)">
+      <datalist id="jurisList"></datalist>
+      <p class="small" id="jurisStatus"></p>
     </fieldset>
     <fieldset>
       <legend id="t-project">What are you proposing?</legend>
@@ -165,6 +170,7 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
   <div class="meter" id="meter" role="img" aria-label="share of rules verified, stale, and unverified"></div>
   <p class="small" id="meterLegend"></p>
   <p class="small"><span id="goldenLine"></span></p>
+  <p class="small mutedtxt" id="covLine"></p>
   <p>
     <button class="ghost" id="simBtn">Rehearse a legislative amendment to Gov. Code § 66321</button>
     <button class="ghost hidden" id="resetBtn">Reset</button>
@@ -201,7 +207,11 @@ const STRINGS = {
   en: {
     tagline: "Every answer cites its source. Every source is watched for change.",
     juris: "Where is the property?",
-    jurisdictions: [["davis","City of Davis"],["woodland","City of Woodland"],["example-city","Another California city"]],
+    jurisPlaceholder: "Type any California city or county…",
+    statusLocal: "Local rule layer encoded, on top of the statewide baseline.",
+    statusBaseline: "Statewide rules apply here in full. A local rule layer has not been encoded yet",
+    statusUnknown: "Not a recognized California jurisdiction — the statewide baseline is applied.",
+    hcdHistory: "Known HCD accountability letter",
     project: "What are you proposing?",
     types: [["adu","Accessory dwelling unit (backyard cottage, garage conversion)"],
             ["jadu","Junior ADU (small unit inside my house)"],
@@ -227,7 +237,11 @@ const STRINGS = {
   es: {
     tagline: "Cada respuesta cita su fuente. Cada fuente se vigila por cambios.",
     juris: "¿Dónde está la propiedad?",
-    jurisdictions: [["davis","Ciudad de Davis"],["woodland","Ciudad de Woodland"],["example-city","Otra ciudad de California"]],
+    jurisPlaceholder: "Escriba cualquier ciudad o condado de California…",
+    statusLocal: "Capa de reglas locales codificada, sobre la base estatal.",
+    statusBaseline: "Las reglas estatales aplican aquí en su totalidad. Aún no se codifica una capa local",
+    statusUnknown: "No es una jurisdicción reconocida de California — se aplica la base estatal.",
+    hcdHistory: "Carta de responsabilidad de HCD conocida",
     project: "¿Qué propone construir?",
     types: [["adu","Vivienda accesoria (casita de patio, conversión de garaje)"],
             ["jadu","ADU júnior (unidad pequeña dentro de mi casa)"],
@@ -252,7 +266,8 @@ const STRINGS = {
   },
 };
 let lang = "en";
-let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [];
+let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [], JURIS = [], LETTERS = {};
+let jurisByName = new Map();
 const SAMPLE_ORDINANCE =
   "Accessory dwelling units shall not exceed sixteen (16) feet in height if " +
   "the dwelling unit does not comply with the setback limitations for a " +
@@ -293,8 +308,8 @@ function renderForm() {
   document.getElementById("t-project").textContent = s.project;
   document.getElementById("t-submit").textContent = s.submit;
   document.getElementById("langToggle").textContent = s.langBtn;
-  document.getElementById("jurisSel").innerHTML =
-    s.jurisdictions.map(([v,t]) => `<option value="${v}">${esc(t)}</option>`).join("");
+  document.getElementById("jurisInput").placeholder = s.jurisPlaceholder;
+  renderJurisStatus();
   document.getElementById("typeRadios").innerHTML =
     s.types.map(([v,t],i) => `<label><input type="radio" name="project_type" value="${v}" ${i===0?"checked":""}> ${esc(t)}</label>`).join("");
   document.getElementById("t-dwelling").textContent = s.dwelling;
@@ -357,6 +372,15 @@ function renderDashboard() {
   });
   document.getElementById("goldenLine").textContent =
     `${pass}/${GOLDEN.length} golden question cases replayed and passing in this browser`;
+  if (JURIS.length) {
+    const nCities = JURIS.filter(j => j.kind === "city").length;
+    const nLocal = JURIS.filter(j => j.has_local_layer).length;
+    const nHcd = Object.keys(LETTERS).length;
+    document.getElementById("covLine").textContent =
+      `Coverage: all ${JURIS.length} California jurisdictions (${nCities} cities, ` +
+      `${JURIS.length - nCities} counties) carry the verified statewide baseline; ` +
+      `${nLocal} have encoded local layers; ${nHcd} have known HCD letter history.`;
+  }
   document.querySelector("#ruleTable tbody").innerHTML = statuses.map(({rule, st}) => {
     const b = st === "verified"
       ? `<span class="badge ok"><span class="status-ico">✓</span>current</span>`
@@ -395,10 +419,36 @@ document.getElementById("intake").addEventListener("submit", e => {
     in_historic_district: !noExcl,
     on_protected_site: !noExcl,
     parcel_created_by_sb9_split: !noExcl,
-    jurisdiction: f.get("jurisdiction"),
+    jurisdiction: (resolveJurisdiction() || {slug: "unrecognized"}).slug,
   }));
   document.getElementById("results").scrollIntoView({behavior: "smooth"});
 });
+function jurisDisplay(j) {
+  return j.kind === "county" ? j.name : `${j.name} (${j.county.replace(" County","")} Co.)`;
+}
+function resolveJurisdiction() {
+  const raw = document.getElementById("jurisInput").value.trim();
+  return jurisByName.get(raw.toLowerCase()) || null;
+}
+function renderJurisStatus() {
+  const s = STRINGS[lang];
+  const el = document.getElementById("jurisStatus");
+  const raw = document.getElementById("jurisInput").value.trim();
+  if (!raw) { el.textContent = ""; return; }
+  const j = resolveJurisdiction();
+  if (!j) { el.textContent = s.statusUnknown; return; }
+  const localCount = JURIS.filter(x => x.has_local_layer).length;
+  let html = j.has_local_layer
+    ? `<span class="badge ok"><span class="status-ico">✓</span>local layer</span> ${esc(s.statusLocal)}`
+    : `${esc(s.statusBaseline)} (${localCount} of ${JURIS.length} jurisdictions have one).`;
+  for (const letter of (LETTERS[j.slug] || [])) {
+    const label = `${esc(s.hcdHistory)}: ${esc(letter.kind)} letter, ${esc(letter.date)} — ${esc(letter.subject)}`;
+    html += `<br><span class="badge warn"><span class="status-ico">⚠</span>HCD</span> ` +
+      (letter.url ? `<a href="${esc(letter.url)}" rel="noopener">${label}</a>` : label);
+  }
+  el.innerHTML = html;
+}
+
 function scanOrdinance(text) {
   const findings = [];
   for (const check of CHECKS) {
@@ -497,8 +547,22 @@ Promise.all([
   fetch("data/golden/example.json").then(r => r.json()),
   fetch("data/sources.json").then(r => r.json()),
   fetch("data/conformance/checks.json").then(r => r.json()),
-]).then(([a, b, c, golden, sources, checks]) => {
+  fetch("data/jurisdictions/registry.json").then(r => r.json()),
+  fetch("data/jurisdictions/hcd-letters.json").then(r => r.json()),
+]).then(([a, b, c, golden, sources, checks, registry, letters]) => {
   RULES = [...a, ...b, ...c]; GOLDEN = golden; SOURCES = sources; CHECKS = checks;
+  LETTERS = letters.letters;
+  const localSlugs = new Set(RULES.filter(r => r.jurisdiction_scope !== "statewide")
+                                  .map(r => r.jurisdiction_scope));
+  JURIS = registry.jurisdictions.map(j => ({...j, has_local_layer: localSlugs.has(j.slug)}));
+  const dl = document.getElementById("jurisList");
+  dl.innerHTML = JURIS.map(j => `<option value="${esc(jurisDisplay(j))}">`).join("");
+  for (const j of JURIS) {
+    jurisByName.set(jurisDisplay(j).toLowerCase(), j);
+    jurisByName.set(j.name.toLowerCase(), j);
+    jurisByName.set(j.slug, j);
+  }
+  document.getElementById("jurisInput").addEventListener("input", renderJurisStatus);
   renderForm(); renderDashboard(); renderSources();
 }).catch(() => {
   document.getElementById("results").innerHTML =
