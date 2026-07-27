@@ -441,10 +441,17 @@ function renderJurisStatus() {
   let html = j.has_local_layer
     ? `<span class="badge ok"><span class="status-ico">✓</span>local layer</span> ${esc(s.statusLocal)}`
     : `${esc(s.statusBaseline)} (${localCount} of ${JURIS.length} jurisdictions have one).`;
-  for (const letter of (LETTERS[j.slug] || [])) {
-    const label = `${esc(s.hcdHistory)}: ${esc(letter.kind)} letter, ${esc(letter.date)} — ${esc(letter.subject)}`;
+  const history = LETTERS[j.slug] || [];
+  if (history.length) {
     html += `<br><span class="badge warn"><span class="status-ico">⚠</span>HCD</span> ` +
-      (letter.url ? `<a href="${esc(letter.url)}" rel="noopener">${label}</a>` : label);
+      `${esc(s.hcdHistory)}: ${history.length} letter(s) on record.`;
+    for (const letter of history.slice(0, 3)) {
+      const label = `${esc(letter.kind)}, ${esc(letter.date)}` +
+        (letter.authority ? ` — ${esc(letter.authority)}` : "");
+      html += `<br>&nbsp;&nbsp;· ` +
+        (letter.url ? `<a href="${esc(letter.url)}" rel="noopener">${label}</a>` : label);
+    }
+    if (history.length > 3) html += `<br>&nbsp;&nbsp;· …and ${history.length - 3} more`;
   }
   el.innerHTML = html;
 }
