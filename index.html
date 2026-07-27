@@ -98,6 +98,8 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
 <main>
 <nav>
   <a href="#screen">Find a pathway</a>
+  <a href="#conformance">Scan an ordinance</a>
+  <a href="#clocks">Review clocks</a>
   <a href="#trust">Trust dashboard</a>
   <a href="#sources">Watched sources</a>
   <a id="langToggle" href="#" role="button">Español</a>
@@ -124,6 +126,35 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
     <button type="submit" id="t-submit">Find my pathway</button>
   </form>
   <div id="results"></div>
+</section>
+
+<section id="conformance">
+  <h2>Scan an ordinance for state-law conflicts</h2>
+  <p class="small">Paste local ADU/SB 9 ordinance or handout text. It is screened
+  against the failure modes HCD documents in its enforcement letters — stale
+  SB 477 citations, height caps below state allowances, unit undercounts,
+  subjective standards, and more. <b>Text never leaves your browser.</b>
+  Presence-based screening for staff/counsel review — not a certification of
+  compliance, and silence is not a clean bill of health.</p>
+  <p class="small">Validated against HCD's June 2025 findings letter to Santa
+  Clara County: the scanner independently re-derives HCD's findings from the
+  ordinance provisions quoted in the letter.
+  <a href="#" id="loadSample">Load two of those provisions as a sample</a>.</p>
+  <textarea id="ordText" rows="8" style="width:100%;font-size:.9rem;
+    border:1px solid var(--grid);border-radius:8px;background:var(--surface);
+    color:var(--ink);padding:.6rem" placeholder="Paste ordinance text here…"></textarea>
+  <p><button id="scanBtn">Scan</button></p>
+  <div id="scanResults"></div>
+</section>
+
+<section id="clocks">
+  <h2>Statutory review clocks</h2>
+  <p class="small">State law puts the permitting agency on a clock. Enter the
+  date a complete ADU/JADU application was received:</p>
+  <p><input type="date" id="recvDate" style="font-size:1rem;padding:.35rem;
+    border:1px solid var(--grid);border-radius:6px;background:var(--surface);
+    color:var(--ink)"> <button class="ghost" id="clockBtn">Compute deadlines</button></p>
+  <div id="clockResults"></div>
 </section>
 
 <section id="trust">
@@ -221,7 +252,13 @@ const STRINGS = {
   },
 };
 let lang = "en";
-let RULES = [], GOLDEN = [], SOURCES = {};
+let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [];
+const SAMPLE_ORDINANCE =
+  "Accessory dwelling units shall not exceed sixteen (16) feet in height if " +
+  "the dwelling unit does not comply with the setback limitations for a " +
+  "single-family residence, prescribed by the applicable zoning district. " +
+  "Detached accessory dwelling units exceeding sixteen (16) feet in height " +
+  "shall incorporate a hip, gable, or other similar styled roof design.";
 const OPS = {
   eq: (a,b) => a === b,
   lte: (a,b) => a != null && a <= b,
@@ -362,6 +399,89 @@ document.getElementById("intake").addEventListener("submit", e => {
   }));
   document.getElementById("results").scrollIntoView({behavior: "smooth"});
 });
+function scanOrdinance(text) {
+  const findings = [];
+  for (const check of CHECKS) {
+    const seen = [];
+    for (const pattern of check.patterns) {
+      const re = new RegExp(pattern, "gi");
+      let m;
+      while ((m = re.exec(text)) !== null) {
+        const excluded = (check.exclude_patterns || []).some(ex => {
+          const exRe = new RegExp(ex, "gi");
+          let e;
+          while ((e = exRe.exec(text)) !== null)
+            if (e.index <= m.index && m.index + m[0].length <= e.index + e[0].length) return true;
+          return false;
+        });
+        if (excluded || seen.some(([s, e]) => s <= m.index && m.index < e)) continue;
+        seen.push([m.index, m.index + m[0].length]);
+        const start = Math.max(0, m.index - 120);
+        const end = Math.min(text.length, m.index + m[0].length + 120);
+        findings.push({ check, excerpt: text.slice(start, end).replace(/\s+/g, " "), offset: m.index });
+      }
+    }
+  }
+  return findings.sort((a, b) => a.offset - b.offset);
+}
+
+document.getElementById("scanBtn").addEventListener("click", () => {
+  const text = document.getElementById("ordText").value;
+  const el = document.getElementById("scanResults");
+  if (!text.trim()) { el.innerHTML = ""; return; }
+  const findings = scanOrdinance(text);
+  if (!findings.length) {
+    el.innerHTML = `<div class="notice">No candidate provisions flagged.
+      Presence-based screen only — this is <b>not</b> a certification of compliance.</div>`;
+    return;
+  }
+  el.innerHTML = findings.map(f => {
+    const definite = f.check.severity === "definite";
+    return `<div class="card ${definite ? "" : "unverified"}"
+      style="border-left-color:${definite ? "var(--critical)" : "var(--warning)"}">
+      <h3>${esc(f.check.title)}
+        <span class="badge ${definite ? "bad" : "warn"}">
+        <span class="status-ico">${definite ? "✕" : "⚠"}</span>${definite ? "finding" : "review"}</span></h3>
+      <blockquote>…${esc(f.excerpt)}…</blockquote>
+      <p class="small"><b>State law:</b> ${esc(f.check.state_law)}</p>
+      <p class="small"><b>Explanation:</b> ${esc(f.check.explanation)}</p>
+      <p class="small mutedtxt"><b>HCD precedent:</b> ${esc(f.check.hcd_precedent)}</p>
+    </div>`;
+  }).join("");
+});
+document.getElementById("loadSample").addEventListener("click", e => {
+  e.preventDefault();
+  document.getElementById("ordText").value = SAMPLE_ORDINANCE;
+  document.getElementById("scanBtn").click();
+});
+
+document.getElementById("clockBtn").addEventListener("click", () => {
+  const v = document.getElementById("recvDate").value;
+  const el = document.getElementById("clockResults");
+  if (!v) { el.innerHTML = ""; return; }
+  const received = new Date(v + "T12:00:00");
+  const addBiz = (d, n) => {
+    const out = new Date(d);
+    while (n > 0) { out.setDate(out.getDate() + 1); if (out.getDay() % 6 !== 0) n--; }
+    return out;
+  };
+  const addCal = (d, n) => { const out = new Date(d); out.setDate(out.getDate() + n); return out; };
+  const fmt = d => d.toISOString().slice(0, 10);
+  const completeness = addBiz(received, 15);
+  el.innerHTML = `<table>
+    <tr><th>Deadline</th><th>Date</th><th>Authority</th></tr>
+    <tr><td>Written completeness determination due</td><td>${fmt(completeness)}</td>
+        <td class="mutedtxt">Gov. Code § 66317(a)(2)(A) — 15 business days</td></tr>
+    <tr><td>Deemed complete if the agency stays silent</td><td>${fmt(addCal(completeness, 1))}</td>
+        <td class="mutedtxt">Gov. Code § 66317(a)(2)(F)</td></tr>
+    <tr><td>Approve/deny decision due (once complete)</td><td>${fmt(addCal(received, 60))}</td>
+        <td class="mutedtxt">Gov. Code § 66317(a)(3) — 60 days</td></tr>
+  </table>
+  <p class="small mutedtxt">Business days exclude weekends only; a production
+  deployment loads the jurisdiction's holiday calendar. SB 9 applications share
+  the 60-day decision clock (Gov. Code §§ 65852.21, 66411.7).</p>`;
+});
+
 document.getElementById("simBtn").addEventListener("click", () => { simulating = true; renderDashboard(); });
 document.getElementById("resetBtn").addEventListener("click", () => { simulating = false; renderDashboard(); });
 document.getElementById("langToggle").addEventListener("click", e => {
@@ -376,8 +496,9 @@ Promise.all([
   fetch("data/rules/woodland.json").then(r => r.json()),
   fetch("data/golden/example.json").then(r => r.json()),
   fetch("data/sources.json").then(r => r.json()),
-]).then(([a, b, c, golden, sources]) => {
-  RULES = [...a, ...b, ...c]; GOLDEN = golden; SOURCES = sources;
+  fetch("data/conformance/checks.json").then(r => r.json()),
+]).then(([a, b, c, golden, sources, checks]) => {
+  RULES = [...a, ...b, ...c]; GOLDEN = golden; SOURCES = sources; CHECKS = checks;
   renderForm(); renderDashboard(); renderSources();
 }).catch(() => {
   document.getElementById("results").innerHTML =

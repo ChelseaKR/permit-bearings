@@ -6,6 +6,20 @@ observers. Goal: be the vendor they remember for *trust*, not features.
 ## Arc: "Every tool will show you an answer. I'll show you how a
 ## jurisdiction knows the answer is still right."
 
+### 0. The opener — scan an ordinance live (5 min)
+- Paste an ADU ordinance provision into the conformance scanner. Watch it
+  flag the stale SB 477 citation, the 16-ft height cap, the subjective
+  "similar styled roof design" — each with the controlling state law and
+  the HCD enforcement letter where that exact failure mode appeared.
+- The kicker: these are the *actual provisions* HCD quoted in its June 2025
+  findings letter to Santa Clara County. The scanner independently re-derives
+  HCD's findings. "HCD does this by hand, one letter at a time. This is that
+  review, as software, validated against their own letters."
+- Positioning sentence: "Symbium helps applicants navigate the rules as
+  coded. PermitFlow helps builders file. Nobody verifies that the rules
+  themselves — the ordinance, the handout, the chatbot's training corpus —
+  are still lawful. That's us."
+
 ### 1. The problem nobody demos (4 min)
 - Housing law changes every session. SB 477 (2024) renumbered all of state
   ADU law (§ 65852.2 → §§ 66310–66342); 2025 legislation renumbered sections

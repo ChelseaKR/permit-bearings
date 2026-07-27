@@ -1,9 +1,29 @@
 # Permit Pathways
 
-**Citation-grounded housing-permit guidance for California jurisdictions, with a
-built-in verification harness that keeps every answer current with state law.**
+**Housing-law conformance infrastructure for California jurisdictions:
+an ordinance conformance scanner validated against HCD's own enforcement
+findings, a citation-grounded permit navigator, statutory review clocks,
+and a verification harness that keeps all of it current with state law.**
 
 **Live demo:** https://chelseakr.github.io/permit-pathways/
+
+## The conformance scanner
+
+Local housing ordinances drift out of conformance with state law every
+legislative session — SB 477 (2024) alone renumbered all of State ADU Law,
+and HCD's Housing Accountability Unit corrects jurisdictions one findings
+letter at a time. The scanner screens ordinance/handout text against the
+failure modes those letters document: stale statutory citations, height caps
+below the 18/25-ft allowances, "only one ADU per lot" undercounts, size caps
+that reach protected conversions, subjective design standards, owner-occupancy
+requirements, over-cap parking, and pre-SB 450 fire-exclusion language.
+
+**Validation:** run against the ordinance provisions HCD quoted verbatim in
+its June 24, 2025 findings letter to Santa Clara County
+(`corpus/hcd/letters/`), the scanner independently re-derives HCD's findings
+(`tests/test_conformance.py`). Presence-based screening for staff/counsel
+review — it flags candidate provisions with the controlling state law and the
+HCD precedent; it does not certify compliance.
 
 Working title. Conceived 2026-07-27 for the California AI Permitting Innovation
 Showcase (ODI / GovOps / CHHA / GO-Biz). See [PROVENANCE.md](PROVENANCE.md).
@@ -70,6 +90,7 @@ harness is built to catch.
 
 ```sh
 python3 -m pytest                                   # test suite
+PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
 PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff
 PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed 66321
