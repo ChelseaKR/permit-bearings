@@ -1,22 +1,72 @@
 [
   {
-    "case_id": "adu-basic",
-    "question": "I want to add a small backyard unit to my house. What approval do I need?",
+    "case_id": "adu-detached-basic",
+    "question": "I want to add a small backyard unit behind my house. What approval do I need?",
     "intake": {
       "project_type": "adu",
-      "on_existing_residential_lot": true,
+      "has_primary_dwelling": true,
       "jurisdiction": "example-city"
     },
-    "expected_rule_ids": ["adu-ministerial-placeholder"]
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards"
+    ]
   },
   {
-    "case_id": "sb9-duplex",
+    "case_id": "jadu-in-sfr",
+    "question": "Can I convert a bedroom in my house into a small separate unit?",
+    "intake": {
+      "project_type": "jadu",
+      "dwelling_type": "single_family",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": ["jadu-standards"]
+  },
+  {
+    "case_id": "sb9-duplex-clean",
     "question": "Can I build two units on my single-family lot?",
     "intake": {
       "project_type": "two_unit",
       "zone_class": "single_family_residential",
+      "in_urbanized_area": true,
+      "demolishes_protected_housing": false,
+      "tenant_occupied_last_3_years": false,
+      "in_historic_district": false,
+      "on_protected_site": false,
       "jurisdiction": "example-city"
     },
-    "expected_rule_ids": ["sb9-two-unit-placeholder"]
+    "expected_rule_ids": ["sb9-two-unit-ministerial"]
+  },
+  {
+    "case_id": "sb9-duplex-tenant-occupied",
+    "question": "Can I replace my rental house (tenants moved out last year) with a duplex under SB 9?",
+    "intake": {
+      "project_type": "two_unit",
+      "zone_class": "single_family_residential",
+      "in_urbanized_area": true,
+      "demolishes_protected_housing": false,
+      "tenant_occupied_last_3_years": true,
+      "in_historic_district": false,
+      "on_protected_site": false,
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-lot-split-clean",
+    "question": "Can I split my single-family lot into two parcels?",
+    "intake": {
+      "project_type": "lot_split",
+      "zone_class": "single_family_residential",
+      "in_urbanized_area": true,
+      "demolishes_protected_housing": false,
+      "tenant_occupied_last_3_years": false,
+      "in_historic_district": false,
+      "on_protected_site": false,
+      "parcel_created_by_sb9_split": false,
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": ["sb9-urban-lot-split"]
   }
 ]

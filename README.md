@@ -51,14 +51,39 @@ Permit Pathways treats that question as the product:
 
 ## Status
 
-Early-stage prototype. The pathway-screening rules in `src/` are **illustrative
-placeholders pending verification against HCD's published summaries** — the
-eval harness exists precisely to catch that class of gap before any answer
-reaches an applicant.
+Working prototype. The statewide rule base covers ADU, JADU, and both SB 9
+pathways, encoded from the **March 2026 HCD ADU Handbook** and the **April
+2026 HCD SB 9 fact sheet** (both in `corpus/hcd/`), each rule carrying the
+quoted source excerpt it was verified against and a `verified_on` date.
+Machine-assisted encoding — a human spot-check against the PDFs in
+`corpus/hcd/` is the intended next verification pass.
+
+A period detail that proves the concept: state ADU law was renumbered from
+Gov. Code § 65852.2 et seq. to §§ 66310–66342 by SB 477 (2024), with further
+renumbering in 2025 legislation. Any tool that cited the old sections — as
+this repo's own first-day placeholder did — is exactly the staleness the
+harness is built to catch.
+
+## Run it
+
+```sh
+python3 -m pytest                                   # 7 tests
+PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
+PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed 66321
+PYTHONPATH=src python3 demo/app.py                  # demo at localhost:8765
+```
+
+The demo serves a bilingual (EN/ES) structured intake, pathway results with
+inline statutory citations and verification badges, an abstention path
+("needs staff review") when no state pathway matches, and a trust dashboard
+at `/trust` — including a one-click rehearsal of a legislative amendment to
+Gov. Code § 66321 that flips dependent guidance to stale until re-verified.
 
 ## Layout
 
-- `src/permit_pathways/screening.py` — deterministic pathway-screening rules
-- `src/permit_pathways/harness/` — golden-set schema + verification runner
-- `tests/` — screening and harness tests
+- `src/permit_pathways/screening.py` — deterministic pathway-screening engine
+- `src/permit_pathways/harness/` — verification runner + CLI
+- `data/rules/` — the cited rule base; `data/golden/` — golden cases
+- `corpus/hcd/` — the HCD source documents rules are verified against
+- `demo/app.py` — stdlib demo server
 - `docs/DESIGN.md` — architecture and demo plan

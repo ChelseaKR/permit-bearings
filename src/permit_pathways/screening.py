@@ -29,10 +29,11 @@ class Citation:
     has been checked against the cited source; the harness reports such
     rules as UNVERIFIED and the engine labels their results accordingly."""
 
-    source: str          # e.g. "Gov. Code § 65852.2" or an HCD document title
+    source: str          # e.g. "Gov. Code § 66321(b)(3)" or an HCD document title
     url: str
+    excerpt: str | None = None      # the source text the rule was verified against
     excerpt_sha256: str | None = None
-    verified_on: str | None = None  # ISO date of last human verification
+    verified_on: str | None = None  # ISO date of last verification against source
 
     @property
     def is_verified(self) -> bool:

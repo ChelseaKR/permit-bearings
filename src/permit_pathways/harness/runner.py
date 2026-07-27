@@ -61,15 +61,25 @@ def verify_rules(
     golden_path: Path,
     today: date,
     max_age_days: int = DEFAULT_MAX_AGE_DAYS,
+    changed_sources: list[str] | None = None,
 ) -> VerificationReport:
+    """`changed_sources` marks sources known (or simulated) to have changed
+    since rules were last verified — e.g. a code section renumbered by new
+    legislation. Any rule citing a matching source is stale regardless of
+    its verification date: verification against superseded text is no
+    verification at all."""
     rules = load_rules(rules_path)
     golden = load_golden(golden_path)
     report = VerificationReport(checked_on=today.isoformat())
+    changed = changed_sources or []
 
     for rule in rules:
-        if not rule.citation.is_verified:
+        cite = rule.citation
+        if any(marker in cite.source or marker in cite.url for marker in changed):
+            report.stale.append(rule.rule_id)
+        elif not cite.is_verified:
             report.unverified.append(rule.rule_id)
-        elif rule.citation.is_stale(max_age_days, today):
+        elif cite.is_stale(max_age_days, today):
             report.stale.append(rule.rule_id)
         else:
             report.verified.append(rule.rule_id)
