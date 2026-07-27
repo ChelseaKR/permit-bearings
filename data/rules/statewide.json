@@ -1,0 +1,43 @@
+[
+  {
+    "rule_id": "adu-ministerial-placeholder",
+    "pathway": "ADU ministerial approval",
+    "route_class": "ministerial",
+    "jurisdiction_scope": "statewide",
+    "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
+      {"field": "on_existing_residential_lot", "op": "eq", "value": true}
+    ],
+    "citation": {
+      "source": "Gov. Code § 65852.2 (ADU law) — PLACEHOLDER, criteria not yet verified against HCD ADU Handbook",
+      "url": "https://www.hcd.ca.gov/policy-and-research/accessory-dwelling-units",
+      "verified_on": null
+    },
+    "required_documents": [
+      "site plan",
+      "floor plan",
+      "jurisdiction ADU application form"
+    ],
+    "notes": "Illustrative placeholder. Real criteria (unit size, setbacks, lot conditions) must be encoded from the HCD ADU Handbook and verified before use."
+  },
+  {
+    "rule_id": "sb9-two-unit-placeholder",
+    "pathway": "SB 9 two-unit ministerial development",
+    "route_class": "ministerial",
+    "jurisdiction_scope": "statewide",
+    "criteria": [
+      {"field": "project_type", "op": "eq", "value": "two_unit"},
+      {"field": "zone_class", "op": "eq", "value": "single_family_residential"}
+    ],
+    "citation": {
+      "source": "Gov. Code § 65852.21 (SB 9) — PLACEHOLDER, criteria not yet verified against HCD SB 9 fact sheet",
+      "url": "https://www.hcd.ca.gov/planning-and-community-development/statutory-determinations",
+      "verified_on": null
+    },
+    "required_documents": [
+      "site plan",
+      "SB 9 eligibility affidavit per jurisdiction form"
+    ],
+    "notes": "Illustrative placeholder. Real criteria (urban lot, historic exclusions, tenancy protections) must be encoded and verified before use."
+  }
+]

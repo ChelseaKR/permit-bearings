@@ -1,0 +1,84 @@
+"""Verification harness.
+
+Answers three questions a jurisdiction will ask before trusting guidance:
+which rules are verified against their cited source, which have gone stale,
+and whether the golden questions still produce the expected pathways.
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from datetime import date
+from pathlib import Path
+
+from ..screening import Rule, load_rules, screen
+
+DEFAULT_MAX_AGE_DAYS = 180  # roughly one legislative cycle between re-checks
+
+
+@dataclass
+class GoldenCase:
+    case_id: str
+    question: str
+    intake: dict
+    expected_rule_ids: list[str]
+
+
+@dataclass
+class VerificationReport:
+    checked_on: str
+    verified: list[str] = field(default_factory=list)
+    stale: list[str] = field(default_factory=list)
+    unverified: list[str] = field(default_factory=list)
+    golden_passed: list[str] = field(default_factory=list)
+    golden_failed: list[str] = field(default_factory=list)
+
+    @property
+    def trustworthy(self) -> bool:
+        return not self.stale and not self.unverified and not self.golden_failed
+
+    def summary(self) -> str:
+        lines = [
+            f"Verification report ({self.checked_on})",
+            f"  rules verified-current: {len(self.verified)}",
+            f"  rules stale:            {len(self.stale)}",
+            f"  rules never verified:   {len(self.unverified)}",
+            f"  golden cases passing:   {len(self.golden_passed)}",
+            f"  golden cases failing:   {len(self.golden_failed)}",
+        ]
+        for case_id in self.golden_failed:
+            lines.append(f"    FAIL {case_id}")
+        return "\n".join(lines)
+
+
+def load_golden(path: Path) -> list[GoldenCase]:
+    return [GoldenCase(**record) for record in json.loads(path.read_text())]
+
+
+def verify_rules(
+    rules_path: Path,
+    golden_path: Path,
+    today: date,
+    max_age_days: int = DEFAULT_MAX_AGE_DAYS,
+) -> VerificationReport:
+    rules = load_rules(rules_path)
+    golden = load_golden(golden_path)
+    report = VerificationReport(checked_on=today.isoformat())
+
+    for rule in rules:
+        if not rule.citation.is_verified:
+            report.unverified.append(rule.rule_id)
+        elif rule.citation.is_stale(max_age_days, today):
+            report.stale.append(rule.rule_id)
+        else:
+            report.verified.append(rule.rule_id)
+
+    for case in golden:
+        got = sorted(r.rule.rule_id for r in screen(case.intake, rules))
+        if got == sorted(case.expected_rule_ids):
+            report.golden_passed.append(case.case_id)
+        else:
+            report.golden_failed.append(case.case_id)
+
+    return report

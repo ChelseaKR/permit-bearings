@@ -1,0 +1,22 @@
+[
+  {
+    "case_id": "adu-basic",
+    "question": "I want to add a small backyard unit to my house. What approval do I need?",
+    "intake": {
+      "project_type": "adu",
+      "on_existing_residential_lot": true,
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": ["adu-ministerial-placeholder"]
+  },
+  {
+    "case_id": "sb9-duplex",
+    "question": "Can I build two units on my single-family lot?",
+    "intake": {
+      "project_type": "two_unit",
+      "zone_class": "single_family_residential",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": ["sb9-two-unit-placeholder"]
+  }
+]

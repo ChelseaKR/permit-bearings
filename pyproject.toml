@@ -1,0 +1,16 @@
+[project]
+name = "permit-pathways"
+version = "0.0.1"
+description = "Citation-grounded housing-permit pathway guidance for California jurisdictions, with a verification harness for currency."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
