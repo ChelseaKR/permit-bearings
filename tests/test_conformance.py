@@ -44,6 +44,44 @@ def test_current_sb9_section_never_flagged_as_stale(checks):
     assert scan(text, checks) == []
 
 
+def test_lawful_proposed_multifamily_two_adu_cap_is_not_flagged(checks):
+    text = (
+        "On a lot with a proposed multifamily dwelling, no more than two "
+        "detached accessory dwelling units are allowed."
+    )
+    assert "unit-count-undercount" not in {
+        finding.check.check_id for finding in scan(text, checks)
+    }
+
+
+def test_privacy_word_alone_is_not_treated_as_subjective(checks):
+    text = (
+        "For an accessory dwelling unit, a privacy window shall have a "
+        "minimum sill height of five feet above finished floor."
+    )
+    assert "subjective-design-standard" not in {
+        finding.check.check_id for finding in scan(text, checks)
+    }
+
+
+def test_qualitative_privacy_language_remains_a_review_signal(checks):
+    text = (
+        "An accessory dwelling unit shall preserve the privacy of neighboring "
+        "properties."
+    )
+    assert "subjective-design-standard" in {
+        finding.check.check_id for finding in scan(text, checks)
+    }
+
+
+def test_height_check_describes_roof_pitch_as_transit_specific(checks):
+    check = next(
+        check for check in checks if check.check_id == "height-cap-below-state"
+    )
+    assert "transit branch" in check.state_law
+    assert "multistory-multifamily branch does not carry" in check.explanation
+
+
 def test_finding_summary_carries_state_law_and_precedent(checks):
     findings = scan(VALIDATION["provisions"][0]["text"], checks)
     summary = findings[0].summary()

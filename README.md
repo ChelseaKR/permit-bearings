@@ -63,12 +63,12 @@ Permit Pathways treats that question as the product:
    HCD guidance document, or local code section that supports it. When the
    corpus doesn't support an answer, the system abstains and routes to staff
    instead of guessing.
-4. **Currency & verification harness** — nine structured golden cases replay
+4. **Currency & verification harness** — 29 structured golden cases replay
    intake against expected rule IDs; each underlying rule carries dated source
-   evidence. The CLI hash-checks selected statewide sources and can mark
-   citation-matched rules stale; the browser separately rehearses a source
-   amendment. Explicit source dependency IDs and durable changed-state
-   persistence are the next trust-layer step.
+   evidence or an explicit unverified state. The CLI hash-checks selected
+   sources and uses stable source-dependency IDs to mark every dependent rule
+   stale; the browser separately rehearses a source amendment. Durable
+   changed-state persistence and a staffed review queue remain planned.
 
 ## Showcase scenario mapping
 
@@ -81,17 +81,20 @@ Permit Pathways treats that question as the product:
 ## Design commitments (from the challenge statement's cross-cutting requirements)
 
 - Decision support, never a legal agent; abstention over confabulation.
-- Jurisdiction owns its data and corpus; everything is exportable; no lock-in
-  if an engagement ends.
-- California Public Records Act-aware record handling; Information Practices
-  Act (Civil Code § 1798 et seq.) respected in any applicant-data flow.
+- Rules, sources, cases, and review artifacts use portable files that a
+  deploying jurisdiction can export and own; this prototype has no accounts,
+  uploads, or applicant-data store.
+- A production applicant-data flow would require deployment-specific privacy,
+  retention, access-control, deletion, and public-records export review. This
+  prototype does not claim CPRA or Information Practices Act compliance.
 - Deployable and affordable for low-capacity jurisdictions; sits alongside
   existing permitting systems rather than replacing them.
 - WCAG 2.2 AAA target with a static computed-contrast audit
   (`docs/ACCESSIBILITY.md`); required human/assistive-technology checks remain
   open. English/Spanish intake, interface controls, and plain-language result
   drafts are prototyped. Spanish drafts have no human or semantic-parity
-  review; pathway titles, source excerpts, and document hints remain English.
+  review. Applicant-facing result titles are localized drafts; canonical
+  source citations, excerpts, and generic document hints remain English.
   Styling uses the open-source California Design System's cagov theme tokens
   (no state branding; use implies no affiliation).
 
@@ -109,7 +112,7 @@ The separate plain-language layer records its own version, linked rule-source
 date, citation fingerprint, full-rule fingerprint, AI-assisted authorship, and
 pending review status. Review metadata is bound to the explanation version it
 covered. If browser-side fingerprint validation is unavailable, the display
-fails closed to matched rules and evidence without explanation copy. All 15
+fails closed to matched rules and evidence without explanation copy. All 19
 current rule records have English and Spanish drafts; none is represented as
 human-reviewed or jurisdiction-approved.
 
@@ -148,7 +151,7 @@ PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zi
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
 PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff
-PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed 66321
+PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
 python3 -m http.server 8765                         # full static showcase
 PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
 # The Python server also exposes the static showcase at /index.html.
@@ -180,9 +183,10 @@ grouped decision-record results with plain-language explanation drafts,
 always-visible citations and source-status badges, an abstention path ("needs
 staff review") when no encoded state pathway matches, the conformance scanner,
 review clocks, and a trust dashboard. Spanish explanation copy is an
-unreviewed machine draft; source-derived pathway titles, excerpts, and document
-hints remain English when shown. Stale and unverified records suppress action
-copy, interpretive notes, and document hints. The dashboard includes a clearly
+unreviewed machine draft; applicant-facing titles are localized drafts while
+canonical pathway labels, excerpts, citations, and document hints remain
+English when shown. Stale and unverified records suppress action copy,
+interpretive notes, and document hints. The dashboard includes a clearly
 labeled one-click rehearsal of an amendment to Gov. Code § 66321; matching
 result cards rerender as stale, but that rehearsal is not persisted production
 state. The smaller Python reference demo renders the same explanation sidecar
@@ -202,3 +206,5 @@ and keeps a separate `/trust` route.
 - `docs/DESIGN.md` — architecture and demo plan
 - `docs/PRODUCT-CONTEXT.md` — capability truth and opportunity priorities
 - `AGENTS.md` — evidence, scope, privacy, and quality guardrails
+- `LICENSE` and `THIRD_PARTY_NOTICES.md` — original-project license and
+  attribution or separate terms for bundled source material

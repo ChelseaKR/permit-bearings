@@ -1,16 +1,33 @@
 # Provenance record
 
-- **Conceived:** 2026-07-27, in response to the public California AI Permitting
-  Innovation Showcase announcement (challenge statement published by ODI;
-  submission window 2026-07-27 through 2026-08-11).
+- **Conceived:** 2026-07-27 in response to the public California AI
+  Permitting Innovation Showcase announcement.
 - **Authorship context:** personal project, personal equipment and accounts,
-  begun after 2026-07-21.
-- **Inputs:** the public challenge statement PDF, public HCD guidance and
-  state-law summaries, and public California open-data resources. No other
-  organization's code, documents, or non-public information.
-- **Relationship to prior work:** none imported. This repository starts from an
-  empty tree; all code and prose are written fresh in this repository's own
-  commit history.
+  begun after 2026-07-21. Original application code, rule encodings,
+  explanation drafts, tests, and project prose were created for this
+  repository.
+- **Public-source inputs:** official California statutes; HCD handbooks, fact
+  sheets, and enforcement or technical-assistance records; official municipal
+  code and CEQA pages; California and federal open data; and official transit
+  schedules. These materials are evidence inputs, not project-authored work.
+- **External design material:** the interface adapts color tokens from the
+  open-source California Design System. It does not use California branding or
+  imply State endorsement.
+- **AI assistance:** rule encoding, explanation and translation drafts, code,
+  and prose have been machine-assisted. No current rule interpretation,
+  plain-language explanation, or Spanish translation is represented as
+  jurisdiction-approved, counsel-approved, or human-reviewed unless its own
+  record contains that exact review metadata.
+- **Relationship to prior work:** no proprietary or non-public work product is
+  represented as imported. Public documents and datasets retained in
+  `corpus/` and generated source registries remain attributable to their
+  publishers and are excluded from claims of original authorship.
 
-This file records contemporaneous facts at project start. It intentionally
-makes no legal conclusions.
+Source URLs, retrieval dates, content hashes, and rule dependencies are
+recorded in `data/sources.json`, rule citations, dataset metadata, and
+`corpus/ordinances/SOURCES.json`. See `THIRD_PARTY_NOTICES.md` for attribution
+and licensing boundaries.
+
+This file records project provenance. It does not make legal conclusions about
+copyright, public-record status, or permission to redistribute any specific
+source artifact.

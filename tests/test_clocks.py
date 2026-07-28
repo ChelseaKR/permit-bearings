@@ -1,39 +1,78 @@
 from datetime import date
 
-from permit_pathways.clocks import add_business_days, adu_clocks
+import pytest
+
+from permit_pathways.clocks import (
+    add_business_days,
+    adu_clocks,
+    completeness_deadline,
+)
 
 
-def test_business_days_skip_weekends():
-    # Mon 2026-08-03 + 5 business days = Mon 2026-08-10
-    assert add_business_days(date(2026, 8, 3), 5) == date(2026, 8, 10)
+def test_business_days_require_and_use_the_agency_calendar():
+    assert add_business_days(date(2026, 8, 3), 5, set()) == date(2026, 8, 10)
+    assert add_business_days(
+        date(2026, 8, 3),
+        5,
+        {date(2026, 8, 7)},
+    ) == date(2026, 8, 11)
+    with pytest.raises(TypeError):
+        add_business_days(date(2026, 8, 3), 5)
 
 
-def test_adu_clock_deadlines():
-    # Received Mon 2026-08-03: 15 business days later is Mon 2026-08-24.
+def test_completeness_deadline_is_unknown_without_agency_closures():
+    deadline = completeness_deadline(date(2026, 8, 3))
+    assert deadline.status == "unknown"
+    assert deadline.date is None
+    assert "agency" in deadline.reason
+
     status = adu_clocks(date(2026, 8, 3))
-    assert status.completeness_deadline == date(2026, 8, 24)
-    assert status.deemed_complete_if_silent == date(2026, 8, 25)
-    assert status.decision_deadline_if_complete == date(2026, 10, 2)
-    summary = status.summary()
-    assert "66317(a)(2)(A)" in summary
-    assert "Deemed complete" in summary
+    assert status.completeness_notice.status == "unknown"
+    assert status.deemed_complete_if_silent.status == "unknown"
+    assert status.decision_if_complete.status == "unknown"
 
 
-def test_ca_holidays_2026():
-    from permit_pathways.clocks import ca_holidays
-    h = ca_holidays(2026)
-    assert date(2026, 1, 1) in h            # New Year's (Thursday)
-    assert date(2026, 1, 19) in h           # MLK Day, 3rd Monday
-    assert date(2026, 3, 31) in h           # Cesar Chavez Day
-    assert date(2026, 5, 25) in h           # Memorial Day, last Monday
-    assert date(2026, 7, 3) in h            # July 4 is Saturday -> observed Friday
-    assert date(2026, 11, 26) in h and date(2026, 11, 27) in h  # Thanksgiving + day after
-    assert date(2026, 12, 25) in h          # Christmas (Friday)
+def test_exact_dates_require_explicit_calendar_and_project_conditions():
+    status = adu_clocks(
+        date(2026, 8, 3),
+        set(),
+        complete_on_receipt=True,
+        existing_dwelling=True,
+    )
+    assert status.completeness_notice.date == date(2026, 8, 24)
+    assert status.deemed_complete_if_silent.date == date(2026, 8, 25)
+    assert status.decision_if_complete.date == date(2026, 10, 2)
+    assert "Completeness notice deadline: 2026-08-24" in status.summary()
 
 
-def test_business_days_skip_holidays():
-    from permit_pathways.clocks import add_business_days
-    # Received Thu 2026-12-24. Excluding weekends, Christmas (Fri 12/25),
-    # New Year's (Fri 1/1), and MLK Day (Mon 1/18), the 15th business day
-    # is Tue 2027-01-19.
-    assert add_business_days(date(2026, 12, 24), 15) == date(2027, 1, 19)
+def test_saturday_closure_is_not_invented_as_a_friday_closure():
+    # The supplied agency calendar contains only the actual Saturday closure.
+    # The calculator must not manufacture a Friday observance.
+    assert add_business_days(
+        date(2026, 6, 29),
+        5,
+        {date(2026, 7, 4)},
+    ) == date(2026, 7, 6)
+    assert add_business_days(
+        date(2026, 6, 29),
+        5,
+        {date(2026, 7, 3)},
+    ) == date(2026, 7, 7)
+
+
+def test_60_day_clock_does_not_assume_completeness_or_existing_dwelling():
+    no_completion = adu_clocks(
+        date(2026, 8, 3),
+        set(),
+        existing_dwelling=True,
+    )
+    assert no_completion.decision_if_complete.status == "unknown"
+    assert "complete-application date" in no_completion.decision_if_complete.reason
+
+    no_existing_dwelling = adu_clocks(
+        date(2026, 8, 3),
+        set(),
+        complete_on_receipt=True,
+    )
+    assert no_existing_dwelling.decision_if_complete.status == "unknown"
+    assert "existing" in no_existing_dwelling.decision_if_complete.reason

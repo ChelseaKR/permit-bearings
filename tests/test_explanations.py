@@ -1,5 +1,6 @@
 import copy
 import json
+import re
 from dataclasses import replace
 from pathlib import Path
 
@@ -38,7 +39,7 @@ def test_every_rule_has_one_versioned_explanation_with_source_date(rules, explan
     assert set(explanations) == {rule.rule_id for rule in rules}
     rules_by_id = {rule.rule_id: rule for rule in rules}
     for rule_id, explanation in explanations.items():
-        assert explanation.version == "1.0.0"
+        assert re.fullmatch(r"\d+\.\d+\.\d+", explanation.version)
         assert explanation.source_verified_on == (
             rules_by_id[rule_id].citation.verified_on
         )
@@ -55,6 +56,9 @@ def test_spanish_copy_is_explicitly_an_unreviewed_machine_draft(explanations):
         assert explanation.es.translation_status == "machine_draft"
         assert explanation.es.reviewer is None
         assert explanation.es.reviewed_on is None
+        assert explanation.en.title
+        assert explanation.es.title
+        assert explanation.es.title != explanation.en.title
         assert explanation.es.summary != explanation.en.summary
 
 
@@ -84,12 +88,24 @@ def test_three_pilot_explanations_preserve_important_boundaries(explanations):
     )
 
     protected = explanations["adu-protected-minimum"]
-    assert "at least 800 square feet" in protected.en.summary
-    assert "all other local development standards" in protected.en.summary
+    assert "do not have to build an 800-square-foot ADU" in (
+        protected.en.summary
+    )
+    assert "every other applicable local development rule" in (
+        protected.en.summary
+    )
 
     height = explanations["adu-height-standards"]
     height_text = " ".join(
-        [height.en.summary, *height.en.next_steps, *height.en.confirm_with_staff]
+        [
+            height.en.summary,
+            *(
+                f"{item.label} {item.text}"
+                for item in height.en.highlights.items
+            ),
+            *height.en.next_steps,
+            *height.en.confirm_with_staff,
+        ]
     ).lower()
     assert "attached or detached" in height_text
     assert "transit" in height_text
@@ -97,17 +113,41 @@ def test_three_pilot_explanations_preserve_important_boundaries(explanations):
     assert "major transit stop" in height_text
     assert "high-quality transit corridor" in height_text
     assert "multistory multifamily" in height_text.replace("-", " ")
+    assert "transit situation" in height_text
+    assert "branch does not add" in height_text
     assert height.en.confirm_with_staff
 
     multifamily = explanations["adu-multifamily-66323"]
-    assert "conversion allowance is at least one ADU" in (
-        multifamily.en.summary
+    multifamily_text = " ".join(
+        [
+            multifamily.en.summary,
+            *(
+                f"{item.label} {item.text}"
+                for item in multifamily.en.highlights.items
+            ),
+        ]
+    )
+    assert "At least one conversion ADU" in multifamily_text
+    assert "blanket 16-foot cap" in multifamily_text
+
+    proposed_multifamily = explanations[
+        "adu-multifamily-proposed-66323"
+    ]
+    assert "no more than two detached ADUs" in (
+        proposed_multifamily.en.summary
+    )
+    assert "conversion allowance does not apply yet" in (
+        proposed_multifamily.en.summary
     )
 
     lot_split = explanations["sb9-urban-lot-split"]
     lot_split_text = " ".join(
         [
             lot_split.en.summary,
+            *(
+                f"{item.label} {item.text}"
+                for item in lot_split.en.highlights.items
+            ),
             *lot_split.en.next_steps,
             *lot_split.en.confirm_with_staff,
         ]
@@ -116,6 +156,27 @@ def test_three_pilot_explanations_preserve_important_boundaries(explanations):
     assert "at least three years" in lot_split_text
     assert "community land trust" in lot_split_text
     assert "nonprofit" in lot_split_text
+    assert "1,200 square feet" in lot_split_text
+    assert "verified current local ordinance" in lot_split_text
+    assert "historic-landmark property" in lot_split_text
+    assert "contributing structure" in lot_split_text
+
+
+def test_woodland_copy_reports_adoption_without_claiming_conformance(
+    explanations,
+):
+    woodland = explanations["woodland-adu-ordinance-2026"]
+    text = " ".join(
+        [
+            woodland.en.title,
+            woodland.en.summary,
+            *woodland.en.next_steps,
+            *woodland.en.confirm_with_staff,
+        ]
+    ).lower()
+    assert "adopted" in text
+    assert "does not establish actual conformance" in text
+    assert "comparable-jurisdiction precedent" not in text
 
 
 def test_high_priority_plain_language_records_avoid_policy_memo_phrasing(
@@ -126,6 +187,7 @@ def test_high_priority_plain_language_records_avoid_policy_memo_phrasing(
         "adu-height-standards",
         "adu-parking-limits",
         "adu-multifamily-66323",
+        "adu-multifamily-proposed-66323",
         "sb9-urban-lot-split",
     )
     policy_phrases = (
@@ -149,6 +211,29 @@ def test_high_priority_plain_language_records_avoid_policy_memo_phrasing(
         )
 
 
+def test_every_staff_prompt_is_a_direct_question_in_each_language(explanations):
+    for rule_id, explanation in explanations.items():
+        assert all(
+            question.rstrip().endswith("?")
+            for question in explanation.en.confirm_with_staff
+        ), rule_id
+        assert explanation.es is not None
+        assert all(
+            question.lstrip().startswith("¿")
+            and question.rstrip().endswith("?")
+            for question in explanation.es.confirm_with_staff
+        ), rule_id
+
+
+def test_every_locale_has_an_applicant_facing_title(explanations):
+    for rule_id, explanation in explanations.items():
+        assert explanation.en.title.strip(), rule_id
+        assert explanation.es is not None
+        assert explanation.es.title.strip(), rule_id
+        assert "ministerial" not in explanation.en.title.lower(), rule_id
+        assert "ministerial" not in explanation.es.title.lower(), rule_id
+
+
 def test_copy_avoids_final_eligibility_approval_and_completeness_claims(explanations):
     def localized_text(localized):
         highlight_text = ()
@@ -162,6 +247,7 @@ def test_copy_avoids_final_eligibility_approval_and_completeness_claims(explanat
                 ),
             )
         return (
+            localized.title,
             localized.summary,
             *highlight_text,
             *localized.next_steps,
@@ -340,7 +426,9 @@ def test_tolerant_display_load_degrades_missing_or_malformed_data_to_empty(
 def test_loading_explanations_cannot_change_deterministic_matches(rules):
     intake = {
         "project_type": "adu",
-        "has_primary_dwelling": True,
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no",
         "jurisdiction": "davis",
     }
     before = [result.rule.rule_id for result in screen(intake, rules)]
@@ -353,11 +441,9 @@ def test_python_demo_groups_decision_records_and_keeps_source_visible():
     form = {
         "project_type": ["adu"],
         "jurisdiction": ["davis"],
-        "dwelling_type": ["single_family"],
-        "has_primary_dwelling": ["on"],
-        "in_urbanized_area": ["on"],
-        "sf_zone": ["on"],
-        "no_exclusions": ["on"],
+        "primary_dwelling_status": ["existing_single_family"],
+        "adu_project_form": ["new_detached"],
+        "unpermitted_existing": ["no"],
     }
     page = result_page(form, "en")
     assert "Possible permit paths and rules" in page
@@ -365,7 +451,7 @@ def test_python_demo_groups_decision_records_and_keeps_source_visible():
     assert "Rules that may apply" in page
     assert "Local process information" in page
     assert 'data-rule-id="davis-local-adu-process"' in page
-    assert "Draft explanation · made with AI · not reviewed by a person" in page
+    assert "About these explanations" in page
     assert "Deadlines in this rule" in page
     assert "<strong>15 business days:</strong>" in page
     assert "source has no date on file" in page
@@ -378,7 +464,9 @@ def test_python_demo_labels_spanish_draft_and_has_evidence_fallback(
 ):
     intake = {
         "project_type": "adu",
-        "has_primary_dwelling": True,
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no",
         "jurisdiction": "example-city",
     }
     result = screen(intake, rules)[0]
@@ -428,10 +516,12 @@ def test_python_demo_withholds_actions_for_unverified_and_stale_rules(
     davis = next(
         result
         for result in screen(
-            {
-                "project_type": "adu",
-                "has_primary_dwelling": True,
-                "jurisdiction": "davis",
+                {
+                    "project_type": "adu",
+                    "primary_dwelling_status": "existing_single_family",
+                    "adu_project_form": "new_detached",
+                    "unpermitted_existing": "no",
+                    "jurisdiction": "davis",
             },
             rules,
         )
@@ -448,10 +538,12 @@ def test_python_demo_withholds_actions_for_unverified_and_stale_rules(
     assert davis.rule.notes not in unverified
 
     current = screen(
-        {
-            "project_type": "adu",
-            "has_primary_dwelling": True,
-            "jurisdiction": "example-city",
+            {
+                "project_type": "adu",
+                "primary_dwelling_status": "existing_single_family",
+                "adu_project_form": "new_detached",
+                "unpermitted_existing": "no",
+                "jurisdiction": "example-city",
         },
         rules,
     )[0]
@@ -472,10 +564,12 @@ def test_python_demo_withholds_actions_for_unverified_and_stale_rules(
 
 def test_python_demo_escapes_explanation_copy(rules, explanations):
     result = screen(
-        {
-            "project_type": "adu",
-            "has_primary_dwelling": True,
-            "jurisdiction": "example-city",
+            {
+                "project_type": "adu",
+                "primary_dwelling_status": "existing_single_family",
+                "adu_project_form": "new_detached",
+                "unpermitted_existing": "no",
+                "jurisdiction": "example-city",
         },
         rules,
     )[0]

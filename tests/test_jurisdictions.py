@@ -55,8 +55,18 @@ def test_statewide_rules_apply_to_any_registry_jurisdiction(registry):
     # Any jurisdiction in the registry — even with no local layer — gets
     # the full statewide baseline from the screening engine.
     rules = load_rules(DATA / "rules")
-    intake = {"project_type": "adu", "has_primary_dwelling": True,
+    intake = {"project_type": "adu",
+              "primary_dwelling_status": "existing_single_family",
+              "adu_project_form": "new_detached",
+              "unpermitted_existing": "no",
               "jurisdiction": "eureka"}
     results = screen(intake, rules)
-    assert len(results) == 7
+    assert {result.rule.rule_id for result in results} == {
+        "adu-ministerial-review",
+        "adu-protected-minimum",
+        "adu-height-standards",
+        "adu-size-allowances",
+        "adu-parking-limits",
+        "adu-no-owner-occupancy-rental",
+    }
     assert all(r.rule.jurisdiction_scope == "statewide" for r in results)

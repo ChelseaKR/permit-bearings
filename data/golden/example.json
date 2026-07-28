@@ -1,10 +1,186 @@
 [
   {
     "case_id": "adu-detached-basic",
-    "question": "I want to add a small backyard unit behind my house. What approval do I need?",
+    "question": "I want to add a new detached backyard unit behind my existing house.",
     "intake": {
       "project_type": "adu",
-      "has_primary_dwelling": true,
+      "primary_dwelling_status": "existing_single_family",
+      "adu_project_form": "new_detached",
+      "unpermitted_existing": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental"
+    ]
+  },
+  {
+    "case_id": "jadu-in-existing-sfr",
+    "question": "Can I turn a bedroom in my existing house into a junior ADU?",
+    "intake": {
+      "project_type": "jadu",
+      "primary_dwelling_status": "existing_single_family",
+      "unpermitted_existing": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "jadu-standards",
+      "jadu-ministerial-review"
+    ]
+  },
+  {
+    "case_id": "sb9-duplex-clean",
+    "question": "Can I build two units on my single-family lot when every encoded screen is satisfied?",
+    "intake": {
+      "project_type": "two_unit",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "two_unit_contributing_historic_location": "no",
+      "two_unit_individually_listed_historic_property": "no",
+      "on_protected_site": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "sb9-two-unit-ministerial",
+      "sb9-adu-interaction"
+    ]
+  },
+  {
+    "case_id": "sb9-duplex-tenant-occupied",
+    "question": "Can I replace a rental house whose tenants moved out last year with an SB 9 project?",
+    "intake": {
+      "project_type": "two_unit",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "yes",
+      "ellis_withdrawal_last_15_years": "no",
+      "two_unit_contributing_historic_location": "no",
+      "two_unit_individually_listed_historic_property": "no",
+      "on_protected_site": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-lot-split-clean-boundary",
+    "question": "Can I split a qualifying lot when one result is exactly 40 percent and both results are exactly 1,200 square feet?",
+    "intake": {
+      "project_type": "lot_split",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "lot_split_on_historic_landmark_site": "no",
+      "lot_split_alters_historic_district_resource": "no",
+      "on_protected_site": "no",
+      "parcel_created_by_sb9_split": "no",
+      "adjacent_sb9_split_same_actor": "no",
+      "proposed_lot_ratio_compliant": "yes",
+      "proposed_lot_size_compliant": "yes",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "sb9-urban-lot-split",
+      "sb9-lot-split-adu-interaction"
+    ]
+  },
+  {
+    "case_id": "davis-new-detached-adu-local-layer",
+    "question": "What records appear for a new detached ADU in Davis?",
+    "intake": {
+      "project_type": "adu",
+      "primary_dwelling_status": "existing_single_family",
+      "adu_project_form": "new_detached",
+      "unpermitted_existing": "no",
+      "jurisdiction": "davis"
+    },
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental",
+      "davis-local-adu-process"
+    ]
+  },
+  {
+    "case_id": "woodland-new-detached-adu-local-layer",
+    "question": "What records appear for a new detached ADU in Woodland?",
+    "intake": {
+      "project_type": "adu",
+      "primary_dwelling_status": "existing_single_family",
+      "adu_project_form": "new_detached",
+      "unpermitted_existing": "no",
+      "jurisdiction": "woodland"
+    },
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental",
+      "woodland-adu-ordinance-2026"
+    ]
+  },
+  {
+    "case_id": "adu-existing-multifamily-lot",
+    "question": "We own an existing apartment building and want to add detached ADUs.",
+    "intake": {
+      "project_type": "adu",
+      "primary_dwelling_status": "existing_multifamily",
+      "adu_project_form": "new_detached",
+      "unpermitted_existing": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-multifamily-66323"
+    ]
+  },
+  {
+    "case_id": "adu-unpermitted-conversion-legalize",
+    "question": "My garage was converted to an ADU before 2020 without permits.",
+    "intake": {
+      "project_type": "adu",
+      "primary_dwelling_status": "existing_single_family",
+      "adu_project_form": "conversion",
+      "unpermitted_existing": "yes",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental",
+      "adu-conversion-exemptions",
+      "adu-unpermitted-legalization"
+    ]
+  },
+  {
+    "case_id": "adu-conversion-only",
+    "question": "I plan to convert existing garage space into an ADU.",
+    "intake": {
+      "project_type": "adu",
+      "primary_dwelling_status": "existing_single_family",
+      "adu_project_form": "conversion",
+      "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
     "expected_rule_ids": [
@@ -18,145 +194,356 @@
     ]
   },
   {
-    "case_id": "jadu-in-sfr",
-    "question": "Can I convert a bedroom in my house into a small separate unit?",
+    "case_id": "adu-same-footprint-rebuild",
+    "question": "I plan to replace a structure in exactly the same location and dimensions with an ADU.",
     "intake": {
-      "project_type": "jadu",
-      "dwelling_type": "single_family",
+      "project_type": "adu",
+      "primary_dwelling_status": "existing_single_family",
+      "adu_project_form": "same_footprint_rebuild",
+      "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
     "expected_rule_ids": [
-      "jadu-standards"
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental",
+      "adu-conversion-exemptions"
     ]
   },
   {
-    "case_id": "sb9-duplex-clean",
-    "question": "Can I build two units on my single-family lot?",
+    "case_id": "adu-proposed-multifamily-lot",
+    "question": "We propose a new apartment building and two detached ADUs.",
     "intake": {
-      "project_type": "two_unit",
-      "zone_class": "single_family_residential",
-      "in_urbanized_area": true,
-      "demolishes_protected_housing": false,
-      "tenant_occupied_last_3_years": false,
-      "in_historic_district": false,
-      "on_protected_site": false,
+      "project_type": "adu",
+      "primary_dwelling_status": "proposed_multifamily",
+      "adu_project_form": "new_detached",
+      "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
     "expected_rule_ids": [
-      "sb9-two-unit-ministerial",
-      "sb9-adu-interaction"
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-multifamily-proposed-66323"
     ]
   },
   {
-    "case_id": "sb9-duplex-tenant-occupied",
-    "question": "Can I replace my rental house (tenants moved out last year) with a duplex under SB 9?",
+    "case_id": "adu-primary-status-unknown",
+    "question": "I do not know whether the primary dwelling is existing or proposed.",
     "intake": {
-      "project_type": "two_unit",
-      "zone_class": "single_family_residential",
-      "in_urbanized_area": true,
-      "demolishes_protected_housing": false,
-      "tenant_occupied_last_3_years": true,
-      "in_historic_district": false,
-      "on_protected_site": false,
+      "project_type": "adu",
+      "primary_dwelling_status": "unknown",
+      "adu_project_form": "new_detached",
+      "unpermitted_existing": "unknown",
       "jurisdiction": "example-city"
     },
     "expected_rule_ids": []
   },
   {
-    "case_id": "sb9-lot-split-clean",
-    "question": "Can I split my single-family lot into two parcels?",
+    "case_id": "adu-project-form-unknown",
+    "question": "I know there is an existing house but do not know whether the ADU is new or a conversion.",
+    "intake": {
+      "project_type": "adu",
+      "primary_dwelling_status": "existing_single_family",
+      "adu_project_form": "unknown",
+      "unpermitted_existing": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "adu-ministerial-review",
+      "adu-protected-minimum",
+      "adu-height-standards",
+      "adu-size-allowances",
+      "adu-parking-limits",
+      "adu-no-owner-occupancy-rental"
+    ]
+  },
+  {
+    "case_id": "jadu-unpermitted-legalize",
+    "question": "A junior ADU inside my house was built before 2020 without permits.",
+    "intake": {
+      "project_type": "jadu",
+      "primary_dwelling_status": "existing_single_family",
+      "unpermitted_existing": "yes",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "jadu-standards",
+      "jadu-ministerial-review",
+      "jadu-unpermitted-legalization"
+    ]
+  },
+  {
+    "case_id": "jadu-proposed-single-family",
+    "question": "I propose a new single-family home with a junior ADU.",
+    "intake": {
+      "project_type": "jadu",
+      "primary_dwelling_status": "proposed_single_family",
+      "unpermitted_existing": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": [
+      "jadu-standards",
+      "jadu-ministerial-review"
+    ]
+  },
+  {
+    "case_id": "jadu-multifamily-inconsistent",
+    "question": "I selected a junior ADU but identified a proposed multifamily building.",
+    "intake": {
+      "project_type": "jadu",
+      "primary_dwelling_status": "proposed_multifamily",
+      "unpermitted_existing": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-ellis-unknown",
+    "question": "Every two-unit screen is answered except the Ellis Act history is unknown.",
+    "intake": {
+      "project_type": "two_unit",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "unknown",
+      "two_unit_contributing_historic_location": "no",
+      "two_unit_individually_listed_historic_property": "no",
+      "on_protected_site": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-two-unit-individually-listed-historic-property",
+    "question": "The parcel is individually listed as a historic property.",
+    "intake": {
+      "project_type": "two_unit",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "two_unit_contributing_historic_location": "no",
+      "two_unit_individually_listed_historic_property": "yes",
+      "on_protected_site": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-two-unit-historic-location-unknown",
+    "question": "The parcel's contributing-structure or locally designated historic-district status has not been confirmed.",
+    "intake": {
+      "project_type": "two_unit",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "two_unit_contributing_historic_location": "unknown",
+      "two_unit_individually_listed_historic_property": "no",
+      "on_protected_site": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-lot-ratio-below-boundary",
+    "question": "One proposed lot would be less than 40 percent of the original parcel.",
     "intake": {
       "project_type": "lot_split",
-      "zone_class": "single_family_residential",
-      "in_urbanized_area": true,
-      "demolishes_protected_housing": false,
-      "tenant_occupied_last_3_years": false,
-      "in_historic_district": false,
-      "on_protected_site": false,
-      "parcel_created_by_sb9_split": false,
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "lot_split_on_historic_landmark_site": "no",
+      "lot_split_alters_historic_district_resource": "no",
+      "on_protected_site": "no",
+      "parcel_created_by_sb9_split": "no",
+      "adjacent_sb9_split_same_actor": "no",
+      "proposed_lot_ratio_compliant": "no",
+      "proposed_lot_size_compliant": "yes",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-lot-size-below-boundary",
+    "question": "One proposed lot is below the applicable minimum size.",
+    "intake": {
+      "project_type": "lot_split",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "lot_split_on_historic_landmark_site": "no",
+      "lot_split_alters_historic_district_resource": "no",
+      "on_protected_site": "no",
+      "parcel_created_by_sb9_split": "no",
+      "adjacent_sb9_split_same_actor": "no",
+      "proposed_lot_ratio_compliant": "yes",
+      "proposed_lot_size_compliant": "no",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-adjacent-split-by-same-actor",
+    "question": "The owner already used SB 9 to split an adjacent parcel.",
+    "intake": {
+      "project_type": "lot_split",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "lot_split_on_historic_landmark_site": "no",
+      "lot_split_alters_historic_district_resource": "no",
+      "on_protected_site": "no",
+      "parcel_created_by_sb9_split": "no",
+      "adjacent_sb9_split_same_actor": "yes",
+      "proposed_lot_ratio_compliant": "yes",
+      "proposed_lot_size_compliant": "yes",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-lot-ratio-unknown",
+    "question": "The proposed lot ratio has not been calculated.",
+    "intake": {
+      "project_type": "lot_split",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "lot_split_on_historic_landmark_site": "no",
+      "lot_split_alters_historic_district_resource": "no",
+      "on_protected_site": "no",
+      "parcel_created_by_sb9_split": "no",
+      "adjacent_sb9_split_same_actor": "no",
+      "proposed_lot_ratio_compliant": "unknown",
+      "proposed_lot_size_compliant": "yes",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-lot-size-unknown",
+    "question": "The applicable minimum lot size has not been confirmed.",
+    "intake": {
+      "project_type": "lot_split",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "lot_split_on_historic_landmark_site": "no",
+      "lot_split_alters_historic_district_resource": "no",
+      "on_protected_site": "no",
+      "parcel_created_by_sb9_split": "no",
+      "adjacent_sb9_split_same_actor": "no",
+      "proposed_lot_ratio_compliant": "yes",
+      "proposed_lot_size_compliant": "unknown",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-adjacent-split-unknown",
+    "question": "The adjacent-parcel SB 9 split history is unknown.",
+    "intake": {
+      "project_type": "lot_split",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "lot_split_on_historic_landmark_site": "no",
+      "lot_split_alters_historic_district_resource": "no",
+      "on_protected_site": "no",
+      "parcel_created_by_sb9_split": "no",
+      "adjacent_sb9_split_same_actor": "unknown",
+      "proposed_lot_ratio_compliant": "yes",
+      "proposed_lot_size_compliant": "yes",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-lot-split-historic-landmark-site",
+    "question": "The lot is on a designated historic-landmark site.",
+    "intake": {
+      "project_type": "lot_split",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "lot_split_on_historic_landmark_site": "yes",
+      "lot_split_alters_historic_district_resource": "no",
+      "on_protected_site": "no",
+      "parcel_created_by_sb9_split": "no",
+      "adjacent_sb9_split_same_actor": "no",
+      "proposed_lot_ratio_compliant": "yes",
+      "proposed_lot_size_compliant": "yes",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-lot-split-historic-alteration-unknown",
+    "question": "It is unknown whether the lot split would alter a contributing historic-district resource.",
+    "intake": {
+      "project_type": "lot_split",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "lot_split_on_historic_landmark_site": "no",
+      "lot_split_alters_historic_district_resource": "unknown",
+      "on_protected_site": "no",
+      "parcel_created_by_sb9_split": "no",
+      "adjacent_sb9_split_same_actor": "no",
+      "proposed_lot_ratio_compliant": "yes",
+      "proposed_lot_size_compliant": "yes",
+      "jurisdiction": "example-city"
+    },
+    "expected_rule_ids": []
+  },
+  {
+    "case_id": "sb9-lot-size-verified-local-minimum",
+    "question": "Both proposed lots meet a verified smaller minimum in the current local ordinance.",
+    "intake": {
+      "project_type": "lot_split",
+      "sf_zone": "yes",
+      "in_urbanized_area": "yes",
+      "demolishes_protected_housing": "no",
+      "tenant_occupied_last_3_years": "no",
+      "ellis_withdrawal_last_15_years": "no",
+      "lot_split_on_historic_landmark_site": "no",
+      "lot_split_alters_historic_district_resource": "no",
+      "on_protected_site": "no",
+      "parcel_created_by_sb9_split": "no",
+      "adjacent_sb9_split_same_actor": "no",
+      "proposed_lot_ratio_compliant": "yes",
+      "proposed_lot_size_compliant": "yes",
       "jurisdiction": "example-city"
     },
     "expected_rule_ids": [
       "sb9-urban-lot-split",
-      "sb9-adu-interaction"
-    ]
-  },
-  {
-    "case_id": "davis-adu-local-layer",
-    "question": "What does Davis require for my backyard ADU?",
-    "intake": {
-      "project_type": "adu",
-      "has_primary_dwelling": true,
-      "jurisdiction": "davis"
-    },
-    "expected_rule_ids": [
-      "adu-ministerial-review",
-      "adu-protected-minimum",
-      "adu-height-standards",
-      "adu-size-allowances",
-      "adu-parking-limits",
-      "adu-no-owner-occupancy-rental",
-      "adu-conversion-exemptions",
-      "davis-local-adu-process"
-    ]
-  },
-  {
-    "case_id": "woodland-adu-local-layer",
-    "question": "Is Woodland's ADU ordinance up to date with state law?",
-    "intake": {
-      "project_type": "adu",
-      "has_primary_dwelling": true,
-      "jurisdiction": "woodland"
-    },
-    "expected_rule_ids": [
-      "adu-ministerial-review",
-      "adu-protected-minimum",
-      "adu-height-standards",
-      "adu-size-allowances",
-      "adu-parking-limits",
-      "adu-no-owner-occupancy-rental",
-      "adu-conversion-exemptions",
-      "woodland-adu-ordinance-2026"
-    ]
-  },
-  {
-    "case_id": "adu-multifamily-lot",
-    "question": "We own a small apartment building \u2014 can we add ADUs?",
-    "intake": {
-      "project_type": "adu",
-      "has_primary_dwelling": true,
-      "dwelling_type": "multifamily",
-      "jurisdiction": "example-city"
-    },
-    "expected_rule_ids": [
-      "adu-ministerial-review",
-      "adu-protected-minimum",
-      "adu-height-standards",
-      "adu-size-allowances",
-      "adu-parking-limits",
-      "adu-no-owner-occupancy-rental",
-      "adu-conversion-exemptions",
-      "adu-multifamily-66323"
-    ]
-  },
-  {
-    "case_id": "adu-unpermitted-legalize",
-    "question": "My garage was converted to a unit years ago without permits. Can I make it legal?",
-    "intake": {
-      "project_type": "adu",
-      "has_primary_dwelling": true,
-      "unpermitted_existing": true,
-      "jurisdiction": "example-city"
-    },
-    "expected_rule_ids": [
-      "adu-ministerial-review",
-      "adu-protected-minimum",
-      "adu-height-standards",
-      "adu-size-allowances",
-      "adu-parking-limits",
-      "adu-no-owner-occupancy-rental",
-      "adu-conversion-exemptions",
-      "adu-unpermitted-legalization"
+      "sb9-lot-split-adu-interaction"
     ]
   }
 ]

@@ -30,8 +30,7 @@ jobs:
         run: |
           gh issue create \
             --title "Source currency alert: a watched legal source changed ($(date -u +%F))" \
-            --body "$(printf 'The weekly currency check found changed or unreachable watched sources. Dependent rules are stale until re-verified against the new text.\n\n```\n%s\n```' "$(cat report.txt)")" \
-            --label "currency"
+            --body "$(printf 'The weekly currency check found changed or unreachable watched sources. Dependent rules are stale until re-verified against the new text.\n\n```\n%s\n```' "$(cat report.txt)")"
       - name: Check HCD HAU letters dashboard for new letters
         id: letters
         run: |
@@ -46,5 +45,4 @@ jobs:
         run: |
           gh issue create \
             --title "HCD HAU letters dataset drifted ($(date -u +%F))" \
-            --body "$(printf 'HCD published new or changed accountability letters. Refresh with:\n\n    python3 scripts/pull_hau_letters.py\n    python3 scripts/build_hcd_letters.py <today>\n\n```\n%s\n```' "$(cat letters.txt)")" \
-            --label "currency"
+            --body "$(printf 'HCD published new or changed accountability letters. Refresh with:\n\n    python3 scripts/pull_hau_letters.py\n    python3 scripts/build_hcd_letters.py <today>\n\n```\n%s\n```' "$(cat letters.txt)")"

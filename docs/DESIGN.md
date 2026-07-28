@@ -95,15 +95,15 @@ abstention path is a structured intake with no matching encoded rule.
 
 ### 3. Currency & verification harness (prototype differentiator)
 
-- **Golden set:** nine structured intake records map to expected rule IDs.
+- **Golden set:** 29 structured intake records map to expected rule IDs.
   They are regression fixtures, not natural-language answer, citation, or
   jurisdiction-acceptance evaluations.
 - **Verification runner:** replays the deterministic matcher, checks recorded
   verification dates, and can mark citation-matched sources stale.
-- **Currency watcher:** monitors the source corpus (statute text, HCD guidance
-  pages) for hash changes. Thirteen selected statewide sources are watched.
-  Local-code watching, new-law discovery, stable source dependency IDs, and
-  durable changed-state persistence are not implemented.
+- **Currency watcher:** monitors the source corpus (statute text, HCD guidance,
+  and selected local-source pages) for hash changes. Fifteen sources are
+  watched. New-law discovery and durable changed-state persistence are not
+  implemented; stable source dependency IDs are.
 - **Public trust surface:** the dashboard shows date-based rule status and a
   labeled amendment rehearsal. It does not currently ingest persisted output
   from the scheduled watcher.
@@ -138,7 +138,7 @@ the test suite compares it byte-for-byte with the canonical JSON inputs.
 | Jurisdiction data ownership | Rules, corpus, fixtures, and source metadata use open repository formats. | Tested full export/offboarding once any hosted or case data exists. |
 | CPRA (Gov C § 7920.000 et seq.) | No applicant record store exists. | Deployment-specific retention, search/export, legal-hold, exemption handling, and audit design; no blanket compliance claim. |
 | Low-capacity affordability | Dependency-light Python core and static-friendly browser demo. | Pilot deployment/TCO evidence and an integration contract beside existing systems. |
-| Keep pace with legislative change | Selected-source hash watcher, date aging, and staleness rehearsal. | Source discovery, explicit dependency graph, persisted review queue, and human approval history. |
+| Keep pace with legislative change | Selected-source hash watcher, stable source IDs with explicit rule dependencies, date aging, and staleness rehearsal. | Source discovery, persisted source state and review queue, broader local-source coverage, and human approval history. |
 | Decision support, not legal agent | Candidate labels, source links, disclaimers, visible unverified state, and abstention. | Ensure stale and unverified rules cannot appear as actionable green results. |
 | SAM 5300 / SIMM / accessibility | Static WCAG 2.2 AAA-target audit; no-storage demo reduces the current data boundary. | Human/AT audit, threat model, control mapping, incident path, and deployment security review. |
 

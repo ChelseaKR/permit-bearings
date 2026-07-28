@@ -19,13 +19,15 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from permit_pathways.explanations import load_explanations  # noqa: E402
+from permit_pathways.harness.watch import (  # noqa: E402
+    load_sources,
+    normalized_digest,
+)
 from permit_pathways.screening import load_rules  # noqa: E402
 
 OUTPUT = ROOT / "data" / "demo-data.js"
+RULE_MANIFEST_OUTPUT = ROOT / "data" / "rules" / "index.json"
 INPUTS = {
-    "statewide_rules": Path("data/rules/statewide.json"),
-    "davis_rules": Path("data/rules/davis.json"),
-    "woodland_rules": Path("data/rules/woodland.json"),
     "golden": Path("data/golden/example.json"),
     "sources": Path("data/sources.json"),
     "checks": Path("data/conformance/checks.json"),
@@ -36,10 +38,124 @@ INPUTS = {
 }
 
 
+def discover_rule_files(root: Path = ROOT) -> list[Path]:
+    """Return every canonical rule file, excluding generated metadata."""
+
+    return sorted(
+        path
+        for path in (root / "data" / "rules").glob("*.json")
+        if path.name != "index.json"
+    )
+
+
+def rule_manifest(root: Path = ROOT) -> dict[str, object]:
+    files = discover_rule_files(root)
+    if not files:
+        raise ValueError("data/rules: no canonical rule files found")
+    return {
+        "schema_version": 1,
+        "files": [path.name for path in files],
+    }
+
+
+def encoded_rule_manifest(root: Path = ROOT) -> str:
+    return json.dumps(
+        rule_manifest(root),
+        ensure_ascii=True,
+        indent=2,
+        sort_keys=True,
+    ) + "\n"
+
+
+def aggregate_rule_records(
+    root: Path = ROOT,
+) -> tuple[list[object], dict[str, str]]:
+    """Load every discovered rule file and return records plus digests."""
+
+    aggregate: list[object] = []
+    digests: dict[str, str] = {}
+    for rule_path in discover_rule_files(root):
+        raw = rule_path.read_bytes()
+        records = json.loads(raw)
+        if not isinstance(records, list):
+            raise ValueError(f"{rule_path}: expected a list of rules")
+        aggregate.extend(records)
+        relative_path = rule_path.relative_to(root)
+        digests[relative_path.as_posix()] = hashlib.sha256(raw).hexdigest()
+    return aggregate, digests
+
+
+def _validate_local_source_copies(root: Path) -> None:
+    """Ensure preserved evidence bytes still match the source registry."""
+
+    sources = load_sources(root / "data" / "sources.json")
+    resolved_root = root.resolve()
+    for source in sources.values():
+        if source.watch and source.local_copy is None:
+            raise ValueError(
+                f"{source.source_id}: watched source requires local_copy"
+            )
+        if source.local_copy is None:
+            continue
+        local_path = (root / source.local_copy).resolve()
+        if resolved_root not in local_path.parents:
+            raise ValueError(
+                f"{source.source_id}.local_copy: path leaves repository"
+            )
+        try:
+            content = local_path.read_bytes()
+        except OSError as error:
+            raise ValueError(
+                f"{source.source_id}.local_copy: unavailable"
+            ) from error
+        digest = normalized_digest(content, source.normalize)
+        if digest != source.sha256:
+            raise ValueError(
+                f"{source.source_id}.local_copy: digest does not match registry"
+            )
+
+
 def build_bundle(root: Path = ROOT) -> str:
     """Return the generated bundle text from canonical JSON inputs."""
 
     rules = load_rules(root / "data" / "rules")
+    sources = load_sources(root / "data" / "sources.json")
+    known_sources = set(sources)
+    for rule in rules:
+        unknown = sorted(set(rule.source_dependencies) - known_sources)
+        if unknown:
+            raise ValueError(
+                f"{rule.rule_id}: unknown source dependencies: "
+                + ", ".join(unknown)
+            )
+        dependency_urls = {
+            sources[source_id].url for source_id in rule.source_dependencies
+        }
+        if rule.citation.url not in dependency_urls:
+            raise ValueError(
+                f"{rule.rule_id}: citation URL is not an explicit dependency"
+            )
+        cited_source = next(
+            sources[source_id]
+            for source_id in rule.source_dependencies
+            if sources[source_id].url == rule.citation.url
+        )
+        if rule.citation.verified_on is not None:
+            if (
+                cited_source.fetched_on is None
+                or cited_source.sha256 is None
+                or cited_source.local_copy is None
+            ):
+                raise ValueError(
+                    f"{rule.rule_id}: dated citation has no preserved "
+                    "source evidence"
+                )
+            if cited_source.fetched_on > rule.citation.verified_on:
+                raise ValueError(
+                    f"{rule.rule_id}: citation verification predates "
+                    "the preserved source evidence"
+                )
+    _validate_local_source_copies(root)
     load_explanations(
         root / "data" / "explanations" / "plain-language.json",
         rules,
@@ -47,6 +163,11 @@ def build_bundle(root: Path = ROOT) -> str:
 
     payload: dict[str, object] = {}
     digests: dict[str, str] = {}
+    aggregate_rules, rule_digests = aggregate_rule_records(root)
+    digests.update(rule_digests)
+    payload["rules"] = aggregate_rules
+    payload["rule_manifest"] = rule_manifest(root)
+
     for key, relative_path in INPUTS.items():
         raw = (root / relative_path).read_bytes()
         payload[key] = json.loads(raw)
@@ -77,18 +198,30 @@ def main() -> int:
     )
     args = parser.parse_args()
     expected = build_bundle()
+    expected_manifest = encoded_rule_manifest()
 
     if args.check:
-        if not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != expected:
+        bundle_current = (
+            OUTPUT.exists()
+            and OUTPUT.read_text(encoding="utf-8") == expected
+        )
+        manifest_current = (
+            RULE_MANIFEST_OUTPUT.exists()
+            and RULE_MANIFEST_OUTPUT.read_text(encoding="utf-8")
+            == expected_manifest
+        )
+        if not bundle_current or not manifest_current:
             print(
-                "data/demo-data.js is out of date; "
+                "generated demo data is out of date; "
                 "run python3 scripts/build_demo_bundle.py"
             )
             return 1
-        print("data/demo-data.js is in sync")
+        print("data/demo-data.js and data/rules/index.json are in sync")
         return 0
 
+    RULE_MANIFEST_OUTPUT.write_text(expected_manifest, encoding="utf-8")
     OUTPUT.write_text(expected, encoding="utf-8")
+    print(f"wrote {RULE_MANIFEST_OUTPUT.relative_to(ROOT)}")
     print(f"wrote {OUTPUT.relative_to(ROOT)}")
     return 0
 

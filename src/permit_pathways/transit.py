@@ -42,7 +42,9 @@ HQTC_MAX_GAP_MIN = 15         # PRC § 21155(b)
 MAJOR_STOP_MAX_GAP_MIN = 20   # PRC § 21064.3(c)
 PEAKS = ((6 * 60, 9 * 60), (16 * 60, 19 * 60))
 STOP_CLUSTER_MILES = 0.1      # stops this close count as one "intersection"
-RAIL_ROUTE_TYPES = {"0", "1", "2", "4"}  # tram, metro, rail, ferry
+RAIL_ROUTE_TYPES = {"0", "1", "2"}  # tram, metro, rail
+FERRY_ROUTE_TYPES = {"4"}
+BUS_ROUTE_TYPES = {"3", "11"}  # bus and trolleybus
 
 
 def haversine_miles(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -60,7 +62,9 @@ class StopService:
     lat: float
     lon: float
     route_max_gaps: dict = field(default_factory=dict)  # route_id -> worst peak max-gap (min)
+    bus_routes: set[str] = field(default_factory=set)
     rail: bool = False
+    ferry: bool = False
 
     def hqtc_routes(self) -> list:
         return [r for r, g in self.route_max_gaps.items() if g <= HQTC_MAX_GAP_MIN]
@@ -83,15 +87,39 @@ def _minutes(hms: str) -> int | None:
 
 def _worst_peak_gap(times: list[int]) -> float | None:
     """Worst max-gap across the peak windows; None if any peak window has
-    fewer than 2 trips (can't establish an interval at all)."""
+    fewer than 2 trips (can't establish an interval at all).
+
+    Window-edge gaps count. Otherwise service at 6:15 and every 15 minutes
+    through 8:45 would be mislabeled as continuous 15-minute service across
+    the full 6–9 AM window.
+    """
     worst = 0.0
     for start, end in PEAKS:
         window = sorted(t for t in times if start <= t <= end)
         if len(window) < 2:
             return None
-        gaps = [b - a for a, b in zip(window, window[1:])]
+        gaps = [
+            window[0] - start,
+            *(b - a for a, b in zip(window, window[1:])),
+            end - window[-1],
+        ]
         worst = max(worst, max(gaps))
     return worst
+
+
+def _route_mode(route_type: str) -> str:
+    if route_type in RAIL_ROUTE_TYPES:
+        return "rail"
+    if route_type in FERRY_ROUTE_TYPES:
+        return "ferry"
+    if route_type in BUS_ROUTE_TYPES:
+        return "bus"
+    # GTFS extended route types 700–799 are bus services.
+    try:
+        numeric = int(route_type)
+    except (TypeError, ValueError):
+        return "other"
+    return "bus" if 700 <= numeric <= 799 else "other"
 
 
 def load_feed(gtfs_zip: Path) -> list[StopService]:
@@ -131,8 +159,16 @@ def load_feed(gtfs_zip: Path) -> list[StopService]:
         stop = stops.get(stop_id)
         if not stop:
             continue
-        if route_types.get(route_id) in RAIL_ROUTE_TYPES:
+        mode = _route_mode(route_types.get(route_id, "3"))
+        if mode == "rail":
             stop.rail = True
+            continue
+        if mode == "ferry":
+            stop.ferry = True
+            continue
+        if mode != "bus":
+            continue
+        stop.bus_routes.add(route_id)
         gap = _worst_peak_gap(times)
         if gap is None:
             continue
@@ -143,17 +179,33 @@ def load_feed(gtfs_zip: Path) -> list[StopService]:
 
 
 def _is_major_stop(stop: StopService, all_stops: list[StopService]) -> bool:
-    """PRC § 21064.3: rail/ferry, or an intersection of two or more major
-    bus routes (≤20-min peak service). Nearby stops (a crossing's corner
-    stops) are clustered so an intersection's routes count together."""
+    """PRC § 21064.3 transit-mode and service conditions.
+
+    Rail is independently qualifying. A ferry terminal qualifies only when
+    the same clustered stop is served by bus or rail transit. Bus stops need
+    two major routes with qualifying peak service.
+    """
     if stop.rail:
         return True
+    cluster = [stop]
+    cluster.extend(
+        other
+        for other in all_stops
+        if other.stop_id != stop.stop_id
+        and haversine_miles(
+            stop.lat,
+            stop.lon,
+            other.lat,
+            other.lon,
+        ) <= STOP_CLUSTER_MILES
+    )
+    if stop.ferry and any(
+        member.rail or member.bus_routes for member in cluster
+    ):
+        return True
     routes = set(stop.major_candidate_routes())
-    for other in all_stops:
-        if other.stop_id == stop.stop_id:
-            continue
-        if haversine_miles(stop.lat, stop.lon, other.lat, other.lon) <= STOP_CLUSTER_MILES:
-            routes |= set(other.major_candidate_routes())
+    for other in cluster[1:]:
+        routes |= set(other.major_candidate_routes())
     return len(routes) >= 2
 
 

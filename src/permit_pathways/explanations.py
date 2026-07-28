@@ -16,10 +16,10 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from .screening import Rule
+from .dates import resolve_today
+from .screening import DISPLAY_GROUPS, Rule
 
 SCHEMA_VERSION = 1
-DISPLAY_GROUPS = ("route", "standard", "local_process")
 REVIEW_STATUSES = (
     "prototype_review_pending",
     "human_reviewed",
@@ -31,6 +31,8 @@ TRANSLATION_STATUSES = (
     "jurisdiction_approved",
 )
 _SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
+_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_FINGERPRINT = re.compile(r"^sha256:[0-9a-f]{64}$")
 
 
 @dataclass(frozen=True)
@@ -40,6 +42,7 @@ class Review:
     reviewed_on: str | None
     method: str | None
     reviewed_version: str | None
+    content_fingerprint: str | None
 
 
 @dataclass(frozen=True)
@@ -56,6 +59,7 @@ class HighlightGroup:
 
 @dataclass(frozen=True)
 class LocalizedExplanation:
+    title: str
     summary: str
     next_steps: tuple[str, ...]
     confirm_with_staff: tuple[str, ...]
@@ -65,6 +69,7 @@ class LocalizedExplanation:
     reviewed_on: str | None = None
     method: str | None = None
     reviewed_version: str | None = None
+    content_fingerprint: str | None = None
 
 
 @dataclass(frozen=True)
@@ -130,6 +135,8 @@ def rule_fingerprint(rule: Rule) -> str:
             "required_documents": rule.required_documents,
             "route_class": rule.route_class,
             "rule_id": rule.rule_id,
+            "source_dependencies": rule.source_dependencies,
+            "display_group": rule.display_group,
         },
         ensure_ascii=False,
         separators=(",", ":"),
@@ -138,15 +145,56 @@ def rule_fingerprint(rule: Rule) -> str:
     return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
-def _iso_date(value: Any, field: str, *, optional: bool = False) -> str | None:
+def localized_content_fingerprint(
+    version: str,
+    language: str,
+    localized: LocalizedExplanation,
+) -> str:
+    """Bind a review claim to the exact localized copy that was reviewed."""
+
+    highlights = None
+    if localized.highlights is not None:
+        highlights = {
+            "title": localized.highlights.title,
+            "items": [
+                {"label": item.label, "text": item.text}
+                for item in localized.highlights.items
+            ],
+        }
+    payload = json.dumps(
+        {
+            "confirm_with_staff": list(localized.confirm_with_staff),
+            "highlights": highlights,
+            "language": language,
+            "next_steps": list(localized.next_steps),
+            "summary": localized.summary,
+            "title": localized.title,
+            "version": version,
+        },
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _iso_date(
+    value: Any,
+    field: str,
+    *,
+    today: date,
+    optional: bool = False,
+) -> str | None:
     if value is None and optional:
         return None
-    if not isinstance(value, str):
-        raise ValueError(f"{field}: expected ISO date string")
+    if not isinstance(value, str) or not _DATE.fullmatch(value):
+        raise ValueError(f"{field}: expected YYYY-MM-DD")
     try:
-        date.fromisoformat(value)
+        parsed = date.fromisoformat(value)
     except ValueError as error:
         raise ValueError(f"{field}: invalid ISO date {value!r}") from error
+    if parsed > today:
+        raise ValueError(f"{field}: future dates are not allowed")
     return value
 
 
@@ -204,6 +252,8 @@ def _review(
     rule_id: str,
     version: str,
     updated_on: str,
+    expected_content_fingerprint: str,
+    today: date,
 ) -> Review:
     field = f"{rule_id}.review"
     if not isinstance(record, dict):
@@ -213,16 +263,29 @@ def _review(
         raise ValueError(f"{field}.status: unknown value {status!r}")
     reviewer = _optional_text(record.get("reviewer"), f"{field}.reviewer")
     reviewed_on = _iso_date(
-        record.get("reviewed_on"), f"{field}.reviewed_on", optional=True
+        record.get("reviewed_on"),
+        f"{field}.reviewed_on",
+        today=today,
+        optional=True,
     )
     method = _optional_text(record.get("method"), f"{field}.method")
     reviewed_version = _optional_text(
         record.get("reviewed_version"), f"{field}.reviewed_version"
     )
-    metadata = (reviewer, reviewed_on, method, reviewed_version)
+    content_fingerprint = _optional_text(
+        record.get("content_fingerprint"), f"{field}.content_fingerprint"
+    )
+    metadata = (
+        reviewer,
+        reviewed_on,
+        method,
+        reviewed_version,
+        content_fingerprint,
+    )
     if status == "prototype_review_pending" and any(metadata):
         raise ValueError(f"{field}: pending review cannot claim reviewer metadata")
-    if status != "prototype_review_pending" and not all(metadata):
+    core_metadata = (reviewer, reviewed_on, method, reviewed_version)
+    if status != "prototype_review_pending" and not all(core_metadata):
         raise ValueError(
             f"{field}: completed review requires reviewer, date, method, "
             f"and reviewed_version"
@@ -236,7 +299,24 @@ def _review(
             raise ValueError(
                 f"{field}: review date predates the explanation update date"
             )
-    return Review(status, reviewer, reviewed_on, method, reviewed_version)
+        if content_fingerprint is None:
+            raise ValueError(
+                f"{field}: completed review requires content_fingerprint"
+            )
+        if not _FINGERPRINT.fullmatch(content_fingerprint):
+            raise ValueError(f"{field}.content_fingerprint: invalid SHA-256")
+        if content_fingerprint != expected_content_fingerprint:
+            raise ValueError(
+                f"{field}: content_fingerprint does not match English copy"
+            )
+    return Review(
+        status,
+        reviewer,
+        reviewed_on,
+        method,
+        reviewed_version,
+        content_fingerprint,
+    )
 
 
 def _localized(
@@ -245,6 +325,7 @@ def _localized(
     language: str,
     version: str,
     updated_on: str,
+    today: date,
 ) -> LocalizedExplanation:
     field = f"{rule_id}.{language}"
     if not isinstance(record, dict):
@@ -254,6 +335,23 @@ def _localized(
     reviewed_on = None
     method = None
     reviewed_version = None
+    content_fingerprint = None
+
+    title = _required_text(record.get("title"), f"{field}.title")
+    summary = _required_text(record.get("summary"), f"{field}.summary")
+    next_steps = _text_list(record.get("next_steps"), f"{field}.next_steps")
+    confirm_with_staff = _text_list(
+        record.get("confirm_with_staff"), f"{field}.confirm_with_staff"
+    )
+    highlights = _highlights(record.get("highlights"), f"{field}.highlights")
+    localized = LocalizedExplanation(
+        title=title,
+        summary=summary,
+        next_steps=next_steps,
+        confirm_with_staff=confirm_with_staff,
+        highlights=highlights,
+    )
+
     if language == "es":
         translation_status = _required_text(
             record.get("translation_status"), f"{field}.translation_status"
@@ -265,18 +363,32 @@ def _localized(
             )
         reviewer = _optional_text(record.get("reviewer"), f"{field}.reviewer")
         reviewed_on = _iso_date(
-            record.get("reviewed_on"), f"{field}.reviewed_on", optional=True
+            record.get("reviewed_on"),
+            f"{field}.reviewed_on",
+            today=today,
+            optional=True,
         )
         method = _optional_text(record.get("method"), f"{field}.method")
         reviewed_version = _optional_text(
             record.get("reviewed_version"), f"{field}.reviewed_version"
         )
-        metadata = (reviewer, reviewed_on, method, reviewed_version)
+        content_fingerprint = _optional_text(
+            record.get("content_fingerprint"),
+            f"{field}.content_fingerprint",
+        )
+        metadata = (
+            reviewer,
+            reviewed_on,
+            method,
+            reviewed_version,
+            content_fingerprint,
+        )
         if translation_status == "machine_draft" and any(metadata):
             raise ValueError(
                 f"{field}: machine draft cannot claim translation review metadata"
             )
-        if translation_status != "machine_draft" and not all(metadata):
+        core_metadata = (reviewer, reviewed_on, method, reviewed_version)
+        if translation_status != "machine_draft" and not all(core_metadata):
             raise ValueError(
                 f"{field}: reviewed translation requires reviewer, date, method, "
                 f"and reviewed_version"
@@ -290,18 +402,35 @@ def _localized(
                 raise ValueError(
                     f"{field}: review date predates the explanation update date"
                 )
+            if content_fingerprint is None:
+                raise ValueError(
+                    f"{field}: reviewed translation requires "
+                    "content_fingerprint"
+                )
+            if not _FINGERPRINT.fullmatch(content_fingerprint):
+                raise ValueError(
+                    f"{field}.content_fingerprint: invalid SHA-256"
+                )
+            expected = localized_content_fingerprint(
+                version, language, localized
+            )
+            if content_fingerprint != expected:
+                raise ValueError(
+                    f"{field}: content_fingerprint does not match "
+                    "translated copy"
+                )
     return LocalizedExplanation(
-        summary=_required_text(record.get("summary"), f"{field}.summary"),
-        next_steps=_text_list(record.get("next_steps"), f"{field}.next_steps"),
-        confirm_with_staff=_text_list(
-            record.get("confirm_with_staff"), f"{field}.confirm_with_staff"
-        ),
-        highlights=_highlights(record.get("highlights"), f"{field}.highlights"),
+        title=title,
+        summary=summary,
+        next_steps=next_steps,
+        confirm_with_staff=confirm_with_staff,
+        highlights=highlights,
         translation_status=translation_status,
         reviewer=reviewer,
         reviewed_on=reviewed_on,
         method=method,
         reviewed_version=reviewed_version,
+        content_fingerprint=content_fingerprint,
     )
 
 
@@ -311,6 +440,7 @@ def load_explanations(
     *,
     require_complete: bool = True,
     strict: bool = True,
+    today: date | None = None,
 ) -> dict[str, PlainLanguageExplanation]:
     """Load and validate display copy against the canonical rule set.
 
@@ -320,6 +450,7 @@ def load_explanations(
     copy to English. Neither mode participates in matching.
     """
 
+    as_of = resolve_today(today)
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
@@ -389,6 +520,7 @@ def load_explanations(
             source_verified_on = _iso_date(
                 record.get("source_verified_on"),
                 f"{rule_id}.source_verified_on",
+                today=as_of,
                 optional=True,
             )
             if source_verified_on != rule.citation.verified_on:
@@ -422,6 +554,10 @@ def load_explanations(
                 raise ValueError(
                     f"{rule_id}.display_group: unknown value {display_group!r}"
                 )
+            if display_group != rule.display_group:
+                raise ValueError(
+                    f"{rule_id}.display_group: does not match linked rule"
+                )
             drafted_by = _required_text(
                 record.get("drafted_by"), f"{rule_id}.drafted_by"
             )
@@ -432,22 +568,42 @@ def load_explanations(
                 )
 
             updated_on = _iso_date(
-                record.get("updated_on"), f"{rule_id}.updated_on"
+                record.get("updated_on"),
+                f"{rule_id}.updated_on",
+                today=as_of,
             )
             if source_verified_on and updated_on < source_verified_on:
                 raise ValueError(
                     f"{rule_id}: explanation update date {updated_on!r} "
                     f"predates linked source date {source_verified_on!r}"
                 )
-            review = _review(
-                record.get("review"), rule_id, version, updated_on
-            )
             english = _localized(
-                record.get("en"), rule_id, "en", version, updated_on
+                record.get("en"),
+                rule_id,
+                "en",
+                version,
+                updated_on,
+                as_of,
+            )
+            english_fingerprint = localized_content_fingerprint(
+                version, "en", english
+            )
+            review = _review(
+                record.get("review"),
+                rule_id,
+                version,
+                updated_on,
+                english_fingerprint,
+                as_of,
             )
             try:
                 spanish = _localized(
-                    record.get("es"), rule_id, "es", version, updated_on
+                    record.get("es"),
+                    rule_id,
+                    "es",
+                    version,
+                    updated_on,
+                    as_of,
                 )
             except ValueError:
                 if strict:

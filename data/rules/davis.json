@@ -2,8 +2,12 @@
   {
     "rule_id": "davis-local-adu-process",
     "pathway": "City of Davis — local ADU permit process (Municipal Code § 40.26.450)",
+    "display_group": "local_process",
     "route_class": "ministerial",
     "jurisdiction_scope": "davis",
+    "source_dependencies": [
+      "davis-code-40-26-450"
+    ],
     "criteria": [
       {"field": "project_type", "op": "in", "value": ["adu", "jadu"]}
     ],

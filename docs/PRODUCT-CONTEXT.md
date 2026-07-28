@@ -62,19 +62,19 @@ Status meanings are defined in `AGENTS.md`.
 
 | Capability | Current status | Evidence and boundary |
 |---|---|---|
-| ADU/JADU/SB 9 structured pathway screening | Prototype | Thirteen statewide rules in `data/rules/statewide.json`; deterministic matching in `screening.py`. SB 35 and AB 2011 are not encoded. |
-| Plain-language decision records | Prototype | `data/explanations/plain-language.json` contains a versioned English and Spanish draft for all 15 current statewide/local rule records. Results group routes, standards, and local process records and separate meaning, scannable deadline/threshold highlights where needed, suggested first steps, direct staff questions, and cited evidence. Copy is AI-assisted and review-pending; it has no legal, jurisdiction, comprehension, or semantic-parity review and cannot affect deterministic matching. Source-date, citation-fingerprint, or full-rule-fingerprint drift invalidates display copy; completed reviews must name the reviewed explanation version; and stale/unverified records withhold action copy, interpretive notes, and generic document hints. `tests/test_explanations.py` checks these contracts and selected semantic/jargon boundaries, not overall accuracy or comprehension. |
+| ADU/JADU/SB 9 structured pathway screening | Prototype | Seventeen statewide rules in `data/rules/statewide.json`; deterministic matching in `screening.py`. SB 35 and AB 2011 are not encoded. |
+| Plain-language decision records | Prototype | `data/explanations/plain-language.json` contains a versioned English and Spanish draft for all 19 current statewide/local rule records. Results group routes, standards, and local process records and separate meaning, scannable deadline/threshold highlights where needed, suggested first steps, direct staff questions, and cited evidence. Copy is AI-assisted and review-pending; it has no legal, jurisdiction, comprehension, or semantic-parity review and cannot affect deterministic matching. Source-date, citation-fingerprint, or full-rule-fingerprint drift invalidates display copy; completed reviews must name the reviewed explanation version; and stale/unverified records withhold action copy, interpretive notes, and generic document hints. `tests/test_explanations.py` checks these contracts and selected semantic/jargon boundaries, not overall accuracy or comprehension. |
 | Local jurisdiction records | Prototype | Davis and Woodland records exist. Davis deliberately has no dated source check; neither record is comprehensive local-code coverage. |
 | Application completeness | Planned | Several rules list generic typical documents. There is no parcel-specific requirement manifest, document ingestion, cross-document validation, or detailed remedy engine. |
-| Golden regression harness | Prototype | Nine structured intake-to-expected-rule-ID fixtures. It does not evaluate natural-language answers, citation fidelity, remedies, or supporting passages. |
-| Source currency monitoring | Prototype | Thirteen statewide HCD/statute URLs are hash-watched. The scheduled workflow now preserves the watched command's exit status through `tee`. Local sources are not watched; new statutes are not discovered; changed state is not persisted to the public dashboard. |
-| Source-impact demonstration | Prototype | The CLI can treat citation-matched changed URLs/markers as stale and the browser rehearses a § 66321 change. Most handbook-cited rules do not depend explicitly on their official statute URLs, so a real LegInfo URL change does not yet reproduce the marker simulation. |
+| Golden regression harness | Prototype | 29 structured intake-to-expected-rule-ID fixtures. It does not evaluate natural-language answers, citation fidelity, remedies, or supporting passages. |
+| Source currency monitoring | Prototype | Fifteen HCD, statute, and selected local-source URLs are hash-watched. The scheduled workflow preserves the watched command's exit status through `tee`. The Davis source remains explicitly unwatched and unverified; new statutes are not discovered; changed state is not persisted to the public dashboard. |
+| Source-impact demonstration | Prototype | Rules carry stable source-dependency IDs. The CLI marks every rule linked to an assumed-changed source stale, and the browser rehearses a § 66321 change. The public demo still lacks persisted changed state and a staffed re-verification queue. |
 | Ordinance conformance scanner | Prototype | Presence-based review flags with an HCD-derived regression fixture containing six quoted Santa Clara provisions, one negative control, and one committed San Diego scan. This is not a compliance test or measured statewide accuracy. |
-| Review clocks | Prototype | A single input date drives both the 15-business-day completeness notice and 60-day decision outputs. Cure/completion events, tolling, resubmissions, and local holidays are not modeled, so the two clocks should not be presented as one production determination. |
-| Transit proximity | Prototype | GTFS and statewide high-quality-transit data support screening in a CLI. Service effective dates/exceptions, peak-boundary gaps, planned-facility filtering, multi-operator completeness, walking-network confirmation, and parcel integration require correction before applicant-facing eligibility use. |
+| Review clocks | Prototype | The 15-business-day date is withheld unless an agency closure calendar is supplied. The separate 60-day illustration appears only when the applicant explicitly confirms both a complete-on-receipt application and an existing primary dwelling. Cure/completion events, tolling, resubmissions, and agency closures are not modeled in the public demo, so neither output is a production deadline determination. |
+| Transit proximity | Prototype | GTFS and statewide high-quality-transit data support screening in a CLI. Peak-window edge gaps and ferry-to-bus/rail connections are covered by regression tests. Service effective dates/exceptions, planned-facility filtering, multi-operator completeness, walking-network confirmation, and parcel integration still require correction before applicant-facing eligibility use. |
 | Jurisdiction/HCD-letter registry | Implemented dataset | 541 entries: 483 incorporated cities and 58 counties. The 2020 Census source is supplemented with official Mountain House incorporation evidence; an ongoing incorporation/dissolution refresh is still needed. Statewide baseline availability does not mean local codes are encoded. |
 | Static browser delivery | Implemented surface for prototype data | `index.html` can run directly from disk or over HTTP by loading the generated `data/demo-data.js` artifact. Canonical JSON remains authoritative; `tests/test_static_demo.py` fails when the bundle drifts. |
-| English/Spanish experience | Prototype | Intake, interface controls, and plain-language result explanations have English/Spanish variants. Spanish explanation copy is labeled as an unreviewed machine draft. Pathway titles, rule notes, document hints, source excerpts, and much dashboard content remain English; no semantic-parity review has been completed. |
+| English/Spanish experience | Prototype | Intake, interface controls, applicant-facing result titles, and plain-language result explanations have English/Spanish variants. Spanish explanation copy is labeled as an unreviewed machine draft. Canonical pathway labels, rule notes, document hints, source excerpts, and much dashboard content remain English; no semantic-parity review has been completed. |
 | Accessibility | Prototype | Static/code audit targets WCAG 2.2 AAA. Human screen-reader, keyboard, reflow, forced-colors, and Spanish pronunciation checks remain open. |
 | Free-text grounded Q&A | Planned | Described as an architectural direction; no executable question-answering surface exists. |
 | Scenario B staff workflows | Not targeted in v1 | No live status integration, report/letter drafting, plan check, or comment-resolution workflow exists. |
@@ -88,11 +88,11 @@ approved the interpretation.
 
 These are implementation defects or evidence gaps, not general roadmap ideas:
 
-1. **Real change propagation is incomplete.** The watcher emits changed source
-   URLs, but rule impact relies on substring matching against display
-   citations. A changed official statute URL may leave handbook-cited rules
-   current even when the browser's manually injected section marker makes them
-   stale.
+1. **Source discovery remains incomplete.** Watched sources and rules use
+   stable IDs with explicit dependency edges, and a changed or unreachable
+   source invalidates every directly dependent rule. The registry still covers
+   only selected known sources; it does not discover newly enacted law or new
+   local materials.
 2. **Live watcher state is not persisted into applicant results.** The browser
    rehearsal rerenders matching cards and withholds their actions when the
    simulated dependency changes, and both demos apply the 180-day age window.
@@ -103,13 +103,15 @@ These are implementation defects or evidence gaps, not general roadmap ideas:
    completed review claims require reviewer, method, date, and reviewed
    version. Source bytes/version, verification method, rule-author review, and
    jurisdiction approval are not yet jointly required or independently signed.
-4. **Clock events are conflated.** Initial receipt and receipt of a completed
-   or cured application need separate event dates before a 60-day deadline is
-   shown.
+4. **Clock event modeling remains bounded.** The public tool withholds the
+   15-business-day date without an agency closure calendar and shows the
+   60-day illustration only after explicit applicability assertions. It still
+   lacks separate cure/resubmission events, applicant-requested delay, and
+   other tolling facts needed for a production deadline determination.
 5. **Transit can overstate certainty.** Planned statewide stops, incomplete
-   feeds, service calendars/exceptions, peak-window coverage, and walking
-   distance can change the result. Return `unknown` unless data completeness
-   supports a narrower conclusion.
+   or single-operator feeds, service-calendar exceptions, and unverified
+   walking distance can change the result. Return `unknown` unless data
+   completeness supports a narrower conclusion.
 6. **Local records are not applicant-ready layers.** Davis is intentionally
    unverified; Woodland cites an adoption/CEQA record rather than a complete
    operative ordinance and sourced checklist.
@@ -167,7 +169,7 @@ conflicting.
 |---|---|---|---|
 | P0 | Make every public claim traceable to a capability status and artifact | Trust is the product; overclaiming destroys the differentiation. | Review README, demo, design, and live UI against the capability table on every release. |
 | P0 | Pilot ADU permit-readiness packet | Directly proves Scenario A completeness and remedies instead of showing generic document hints. | Compare results on a small set of public, synthetic, or redacted packets with staff-authored completeness notices. |
-| P0 | Evidence manifest and durable source-dependency graph | Turns the strongest demo simulation into operational assurance. | Replay a historical or simulated source revision and verify the exact affected/unaffected rules, cases, and packet fields. |
+| P0 | Evidence manifest and durable source-state propagation | Turns the strongest demo simulation into operational assurance. | Replay a historical or simulated source revision and verify the exact affected/unaffected rules, cases, and packet fields across persisted outputs. |
 | P0 | Verification levels and evaluator provenance | Makes “verified” meaningful to staff and counsel. | Add machine-linked, human-reviewed, and jurisdiction-approved states to one pilot rule set and test status transitions. |
 | P1 | Parcel fact retrieval for one jurisdiction | Replaces high-risk self-attestation for zoning, hazards, historic status, and transit with sourced facts. | Run a known parcel set and have staff review disagreements and unknowns. |
 | P1 | Local-rule authoring and re-verification workbench | Gives lower-capacity jurisdictions a maintainable way to adopt the layer. | Have a reviewer approve/reject AI-proposed rules beside exact source passages; measure time and disagreement. |

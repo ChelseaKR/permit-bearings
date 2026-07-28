@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
+from ..dates import resolve_today
 from ..screening import Rule, load_rules, screen
 
 DEFAULT_MAX_AGE_DAYS = 180  # roughly one legislative cycle between re-checks
@@ -59,27 +60,38 @@ def load_golden(path: Path) -> list[GoldenCase]:
 def verify_rules(
     rules_path: Path,
     golden_path: Path,
-    today: date,
+    today: date | None = None,
     max_age_days: int = DEFAULT_MAX_AGE_DAYS,
+    changed_source_ids: list[str] | None = None,
+    *,
     changed_sources: list[str] | None = None,
 ) -> VerificationReport:
-    """`changed_sources` marks sources known (or simulated) to have changed
-    since rules were last verified — e.g. a code section renumbered by new
-    legislation. Any rule citing a matching source is stale regardless of
-    its verification date: verification against superseded text is no
-    verification at all."""
-    rules = load_rules(rules_path)
+    """Mark exact source dependencies stale after a source changes.
+
+    ``changed_sources`` remains as a keyword-only compatibility alias; its
+    values are stable source IDs, never citation substrings.
+    """
+    if changed_source_ids is not None and changed_sources is not None:
+        raise ValueError(
+            "pass changed_source_ids or changed_sources, not both"
+        )
+    as_of = resolve_today(today)
+    rules = load_rules(rules_path, today=as_of)
     golden = load_golden(golden_path)
-    report = VerificationReport(checked_on=today.isoformat())
-    changed = changed_sources or []
+    report = VerificationReport(checked_on=as_of.isoformat())
+    changed = set(
+        changed_source_ids
+        if changed_source_ids is not None
+        else (changed_sources or [])
+    )
 
     for rule in rules:
         cite = rule.citation
-        if any(marker in cite.source or marker in cite.url for marker in changed):
+        if changed.intersection(rule.source_dependencies):
             report.stale.append(rule.rule_id)
         elif not cite.is_verified:
             report.unverified.append(rule.rule_id)
-        elif cite.is_stale(max_age_days, today):
+        elif cite.is_stale(max_age_days, as_of):
             report.stale.append(rule.rule_id)
         else:
             report.verified.append(rule.rule_id)

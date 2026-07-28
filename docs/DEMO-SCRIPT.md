@@ -49,7 +49,9 @@ run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
   confident answer.
 - Switch the intake/results to Spanish. Be explicit that Spanish
   plain-language copy is an unreviewed machine draft with no semantic-parity
-  review; pathway titles, source excerpts, and document hints remain English.
+  review. Applicant-facing result titles are localized drafts; canonical
+  pathway labels, source excerpts, citations, and document hints remain
+  English.
 - Show the separate clock prototype and name its single-date assumption.
 - The trust moment: select an SB 9 fact combination with no matching encoded
   rule → the system abstains and routes to staff. "No match means insufficient
@@ -64,13 +66,13 @@ run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
 - Watched sources table: content hashes of the March 2026 ADU Handbook and
   April 2026 SB 9 fact sheet; weekly automated re-fetch (show the GitHub
   Action) reports when either changes or becomes unreachable.
-- One click: rehearse an amendment to § 66321. Three dependent rules flip
+- One click: rehearse an amendment to § 66321. Five dependent rules flip
   stale; matching result cards rerender and withhold their drafted actions,
-  while unrelated records remain unchanged. Label this as a simulation;
-  stable dependency IDs and a persisted review queue are the next
-  implementation step. "This is what the morning after the legislative
+  while unrelated records remain unchanged. Label this as a simulation.
+  Stable dependency IDs are implemented; persisted changed state and a staffed
+  review queue are not. "This is what the morning after the legislative
   session should look like."
-- Nine structured golden scenarios replay in the browser. They prove matcher
+- 29 structured golden scenarios replay in the browser. They prove matcher
   regression behavior, not natural-language accuracy or jurisdiction
   acceptance.
 
@@ -86,10 +88,11 @@ run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
   schedule are versioned evidence."
 
 ### 4. Fit and posture (3 min)
-- Jurisdiction owns everything: rules, corpus, golden set — plain JSON,
-  exportable, no lock-in. The demo persists no applicant data; production
-  retention, CPRA export, and security controls remain deployment work.
-  Decision support, not a legal agent, is stated on every page.
+- Rules, sources, and the golden set are portable files a deploying
+  jurisdiction can export and own. The demo persists no applicant data;
+  production retention, CPRA export, privacy review, and security controls
+  remain deployment work. Decision support, not a legal agent, is stated on
+  every page.
 - Built for low-capacity jurisdictions: static-friendly, runs beside existing
   permitting systems, no rip-and-replace.
 - Teaming: this verification layer composes with full-pipeline platforms —
@@ -111,9 +114,11 @@ run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
   page-evidenced document extraction and cited remedy drafting, with human
   approval and model-independent regression fixtures.
 - "Solo vendor risk?" → Working public code, dated history, CI, and a design
-  where the jurisdiction owns everything — the bus factor is mitigated by
-  exportability, not headcount. Open to teaming.
-- "Accuracy of the rule base?" → Every rule links its quoted source excerpt;
-  the current `verified_on` field records dated source evidence, not
-  jurisdiction or counsel approval. Encoding was machine-assisted; a named
-  human review level and held-out evaluation are next.
+  based on portable, exportable artifacts. That reduces lock-in but does not
+  remove key-person risk. Open to teaming.
+- "Accuracy of the rule base?" → Each rule with dated evidence links a source
+  and supporting excerpt; the Davis pilot record remains explicitly
+  unverified because its source could not be retrieved. The current
+  `verified_on` field records dated source evidence, not jurisdiction or
+  counsel approval. Encoding was machine-assisted; a named human review level
+  and held-out evaluation are next.

@@ -35,8 +35,8 @@
    "(?:not|shall not|may not)\\s+exceed\\s+(?:sixteen|16)\\s*(?:\\(16\\)\\s*)?feet",
    "maximum\\s+height\\s+of\\s+(?:sixteen|16)\\b"
   ],
-  "state_law": "Gov. Code \u00a7 66321(b)(4): 16 ft is only the base for detached ADUs; 18 ft applies near a major transit stop / high-quality transit corridor or on multistory-multifamily lots (+2 ft roof pitch), and attached ADUs must be allowed up to 25 ft.",
-  "explanation": "A blanket 16-foot cap omits the mandatory 18/20/25-foot allowances.",
+  "state_law": "Gov. Code \u00a7 66321(b)(4): 16 ft is the base for detached ADUs. A detached ADU must be allowed 18 ft near a qualifying major transit stop / high-quality transit corridor; that transit branch also allows 2 additional ft for an aligned roof pitch. A separate 18-ft branch applies on a lot with an existing or proposed multistory multifamily dwelling. Attached ADUs must be allowed up to 25 ft or the primary-dwelling zoning limit, whichever is lower.",
+  "explanation": "A blanket 16-foot cap may omit a mandatory 18-foot branch, the transit-specific 2-foot roof-pitch addition, or the attached-ADU allowance. The multistory-multifamily branch does not carry the roof-pitch addition unless the transit condition also applies.",
   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 6 (Height).",
   "context_patterns": [
    "accessory\\s+dwelling|\\badus?\\b|\\bjadu"
@@ -44,14 +44,14 @@
  },
  {
   "check_id": "unit-count-undercount",
-  "title": "Allows fewer ADUs/JADUs than state law guarantees",
+  "title": "Possible ADU/JADU unit-count undercount",
   "severity": "review",
   "patterns": [
    "only\\s+one\\s+(?:accessory\\s+dwelling\\s+unit|adu)",
-   "no\\s+more\\s+than\\s+(?:one|two)\\s+(?:detached\\s+)?(?:accessory\\s+dwelling\\s+units?|adus?)"
+   "no\\s+more\\s+than\\s+one\\s+(?:detached\\s+)?(?:accessory\\s+dwelling\\s+units?|adus?)"
   ],
-  "state_law": "Gov. Code \u00a7 66323(a): on a single-family lot, a converted ADU, a detached new-construction ADU, and a JADU may be combined; on multifamily lots, up to eight detached ADUs (not exceeding existing unit count) plus conversion ADUs up to 25% of existing units.",
-  "explanation": "\"Only one ADU per lot\" or \"no more than two detached ADUs\" style limits conflict with the \u00a7 66323 guaranteed combinations.",
+  "state_law": "Gov. Code \u00a7 66323(a): specified ADU/JADU combinations are protected on single-family lots. Existing multifamily lots may receive up to eight detached ADUs, not exceeding the existing unit count, plus conversion ADUs. Proposed multifamily lots are limited to no more than two detached ADUs.",
+  "explanation": "Review an apparent one-ADU cap to determine whether it is an unlawful overall lot cap or a lawful limit on one specific approval branch. This screen deliberately does not flag a two-detached-ADU cap by itself because that exact cap is lawful for a proposed multifamily dwelling under \u00a7 66323(a)(4)(A)(iii).",
   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 3 (Unit Allowance).",
   "context_patterns": [
    "accessory\\s+dwelling|\\badus?\\b|\\bjadu"
@@ -65,8 +65,8 @@
    "(?:maximum|not\\s+(?:to\\s+)?exceed(?:ing)?)[^.]{0,60}?(?:1,?200|1,?000|850|800|750|700|640|600)\\s*square\\s+feet",
    "cumulative\\s+square\\s+footage[^.]{0,80}(?:not|shall\\s+not)\\s+exceed"
   ],
-  "state_law": "Gov. Code \u00a7 66321(b)(2): local maximums must allow at least 850 sq ft (1,000 sq ft for 2+ bedrooms) of interior livable space; \u00a7 66323(a)(1): conversions of existing space are not subject to size limits at all.",
-  "explanation": "Size caps are lawful only above the state minimums and cannot reach \u00a7 66323(a)(1) conversions; cumulative caps across units are a common conflict.",
+  "state_law": "Gov. Code \u00a7 66321(b)(2): a local maximum must still allow 850 sq ft of interior livable space, or 1,000 sq ft for an ADU with more than one bedroom. These figures protect what local maximums must allow; they are not required minimum unit sizes. Qualifying \u00a7 66323(a)(1) conversions are not subject to unit-size limits.",
+  "explanation": "Review whether the cap leaves the applicable protected size available and whether it improperly reaches a qualifying conversion. A number at or above a protected allowance is not a conflict by itself; scope and ADU type matter.",
   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 7 (Size Maximums); HCD letter to City of Fort Bragg, Feb. 19, 2025 (overly restrictive ADU size limits).",
   "context_patterns": [
    "accessory\\s+dwelling|\\badus?\\b|\\bjadu"
@@ -82,10 +82,10 @@
    "harmon(?:y|ious)",
    "high[\\s-]quality\\s+materials",
    "character\\s+of\\s+the\\s+neighborhood",
-   "\\bprivacy\\b"
+   "(?:(?:adequate|reasonable|compatible)\\s+privacy|privacy\\s+(?:of|for)\\s+(?:adjacent|neighboring)|(?:ensure|protect|preserve|maintain)\\s+(?:the\\s+)?privacy)"
   ],
   "state_law": "Gov. Code \u00a7\u00a7 66314(b)(1), 66313(i): only objective standards \u2014 uniformly verifiable by an external benchmark knowable before submittal \u2014 may be imposed on ADUs.",
-  "explanation": "Words like \"compatible,\" \"harmony,\" \"similar styled,\" or \"privacy\" require judgment and are not objective standards.",
+  "explanation": "Qualitative terms such as \"compatible,\" \"harmony,\" or \"similar styled\" may require subjective judgment. Privacy-related standards are not automatically subjective: staff should check whether the provision supplies a measurable external benchmark, such as a stated window location or distance.",
   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 8 (Subjective Standard: \"similar styled roof design\").",
   "context_patterns": [
    "accessory\\s+dwelling|\\badus?\\b|\\bjadu"

@@ -4,7 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from permit_pathways.transit import determine, haversine_miles, load_feed
+from permit_pathways.transit import (
+    StopService,
+    _worst_peak_gap,
+    determine,
+    haversine_miles,
+    load_feed,
+)
 
 # Synthetic feed: stop S1 served by route A every 10 min in both peaks
 # (HQTC-quality) and route B every 30 min; stop S2 nearby (same corner)
@@ -28,9 +34,9 @@ FILES = {
         "WK,1,1,1,1,1,0,0,20260101,20261231\n"
     ),
     "trips.txt": "route_id,service_id,trip_id,direction_id\n" + "".join(
-        [f"A,WK,A{i},0\n" for i in range(40)]
-        + [f"B,WK,B{i},0\n" for i in range(10)]
-        + [f"C,WK,C{i},0\n" for i in range(20)]
+        [f"A,WK,A{i},0\n" for i in range(38)]
+        + [f"B,WK,B{i},0\n" for i in range(14)]
+        + [f"C,WK,C{i},0\n" for i in range(26)]
         + ["B,WK,BFAR,0\n"]
     ),
     "stop_times.txt": "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n"
@@ -42,14 +48,14 @@ FILES = {
            f"{16 + (i * 10) // 60:02d}:{(i * 10) % 60:02d}:00,S1,1\n" for i in range(19)]
         # Route B at S1: every 30 min in both peaks
         + [f"B{i},{6 + (i * 30) // 60:02d}:{(i * 30) % 60:02d}:00,"
-           f"{6 + (i * 30) // 60:02d}:{(i * 30) % 60:02d}:00,S1,1\n" for i in range(5)]
-        + [f"B{5 + i},{16 + (i * 30) // 60:02d}:{(i * 30) % 60:02d}:00,"
-           f"{16 + (i * 30) // 60:02d}:{(i * 30) % 60:02d}:00,S1,1\n" for i in range(4)]
+           f"{6 + (i * 30) // 60:02d}:{(i * 30) % 60:02d}:00,S1,1\n" for i in range(7)]
+        + [f"B{7 + i},{16 + (i * 30) // 60:02d}:{(i * 30) % 60:02d}:00,"
+           f"{16 + (i * 30) // 60:02d}:{(i * 30) % 60:02d}:00,S1,1\n" for i in range(7)]
         # Route C at S2: every 15 min in both peaks
         + [f"C{i},{6 + (i * 15) // 60:02d}:{(i * 15) % 60:02d}:00,"
-           f"{6 + (i * 15) // 60:02d}:{(i * 15) % 60:02d}:00,S2,1\n" for i in range(10)]
-        + [f"C{10 + i},{16 + (i * 15) // 60:02d}:{(i * 15) % 60:02d}:00,"
-           f"{16 + (i * 15) // 60:02d}:{(i * 15) % 60:02d}:00,S2,1\n" for i in range(10)]
+           f"{6 + (i * 15) // 60:02d}:{(i * 15) % 60:02d}:00,S2,1\n" for i in range(13)]
+        + [f"C{13 + i},{16 + (i * 15) // 60:02d}:{(i * 15) % 60:02d}:00,"
+           f"{16 + (i * 15) // 60:02d}:{(i * 15) % 60:02d}:00,S2,1\n" for i in range(13)]
         # FAR: one bus all day
         + ["BFAR,07:00:00,07:00:00,FAR,1\n"]
     ),
@@ -93,6 +99,36 @@ def test_remote_point_has_no_candidate_in_supplied_data(stops):
 def test_haversine_sanity():
     # Davis to Sacramento is roughly 11 miles.
     assert 9 < haversine_miles(38.5449, -121.7405, 38.5816, -121.4944) < 14
+
+
+def test_peak_window_edges_count_toward_the_worst_gap():
+    # Each peak has two trips 15 minutes apart near its end. Consecutive-trip
+    # math alone says 15 minutes; the uncovered window edge is 150 minutes.
+    assert _worst_peak_gap([510, 525, 1110, 1125]) == 150
+
+
+def test_ferry_requires_connecting_bus_or_rail_service():
+    ferry = StopService(
+        stop_id="F",
+        name="Ferry terminal",
+        lat=38.545,
+        lon=-121.740,
+        ferry=True,
+    )
+    unconnected = determine(38.545, -121.740, [ferry])
+    assert unconnected.parking_exemption == "candidate"
+    assert unconnected.height_18ft == "no"
+
+    connecting_bus = StopService(
+        stop_id="B",
+        name="Connecting bus",
+        lat=38.5451,
+        lon=-121.740,
+        bus_routes={"connector"},
+    )
+    connected = determine(38.545, -121.740, [ferry, connecting_bus])
+    assert connected.height_18ft == "candidate"
+    assert "major transit stop" in connected.qualifying_stops[0][2]
 
 
 def test_hq_dataset_supplies_missing_rail_major_stop(stops):

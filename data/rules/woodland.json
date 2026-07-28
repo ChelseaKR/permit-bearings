@@ -1,9 +1,13 @@
 [
   {
     "rule_id": "woodland-adu-ordinance-2026",
-    "pathway": "City of Woodland — ADU ordinance conformed to state law (Feb 2026)",
+    "pathway": "City of Woodland — ADU ordinance update adopted (Feb 2026)",
+    "display_group": "local_process",
     "route_class": "ministerial",
     "jurisdiction_scope": "woodland",
+    "source_dependencies": [
+      "woodland-ceqa-2026020683"
+    ],
     "criteria": [
       {"field": "project_type", "op": "in", "value": ["adu", "jadu"]}
     ],
@@ -11,11 +15,9 @@
       "source": "CEQA Notice of Exemption, City of Woodland ADU Ordinance Amendments (SCH 2026020683), posted 2026-02-19",
       "url": "https://ceqanet.lci.ca.gov/2026020683",
       "excerpt": "On February 17, 2026, the Woodland City Council adopted an ordinance amending Section 17.84.030, Accessory Dwelling Units, of the City Zoning Ordinance in the Woodland Municipal Code to update regulations for accessory dwelling units (ADUs) and junior accessory dwelling units (JADUs) to conform with state law.",
-      "verified_on": "2026-07-27"
+      "verified_on": "2026-07-28"
     },
-    "required_documents": [
-      "City of Woodland ADU application per Municipal Code § 17.84.030"
-    ],
-    "notes": "Woodland's ADU regulations were updated February 17, 2026 specifically to conform with current state law — a comparable-jurisdiction precedent (Scenario C): staff in other cities can check their own ordinance's currency against this update. Statutory CEQA exemption under 14 CCR § 15282(h)."
+    "required_documents": [],
+    "notes": "The cited CEQA notice records Woodland's February 17, 2026 adoption of ADU and JADU amendments and describes their purpose as updating local regulations to conform with state law. The notice does not contain the operative ordinance requirements, establish that the amended ordinance conforms with state law, or provide a current application checklist. Review the current text of Municipal Code § 17.84.030 and current city application materials. The notice invokes the statutory CEQA exemption under 14 CCR § 15282(h)."
   }
 ]

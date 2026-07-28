@@ -1,115 +1,206 @@
-"""Statutory review-clock calculator.
+"""Conservative statutory review-clock calculations.
 
-Computes the deadlines State ADU Law and SB 9 impose on permitting
-agencies, so an applicant (or staff) can see exactly where an application
-stands. Encodes:
+Gov. Code §§ 66317(a)(2) and 66335(a)(2) use a 15-business-day
+completeness-notice period. The relevant agency calendar controls which
+weekdays are full-day closures. A statewide holiday approximation is not an
+agency calendar, so this module returns an explicit unknown state unless a
+deployment supplies that calendar.
 
-- Gov. Code § 66317(a)(2)(A): written completeness determination within
-  15 BUSINESS days of receipt (ADU/JADU).
-- Gov. Code § 66317(a)(2)(F): the application is DEEMED COMPLETE if no
-  timely written determination is made.
-- Gov. Code §§ 66317(a)(3), 66335(a)(3): approve or deny within 60
-  CALENDAR days of a complete application (existing SF/MF dwelling on
-  the lot); same 60-day clock for SB 9 (§§ 65852.21, 66411.7 per the
-  April 2026 HCD fact sheet).
-
-Business days exclude weekends and California state holidays (Gov. Code
-§ 6700 list, as observed by state offices: Saturday holidays shift to
-Friday, Sunday holidays to Monday). Jurisdictions may observe additional
-local holidays — a deployment should confirm the local calendar; the
-state list is the floor.
-
-The current `adu_clocks` helper models the bounded case in which the
-application is complete on initial receipt. It does not model an incompleteness
-notice, cure/resubmittal date, applicant delay, or tolling; production output
-must collect those events separately.
+The 60-calendar-day ADU decision clock is separately conditioned on a
+complete application and an existing qualifying dwelling. The helper never
+silently treats the receipt date as the completion date.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, timedelta
+from typing import Literal
 
-COMPLETENESS_BUSINESS_DAYS = 15   # § 66317(a)(2)(A)
-DECISION_CALENDAR_DAYS = 60       # §§ 66317(a)(3), 66335(a)(3); SB 9
-
-
-def _nth_weekday(year: int, month: int, weekday: int, n: int) -> date:
-    d = date(year, month, 1)
-    offset = (weekday - d.weekday()) % 7
-    return d + timedelta(days=offset + 7 * (n - 1))
+COMPLETENESS_BUSINESS_DAYS = 15
+DECISION_CALENDAR_DAYS = 60
 
 
-def _last_weekday(year: int, month: int, weekday: int) -> date:
-    d = date(year + (month == 12), (month % 12) + 1, 1) - timedelta(days=1)
-    return d - timedelta(days=(d.weekday() - weekday) % 7)
+@dataclass(frozen=True)
+class CalendarDeadline:
+    """A deadline with an explicit exact-or-unknown evidence state."""
+
+    status: Literal["unknown", "exact"]
+    date: date | None
+    reason: str
+
+    def __post_init__(self) -> None:
+        if self.status not in ("unknown", "exact"):
+            raise ValueError(f"unknown deadline status {self.status!r}")
+        if self.status == "exact" and self.date is None:
+            raise ValueError("exact deadline requires a date")
+        if self.status == "unknown" and self.date is not None:
+            raise ValueError("unknown deadline cannot carry a date")
+        if not self.reason.strip():
+            raise ValueError("deadline reason cannot be blank")
 
 
-def _observed(d: date) -> date:
-    if d.weekday() == 5:            # Saturday -> Friday
-        return d - timedelta(days=1)
-    if d.weekday() == 6:            # Sunday -> Monday
-        return d + timedelta(days=1)
-    return d
+def add_business_days(
+    start: date,
+    days: int,
+    agency_closures: set[date],
+) -> date:
+    """Add weekdays using an explicitly supplied agency closure calendar."""
 
-
-def ca_holidays(year: int) -> set[date]:
-    """California state holidays per Gov. Code § 6700 as observed by state
-    offices (including the day after Thanksgiving)."""
-    thanksgiving = _nth_weekday(year, 11, 3, 4)
-    fixed = [date(year, 1, 1), date(year, 3, 31), date(year, 7, 4),
-             date(year, 11, 11), date(year, 12, 25)]
-    floating = [
-        _nth_weekday(year, 1, 0, 3),   # Martin Luther King Jr. Day
-        _nth_weekday(year, 2, 0, 3),   # Presidents' Day
-        _last_weekday(year, 5, 0),     # Memorial Day
-        _nth_weekday(year, 9, 0, 1),   # Labor Day
-        thanksgiving,
-        thanksgiving + timedelta(days=1),  # day after Thanksgiving
-    ]
-    return {_observed(d) for d in fixed} | set(floating)
-
-
-def add_business_days(start: date, days: int,
-                      holidays: set[date] | None = None) -> date:
-    if holidays is None:
-        holidays = ca_holidays(start.year) | ca_holidays(start.year + 1)
+    if days < 0:
+        raise ValueError("days must be non-negative")
+    if not isinstance(agency_closures, set) or any(
+        not isinstance(closure, date) for closure in agency_closures
+    ):
+        raise ValueError("agency_closures must be a set of dates")
     current = start
     remaining = days
-    while remaining > 0:
+    while remaining:
         current += timedelta(days=1)
-        if current.weekday() < 5 and current not in holidays:
+        if current.weekday() < 5 and current not in agency_closures:
             remaining -= 1
     return current
+
+
+def completeness_deadline(
+    received: date,
+    agency_closures: set[date] | None = None,
+) -> CalendarDeadline:
+    """Return an exact deadline only with the relevant agency calendar."""
+
+    if agency_closures is None:
+        return CalendarDeadline(
+            status="unknown",
+            date=None,
+            reason=(
+                "Exact date requires the permitting agency's full-day "
+                "closure calendar."
+            ),
+        )
+    return CalendarDeadline(
+        status="exact",
+        date=add_business_days(
+            received,
+            COMPLETENESS_BUSINESS_DAYS,
+            agency_closures,
+        ),
+        reason=(
+            "Calculated from weekends and the supplied agency full-day "
+            "closure calendar."
+        ),
+    )
 
 
 @dataclass(frozen=True)
 class ClockStatus:
     received: date
-    completeness_deadline: date       # written determination due
-    deemed_complete_if_silent: date   # day after deadline passes with no notice
-    decision_deadline_if_complete: date
+    completeness_notice: CalendarDeadline
+    deemed_complete_if_silent: CalendarDeadline
+    decision_if_complete: CalendarDeadline
+
+    @property
+    def completeness_deadline(self) -> CalendarDeadline:
+        """Compatibility name with an explicit deadline state."""
+
+        return self.completeness_notice
+
+    @property
+    def decision_deadline_if_complete(self) -> CalendarDeadline:
+        """Compatibility name with an explicit deadline state."""
+
+        return self.decision_if_complete
 
     def summary(self) -> str:
-        return "\n".join([
-            f"Application received:            {self.received.isoformat()}",
-            f"Completeness notice due by:      {self.completeness_deadline.isoformat()}"
-            "  (Gov. Code § 66317(a)(2)(A), 15 business days)",
-            f"Deemed complete if no notice by: {self.deemed_complete_if_silent.isoformat()}"
-            "  (Gov. Code § 66317(a)(2)(F))",
-            f"Decision due (assuming complete on receipt): "
-            f"{self.decision_deadline_if_complete.isoformat()}"
-            "  (Gov. Code § 66317(a)(3), 60 days)",
-        ])
+        def line(label: str, deadline: CalendarDeadline) -> str:
+            value = (
+                deadline.date.isoformat()
+                if deadline.status == "exact"
+                else "unknown"
+            )
+            return f"{label}: {value} — {deadline.reason}"
+
+        return "\n".join(
+            [
+                f"Application received: {self.received.isoformat()}",
+                line("Completeness notice deadline", self.completeness_notice),
+                line(
+                    "Deemed complete if no timely notice",
+                    self.deemed_complete_if_silent,
+                ),
+                line(
+                    "60-day decision deadline",
+                    self.decision_if_complete,
+                ),
+            ]
+        )
 
 
-def adu_clocks(received: date) -> ClockStatus:
-    """Illustrate both deadlines assuming the application is complete on
-    initial receipt. Correction cycles require a separate completion event."""
-    completeness = add_business_days(received, COMPLETENESS_BUSINESS_DAYS)
+def adu_clocks(
+    received: date,
+    agency_closures: set[date] | None = None,
+    *,
+    complete_on_receipt: bool = False,
+    existing_dwelling: bool = False,
+) -> ClockStatus:
+    """Calculate only deadlines supported by supplied project facts.
+
+    ``complete_on_receipt`` must be explicitly true before the receipt date
+    is used as the complete-application date. A correction or resubmittal
+    workflow needs its recorded completion event and should calculate
+    ``complete_date + 60 days`` directly.
+    """
+
+    completeness = completeness_deadline(received, agency_closures)
+    if completeness.status == "exact":
+        deemed = CalendarDeadline(
+            status="exact",
+            date=completeness.date + timedelta(days=1),
+            reason=(
+                "The application is deemed complete after the timely-notice "
+                "deadline passes without a notice."
+            ),
+        )
+    else:
+        deemed = CalendarDeadline(
+            status="unknown",
+            date=None,
+            reason=(
+                "This date cannot be shown until the completeness-notice "
+                "deadline is known."
+            ),
+        )
+
+    if not complete_on_receipt:
+        decision = CalendarDeadline(
+            status="unknown",
+            date=None,
+            reason=(
+                "A recorded complete-application date is required before "
+                "the 60-day clock can be calculated."
+            ),
+        )
+    elif not existing_dwelling:
+        decision = CalendarDeadline(
+            status="unknown",
+            date=None,
+            reason=(
+                "The encoded 60-day ADU clock applies only when an existing "
+                "single-family or multifamily dwelling is on the lot."
+            ),
+        )
+    else:
+        decision = CalendarDeadline(
+            status="exact",
+            date=received + timedelta(days=DECISION_CALENDAR_DAYS),
+            reason=(
+                "Calculated from the asserted complete-on-receipt date and "
+                "existing-dwelling condition."
+            ),
+        )
+
     return ClockStatus(
         received=received,
-        completeness_deadline=completeness,
-        deemed_complete_if_silent=completeness + timedelta(days=1),
-        decision_deadline_if_complete=received + timedelta(days=DECISION_CALENDAR_DAYS),
+        completeness_notice=completeness,
+        deemed_complete_if_silent=deemed,
+        decision_if_complete=decision,
     )

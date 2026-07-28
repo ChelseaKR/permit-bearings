@@ -46,8 +46,15 @@ class Coverage:
 
 def _local_layer_slugs(rules_dir: Path) -> set:
     slugs = set()
-    for path in rules_dir.glob("*.json"):
-        for rule in json.loads(path.read_text()):
+    for path in sorted(rules_dir.glob("*.json")):
+        if path.name == "index.json":
+            continue
+        payload = json.loads(path.read_text())
+        if not isinstance(payload, list):
+            raise ValueError(f"{path}: expected a list of rules")
+        for rule in payload:
+            if not isinstance(rule, dict):
+                raise ValueError(f"{path}: expected rule objects")
             scope = rule.get("jurisdiction_scope", "statewide")
             if scope != "statewide":
                 slugs.add(scope)

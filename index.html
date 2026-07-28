@@ -24,6 +24,7 @@
   --surface: #fcfcfb; --page: #f9f9f7;
   --ink: #0b0b0b; --ink-2: #52514e; --muted: #565550;
   --grid: #e1e0d9; --border: rgba(11,11,11,0.10);
+  --control-border: #706f69;
   --accent: var(--primary-900);
   --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
   --good-text: #005700; --bad-text: #8b1a1a; --warn-text: var(--accent2-900);
@@ -35,6 +36,7 @@
     --surface: #1a1a19; --page: #0d0d0d;
     --ink: #ffffff; --ink-2: #c3c2b7; --muted: #aaa8a0;
     --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+    --control-border: #a3a198;
     --accent: var(--primary-300);
     --good-text: #4ade80; --bad-text: #fca5a5; --warn-text: var(--warning);
     --good-bg: #12310f; --warn-bg: #33270a; --crit-bg: #351212;
@@ -45,6 +47,7 @@
   --surface: #1a1a19; --page: #0d0d0d;
   --ink: #ffffff; --ink-2: #c3c2b7; --muted: #aaa8a0;
   --grid: #2c2c2a; --border: rgba(255,255,255,0.10);
+  --control-border: #a3a198;
   --accent: var(--primary-300);
   --good-text: #4ade80; --bad-text: #fca5a5; --warn-text: var(--warning);
   --good-bg: #12310f; --warn-bg: #33270a; --crit-bg: #351212;
@@ -60,12 +63,17 @@ main { max-width: 46rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
 h1 { font-size: 1.45rem; margin: .4rem 0 .2rem; }
 h2 { font-size: 1.15rem; margin-top: 2rem; }
 .tag { color: var(--ink-2); margin-top: 0; }
-nav { font-size: .85rem; }
+nav { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .55rem;
+  font-size: .85rem; }
 nav a, nav .nav-button { color: var(--accent); text-decoration: none;
-  margin-right: .9rem; }
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 .25rem; }
 nav .nav-button { display: inline-flex; align-items: center; min-height: 44px;
   padding: 0 .2rem; border: 0; background: transparent; font: inherit;
   font-weight: 400; vertical-align: middle; }
+.skip-link { position: absolute; left: .75rem; top: .5rem; z-index: 10;
+  transform: translateY(-180%); padding: .65rem .8rem; border-radius: 4px;
+  background: var(--surface); color: var(--accent); }
+.skip-link:focus { transform: translateY(0); }
 fieldset { border: 1px solid var(--grid); border-radius: 10px;
   margin: 1rem 0; padding: .9rem 1rem; background: var(--surface);
   min-width: 0; }
@@ -75,9 +83,13 @@ label { display: flex; align-items: flex-start; gap: .6rem;
 label > input[type="radio"], label > input[type="checkbox"] {
   flex: none; width: 1.25rem; height: 1.25rem; margin-top: .15rem; }
 select { font-size: 1rem; padding: .5rem; min-height: 44px; border-radius: 4px;
-  border: 1px solid var(--grid); background: var(--surface); color: var(--ink);
+  border: 2px solid var(--control-border); background: var(--surface); color: var(--ink);
   width: 100%; max-width: 100%; }
-input[type="text"], input[type="date"], input[list], textarea { min-height: 44px; }
+input[type="text"], input[type="date"], input[list], textarea {
+  min-height: 44px; border: 2px solid var(--control-border);
+  border-radius: 6px; background: var(--surface); color: var(--ink); }
+input[aria-invalid="true"], select[aria-invalid="true"] {
+  border-color: var(--bad-text); }
 button { background: var(--accent); color: var(--page); border: 0;
   border-radius: 4px; min-height: 44px; padding: .6rem 1.3rem;
   font-size: 1rem; font-weight: 600; cursor: pointer; }
@@ -86,6 +98,16 @@ button:disabled { cursor: wait; opacity: .58; text-decoration: none;
   box-shadow: none; }
 button.ghost { background: transparent; color: var(--accent);
   border: 1px solid var(--accent); }
+button.link-button { display: inline; min-height: 0; padding: 0;
+  border: 0; border-radius: 0; background: transparent; color: var(--accent);
+  font: inherit; font-weight: 400; text-decoration: underline; }
+button.link-button:hover { box-shadow: none; }
+.question-help { margin: -.25rem 0 .7rem; }
+.choice-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .25rem .8rem; }
+.choice-grid label { align-items: center; }
+.conditional-intake[hidden] { display: none; }
+.translation-scope { margin: .15rem 0 1rem; }
 .card { background: var(--surface); border: 1px solid var(--border);
   border-left: 5px solid var(--good); border-radius: 10px;
   padding: 1rem 1.1rem; margin: 1rem 0; }
@@ -102,6 +124,7 @@ button.ghost { background: transparent; color: var(--accent);
 .result-card h5 { font-size: .9rem; margin: 1rem 0 .25rem; }
 .result-card ol, .result-card ul { margin-top: .3rem; padding-left: 1.35rem; }
 .result-card .badge { max-width: 100%; white-space: normal; }
+.result-heading:focus { outline: 3px solid var(--accent); outline-offset: 4px; }
 .review-note { color: var(--ink-2); font-size: .82rem; font-weight: 650;
   margin: .45rem 0 .8rem; }
 .confirmation { border: 1px solid var(--grid); border-radius: 8px;
@@ -131,6 +154,7 @@ a { color: var(--accent); }
 .meter { display: flex; height: 14px; border-radius: 7px; overflow: hidden;
   background: var(--grid); margin: .5rem 0 .3rem; }
 .meter > div { height: 100%; }
+.meter > div + div { border-left: 2px solid var(--ink); }
 .meter .m-good { background: var(--good); }
 .meter .m-bad  { background: var(--critical); }
 .meter .m-warn { background: var(--warning); }
@@ -148,47 +172,52 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
 .visually-hidden { position: absolute !important; width: 1px; height: 1px;
   padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0);
   white-space: nowrap; border: 0; }
+@media (max-width: 30rem) {
+  .choice-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
-<main>
-<nav>
+<a class="skip-link" href="#mainContent">Skip to main content</a>
+<main id="mainContent">
+<nav aria-label="Primary">
   <a href="#screen">Find a pathway</a>
   <a href="#conformance">Scan an ordinance</a>
   <a href="#clocks">Review clocks</a>
   <a href="#trust">Trust dashboard</a>
-  <a href="#sources">Watched sources</a>
-  <button class="nav-button" id="langToggle" type="button">Español</button>
+  <a href="#sources">Source monitoring</a>
+  <button class="nav-button" id="langToggle" type="button">Español: formulario y resultados</button>
 </nav>
 
 <h1 id="t-title">Permit Pathways</h1>
 <p class="tag" id="t-tagline">Every candidate answer cites a source. Selected statewide sources are watched for change.</p>
+<p class="small translation-scope" id="translationScope">The language choice applies to the applicant form and pathway results. The ordinance, clock, and trust tools below remain in English.</p>
 
-<section id="screen">
-  <form id="intake">
+<section id="screen" aria-labelledby="screenHeading">
+  <h2 id="screenHeading">Find a possible permit path</h2>
+  <form id="intake" novalidate>
     <fieldset>
       <legend id="t-juris">Where is the property?</legend>
       <input id="jurisInput" name="jurisdiction_name" list="jurisList"
-             autocomplete="off" aria-label="California city or county"
+             autocomplete="off" aria-labelledby="t-juris"
+             aria-describedby="jurisHelp jurisStatus"
              required
              placeholder="Type any California city or county…"
-             style="width:100%;font-size:1rem;padding:.45rem;border:1px solid var(--grid);
-                    border-radius:6px;background:var(--surface);color:var(--ink)">
+             style="width:100%;font-size:1rem;padding:.45rem">
       <datalist id="jurisList"></datalist>
-      <p class="small" id="jurisStatus" aria-live="polite"></p>
+      <p class="small" id="jurisHelp">Choose a suggestion, or enter the exact city or county name.</p>
+      <p class="small" id="jurisStatus" role="status" aria-live="polite"
+         aria-atomic="true"></p>
     </fieldset>
     <fieldset>
       <legend id="t-project">What are you proposing?</legend>
       <div id="typeRadios"></div>
     </fieldset>
-    <fieldset>
-      <legend id="t-dwelling">What kind of home is on the lot?</legend>
-      <select name="dwelling_type" id="dwellingSel"></select>
-    </fieldset>
-    <fieldset id="factBoxes"></fieldset>
+    <div id="projectQuestions" class="conditional-intake" hidden></div>
     <button type="submit" id="t-submit" disabled>Check candidate pathways</button>
   </form>
-  <p id="resultStatus" class="visually-hidden" aria-live="polite"></p>
+  <p id="resultStatus" class="visually-hidden" role="status"
+     aria-live="polite" aria-atomic="true"></p>
   <div id="results"></div>
 </section>
 
@@ -203,26 +232,38 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
   <p class="small">Named regression fixture: six provisions quoted in HCD's
   June 2025 Santa Clara County findings letter reproduce the six expected
   review flags. This is not a statewide accuracy evaluation.
-  <a href="#" id="loadSample">Load two of those provisions as a sample</a>.</p>
+  <button class="link-button" type="button" id="loadSample">Load two of those provisions as a sample</button>.</p>
   <textarea id="ordText" rows="8" aria-label="Ordinance text to scan"
     style="width:100%;font-size:.9rem;
-    border:1px solid var(--grid);border-radius:8px;background:var(--surface);
-    color:var(--ink);padding:.6rem" placeholder="Paste ordinance text here…"></textarea>
+    padding:.6rem" placeholder="Paste ordinance text here…"></textarea>
   <p><button id="scanBtn" disabled>Scan</button></p>
-  <div id="scanResults" aria-live="polite"></div>
+  <p id="scanStatus" class="visually-hidden" role="status"
+     aria-live="polite" aria-atomic="true"></p>
+  <div id="scanResults"></div>
 </section>
 
 <section id="clocks">
-  <h2>Statutory review clocks</h2>
-  <p class="small">State law puts the permitting agency on a clock. Enter the
-  initial receipt date. This bounded prototype assumes the application was
-  complete on receipt for the illustrative 60-day decision row; it does not
-  model a correction/resubmittal cycle:</p>
-  <p><input type="date" id="recvDate" aria-label="Date the application was received"
+  <h2>ADU review-clock illustration</h2>
+  <p class="small" id="clockHelp">This tool illustrates current ADU clocks
+  only. Enter the date the agency received the ADU application. An exact
+  15-business-day date requires the agency's own closure calendar, which this
+  prototype does not have. The separate 60-day illustration is shown only
+  when you confirm both conditions below.</p>
+  <p><input type="date" id="recvDate"
+    aria-label="Date the ADU application was received" aria-describedby="clockHelp"
     style="font-size:1rem;padding:.35rem;
-    border:1px solid var(--grid);border-radius:6px;background:var(--surface);
-    color:var(--ink)"> <button class="ghost" id="clockBtn">Compute deadlines</button></p>
-  <div id="clockResults" aria-live="polite"></div>
+    "> <button class="ghost" id="clockBtn">Show clock information</button></p>
+  <fieldset>
+    <legend>Conditions for the ADU 60-day illustration</legend>
+    <label><input type="checkbox" id="clockComplete">
+      The agency confirmed this ADU application was complete on the receipt date.</label>
+    <label><input type="checkbox" id="clockExisting">
+      For this ADU application, a single-family or multifamily dwelling already
+      existed on the lot.</label>
+  </fieldset>
+  <p id="clockStatus" class="visually-hidden" role="status"
+     aria-live="polite" aria-atomic="true"></p>
+  <div id="clockResults"></div>
 </section>
 
 <section id="trust">
@@ -240,9 +281,9 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
   </p>
   <div class="notice hidden" id="simNote">
     Simulating: Gov. Code § 66321 (ADU size, setback, and height standards) has been
-    amended. Citation-matched rules are <b>stale</b> until staff re-check them
-    against the new text. This rehearsal uses citation text matching; stable
-    dependency IDs and persisted watcher state are the next step.
+    amended. Every rule linked to that source by its exact stable dependency ID
+    is <b>stale</b> until staff re-check it against the new text. A durable,
+    persisted review queue remains planned.
   </div>
   <p id="simulationStatus" class="visually-hidden" aria-live="polite"></p>
   <div class="table-scroll" role="region" aria-label="Rule source status table"
@@ -254,15 +295,16 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
 </section>
 
 <section id="sources">
-  <h2 id="t-sources">Watched sources</h2>
-  <p class="small" id="t-sourcesub">Selected statewide source hashes are
-  recorded and re-fetched so revisions or fetch failures become visible.
-  Local-source coverage, explicit dependencies, and a persisted impact queue
-  are planned.</p>
-  <div class="table-scroll" role="region" aria-label="Watched source table"
+  <h2 id="t-sources">Source monitoring</h2>
+  <p class="small" id="t-sourcesub">Selected official state and local source
+  hashes are recorded and re-fetched so revisions or fetch failures become
+  visible. Rules link to sources through exact stable dependency IDs. Sources
+  that cannot be watched are labeled reference only; a durable, persisted
+  review queue remains planned.</p>
+  <div class="table-scroll" role="region" aria-label="Source monitoring table"
        tabindex="0">
   <table id="sourceTable"><thead>
-    <tr><th>Source</th><th>Recorded</th><th>SHA-256</th></tr>
+    <tr><th>Source</th><th>Monitoring</th><th>Recorded</th><th>SHA-256</th></tr>
   </thead><tbody></tbody></table>
   </div>
 </section>
@@ -279,34 +321,78 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
 const STRINGS = {
   en: {
     tagline: "Every candidate answer cites a source. Selected statewide sources are watched for change.",
+    screenHeading: "Find a possible permit path",
+    translationScope: "The language choice applies to the applicant form and pathway results. The ordinance, clock, and trust tools below remain in English.",
     juris: "Where is the property?",
     jurisPlaceholder: "Type any California city or county…",
-    jurisAria: "California city or county",
+    jurisHelp: "Choose a suggestion, or enter the exact city or county name.",
     statusLocal: "A jurisdiction-scoped metadata record exists; inspect its source status below.",
     statusBaseline: "The statewide candidate-rule set is available. No local requirements layer is encoded",
     statusUnknown: "Choose a recognized California city or county; screening will not run until it resolves.",
     jurisRequired: "Select a recognized California city or county before screening.",
     localCoverage: (count, total) => `${count} of ${total} have a jurisdiction-scoped record.`,
     hcdHistory: "Known HCD accountability letter",
+    localMetadata: "local metadata",
+    scanned: "screened",
+    scanRecord: (date, count) => `Ordinance screened ${date}: ${count} provision${count === 1 ? "" : "s"} flagged for review`,
+    viewScan: "view scan findings (JSON)",
+    letterCount: count => `${count} letter${count === 1 ? "" : "s"} on record.`,
+    moreLetters: count => `and ${count} more`,
     project: "What are you proposing?",
     types: [["adu","Accessory dwelling unit (backyard cottage, garage conversion)"],
             ["jadu","Junior ADU (small unit inside my house)"],
             ["two_unit","Two homes on my single-family lot (SB 9)"],
             ["lot_split","Split my lot into two parcels (SB 9)"]],
-    dwelling: "What kind of home is on the lot?",
-    dwellings: [["single_family","Single-family house"],
-                ["multifamily","Multifamily building (apartments, attached units)"],
-                ["other","Other / no home yet"]],
-    facts: [["has_primary_dwelling","There is (or will be) a home on the lot",true],
-            ["in_urbanized_area","The property is in a city / urbanized area",true],
-            ["sf_zone","The property is zoned single-family residential",true],
-            ["unpermitted_existing","The unit already exists but was built without permits (before 2020)",false],
-            ["no_exclusions","None of these apply: demolishing rent-restricted or affordable housing · a tenant lived there in the last 3 years · historic district · wetlands or other protected site · parcel already created by an SB 9 lot split",true]],
+    tri: [["yes","Yes"],["no","No"],["unknown","I'm not sure"]],
+    primaryQuestion: "What dwelling exists on the lot now—or is proposed?",
+    primaryHelp: "Choose what exists now separately from what is only proposed. Some review clocks depend on that difference.",
+    questionIntro: "Choose “I'm not sure” when you do not know. The prototype will send uncertain material facts to staff instead of assuming they favor a path.",
+    primaryOptions: [
+      ["existing_single_family","An existing single-family home"],
+      ["existing_multifamily","An existing multifamily building"],
+      ["proposed_single_family","A single-family home is proposed; none exists now"],
+      ["proposed_multifamily","A multifamily building is proposed; none exists now"],
+      ["none","No primary dwelling exists or is proposed"],
+      ["unknown","I'm not sure"],
+    ],
+    aduFormQuestion: "What kind of ADU work are you planning?",
+    aduFormOptions: [
+      ["new_detached","Build a new detached ADU"],
+      ["new_attached","Build a new attached ADU"],
+      ["conversion","Convert space in an existing structure"],
+      ["same_footprint_rebuild","Replace a structure in the same location and dimensions"],
+      ["unknown","I'm not sure"],
+    ],
+    unpermittedQuestions: {
+      adu: "Are you trying to legalize an ADU built without permits before January 1, 2020?",
+      jadu: "Are you trying to legalize a junior ADU built without permits before January 1, 2020?",
+    },
+    questions: {
+      in_urbanized_area: "Is the property inside an incorporated city or another SB 9-qualifying urban area?",
+      sf_zone: "Is the property zoned for single-family residential use?",
+      demolishes_protected_housing: "Would the project demolish or alter rent-restricted, price-controlled, or deed-restricted affordable housing?",
+      tenant_occupied_last_3_years: "Has a tenant lived in housing the project would demolish or alter during the last three years?",
+      ellis_withdrawal_last_15_years: "Was housing on the property withdrawn from rental use under the Ellis Act during the last 15 years?",
+      two_unit_contributing_historic_location: "Would the two-home project be located in a contributing structure in a state-listed historic district, or in a historic property or district protected by a city or county ordinance?",
+      two_unit_individually_listed_historic_property: "Is the parcel individually listed in the State Historic Resources Inventory, or is the property individually designated or listed as a city or county landmark?",
+      lot_split_on_historic_landmark_site: "Is the parcel within a historical landmark property in the State Historic Resources Inventory, or on a site designated or listed as a city or county landmark?",
+      lot_split_alters_historic_district_resource: "Would the lot split require demolition or alteration of a contributing structure or an existing exterior structural wall in a historic district listed by California or designated by a city or county?",
+      on_protected_site: "Does the property have a wetland, hazardous-land, conservation, habitat, or other protected-site condition named in SB 9?",
+      parcel_created_by_sb9_split: "Was this parcel already created by an SB 9 lot split?",
+      adjacent_sb9_split_same_actor: "Has the same owner—or someone working with that owner—used SB 9 to split an adjacent parcel?",
+      proposed_lot_ratio_compliant: "Would each proposed parcel contain at least 40% of the original lot area?",
+      proposed_lot_size_compliant: "Would both new lots be at least 1,200 square feet, or meet a smaller minimum verified in a current local ordinance?",
+    },
     submit: "Check candidate pathways",
     results: "Possible permit paths and rules",
-    resultIntro: "This prototype deterministically matched your answers against its bounded encoded rule set. It did not verify parcel facts, eligibility, or approval. Plain-language explanations are AI-assisted drafts; cited source records remain separate below.",
-    resultCount: count => count === 1 ? "1 matched rule record." : `${count} matched rule records.`,
-    none: "No pathway in this prototype's encoded state rule set matched your answers. This does not mean your project is impossible — it means it needs staff review. Contact your jurisdiction's planning counter.",
+    resultIntro: "We compared your answers with the limited set of rules in this prototype. We did not verify the property facts, decide eligibility, or approve the project.",
+    resultCount: count => count === 1 ? "1 result found." : `${count} results found.`,
+    none: "The included rules do not identify a possible path from these answers. This does not mean the project is impossible. Ask the local planning counter to review it.",
+    supportingOnly: "Supporting local information is shown below, but it is not a candidate permit path.",
+    unknownHeading: "Staff review is needed before showing a possible path",
+    unknownIntro: "You chose “I'm not sure” for a fact that can change the result. Confirm these items with the local planning counter:",
+    explanationBanner: "About these explanations: the text shown is an AI-assisted draft and has not been reviewed by a person. The cited source stays separate in each card.",
+    dataLoadError: "The demo data did not load. Keep data/demo-data.js beside index.html, or serve the repository over HTTP. Pathway and ordinance controls stay disabled until the data is available.",
     groups: {
       route: "Possible permit paths",
       standard: "Rules that may apply",
@@ -332,38 +418,82 @@ const STRINGS = {
     simulationReset: count => `The amendment rehearsal was reset. ${count} matching guidance record${count === 1 ? " is" : "s are"} available again.`,
     verifiedOn: "source date on file", stale: "SOURCE NEEDS A NEW CHECK",
     unverified: "NO SOURCE DATE ON FILE",
-    langBtn: "Español",
+    langBtn: "Español: formulario y resultados",
   },
   es: {
     tagline: "Cada respuesta posible cita una fuente. Se monitorean fuentes estatales seleccionadas.",
+    screenHeading: "Encuentre una posible vía de permiso",
+    translationScope: "El idioma elegido se aplica al formulario y a los resultados para solicitantes. Las herramientas de ordenanzas, plazos y confianza que aparecen abajo permanecen en inglés.",
     juris: "¿Dónde está la propiedad?",
     jurisPlaceholder: "Escriba cualquier ciudad o condado de California…",
-    jurisAria: "Ciudad o condado de California",
+    jurisHelp: "Elija una sugerencia o escriba el nombre exacto de la ciudad o el condado.",
     statusLocal: "Existe un registro de metadatos de la jurisdicción; revise el estado de sus fuentes abajo.",
     statusBaseline: "El conjunto estatal de reglas posibles está disponible. Aún no se codifican los requisitos locales",
     statusUnknown: "Elija una ciudad o condado reconocido de California; no se ejecutará la evaluación hasta resolverlo.",
     jurisRequired: "Seleccione una ciudad o condado reconocido de California antes de continuar.",
     localCoverage: (count, total) => `${count} de ${total} tienen un registro específico de la jurisdicción.`,
     hcdHistory: "Carta de responsabilidad de HCD conocida",
+    localMetadata: "metadatos locales",
+    scanned: "evaluada",
+    scanRecord: (date, count) => `Ordenanza evaluada el ${date}: ${count} disposición${count === 1 ? "" : "es"} señalada${count === 1 ? "" : "s"} para revisión`,
+    viewScan: "ver los resultados de la evaluación (JSON)",
+    letterCount: count => `${count} carta${count === 1 ? "" : "s"} registrada${count === 1 ? "" : "s"}.`,
+    moreLetters: count => `y ${count} más`,
     project: "¿Qué propone construir?",
     types: [["adu","Vivienda accesoria (casita de patio, conversión de garaje)"],
             ["jadu","ADU júnior (unidad pequeña dentro de mi casa)"],
             ["two_unit","Dos viviendas en mi lote unifamiliar (SB 9)"],
             ["lot_split","Dividir mi lote en dos parcelas (SB 9)"]],
-    dwelling: "¿Qué tipo de vivienda hay en el lote?",
-    dwellings: [["single_family","Casa unifamiliar"],
-                ["multifamily","Edificio multifamiliar (apartamentos, unidades adosadas)"],
-                ["other","Otro / aún no hay vivienda"]],
-    facts: [["has_primary_dwelling","Hay (o habrá) una vivienda en el lote",true],
-            ["in_urbanized_area","La propiedad está en una ciudad / área urbanizada",true],
-            ["sf_zone","La propiedad tiene zonificación residencial unifamiliar",true],
-            ["unpermitted_existing","La unidad ya existe pero se construyó sin permisos (antes de 2020)",false],
-            ["no_exclusions","Ninguno de estos aplica: demoler vivienda de renta restringida o asequible · un inquilino vivió allí en los últimos 3 años · distrito histórico · humedales u otro sitio protegido · parcela ya creada por una división SB 9",true]],
+    tri: [["yes","Sí"],["no","No"],["unknown","No lo sé"]],
+    primaryQuestion: "¿Qué vivienda existe ahora en el lote o está propuesta?",
+    primaryHelp: "Distinga lo que ya existe de lo que solo está propuesto. Algunos plazos dependen de esa diferencia.",
+    questionIntro: "Elija “No lo sé” si no conoce la respuesta. El prototipo enviará los datos materiales inciertos al personal en lugar de suponer que favorecen una vía.",
+    primaryOptions: [
+      ["existing_single_family","Ya existe una vivienda unifamiliar"],
+      ["existing_multifamily","Ya existe un edificio multifamiliar"],
+      ["proposed_single_family","Se propone una vivienda unifamiliar; aún no existe"],
+      ["proposed_multifamily","Se propone un edificio multifamiliar; aún no existe"],
+      ["none","No existe ni se propone una vivienda principal"],
+      ["unknown","No lo sé"],
+    ],
+    aduFormQuestion: "¿Qué tipo de trabajo de ADU propone?",
+    aduFormOptions: [
+      ["new_detached","Construir una ADU nueva y separada"],
+      ["new_attached","Construir una ADU nueva y adosada"],
+      ["conversion","Convertir espacio dentro de una estructura existente"],
+      ["same_footprint_rebuild","Reemplazar una estructura en el mismo lugar y con las mismas dimensiones"],
+      ["unknown","No lo sé"],
+    ],
+    unpermittedQuestions: {
+      adu: "¿Quiere legalizar una ADU construida sin permisos antes del 1 de enero de 2020?",
+      jadu: "¿Quiere legalizar una ADU júnior construida sin permisos antes del 1 de enero de 2020?",
+    },
+    questions: {
+      in_urbanized_area: "¿Está la propiedad dentro de una ciudad incorporada u otra área urbana que califique para la SB 9?",
+      sf_zone: "¿Tiene la propiedad zonificación residencial unifamiliar?",
+      demolishes_protected_housing: "¿El proyecto demolería o alteraría vivienda con renta o precio controlado, o vivienda asequible restringida por escritura?",
+      tenant_occupied_last_3_years: "¿Un inquilino vivió durante los últimos tres años en una vivienda que el proyecto demolería o alteraría?",
+      ellis_withdrawal_last_15_years: "¿Se retiró del mercado de alquiler alguna vivienda de la propiedad conforme a la Ley Ellis durante los últimos 15 años?",
+      two_unit_contributing_historic_location: "¿Estaría el proyecto de dos viviendas en una estructura que contribuye al valor de un distrito histórico incluido por el estado, o en una propiedad o distrito histórico protegido por una ordenanza local?",
+      two_unit_individually_listed_historic_property: "¿Está la parcela incluida individualmente en el inventario estatal de recursos históricos, o está la propiedad designada individualmente como monumento histórico por la ciudad o el condado?",
+      lot_split_on_historic_landmark_site: "¿Está la parcela dentro de una propiedad incluida en el inventario estatal de recursos históricos, o en un sitio designado como monumento histórico por la ciudad o el condado?",
+      lot_split_alters_historic_district_resource: "¿La división del lote exigiría demoler o alterar una estructura que contribuye a un distrito histórico, o un muro estructural exterior existente, dentro de un distrito histórico incluido por el estado o designado localmente?",
+      on_protected_site: "¿Tiene la propiedad humedales, suelo peligroso, terreno de conservación, hábitat u otra condición de sitio protegido indicada en la SB 9?",
+      parcel_created_by_sb9_split: "¿Esta parcela ya fue creada mediante una división de lote SB 9?",
+      adjacent_sb9_split_same_actor: "¿El mismo propietario, o alguien que actúe con ese propietario, usó la SB 9 para dividir una parcela adyacente?",
+      proposed_lot_ratio_compliant: "¿Cada parcela propuesta tendría al menos el 40% del área del lote original?",
+      proposed_lot_size_compliant: "¿Tendrían ambos lotes nuevos al menos 1,200 pies cuadrados, o cumplirían un mínimo menor verificado en una ordenanza local vigente?",
+    },
     submit: "Revisar posibles vías",
     results: "Posibles vías de permiso y reglas",
-    resultIntro: "Este prototipo comparó sus respuestas de forma determinista con su conjunto limitado de reglas codificadas. No verificó los datos de la parcela, la elegibilidad ni la aprobación. Las explicaciones en lenguaje sencillo son borradores asistidos por IA; los registros de las fuentes citadas se muestran por separado.",
-    resultCount: count => count === 1 ? "1 registro de regla coincidente." : `${count} registros de reglas coincidentes.`,
-    none: "Ninguna vía del conjunto de reglas estatales codificadas de este prototipo coincidió con sus respuestas. Esto no significa que su proyecto sea imposible — significa que necesita revisión del personal. Contacte a su departamento de planificación.",
+    resultIntro: "Comparamos sus respuestas con el conjunto limitado de reglas de este prototipo. No verificamos los datos de la propiedad, decidimos la elegibilidad ni aprobamos el proyecto.",
+    resultCount: count => count === 1 ? "Se encontró 1 resultado." : `Se encontraron ${count} resultados.`,
+    none: "Las reglas incluidas no identifican una posible vía con estas respuestas. Esto no significa que el proyecto sea imposible. Pida una revisión en el departamento local de planificación.",
+    supportingOnly: "Abajo se muestra información local de apoyo, pero no es una posible vía de permiso.",
+    unknownHeading: "Se necesita revisión del personal antes de mostrar una posible vía",
+    unknownIntro: "Eligió “No lo sé” para un dato que puede cambiar el resultado. Confirme estos puntos con el departamento local de planificación:",
+    explanationBanner: "Sobre estas explicaciones: el texto mostrado es un borrador creado con ayuda de IA y no ha sido revisado por una persona. El texto en español es una traducción automática sin revisión de exactitud. La fuente citada se mantiene separada en cada tarjeta.",
+    dataLoadError: "No se pudieron cargar los datos de la demostración. Mantenga data/demo-data.js junto a index.html o sirva el repositorio por HTTP. Los controles de vías y ordenanzas permanecerán desactivados hasta que los datos estén disponibles.",
     groups: {
       route: "Posibles vías de permiso",
       standard: "Reglas que podrían aplicarse",
@@ -389,45 +519,143 @@ const STRINGS = {
     simulationReset: count => `Se restableció el ensayo de la enmienda. ${count} registro${count === 1 ? "" : "s"} coincidente${count === 1 ? " está" : " están"} disponible${count === 1 ? "" : "s"} de nuevo.`,
     verifiedOn: "fecha de la fuente registrada", stale: "LA FUENTE NECESITA UNA NUEVA COMPROBACIÓN",
     unverified: "SIN FECHA DE LA FUENTE",
-    langBtn: "English",
+    langBtn: "English: form and results",
   },
 };
 let lang = "en";
 let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [], JURIS = [], LETTERS = {}, SCANS = {};
 let EXPLANATIONS = new Map();
 let jurisByName = new Map();
+let intakeDraft = {};
 const SAMPLE_ORDINANCE =
   "Accessory dwelling units shall not exceed sixteen (16) feet in height if " +
   "the dwelling unit does not comply with the setback limitations for a " +
   "single-family residence, prescribed by the applicable zoning district. " +
   "Detached accessory dwelling units exceeding sixteen (16) feet in height " +
   "shall incorporate a hip, gable, or other similar styled roof design.";
+function isJsonNumber(value) {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function isRuleInteger(value) {
+  return typeof value === "number" && Number.isSafeInteger(value);
+}
+
+function isJsonScalar(value) {
+  return typeof value === "string"
+    || typeof value === "boolean"
+    || isRuleInteger(value);
+}
+
+const RULE_KEYS = [
+  "rule_id", "pathway", "route_class", "jurisdiction_scope", "criteria",
+  "citation", "source_dependencies", "display_group", "required_documents",
+  "notes",
+];
+const CITATION_KEYS = [
+  "source", "url", "excerpt", "excerpt_sha256", "verified_on",
+];
+const CITATION_REQUIRED_KEYS = ["source", "url", "excerpt", "verified_on"];
+const CRITERION_KEYS = ["field", "op", "value"];
+
+function hasExactKeys(value, allowed, required) {
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    return false;
+  const keys = Object.keys(value);
+  return keys.every(key => allowed.includes(key))
+    && required.every(key =>
+      Object.prototype.hasOwnProperty.call(value, key)
+    );
+}
+
+function sameScalar(left, right) {
+  if (isJsonNumber(left) && isJsonNumber(right)) return left === right;
+  return typeof left === typeof right && left === right;
+}
+
 const OPS = {
-  eq: (a,b) => a === b,
-  lte: (a,b) => a != null && a <= b,
-  gte: (a,b) => a != null && a >= b,
-  in: (a,b) => b.includes(a),
+  eq: (actual, expected) =>
+    actual != null && sameScalar(actual, expected),
+  lte: (actual, expected) =>
+    isJsonNumber(actual) && isJsonNumber(expected) && actual <= expected,
+  gte: (actual, expected) =>
+    isJsonNumber(actual) && isJsonNumber(expected) && actual >= expected,
+  in: (actual, expected) =>
+    actual != null && Array.isArray(expected)
+      && expected.some(candidate => sameScalar(actual, candidate)),
 };
 const MAX_AGE_DAYS = 180;
 
+function validCriterion(criterion) {
+  if (!hasExactKeys(criterion, CRITERION_KEYS, CRITERION_KEYS)
+      || !nonBlank(criterion.field)
+      || !/^[a-z][a-z0-9_]*$/.test(criterion.field)
+      || !Object.prototype.hasOwnProperty.call(OPS, criterion.op)) return false;
+  const expected = criterion.value;
+  if (criterion.op === "eq")
+    return isJsonScalar(expected)
+      && !(typeof expected === "string" && !expected.trim());
+  if (criterion.op === "in") {
+    if (!Array.isArray(expected) || !expected.length
+        || !expected.every(isJsonScalar)
+        || expected.some(value =>
+          typeof value === "string" && !value.trim()
+        )) return false;
+    const firstType = typeof expected[0];
+    return expected.every(value => typeof value === firstType)
+      && expected.every((value, index) =>
+        !expected.slice(0, index).some(prior =>
+          sameScalar(value, prior)
+        )
+      );
+  }
+  return isRuleInteger(expected);
+}
+
 function matches(rule, intake) {
-  return rule.criteria.every(c => OPS[c.op](intake[c.field], c.value));
+  return Array.isArray(rule.criteria)
+    && rule.criteria.length > 0
+    && rule.criteria.every(criterion =>
+      validCriterion(criterion)
+      && OPS[criterion.op](intake[criterion.field], criterion.value)
+    );
 }
 function screen(intake) {
   return RULES.filter(r =>
     (r.jurisdiction_scope === "statewide" || r.jurisdiction_scope === intake.jurisdiction)
     && matches(r, intake));
 }
-function ruleStatus(rule, changedMarkers) {
+function ruleStatus(rule, changedSourceIds) {
   const c = rule.citation;
-  if (changedMarkers.some(m => (c.source||"").includes(m) || (c.url||"").includes(m)))
+  const dependencies = Array.isArray(rule.source_dependencies)
+    ? rule.source_dependencies : [];
+  if (changedSourceIds.some(sourceId => dependencies.includes(sourceId)))
     return "stale";
-  if (!c.verified_on) return "unverified";
-  const age = (Date.now() - new Date(c.verified_on)) / 86400000;
-  return age > MAX_AGE_DAYS ? "stale" : "verified";
+  if (!validIsoDate(c.verified_on)) return "unverified";
+  const now = new Date();
+  const todayUtc = Date.UTC(
+    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()
+  );
+  const verifiedUtc = Date.parse(`${c.verified_on}T00:00:00Z`);
+  const age = Math.floor((todayUtc - verifiedUtc) / 86400000);
+  return age < 0 || age > MAX_AGE_DAYS ? "stale" : "verified";
 }
 
 function esc(s) { const d = document.createElement("span"); d.textContent = s ?? ""; return d.innerHTML; }
+
+function safeExternalUrl(value) {
+  try {
+    const parsed = new URL(String(value));
+    return ["https:", "http:"].includes(parsed.protocol) ? parsed.href : null;
+  } catch {
+    return null;
+  }
+}
+
+function safeLocalJsonPath(slug) {
+  return /^[a-z0-9-]+$/.test(slug || "")
+    ? `data/conformance/results/${slug}.json` : null;
+}
 
 function nonBlank(value) {
   return typeof value === "string" && value.trim().length > 0;
@@ -438,6 +666,81 @@ function validIsoDate(value) {
   const parsed = new Date(`${value}T00:00:00Z`);
   return !Number.isNaN(parsed.getTime())
     && parsed.toISOString().slice(0, 10) === value;
+}
+
+function dateIsNotFuture(value) {
+  if (!validIsoDate(value)) return false;
+  const now = new Date();
+  const todayUtc = Date.UTC(
+    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()
+  );
+  return Date.parse(`${value}T00:00:00Z`) <= todayUtc;
+}
+
+function validStableId(value) {
+  return typeof value === "string"
+    && /^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$/.test(value);
+}
+
+function validHttpsUrl(value) {
+  try {
+    const parsed = new URL(String(value));
+    return parsed.protocol === "https:"
+      && Boolean(parsed.hostname)
+      && !parsed.username
+      && !parsed.password;
+  } catch {
+    return false;
+  }
+}
+
+function validRuleRecord(rule) {
+  if (!hasExactKeys(rule, RULE_KEYS, RULE_KEYS)
+      || !validStableId(rule.rule_id)
+      || !nonBlank(rule.pathway)
+      || !["ministerial", "discretionary", "mixed"].includes(rule.route_class)
+      || !validStableId(rule.jurisdiction_scope)
+      || !["route", "standard", "local_process"].includes(rule.display_group)
+      || !Array.isArray(rule.criteria) || !rule.criteria.length
+      || !rule.criteria.every(validCriterion)
+      || !Array.isArray(rule.source_dependencies)
+      || !rule.source_dependencies.length
+      || !rule.source_dependencies.every(validStableId)
+      || new Set(rule.source_dependencies).size
+         !== rule.source_dependencies.length
+      || !Array.isArray(rule.required_documents)
+      || !rule.required_documents.every(nonBlank)
+      || new Set(rule.required_documents).size
+         !== rule.required_documents.length
+      || !nonBlank(rule.notes)) return false;
+  const citation = rule.citation;
+  return hasExactKeys(
+    citation, CITATION_KEYS, CITATION_REQUIRED_KEYS
+  )
+    && nonBlank(citation.source)
+    && nonBlank(citation.url)
+    && validHttpsUrl(citation.url)
+    && (citation.excerpt == null || nonBlank(citation.excerpt))
+    && (
+      citation.excerpt_sha256 == null
+      || /^(?:sha256:)?[0-9a-f]{64}$/.test(citation.excerpt_sha256)
+    )
+    && (
+      citation.verified_on == null
+      || dateIsNotFuture(citation.verified_on)
+    )
+    && !(citation.verified_on && !citation.excerpt);
+}
+
+function normalizeRules(records) {
+  if (!Array.isArray(records) || !records.length
+      || !records.every(validRuleRecord)) {
+    throw new Error("rule data failed validation");
+  }
+  const ids = records.map(rule => rule.rule_id);
+  if (new Set(ids).size !== ids.length)
+    throw new Error("rule data contains duplicate IDs");
+  return records;
 }
 
 function validTextList(value) {
@@ -455,23 +758,32 @@ function validHighlights(value) {
   );
 }
 
-function validReview(review, version, updatedOn) {
+async function validReview(review, version, updatedOn, englishCopy) {
   if (!review || typeof review !== "object") return false;
   const allowed = ["prototype_review_pending", "human_reviewed",
                    "jurisdiction_approved"];
   if (!allowed.includes(review.status)) return false;
   const metadata = [review.reviewer, review.reviewed_on, review.method,
-                    review.reviewed_version];
+                    review.reviewed_version, review.content_fingerprint];
   if (review.status === "prototype_review_pending")
     return metadata.every(value => value == null);
-  return metadata.every(nonBlank)
-    && validIsoDate(review.reviewed_on)
-    && review.reviewed_on >= updatedOn
-    && review.reviewed_version === version;
+  if (!(metadata.every(nonBlank)
+      && dateIsNotFuture(review.reviewed_on)
+      && review.reviewed_on >= updatedOn
+      && review.reviewed_version === version)) return false;
+  try {
+    const expected = await localizedContentFingerprint(
+      version, "en", englishCopy
+    );
+    return nonBlank(expected) && review.content_fingerprint === expected;
+  } catch {
+    return false;
+  }
 }
 
-function validLocalizedCopy(copy, language, version, updatedOn) {
+function validLocalizedCopy(copy, language) {
   if (!copy || typeof copy !== "object"
+      || !nonBlank(copy.title)
       || !nonBlank(copy.summary)
       || !validTextList(copy.next_steps)
       || !validTextList(copy.confirm_with_staff)
@@ -480,13 +792,10 @@ function validLocalizedCopy(copy, language, version, updatedOn) {
   const allowed = ["machine_draft", "human_reviewed", "jurisdiction_approved"];
   if (!allowed.includes(copy.translation_status)) return false;
   const metadata = [copy.reviewer, copy.reviewed_on, copy.method,
-                    copy.reviewed_version];
+                    copy.reviewed_version, copy.content_fingerprint];
   if (copy.translation_status === "machine_draft")
     return metadata.every(value => value == null);
-  return metadata.every(nonBlank)
-    && validIsoDate(copy.reviewed_on)
-    && copy.reviewed_on >= updatedOn
-    && copy.reviewed_version === version;
+  return metadata.every(nonBlank);
 }
 
 function stableJson(value) {
@@ -508,6 +817,32 @@ async function sha256Fingerprint(value) {
     .map(byte => byte.toString(16).padStart(2, "0")).join("");
 }
 
+async function localizedContentFingerprint(version, language, copy) {
+  return sha256Fingerprint({
+    confirm_with_staff: copy.confirm_with_staff,
+    highlights: copy.highlights ?? null,
+    language,
+    next_steps: copy.next_steps,
+    summary: copy.summary,
+    title: copy.title,
+    version,
+  });
+}
+
+async function validTranslationReview(copy, version, updatedOn) {
+  if (!validLocalizedCopy(copy, "es")) return false;
+  if (copy.translation_status === "machine_draft") return true;
+  if (!dateIsNotFuture(copy.reviewed_on)
+      || copy.reviewed_on < updatedOn
+      || copy.reviewed_version !== version) return false;
+  try {
+    const expected = await localizedContentFingerprint(version, "es", copy);
+    return nonBlank(expected) && copy.content_fingerprint === expected;
+  } catch {
+    return false;
+  }
+}
+
 function normalizedCitation(rule) {
   const citation = rule.citation || {};
   return {
@@ -527,12 +862,14 @@ async function ruleFingerprint(rule) {
   return sha256Fingerprint({
     citation: normalizedCitation(rule),
     criteria: rule.criteria,
+    display_group: rule.display_group,
     jurisdiction_scope: rule.jurisdiction_scope,
     notes: rule.notes,
     pathway: rule.pathway,
     required_documents: rule.required_documents,
     route_class: rule.route_class,
     rule_id: rule.rule_id,
+    source_dependencies: rule.source_dependencies,
   });
 }
 
@@ -559,15 +896,19 @@ async function normalizeExplanations(payload, rules) {
     const version = record.version;
     const updatedOn = record.updated_on;
     if (!rule || !/^\d+\.\d+\.\d+$/.test(version || "")
-        || !validIsoDate(updatedOn)
-        || !["route", "standard", "local_process"].includes(record.display_group)
+        || !dateIsNotFuture(updatedOn)
+        || record.display_group !== rule.display_group
         || record.drafted_by !== "ai_assisted"
         || (record.source_verified_on ?? null)
            !== (rule.citation.verified_on ?? null)
         || (record.source_verified_on
+            && !dateIsNotFuture(record.source_verified_on))
+        || (record.source_verified_on
             && updatedOn < record.source_verified_on)
-        || !validReview(record.review, version, updatedOn)
-        || !validLocalizedCopy(record.en, "en", version, updatedOn)) continue;
+        || !validLocalizedCopy(record.en, "en")
+        || !(await validReview(
+          record.review, version, updatedOn, record.en
+        ))) continue;
     let expectedFingerprint;
     let expectedRuleFingerprint;
     try {
@@ -584,36 +925,126 @@ async function normalizeExplanations(payload, rules) {
         || record.rule_fingerprint !== expectedRuleFingerprint) continue;
     normalized.set(ruleId, {
       ...record,
-      es: validLocalizedCopy(record.es, "es", version, updatedOn)
+      es: await validTranslationReview(record.es, version, updatedOn)
         ? record.es : null,
     });
   }
   return normalized;
 }
 
+const SB9_BASE_FIELDS = [
+  "in_urbanized_area",
+  "sf_zone",
+  "demolishes_protected_housing",
+  "tenant_occupied_last_3_years",
+  "ellis_withdrawal_last_15_years",
+  "on_protected_site",
+];
+const SB9_TWO_UNIT_FIELDS = [
+  "two_unit_contributing_historic_location",
+  "two_unit_individually_listed_historic_property",
+];
+const SB9_LOT_SPLIT_FIELDS = [
+  "lot_split_on_historic_landmark_site",
+  "lot_split_alters_historic_district_resource",
+  "parcel_created_by_sb9_split",
+  "adjacent_sb9_split_same_actor",
+  "proposed_lot_ratio_compliant",
+  "proposed_lot_size_compliant",
+];
+
+function radioQuestion(name, legend, options, help = "") {
+  const helpId = `${name}-help`;
+  const describedBy = help ? ` aria-describedby="${helpId}"` : "";
+  return `<fieldset data-question="${esc(name)}"${describedBy}>
+    <legend>${esc(legend)}</legend>
+    ${help ? `<p class="small question-help" id="${helpId}">${esc(help)}</p>` : ""}
+    <div class="choice-grid">
+      ${options.map(([value, label]) =>
+        `<label><input type="radio" name="${esc(name)}"
+          value="${esc(value)}" required> ${esc(label)}</label>`
+      ).join("")}
+    </div>
+  </fieldset>`;
+}
+
+function fieldsForProject(projectType) {
+  if (projectType === "adu")
+    return ["primary_dwelling_status", "adu_project_form",
+            "unpermitted_existing"];
+  if (projectType === "jadu")
+    return ["primary_dwelling_status", "unpermitted_existing"];
+  if (projectType === "two_unit")
+    return [...SB9_BASE_FIELDS, ...SB9_TWO_UNIT_FIELDS];
+  if (projectType === "lot_split")
+    return [...SB9_BASE_FIELDS, ...SB9_LOT_SPLIT_FIELDS];
+  return [];
+}
+
+function renderProjectQuestions() {
+  const s = STRINGS[lang];
+  const projectType = intakeDraft.project_type || null;
+  const container = document.getElementById("projectQuestions");
+  if (!projectType) {
+    container.hidden = true;
+    container.innerHTML = "";
+    return;
+  }
+  const fields = fieldsForProject(projectType);
+  const questions = fields.map(name => {
+    if (name === "primary_dwelling_status")
+      return radioQuestion(name, s.primaryQuestion, s.primaryOptions, s.primaryHelp);
+    if (name === "adu_project_form")
+      return radioQuestion(name, s.aduFormQuestion, s.aduFormOptions);
+    if (name === "unpermitted_existing")
+      return radioQuestion(
+        name,
+        s.unpermittedQuestions[projectType],
+        s.tri
+      );
+    return radioQuestion(name, s.questions[name], s.tri);
+  }).join("");
+  container.hidden = false;
+  container.lang = lang;
+  container.innerHTML = `<p class="small">${esc(s.questionIntro)}</p>${questions}`;
+  for (const input of container.querySelectorAll("input[type=radio]")) {
+    input.checked = intakeDraft[input.name] === input.value;
+  }
+}
+
+function rememberIntakeValues() {
+  const form = document.getElementById("intake");
+  for (const [name, value] of new FormData(form).entries()) {
+    if (name !== "jurisdiction_name") intakeDraft[name] = value;
+  }
+}
+
 function renderForm() {
   const s = STRINGS[lang];
-  const translatedIds = ["t-tagline", "t-juris", "t-project", "t-submit",
-                         "t-dwelling", "typeRadios", "dwellingSel", "factBoxes",
-                         "jurisStatus", "resultStatus"];
+  const translatedIds = ["t-tagline", "translationScope", "screenHeading",
+                         "t-juris", "jurisHelp", "t-project", "t-submit",
+                         "typeRadios", "projectQuestions", "jurisStatus",
+                         "resultStatus"];
   translatedIds.forEach(id => { document.getElementById(id).lang = lang; });
   document.getElementById("t-tagline").textContent = s.tagline;
+  document.getElementById("translationScope").textContent = s.translationScope;
+  document.getElementById("screenHeading").textContent = s.screenHeading;
   document.getElementById("t-juris").textContent = s.juris;
+  document.getElementById("jurisHelp").textContent = s.jurisHelp;
   document.getElementById("t-project").textContent = s.project;
   document.getElementById("t-submit").textContent = s.submit;
   document.getElementById("langToggle").textContent = s.langBtn;
   document.getElementById("langToggle").lang = lang === "en" ? "es" : "en";
   document.getElementById("jurisInput").placeholder = s.jurisPlaceholder;
   document.getElementById("jurisInput").lang = lang;
-  document.getElementById("jurisInput").setAttribute("aria-label", s.jurisAria);
   renderJurisStatus();
   document.getElementById("typeRadios").innerHTML =
-    s.types.map(([v,t],i) => `<label><input type="radio" name="project_type" value="${v}" ${i===0?"checked":""}> ${esc(t)}</label>`).join("");
-  document.getElementById("t-dwelling").textContent = s.dwelling;
-  document.getElementById("dwellingSel").innerHTML =
-    s.dwellings.map(([v,t]) => `<option value="${v}">${esc(t)}</option>`).join("");
-  document.getElementById("factBoxes").innerHTML =
-    s.facts.map(([v,t,on]) => `<label><input type="checkbox" name="${v}" ${on?"checked":""}> ${esc(t)}</label>`).join("");
+    s.types.map(([value, text]) =>
+      `<label><input type="radio" name="project_type"
+        value="${esc(value)}" required
+        ${intakeDraft.project_type === value ? "checked" : ""}> ${esc(text)}</label>`
+    ).join("");
+  renderProjectQuestions();
 }
 
 function usableLocalizedExplanation(explanation) {
@@ -621,7 +1052,8 @@ function usableLocalizedExplanation(explanation) {
   const preferred = lang === "es" ? explanation.es : explanation.en;
   const fallback = lang === "es" ? explanation.en : null;
   const localized = preferred || fallback;
-  if (!localized || typeof localized.summary !== "string"
+  if (!localized || typeof localized.title !== "string"
+      || typeof localized.summary !== "string"
       || !Array.isArray(localized.next_steps)
       || !localized.next_steps.every(item => typeof item === "string")
       || !Array.isArray(localized.confirm_with_staff)
@@ -663,10 +1095,12 @@ function explanationReviewLabels(explanation, localized, copyLang) {
     `Traducción revisada por una persona · ${localized.reviewer} · ${localized.reviewed_on} · v${localized.reviewed_version}`];
 }
 
-function renderResultCard(rule, explanation) {
+function renderResultCard(rule, explanation, suppressPendingReview = false) {
   const s = STRINGS[lang];
   const c = rule.citation;
-  const status = ruleStatus(rule, simulating ? ["66321"] : []);
+  const status = ruleStatus(
+    rule, simulating ? ["ca-gov-66321"] : []
+  );
   const ok = status === "verified";
   const badge = ok
     ? `<span class="badge info" lang="${lang}"><span class="status-ico" aria-hidden="true">◷</span>${esc(s.verifiedOn)} ${esc(c.verified_on)}</span>`
@@ -681,8 +1115,12 @@ function renderResultCard(rule, explanation) {
     : `<div class="notice small" lang="${lang}">${esc(s.unavailable)}</div>`;
   let reviewNote = "";
   let copyRecord = "";
+  let displayTitle = rule.pathway;
+  let displayTitleLang = "en";
   if (localizedRecord) {
     const {localized, copyLang} = localizedRecord;
+    displayTitle = localized.title;
+    displayTitleLang = copyLang;
     const steps = localized.next_steps.map(step => `<li>${esc(step)}</li>`).join("");
     const confirmations = localized.confirm_with_staff.map(item => `<li>${esc(item)}</li>`).join("");
     const highlights = localized.highlights
@@ -705,9 +1143,14 @@ function renderResultCard(rule, explanation) {
         <ul lang="${copyLang}">${confirmations}</ul>
       </div>
     </div>`;
-    reviewNote = explanationReviewLabels(explanation, localized, copyLang)
-      .map(label => `<p class="review-note" lang="${lang}">${esc(label)}</p>`)
-      .join("");
+    const pendingOnly = explanation.review.status === "prototype_review_pending"
+      && (lang !== "es"
+        || (copyLang === "es" && localized.translation_status === "machine_draft"));
+    if (!(suppressPendingReview && pendingOnly)) {
+      reviewNote = explanationReviewLabels(explanation, localized, copyLang)
+        .map(label => `<p class="review-note" lang="${lang}">${esc(label)}</p>`)
+        .join("");
+    }
     copyRecord = `<p class="small"><span lang="${lang}">${esc(s.copyRecord)}:</span>
       <span lang="en">${esc(explanation.source_rule_id)} v${esc(explanation.version)}, ${esc(explanation.updated_on)}</span></p>`;
   }
@@ -721,16 +1164,21 @@ function renderResultCard(rule, explanation) {
     ${copyRecord}
   </details>`;
   const safeId = String(rule.rule_id).replace(/[^A-Za-z0-9_-]/g, "-");
+  const sourceUrl = safeExternalUrl(c.url);
+  const sourceMarkup = sourceUrl
+    ? `<a lang="en" href="${esc(sourceUrl)}" rel="noopener">${esc(c.source)}</a>`
+    : `<span lang="en">${esc(c.source)}</span>`;
   return `<article class="card result-card ${ok ? "" : "unverified"}"
       data-rule-id="${esc(rule.rule_id)}" aria-labelledby="result-title-${safeId}">
     <div class="result-head">
-      <h4 class="result-title" id="result-title-${safeId}" lang="en">${esc(rule.pathway)}</h4>
+      <h4 class="result-title" id="result-title-${safeId}"
+        lang="${displayTitleLang}">${esc(displayTitle)}</h4>
       ${badge}
     </div>
     ${reviewNote}
     ${plainLanguage}
     <p class="source-basis"><b lang="${lang}">${esc(s.source)}:</b>
-      <a lang="en" href="${esc(c.url)}" rel="noopener">${esc(c.source)}</a></p>
+      ${sourceMarkup}</p>
     ${evidence}
   </article>`;
 }
@@ -739,23 +1187,44 @@ function renderResults(list) {
   const s = STRINGS[lang];
   const el = document.getElementById("results");
   LAST_RESULTS = list;
+  LAST_UNRESOLVED = null;
+  const hasRoute = list.some(rule => rule.display_group === "route");
   const status = document.getElementById("resultStatus");
   status.lang = lang;
   status.textContent = list.length
-    ? s.resultCount(list.length)
+    ? hasRoute
+      ? s.resultCount(list.length)
+      : `${s.none} ${s.supportingOnly}`
     : `${s.resultCount(0)} ${s.none}`;
   if (!list.length) {
-    el.innerHTML = `<div lang="${lang}"><h2>${esc(s.results)}</h2>
+    el.innerHTML = `<div lang="${lang}">
+      <h2 class="result-heading" id="resultsHeading" tabindex="-1">${esc(s.results)}</h2>
       <div class="notice">${esc(s.none)}</div></div>`;
     return;
   }
   const groupOrder = ["route", "standard", "local_process", "other"];
   const grouped = new Map(groupOrder.map(group => [group, []]));
+  const shownExplanations = list.map(rule => {
+    if (ruleStatus(
+      rule, simulating ? ["ca-gov-66321"] : []
+    ) !== "verified") return null;
+    const explanation = EXPLANATIONS.get(rule.rule_id);
+    const localized = usableLocalizedExplanation(explanation);
+    return localized ? {explanation, ...localized} : null;
+  }).filter(Boolean);
+  const oneSharedDraftLabel = shownExplanations.length > 0
+    && shownExplanations.every(({explanation, localized, copyLang}) =>
+      explanation.review.status === "prototype_review_pending"
+      && (lang !== "es"
+        || (copyLang === "es" && localized.translation_status === "machine_draft"))
+    );
   list.forEach(rule => {
     const explanation = EXPLANATIONS.get(rule.rule_id);
-    const group = explanation && ["route", "standard", "local_process"].includes(explanation.display_group)
-      ? explanation.display_group : "other";
-    grouped.get(group).push(renderResultCard(rule, explanation));
+    const candidateGroup = rule.display_group || explanation?.display_group;
+    const group = groupOrder.includes(candidateGroup) ? candidateGroup : "other";
+    grouped.get(group).push(
+      renderResultCard(rule, explanation, oneSharedDraftLabel)
+    );
   });
   const sections = groupOrder.map(group => {
     const cards = grouped.get(group);
@@ -765,14 +1234,63 @@ function renderResults(list) {
           ${cards.join("")}
         </section>` : "";
   }).join("");
-  el.innerHTML = `<h2 lang="${lang}">${esc(s.results)}</h2>
-    <p class="small" lang="${lang}">${esc(s.resultIntro)}</p>${sections}`;
+  const draftBanner = oneSharedDraftLabel
+    ? `<div class="notice small" lang="${lang}">${esc(s.explanationBanner)}</div>`
+    : "";
+  const noRouteNotice = hasRoute
+    ? ""
+    : `<div class="notice" lang="${lang}">
+        <p>${esc(s.none)}</p>
+        <p>${esc(s.supportingOnly)}</p>
+      </div>`;
+  el.innerHTML = `<h2 class="result-heading" id="resultsHeading"
+      tabindex="-1" lang="${lang}">${esc(s.results)}</h2>
+    <p class="small" lang="${lang}">${esc(s.resultIntro)}</p>
+    ${noRouteNotice}${draftBanner}${sections}`;
+}
+
+function questionLabel(name) {
+  const s = STRINGS[lang];
+  if (name === "primary_dwelling_status") return s.primaryQuestion;
+  if (name === "adu_project_form") return s.aduFormQuestion;
+  if (name === "unpermitted_existing")
+    return s.unpermittedQuestions[intakeDraft.project_type]
+      || s.unpermittedQuestions.adu;
+  return s.questions[name] || name;
+}
+
+function renderNeedsStaffReview(fieldNames) {
+  const s = STRINGS[lang];
+  LAST_RESULTS = null;
+  LAST_UNRESOLVED = [...fieldNames];
+  const status = document.getElementById("resultStatus");
+  status.lang = lang;
+  status.textContent = s.unknownHeading;
+  document.getElementById("results").innerHTML =
+    `<div lang="${lang}">
+      <h2 class="result-heading" id="resultsHeading" tabindex="-1">
+        ${esc(s.unknownHeading)}
+      </h2>
+      <div class="notice">
+        <p>${esc(s.unknownIntro)}</p>
+        <ul>${fieldNames.map(name => `<li>${esc(questionLabel(name))}</li>`).join("")}</ul>
+      </div>
+    </div>`;
+}
+
+function focusResults() {
+  const heading = document.getElementById("resultsHeading");
+  if (!heading) return;
+  heading.focus({preventScroll: true});
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  heading.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth"});
 }
 
 let simulating = false;
 let LAST_RESULTS = null;
+let LAST_UNRESOLVED = null;
 function renderDashboard() {
-  const changed = simulating ? ["66321"] : [];
+  const changed = simulating ? ["ca-gov-66321"] : [];
   const statuses = RULES.map(r => ({ rule: r, st: ruleStatus(r, changed) }));
   const n = { verified: 0, stale: 0, unverified: 0 };
   statuses.forEach(x => n[x.st]++);
@@ -780,6 +1298,11 @@ function renderDashboard() {
   const pct = total ? Math.round(100 * n.verified / total) : 0;
   document.getElementById("pct").textContent = pct;
   const meter = document.getElementById("meter");
+  meter.setAttribute(
+    "aria-label",
+    `${n.verified} rule records inside the review window; ${n.stale} stale; ` +
+    `${n.unverified} without a dated source record.`
+  );
   meter.innerHTML =
     `<div class="m-good" style="width:${100*n.verified/total}%"></div>` +
     `<div class="m-bad" style="width:${100*n.stale/total}%"></div>` +
@@ -821,46 +1344,71 @@ function renderDashboard() {
 
 function renderSources() {
   document.querySelector("#sourceTable tbody").innerHTML =
-    Object.entries(SOURCES).map(([url, m]) =>
-      `<tr><td><a href="${esc(url)}" rel="noopener">${esc(m.label)}</a></td>
-       <td class="mutedtxt">${esc(m.fetched_on)}</td>
-       <td class="mutedtxt" style="font-family:ui-monospace,monospace;font-size:.75rem">${esc(m.sha256.slice(0,16))}…</td></tr>`
-    ).join("");
+    Object.entries(SOURCES).map(([url, sourceRecord]) => {
+      const metadata = sourceRecord && typeof sourceRecord === "object"
+        ? sourceRecord : {};
+      const sourceUrl = safeExternalUrl(url);
+      const label = esc(metadata.label || url);
+      const source = sourceUrl
+        ? `<a href="${esc(sourceUrl)}" rel="noopener">${label}</a>`
+        : `<span>${label}</span>`;
+      const watched = metadata.watch !== false && nonBlank(metadata.sha256);
+      const monitoring = watched
+        ? `<span class="badge info">watched</span>`
+        : `<span class="badge info">reference only</span>`;
+      const recorded = metadata.fetched_on ? esc(metadata.fetched_on) : "—";
+      const digest = nonBlank(metadata.sha256)
+        ? `${esc(metadata.sha256.slice(0, 16))}…` : "not recorded";
+      return `<tr><td>${source}</td><td>${monitoring}</td>
+        <td class="mutedtxt">${recorded}</td>
+        <td class="mutedtxt" style="font-family:ui-monospace,monospace;font-size:.75rem">${digest}</td></tr>`;
+    }).join("");
 }
 
 document.getElementById("intake").addEventListener("submit", e => {
   e.preventDefault();
-  const f = new FormData(e.target);
+  rememberIntakeValues();
+  const form = e.target;
+  const f = new FormData(form);
   const jurisdiction = resolveJurisdiction();
   if (!jurisdiction) {
     const s = STRINGS[lang];
     LAST_RESULTS = null;
     document.getElementById("results").innerHTML =
-      `<div lang="${lang}"><h2>${esc(s.results)}</h2>
+      `<div lang="${lang}"><h2 class="result-heading" id="resultsHeading"
+        tabindex="-1">${esc(s.results)}</h2>
        <div class="notice">${esc(s.jurisRequired)}</div></div>`;
     document.getElementById("resultStatus").textContent = s.jurisRequired;
+    renderJurisStatus(true);
     document.getElementById("jurisInput").focus();
     return;
   }
-  const noExcl = f.has("no_exclusions");
-  renderResults(screen({
-    project_type: f.get("project_type"),
-    has_primary_dwelling: f.has("has_primary_dwelling"),
-    dwelling_type: f.get("dwelling_type"),
-    unpermitted_existing: f.has("unpermitted_existing"),
-    in_urbanized_area: f.has("in_urbanized_area"),
-    zone_class: f.has("sf_zone") ? "single_family_residential" : "other",
-    demolishes_protected_housing: !noExcl,
-    tenant_occupied_last_3_years: !noExcl,
-    in_historic_district: !noExcl,
-    on_protected_site: !noExcl,
-    parcel_created_by_sb9_split: !noExcl,
-    jurisdiction: jurisdiction.slug,
-  }));
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.getElementById("results").scrollIntoView({
-    behavior: reduceMotion ? "auto" : "smooth",
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  const projectType = f.get("project_type");
+  const materialFields = fieldsForProject(projectType);
+  const unresolved = materialFields.filter(name => {
+    const value = f.get(name);
+    return value == null || value === "unknown";
   });
+  if (unresolved.length) {
+    renderNeedsStaffReview(unresolved);
+    focusResults();
+    return;
+  }
+  const intake = Object.fromEntries(f.entries());
+  intake.jurisdiction = jurisdiction.slug;
+  renderResults(screen(intake));
+  focusResults();
+});
+
+document.getElementById("intake").addEventListener("change", event => {
+  const target = event.target;
+  if (!target.name) return;
+  intakeDraft[target.name] = target.value;
+  if (target.name === "project_type") renderProjectQuestions();
 });
 function jurisDisplay(j) {
   return j.kind === "county" ? j.name : `${j.name} (${j.county.replace(" County","")} Co.)`;
@@ -869,36 +1417,53 @@ function resolveJurisdiction() {
   const raw = document.getElementById("jurisInput").value.trim();
   return jurisByName.get(raw.toLowerCase()) || null;
 }
-function renderJurisStatus() {
+function renderJurisStatus(showError = false) {
   const s = STRINGS[lang];
   const el = document.getElementById("jurisStatus");
+  const input = document.getElementById("jurisInput");
   const raw = document.getElementById("jurisInput").value.trim();
-  if (!raw) { el.textContent = ""; return; }
+  if (!raw) {
+    if (el.textContent) el.textContent = "";
+    input.removeAttribute("aria-invalid");
+    return;
+  }
   const j = resolveJurisdiction();
-  if (!j) { el.textContent = s.statusUnknown; return; }
+  if (!j) {
+    if (el.textContent !== s.statusUnknown) el.textContent = s.statusUnknown;
+    if (showError) input.setAttribute("aria-invalid", "true");
+    return;
+  }
+  input.removeAttribute("aria-invalid");
   const localCount = JURIS.filter(x => x.has_local_layer).length;
   let html = j.has_local_layer
-    ? `<span class="badge ok"><span class="status-ico" aria-hidden="true">✓</span>local metadata</span> ${esc(s.statusLocal)}`
+    ? `<span class="badge info">${esc(s.localMetadata)}</span> ${esc(s.statusLocal)}`
     : `${esc(s.statusBaseline)} (${esc(s.localCoverage(localCount, JURIS.length))})`;
   const scanRec = SCANS[j.slug];
   if (scanRec) {
-    html += `<br><span class="badge ok"><span class="status-ico" aria-hidden="true">✓</span>scanned</span> ` +
-      `Ordinance screened ${esc(scanRec.scanned_on)}: ${scanRec.findings} provision(s) ` +
-      `flagged for review — <a href="data/conformance/results/${esc(j.slug)}.json" rel="noopener">view scan findings (JSON)</a>.`;
+    const scanPath = safeLocalJsonPath(j.slug);
+    const scanLink = scanPath
+      ? ` — <a href="${esc(scanPath)}" rel="noopener">${esc(s.viewScan)}</a>`
+      : "";
+    html += `<br><span class="badge info">${esc(s.scanned)}</span> ` +
+      `${esc(s.scanRecord(scanRec.scanned_on, scanRec.findings))}${scanLink}.`;
   }
   const history = LETTERS[j.slug] || [];
   if (history.length) {
     html += `<br><span class="badge warn"><span class="status-ico" aria-hidden="true">⚠</span>HCD</span> ` +
-      `${esc(s.hcdHistory)}: ${history.length} letter(s) on record.`;
+      `${esc(s.hcdHistory)}: ${esc(s.letterCount(history.length))}`;
     for (const letter of history.slice(0, 3)) {
       const label = `${esc(letter.kind)}, ${esc(letter.date)}` +
         (letter.authority ? ` — ${esc(letter.authority)}` : "");
+      const letterUrl = safeExternalUrl(letter.url);
       html += `<br>&nbsp;&nbsp;· ` +
-        (letter.url ? `<a href="${esc(letter.url)}" rel="noopener">${label}</a>` : label);
+        (letterUrl
+          ? `<a lang="en" href="${esc(letterUrl)}" rel="noopener">${label}</a>`
+          : `<span lang="en">${label}</span>`);
     }
-    if (history.length > 3) html += `<br>&nbsp;&nbsp;· …and ${history.length - 3} more`;
+    if (history.length > 3)
+      html += `<br>&nbsp;&nbsp;· …${esc(s.moreLetters(history.length - 3))}`;
   }
-  el.innerHTML = html;
+  if (el.innerHTML !== html) el.innerHTML = html;
 }
 
 function scanOrdinance(text) {
@@ -935,11 +1500,18 @@ function scanOrdinance(text) {
 document.getElementById("scanBtn").addEventListener("click", () => {
   const text = document.getElementById("ordText").value;
   const el = document.getElementById("scanResults");
-  if (!text.trim()) { el.innerHTML = ""; return; }
+  const status = document.getElementById("scanStatus");
+  if (!text.trim()) {
+    el.innerHTML = "";
+    status.textContent = "Paste ordinance text before scanning.";
+    document.getElementById("ordText").focus();
+    return;
+  }
   const findings = scanOrdinance(text);
   if (!findings.length) {
     el.innerHTML = `<div class="notice">No candidate provisions flagged.
       Presence-based screen only — this is <b>not</b> a certification of compliance.</div>`;
+    status.textContent = "No candidate provisions were flagged. This is only a presence-based screen.";
     return;
   }
   el.innerHTML = findings.map(f => {
@@ -955,9 +1527,9 @@ document.getElementById("scanBtn").addEventListener("click", () => {
       <p class="small mutedtxt"><b>HCD precedent:</b> ${esc(f.check.hcd_precedent)}</p>
     </div>`;
   }).join("");
+  status.textContent = `${findings.length} potential provision${findings.length === 1 ? "" : "s"} flagged for review.`;
 });
-document.getElementById("loadSample").addEventListener("click", e => {
-  e.preventDefault();
+document.getElementById("loadSample").addEventListener("click", () => {
   document.getElementById("ordText").value = SAMPLE_ORDINANCE;
   document.getElementById("scanBtn").click();
 });
@@ -965,66 +1537,57 @@ document.getElementById("loadSample").addEventListener("click", e => {
 document.getElementById("clockBtn").addEventListener("click", () => {
   const v = document.getElementById("recvDate").value;
   const el = document.getElementById("clockResults");
-  if (!v) { el.innerHTML = ""; return; }
-  const received = new Date(v + "T12:00:00");
-  const nthWeekday = (y, m, wd, n) => {
-    const d = new Date(y, m, 1);
-    return new Date(y, m, 1 + ((wd - d.getDay() + 7) % 7) + 7 * (n - 1));
-  };
-  const lastWeekday = (y, m, wd) => {
-    const d = new Date(y, m + 1, 0);
-    return new Date(y, m, d.getDate() - ((d.getDay() - wd + 7) % 7));
-  };
-  const observed = d => {
-    const out = new Date(d);
-    if (d.getDay() === 6) out.setDate(d.getDate() - 1);
-    if (d.getDay() === 0) out.setDate(d.getDate() + 1);
+  const status = document.getElementById("clockStatus");
+  if (!v) {
+    el.innerHTML = "";
+    status.textContent = "Enter the application receipt date first.";
+    document.getElementById("recvDate").focus();
+    return;
+  }
+  const received = new Date(`${v}T00:00:00Z`);
+  const addCal = (dateValue, days) => {
+    const out = new Date(dateValue);
+    out.setUTCDate(out.getUTCDate() + days);
     return out;
   };
-  const caHolidays = y => {
-    const tg = nthWeekday(y, 10, 4, 4);
-    const dayAfterTg = new Date(tg); dayAfterTg.setDate(tg.getDate() + 1);
-    return new Set([
-      observed(new Date(y, 0, 1)), observed(new Date(y, 2, 31)),
-      observed(new Date(y, 6, 4)), observed(new Date(y, 10, 11)),
-      observed(new Date(y, 11, 25)),
-      nthWeekday(y, 0, 1, 3), nthWeekday(y, 1, 1, 3), lastWeekday(y, 4, 1),
-      nthWeekday(y, 8, 1, 1), tg, dayAfterTg,
-    ].map(d => d.toDateString()));
-  };
-  const hols = new Set([...caHolidays(received.getFullYear()),
-                        ...caHolidays(received.getFullYear() + 1)]);
-  const addBiz = (d, n) => {
-    const out = new Date(d);
-    while (n > 0) {
-      out.setDate(out.getDate() + 1);
-      if (out.getDay() % 6 !== 0 && !hols.has(out.toDateString())) n--;
-    }
-    return out;
-  };
-  const addCal = (d, n) => { const out = new Date(d); out.setDate(out.getDate() + n); return out; };
   const fmt = d => d.toISOString().slice(0, 10);
-  const completeness = addBiz(received, 15);
-  el.innerHTML = `<table>
-    <tr><th>Deadline</th><th>Date</th><th>Authority</th></tr>
-    <tr><td>Written completeness determination due</td><td>${fmt(completeness)}</td>
-        <td class="mutedtxt">Gov. Code § 66317(a)(2)(A) — 15 business days</td></tr>
-    <tr><td>Deemed complete if the agency stays silent</td><td>${fmt(addCal(completeness, 1))}</td>
-        <td class="mutedtxt">Gov. Code § 66317(a)(2)(F)</td></tr>
-    <tr><td>Approve/deny decision due (illustrative: complete on receipt)</td><td>${fmt(addCal(received, 60))}</td>
-        <td class="mutedtxt">Gov. Code § 66317(a)(3) — 60 days</td></tr>
-  </table>
-  <p class="small mutedtxt">Business days exclude weekends and California state
-  holidays (Gov. Code § 6700, as observed by state offices); jurisdictions may
-  observe additional local holidays. SB 9 applications share the 60-day
-  decision clock (Gov. Code §§ 65852.21, 66411.7).</p>`;
+  const canShowDecision = document.getElementById("clockComplete").checked
+    && document.getElementById("clockExisting").checked;
+  const decision = canShowDecision
+    ? `<time datetime="${fmt(addCal(received, 60))}">${fmt(addCal(received, 60))}</time>`
+    : "Not shown";
+  const decisionReason = canShowDecision
+    ? "Illustration only: complete on receipt and an existing dwelling confirmed."
+    : "Confirm both conditions above before using the 60-day illustration.";
+  el.innerHTML = `<div class="table-scroll" role="region"
+      aria-label="Review clock information" tabindex="0">
+    <table>
+      <thead><tr><th>Clock</th><th>Date</th><th>What is still needed</th></tr></thead>
+      <tbody>
+        <tr><td>Written completeness determination — 15 business days</td>
+          <td>Not calculated</td>
+          <td class="mutedtxt">The agency's closure calendar is required.</td></tr>
+        <tr><td>Deemed complete if the agency stays silent</td>
+          <td>Not calculated</td>
+          <td class="mutedtxt">This depends on the exact completeness-notice date.</td></tr>
+        <tr><td>Approve or deny — conditional 60-day illustration</td>
+          <td>${decision}</td><td class="mutedtxt">${decisionReason}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small mutedtxt">These rows describe separate clocks. A completeness
+  notice is not an approval. Corrections, resubmittals, tolling, and local
+  closures are not modeled.</p>`;
+  status.textContent = canShowDecision
+    ? "Clock information updated. The 60-day illustration is shown; the 15-business-day date remains unknown without the agency closure calendar."
+    : "Clock information updated. Exact dates are not shown until their required facts or calendar are available.";
 });
 
 function matchingSimulationCount() {
   if (LAST_RESULTS === null) return 0;
   return LAST_RESULTS.filter(rule =>
     ruleStatus(rule, []) === "verified"
-    && ruleStatus(rule, ["66321"]) === "stale"
+    && ruleStatus(rule, ["ca-gov-66321"]) === "stale"
   ).length;
 }
 
@@ -1036,53 +1599,28 @@ document.getElementById("simBtn").addEventListener("click", () => {
   const affected = matchingSimulationCount();
   simulating = true;
   rerenderSimulationState();
-  document.getElementById("simulationStatus").textContent =
-    STRINGS[lang].simulationApplied(affected);
+  const status = document.getElementById("simulationStatus");
+  status.lang = "en";
+  status.textContent = STRINGS.en.simulationApplied(affected);
   document.getElementById("resetBtn").focus();
 });
 document.getElementById("resetBtn").addEventListener("click", () => {
   const restored = matchingSimulationCount();
   simulating = false;
   rerenderSimulationState();
-  document.getElementById("simulationStatus").textContent =
-    STRINGS[lang].simulationReset(restored);
+  const status = document.getElementById("simulationStatus");
+  status.lang = "en";
+  status.textContent = STRINGS.en.simulationReset(restored);
   document.getElementById("simBtn").focus();
 });
 
-function captureIntakeState() {
-  const form = document.getElementById("intake");
-  const data = new FormData(form);
-  return {
-    projectType: data.get("project_type"),
-    dwellingType: data.get("dwelling_type"),
-    checked: new Set(
-      ["has_primary_dwelling", "in_urbanized_area", "sf_zone",
-       "unpermitted_existing", "no_exclusions"].filter(name => data.has(name))
-    ),
-  };
-}
-
-function restoreIntakeState(state) {
-  const project = document.querySelector(
-    `input[name="project_type"][value="${state.projectType}"]`
-  );
-  if (project) project.checked = true;
-  const dwelling = document.getElementById("dwellingSel");
-  if (state.dwellingType) dwelling.value = state.dwellingType;
-  ["has_primary_dwelling", "in_urbanized_area", "sf_zone",
-   "unpermitted_existing", "no_exclusions"].forEach(name => {
-    const input = document.querySelector(`input[name="${name}"]`);
-    if (input) input.checked = state.checked.has(name);
-  });
-}
-
 document.getElementById("langToggle").addEventListener("click", e => {
-  const intakeState = captureIntakeState();
+  rememberIntakeValues();
   e.preventDefault(); lang = lang === "en" ? "es" : "en";
   renderForm();
-  restoreIntakeState(intakeState);
   renderJurisStatus();
   if (LAST_RESULTS !== null) renderResults(LAST_RESULTS);
+  else if (LAST_UNRESOLVED !== null) renderNeedsStaffReview(LAST_UNRESOLVED);
 });
 
 function fetchJson(path) {
@@ -1099,14 +1637,36 @@ function fetchOptionalJson(path, fallback) {
   });
 }
 
+function validRuleManifest(manifest) {
+  return manifest && manifest.schema_version === 1
+    && Array.isArray(manifest.files)
+    && manifest.files.length > 0
+    && manifest.files.every(file =>
+      /^[a-z0-9][a-z0-9-]*\.json$/.test(file) && file !== "index.json"
+    );
+}
+
+async function fetchRuleData() {
+  const manifest = await fetchJson("data/rules/index.json");
+  if (!validRuleManifest(manifest))
+    throw new Error("data/rules/index.json: invalid rule manifest");
+  const files = await Promise.all(
+    manifest.files.map(file => fetchJson(`data/rules/${file}`))
+  );
+  if (!files.every(Array.isArray))
+    throw new Error("rule manifest contains a non-list rule file");
+  return {rules: files.flat(), rule_manifest: manifest};
+}
+
 function loadDemoData() {
   if (globalThis.PERMIT_PATHWAYS_DEMO_DATA) {
-    return Promise.resolve(globalThis.PERMIT_PATHWAYS_DEMO_DATA);
+    const data = globalThis.PERMIT_PATHWAYS_DEMO_DATA;
+    if (!Array.isArray(data.rules) || !validRuleManifest(data.rule_manifest))
+      return Promise.reject(new Error("generated demo bundle has invalid rule data"));
+    return Promise.resolve(data);
   }
   return Promise.all([
-    fetchJson("data/rules/statewide.json"),
-    fetchOptionalJson("data/rules/davis.json", []),
-    fetchOptionalJson("data/rules/woodland.json", []),
+    fetchRuleData(),
     fetchOptionalJson("data/golden/example.json", []),
     fetchOptionalJson("data/sources.json", {}),
     fetchOptionalJson("data/conformance/checks.json", []),
@@ -1115,11 +1675,10 @@ function loadDemoData() {
     fetchOptionalJson("data/conformance/results/index.json", {}),
     fetchOptionalJson("data/explanations/plain-language.json",
                       {schema_version: 1, entries: []}),
-  ]).then(([statewideRules, davisRules, woodlandRules, golden, sources,
+  ]).then(([ruleData, golden, sources,
             checks, registry, letters, scans, plainLanguage]) => ({
-    statewide_rules: statewideRules,
-    davis_rules: davisRules,
-    woodland_rules: woodlandRules,
+    rules: ruleData.rules,
+    rule_manifest: ruleData.rule_manifest,
     golden, sources, checks, registry, letters, scans,
     plain_language: plainLanguage,
   }));
@@ -1134,7 +1693,7 @@ function syncDataControls() {
 
 renderForm();
 loadDemoData().then(async data => {
-  RULES = [...data.statewide_rules, ...data.davis_rules, ...data.woodland_rules];
+  RULES = normalizeRules(data.rules);
   GOLDEN = data.golden; SOURCES = data.sources; CHECKS = data.checks;
   LETTERS = data.letters.letters || {}; SCANS = data.scans;
   EXPLANATIONS = await normalizeExplanations(data.plain_language, RULES);
@@ -1157,13 +1716,11 @@ loadDemoData().then(async data => {
 }).catch(error => {
   console.error("Permit Pathways demo data failed to load", error);
   syncDataControls();
-  document.getElementById("resultStatus").textContent = "Demo data did not load.";
+  const message = STRINGS[lang].dataLoadError;
+  document.getElementById("resultStatus").lang = lang;
+  document.getElementById("resultStatus").textContent = message;
   document.getElementById("results").innerHTML =
-    `<div class="notice"><b>Demo data did not load.</b> Keep
-    <code>data/demo-data.js</code> beside <code>index.html</code>, or serve the
-    repository over HTTP with <code>python3 -m http.server 8765</code>. The
-    pathway and ordinance-screening controls are disabled until the data is
-    available.</div>`;
+    `<div class="notice" lang="${lang}">${esc(message)}</div>`;
 });
 </script>
 </body>

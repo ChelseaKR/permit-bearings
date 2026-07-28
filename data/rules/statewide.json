@@ -1,25 +1,31 @@
 [
   {
     "rule_id": "adu-ministerial-review",
-    "pathway": "ADU \u2014 ministerial review",
+    "pathway": "ADU — ministerial review and application timelines",
+    "display_group": "route",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66317",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
       {
-        "field": "project_type",
-        "op": "eq",
-        "value": "adu"
-      },
-      {
-        "field": "has_primary_dwelling",
-        "op": "eq",
-        "value": true
+        "field": "primary_dwelling_status",
+        "op": "in",
+        "value": [
+          "existing_single_family",
+          "existing_multifamily",
+          "proposed_single_family",
+          "proposed_multifamily"
+        ]
       }
     ],
     "citation": {
-      "source": "Gov. Code \u00a7\u00a7 66317(a)(3), 66317(a)(2)(A) \u2014 HCD ADU Handbook (March 2026)",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "Requires a permitting agency to either approve or deny an application to create or serve an ADU or JADU within 60 days from when a completed application is received, if there is an existing single-family or multifamily dwelling on the lot. [...] Required a permitting agency to determine whether an application for an ADU or JADU is complete and provide written notice of the determination no later than 15 business days after the permitting agency received the application.",
+      "source": "Gov. Code § 66317",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66317",
+      "excerpt": "A permit application for an accessory dwelling unit shall be considered and approved ministerially without discretionary review or a hearing. [...] A permitting agency shall determine whether an application [...] is complete and provide written notice [...] not later than 15 business days after the permitting agency received the application. [...] The permitting agency shall either approve or deny [...] within 60 days from the date the permitting agency receives a completed application if there is an existing single-family or multifamily dwelling on the lot.",
       "verified_on": "2026-07-27"
     },
     "required_documents": [
@@ -27,135 +33,164 @@
       "floor plan",
       "jurisdiction ADU application form"
     ],
-    "notes": "Approved or denied without discretionary review or hearing (Gov. Code \u00a7 66317(a)). Completeness determination due within 15 business days (\u00a7 66317(a)(2)(A), effective 2026); approval/denial within 60 days of a complete application. Denials must include a full written list of defective items and how to remedy them (\u00a7 66317(b)). Encoded from the March 2026 HCD ADU Handbook; note SB 477 (2024) renumbered ADU law from \u00a7 65852.2 et seq. to \u00a7\u00a7 66310\u201366342."
+    "notes": "Ministerial review and the 15-business-day written completeness determination apply to ADU applications. The 60-calendar-day approval-or-denial period applies after receipt of a completed application when an existing single-family or multifamily dwelling is on the lot. When the ADU application accompanies a proposed primary dwelling, the agency may delay the ADU decision until it decides the primary-dwelling application. Applicant-requested delay tolls the 60-day period. An incomplete or denied application must receive written defects or missing items and a description of how to remedy them; § 66317(d) also requires an appeal process."
   },
   {
     "rule_id": "adu-protected-minimum",
-    "pathway": "ADU \u2014 state-protected minimum unit (800 sq ft, 4-ft setbacks)",
+    "pathway": "ADU — protected 800-square-foot option",
+    "display_group": "standard",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66321",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
       {
-        "field": "project_type",
-        "op": "eq",
-        "value": "adu"
-      },
-      {
-        "field": "has_primary_dwelling",
-        "op": "eq",
-        "value": true
+        "field": "primary_dwelling_status",
+        "op": "in",
+        "value": [
+          "existing_single_family",
+          "existing_multifamily",
+          "proposed_single_family",
+          "proposed_multifamily"
+        ]
       }
     ],
     "citation": {
-      "source": "Gov. Code \u00a7 66321(b)(3) \u2014 HCD ADU Handbook (March 2026)",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "Prohibits a local agency from requiring \"a zoning clearance or separate zoning review or any other minimum or maximum size for an accessory dwelling unit, size based upon a percentage of the proposed or existing primary dwelling, or limits on lot coverage, floor area ratio, open space, front setbacks, and minimum lot size, for either attached or detached dwellings that does not permit at least an 800 square foot accessory dwelling unit with four-foot side and rear yard setbacks to be constructed in compliance with all other local development standards.\"",
+      "source": "Gov. Code § 66321(b)(3)",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66321",
+      "excerpt": "A local agency shall not establish by ordinance [...] any [...] limits on lot coverage, floor area ratio, open space, front setbacks, and minimum lot size [...] that does not permit an accessory dwelling unit with at least 800 square feet of interior livable space and with four-foot side and rear yard setbacks to be constructed in compliance with all other local development standards.",
       "verified_on": "2026-07-27"
     },
     "required_documents": [],
-    "notes": "Local standards cannot preclude an 800 sq ft ADU with 4-foot side and rear setbacks. Useful as a floor when local objective standards appear to block a proposal."
+    "notes": "This is a protected option, not a required minimum unit size. An applicant may propose a smaller ADU. Local lot-coverage, floor-area-ratio, open-space, front-setback, and minimum-lot-size rules cannot eliminate the ability to build an ADU of at least 800 square feet with four-foot side and rear setbacks when every other applicable local development standard is met."
   },
   {
     "rule_id": "adu-height-standards",
-    "pathway": "ADU \u2014 state height allowances",
+    "pathway": "ADU — state-protected height options",
+    "display_group": "standard",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66321",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
       {
-        "field": "project_type",
-        "op": "eq",
-        "value": "adu"
-      },
-      {
-        "field": "has_primary_dwelling",
-        "op": "eq",
-        "value": true
+        "field": "primary_dwelling_status",
+        "op": "in",
+        "value": [
+          "existing_single_family",
+          "existing_multifamily",
+          "proposed_single_family",
+          "proposed_multifamily"
+        ]
       }
     ],
     "citation": {
-      "source": "Gov. Code \u00a7 66321(b)(4) \u2014 HCD ADU Handbook (March 2026)",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "Establishes a base height limitation of 16 feet for detached ADUs (Gov. Code, \u00a7 66321, subd. (b)(4)(A)). Increases the maximum height limitation on a detached ADU to 18 feet if the ADU is \"either within a half-mile walking distance of a major transit stop or a high-quality transit corridor\" and provides for an additional two feet for roof pitch [...] Establishes the maximum height limitation that may be imposed by a local agency on an attached ADU to 25 feet, or the existing primary dwelling height limit if lower than 25 feet.",
+      "source": "Gov. Code § 66321(b)(4)",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66321",
+      "excerpt": "Any height limitation [must] allow at least [...] 16 feet for a detached accessory dwelling unit [...]; 18 feet for a detached accessory dwelling unit [...] within one-half of one mile walking distance of a major transit stop or a high-quality transit corridor. A local agency shall also allow an additional two feet in height to accommodate a roof pitch [...] aligned with the roof pitch of the primary dwelling unit. [...] 18 feet for a detached accessory dwelling unit on a lot with an existing or proposed multifamily, multistory dwelling. [...] 25 feet or the height limitation [...] that applies to the primary dwelling, whichever is lower, for an accessory dwelling unit that is attached to a primary dwelling.",
       "verified_on": "2026-07-27"
     },
     "required_documents": [],
-    "notes": "Detached: 16 ft base; 18 ft near a major transit stop / high-quality transit corridor or on a lot with an existing or proposed multistory multifamily dwelling; +2 ft for roof pitch matching the primary dwelling. Attached: up to 25 ft or the primary dwelling height limit if lower."
+    "notes": "Detached ADUs have a 16-foot base protection. A detached ADU within one-half mile walking distance of a qualifying major transit stop or high-quality transit corridor must be allowed 18 feet; in that transit branch, an aligned primary-dwelling roof pitch can add two feet. A detached ADU on a lot with an existing or proposed multistory multifamily dwelling must be allowed 18 feet, but that branch alone does not carry the separate two-foot roof-pitch addition. An attached ADU must be allowed 25 feet or the primary dwelling's zoning height limit, whichever is lower, without requiring more than two stories."
   },
   {
     "rule_id": "jadu-standards",
-    "pathway": "JADU \u2014 ministerial review (within single-family residence)",
+    "pathway": "JADU — required location, features, and recorded restrictions",
+    "display_group": "standard",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66313",
+      "ca-gov-66333",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "jadu"},
       {
-        "field": "project_type",
-        "op": "eq",
-        "value": "jadu"
-      },
-      {
-        "field": "dwelling_type",
-        "op": "eq",
-        "value": "single_family"
+        "field": "primary_dwelling_status",
+        "op": "in",
+        "value": [
+          "existing_single_family",
+          "proposed_single_family"
+        ]
       }
     ],
     "citation": {
-      "source": "Gov. Code \u00a7\u00a7 66313(d), 66333(b), 66333(g) \u2014 HCD ADU Handbook (March 2026)",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "A unit that is no more than 500 square feet in interior livable space and contained entirely within a single-family residence. [...] if a JADU has shared sanitation facilities with the primary structure, owner-occupancy will be required. If the JADU does not have shared sanitation facilities, owner occupancy will not be required (Gov. Code, \u00a7 66333, subd. (b)). Additionally, made changes that stipulate JADUs can no longer be used as short-term rentals and, if rented, must now be rented for longer than 30 days (Gov. Code, \u00a7 66333, subd. (g)).",
+      "source": "Gov. Code §§ 66313(d), 66333",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66333",
+      "excerpt": "A [JADU] ordinance [...] shall [...] require the recordation of a deed restriction [...]; require a permitted junior accessory dwelling unit to be constructed within the walls of the proposed or existing single-family residence; require [...] a separate entrance from the main entrance [...]; require [...] an efficiency kitchen [...]; [and] require that a rental of a junior accessory dwelling unit be for a term longer than 30 days.",
       "verified_on": "2026-07-27"
     },
     "required_documents": [
       "floor plan showing the JADU within the single-family residence",
-      "jurisdiction JADU application form"
+      "jurisdiction JADU application form",
+      "deed restriction in the form required by the jurisdiction"
     ],
-    "notes": "Max 500 sq ft interior livable space, contained entirely within the single-family residence. Owner-occupancy required only when sanitation facilities are shared (2025 legislation). Rentals must exceed 30 days."
+    "notes": "A JADU is no more than 500 square feet of interior livable space and must be entirely within a proposed or existing single-family residence. It requires a separate entrance and an efficiency kitchen. A recorded deed restriction must prohibit separate sale and bind the JADU's size and attributes. Shared sanitation facilities require owner occupancy unless the statutory governmental-agency, land-trust, or housing-organization exception applies; separate sanitation facilities do not. A JADU rental must be longer than 30 days."
   },
   {
-    "rule_id": "sb9-two-unit-ministerial",
-    "pathway": "SB 9 \u2014 two-unit housing development (ministerial)",
+    "rule_id": "jadu-ministerial-review",
+    "pathway": "JADU — ministerial review and application timelines",
+    "display_group": "route",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66335",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "jadu"},
       {
-        "field": "project_type",
-        "op": "eq",
-        "value": "two_unit"
-      },
-      {
-        "field": "zone_class",
-        "op": "eq",
-        "value": "single_family_residential"
-      },
-      {
-        "field": "in_urbanized_area",
-        "op": "eq",
-        "value": true
-      },
-      {
-        "field": "demolishes_protected_housing",
-        "op": "eq",
-        "value": false
-      },
-      {
-        "field": "tenant_occupied_last_3_years",
-        "op": "eq",
-        "value": false
-      },
-      {
-        "field": "in_historic_district",
-        "op": "eq",
-        "value": false
-      },
-      {
-        "field": "on_protected_site",
-        "op": "eq",
-        "value": false
+        "field": "primary_dwelling_status",
+        "op": "in",
+        "value": [
+          "existing_single_family",
+          "proposed_single_family"
+        ]
       }
     ],
     "citation": {
-      "source": "Gov. Code \u00a7 65852.21 \u2014 HCD Housing Law Fact Sheet: Duplexes and Lot Splits (SB 9), April 2026",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/lot-splits-and-duplexes-sb-9.pdf",
-      "excerpt": "SB 9 requires ministerial approval of a housing development with no more than two primary units in a single-family zone [...] local objective standards cannot preclude the development of one or two units of at least 800 square feet each on a qualifying lot. [...] Setbacks. A rear and side setback of up to four feet, except where there is an existing structure with less or no setback. [...] A complete application for a housing development or urban lot split must be approved or denied within 60 days from the date the local agency receives it.",
+      "source": "Gov. Code § 66335",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66335",
+      "excerpt": "An application for a permit pursuant to this article shall [...] be considered ministerially, without discretionary review or a hearing. [...] A permitting agency shall determine whether an application [...] is complete and provide written notice [...] not later than 15 business days after the permitting agency received the application. [...] The permitting agency shall either approve or deny [...] within 60 days from the date the local agency receives a completed application if there is an existing single-family dwelling on the lot.",
+      "verified_on": "2026-07-28"
+    },
+    "required_documents": [
+      "jurisdiction JADU application form"
+    ],
+    "notes": "Ministerial review and the 15-business-day written completeness determination apply to JADU applications. The 60-calendar-day approval-or-denial period applies after receipt of a completed application when an existing single-family dwelling is on the lot. When the JADU application accompanies a proposed single-family dwelling, the agency may delay the JADU decision until it decides the primary-dwelling application. Applicant-requested delay tolls the 60-day period. Incomplete or denied applications must receive written defects or missing items and remedies; § 66335(e) also requires an appeal process."
+  },
+  {
+    "rule_id": "sb9-two-unit-ministerial",
+    "pathway": "SB 9 — possible two-unit housing route",
+    "display_group": "route",
+    "route_class": "ministerial",
+    "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-65852-21",
+      "hcd-sb9-fact-sheet-2026-04"
+    ],
+    "criteria": [
+      {"field": "project_type", "op": "eq", "value": "two_unit"},
+      {"field": "sf_zone", "op": "eq", "value": "yes"},
+      {"field": "in_urbanized_area", "op": "eq", "value": "yes"},
+      {"field": "demolishes_protected_housing", "op": "eq", "value": "no"},
+      {"field": "tenant_occupied_last_3_years", "op": "eq", "value": "no"},
+      {"field": "ellis_withdrawal_last_15_years", "op": "eq", "value": "no"},
+      {"field": "two_unit_contributing_historic_location", "op": "eq", "value": "no"},
+      {"field": "two_unit_individually_listed_historic_property", "op": "eq", "value": "no"},
+      {"field": "on_protected_site", "op": "eq", "value": "no"}
+    ],
+    "citation": {
+      "source": "Gov. Code § 65852.21",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=65852.21",
+      "excerpt": "A proposed housing development containing no more than two residential units within a single-family residential zone shall be considered ministerially [...] if [the parcel meets the listed urbanized-area, protected-site, protected-housing, Ellis Act, and historic-resource requirements]. [...] [Standards shall not] physically preclude the construction of up to two units or [...] either of the two units from being at least 800 square feet in floor area.",
       "verified_on": "2026-07-27"
     },
     "required_documents": [
@@ -163,281 +198,374 @@
       "floor plans for proposed units",
       "jurisdiction SB 9 application form"
     ],
-    "notes": "Up to two primary units, plus ADUs as permitted under ADU law. Exclusions encoded as intake screens: demolition/alteration of affordable-restricted, rent/price-controlled, or tenant-occupied (last 3 years) housing; Ellis Act withdrawals in last 15 years fall under protected housing; historic contributing structures/districts (AB 1061, 2025); environmentally sensitive/hazardous/protected sites per Gov. Code \u00a7 65913.4(a)(6)(B)\u2013(K). Amended by SB 450 (2024) and AB 1061 (2025). Rentals must exceed 30 days."
+    "notes": "This route requires explicit confirmation of every encoded condition: single-family residential zoning; qualifying urbanized location; no protected-site exclusion; no demolition or alteration of affordable-restricted, rent- or price-controlled, or recently tenant-occupied housing; no Ellis Act withdrawal within 15 years; no contributing structure in a historic district or property within a historic district designated by local ordinance; and no individually listed historic parcel or locally designated or listed historic property or landmark. A complete application must be approved or denied within 60 days. Rentals created under this section must be longer than 30 days. Local objective standards cannot physically preclude up to two units or prevent either unit from reaching 800 square feet."
   },
   {
     "rule_id": "sb9-urban-lot-split",
-    "pathway": "SB 9 \u2014 urban lot split (ministerial)",
+    "pathway": "SB 9 — possible urban lot-split route",
+    "display_group": "route",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66411-7",
+      "hcd-sb9-fact-sheet-2026-04"
+    ],
     "criteria": [
-      {
-        "field": "project_type",
-        "op": "eq",
-        "value": "lot_split"
-      },
-      {
-        "field": "zone_class",
-        "op": "eq",
-        "value": "single_family_residential"
-      },
-      {
-        "field": "in_urbanized_area",
-        "op": "eq",
-        "value": true
-      },
-      {
-        "field": "demolishes_protected_housing",
-        "op": "eq",
-        "value": false
-      },
-      {
-        "field": "tenant_occupied_last_3_years",
-        "op": "eq",
-        "value": false
-      },
-      {
-        "field": "in_historic_district",
-        "op": "eq",
-        "value": false
-      },
-      {
-        "field": "on_protected_site",
-        "op": "eq",
-        "value": false
-      },
-      {
-        "field": "parcel_created_by_sb9_split",
-        "op": "eq",
-        "value": false
-      }
+      {"field": "project_type", "op": "eq", "value": "lot_split"},
+      {"field": "sf_zone", "op": "eq", "value": "yes"},
+      {"field": "in_urbanized_area", "op": "eq", "value": "yes"},
+      {"field": "demolishes_protected_housing", "op": "eq", "value": "no"},
+      {"field": "tenant_occupied_last_3_years", "op": "eq", "value": "no"},
+      {"field": "ellis_withdrawal_last_15_years", "op": "eq", "value": "no"},
+      {"field": "lot_split_on_historic_landmark_site", "op": "eq", "value": "no"},
+      {"field": "lot_split_alters_historic_district_resource", "op": "eq", "value": "no"},
+      {"field": "on_protected_site", "op": "eq", "value": "no"},
+      {"field": "parcel_created_by_sb9_split", "op": "eq", "value": "no"},
+      {"field": "adjacent_sb9_split_same_actor", "op": "eq", "value": "no"},
+      {"field": "proposed_lot_ratio_compliant", "op": "eq", "value": "yes"},
+      {"field": "proposed_lot_size_compliant", "op": "eq", "value": "yes"}
     ],
     "citation": {
-      "source": "Gov. Code \u00a7 66411.7 \u2014 HCD Housing Law Fact Sheet: Duplexes and Lot Splits (SB 9), April 2026",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/lot-splits-and-duplexes-sb-9.pdf",
-      "excerpt": "the statute allows an applicant with a qualifying single-family lot to subdivide it into two lots of roughly equal size. [...] Local objective standards also cannot preclude the creation of two 1,200 square-foot lots. [...] an applicant for an urban lot split must sign an affidavit stating that the applicant intends to live in one of the units as their principal residence for at least three years from the date of approval of the urban lot split unless the applicant is a community land trust or nonprofit organization. [...] Parcels previously created under SB 9 lot split provisions are not eligible for further lot splits.",
+      "source": "Gov. Code § 66411.7",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66411.7",
+      "excerpt": "The parcel map subdivides an existing parcel to create no more than two new parcels of approximately equal lot area provided that one parcel shall not be smaller than 40 percent of the lot area of the original parcel [...]. Except as provided [by a smaller local minimum], both newly created parcels are no smaller than 1,200 square feet. [...] The parcel has not been established through prior exercise of an urban lot split [...]. Neither the owner [...] nor any person acting in concert with the owner has previously subdivided an adjacent parcel using an urban lot split.",
       "verified_on": "2026-07-27"
     },
     "required_documents": [
-      "tentative parcel map",
-      "owner-occupancy affidavit (3-year principal residence; exempt for community land trusts and nonprofits)",
-      "jurisdiction urban lot split application form"
+      "tentative parcel map showing proposed lot areas",
+      "owner-occupancy affidavit (three-year principal residence; statutory exception for qualifying community land trusts and nonprofit corporations)",
+      "jurisdiction urban lot-split application form"
     ],
-    "notes": "Two lots of roughly equal size; objective standards cannot preclude two 1,200 sq ft lots. Up to two units allowed on each resulting lot. Jurisdictions may not require right-of-way dedication, offsite improvements, or correction of nonconforming conditions. Same site exclusions as the two-unit pathway, plus: no re-split of SB 9 lots and no split of parcels adjacent to a lot split by the same owner or someone acting in concert."
+    "notes": "This route requires explicit confirmation of the encoded zoning, urbanized-location, protected-site, protected-housing, tenant, Ellis Act, and lot-split conditions. The parcel must not be on a historic-landmark property or designated historic site, and the proposal must not demolish or alter a contributing structure or exterior structural wall in a historic district. Neither resulting lot may be smaller than 40 percent of the original parcel. The lot-size answer is yes only when both resulting lots are at least 1,200 square feet or a current local ordinance has been verified to allow a smaller minimum that both lots meet. The original parcel cannot be a prior SB 9 split, and the same owner or a person acting in concert cannot have previously split an adjacent parcel under SB 9. The applicant generally must sign a three-year principal-residence affidavit; qualifying community land trusts and nonprofit corporations are excepted. A complete application must be approved or denied within 60 days."
   },
   {
     "rule_id": "adu-size-allowances",
-    "pathway": "ADU \u2014 state-protected size allowances",
+    "pathway": "ADU — state-protected size options",
+    "display_group": "standard",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66314",
+      "ca-gov-66321",
+      "ca-gov-66323",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
       {
-        "field": "project_type",
-        "op": "eq",
-        "value": "adu"
-      },
-      {
-        "field": "has_primary_dwelling",
-        "op": "eq",
-        "value": true
+        "field": "primary_dwelling_status",
+        "op": "in",
+        "value": [
+          "existing_single_family",
+          "existing_multifamily",
+          "proposed_single_family",
+          "proposed_multifamily"
+        ]
       }
     ],
     "citation": {
-      "source": "Gov. Code \u00a7\u00a7 66321(b)(2), 66314(d)(4)\u2013(5); HSC \u00a7 17958.1 \u2014 HCD ADU Handbook (March 2026)",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "maximum unit size requirements must allow an ADU of at least 850 square feet of interior livable space, or 1,000 square feet of interior livable space for ADUs with more than one bedroom. (Gov. Code, \u00a7 66321, subd. (b)(2).) For local agencies without a compliant ADU ordinance, maximum unit sizes are 1,200 square feet of interior livable space for a new detached ADU (Gov. Code, \u00a7 66314, subd. (d)(4)) and up to 50 percent of the floor area of the existing primary dwelling for an attached ADU (at least 800 square feet of interior livable space) [...] The conversion of an existing accessory structure or a portion of the existing primary residence to an ADU is not subject to unit size requirements. (Gov. Code, \u00a7 66323, subd. (a)(1).)",
+      "source": "Gov. Code §§ 66321(b)(1)–(2), 66314(d)(4)–(5), 66323(a)(1)",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66321",
+      "excerpt": "A local agency shall not establish [...] a maximum square footage requirement [...] that is less than [...] eight hundred fifty square feet of interior livable space [or] one thousand square feet [...] for an accessory dwelling unit that provides more than one bedroom. [A local rule also cannot set a minimum that prohibits an efficiency unit.]",
       "verified_on": "2026-07-27"
     },
     "required_documents": [],
-    "notes": "Local maximum sizes must allow at least 850 sq ft (or 1,000 sq ft for more than one bedroom) of interior livable space. Without a compliant local ordinance: 1,200 sq ft detached, 50% of primary dwelling floor area for attached (minimum 800 sq ft). No minimum size may prohibit an efficiency unit (as small as 150 sq ft, HSC \u00a7 17958.1). Conversions of existing space are not subject to size limits."
+    "notes": "These are protections against overly restrictive local size rules, not required minimum unit sizes. An applicant may propose a smaller unit. Any local maximum must still allow 850 square feet of interior livable space, or 1,000 square feet for an ADU with more than one bedroom. Where no compliant local ordinance exists, § 66314 supplies different attached and detached limits. Qualifying conversions under § 66323(a)(1) are not subject to unit-size limits."
   },
   {
     "rule_id": "adu-parking-limits",
-    "pathway": "ADU \u2014 parking limits and exemptions",
+    "pathway": "ADU — parking limits and no-parking conditions",
+    "display_group": "standard",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66314",
+      "ca-gov-66322",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
       {
-        "field": "project_type",
-        "op": "eq",
-        "value": "adu"
-      },
-      {
-        "field": "has_primary_dwelling",
-        "op": "eq",
-        "value": true
+        "field": "primary_dwelling_status",
+        "op": "in",
+        "value": [
+          "existing_single_family",
+          "existing_multifamily",
+          "proposed_single_family",
+          "proposed_multifamily"
+        ]
       }
     ],
     "citation": {
-      "source": "Gov. Code \u00a7\u00a7 66314(d)(10)\u2013(11), 66322(a) \u2014 HCD ADU Handbook (March 2026)",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "Parking requirements for ADUs shall not exceed one parking space per unit or bedroom, whichever is less (Gov. Code, \u00a7 66314, subd. (d)(10)(A)). These spaces may be provided as tandem parking on a driveway [...] Guest parking spaces shall not be required for ADUs under any circumstances. [...] a local agency may not require off-street parking spaces to be replaced when a garage, carport, covered parking structure, or uncovered parking space is demolished in conjunction with the construction of an ADU [...] A local agency shall not impose parking standards on any of the following ADUs, pursuant to Government Code section 66322, subdivision (a): 1) ADUs located within one-half mile walking distance of public transit.",
+      "source": "Gov. Code §§ 66314(d)(10)–(11), 66322(a)",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66322",
+      "excerpt": "A local agency shall not impose any parking standards for an accessory dwelling unit [within a half-mile walk of public transit; in an architecturally and historically significant historic district; as part of the primary residence or an accessory structure; where on-street permits are required but unavailable to the ADU occupant; or within one block of car share]. [...] [The same applies to an ADU application submitted with a new primary-dwelling application when another listed criterion is satisfied.]",
       "verified_on": "2026-07-27"
     },
     "required_documents": [],
-    "notes": "Maximum one space per unit or bedroom, whichever is less; tandem on a driveway counts; guest parking never required. Full exemptions (\u00a7 66322(a)): within half-mile walk of public transit; in an architecturally/historically significant district; ADU part of the primary residence or accessory structure; on-street permits required but not offered to the ADU occupant; car-share vehicle within a block. Demolished garage/carport parking need not be replaced."
+    "notes": "Outside an exemption, parking cannot exceed one space per ADU or bedroom, whichever is fewer; tandem parking on a driveway is allowed, and guest parking cannot be required. No ADU parking standard may be imposed when any § 66322(a)(1)–(5) condition applies: half-mile walking distance to public transit; qualifying historic district; ADU within the primary residence or an accessory structure; on-street permits required but not offered to the ADU occupant; or car share within one block. A jointly submitted new-primary-dwelling application also receives the exemption when the ADU or parcel satisfies another listed condition. Parking removed for ADU construction or conversion need not be replaced."
   },
   {
     "rule_id": "adu-no-owner-occupancy-rental",
-    "pathway": "ADU \u2014 no owner-occupancy requirement; rental terms",
+    "pathway": "ADU on a single-family lot — occupancy and ordinary rental terms",
+    "display_group": "standard",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66315",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
       {
-        "field": "project_type",
-        "op": "eq",
-        "value": "adu"
-      },
-      {
-        "field": "has_primary_dwelling",
-        "op": "eq",
-        "value": true
+        "field": "primary_dwelling_status",
+        "op": "in",
+        "value": [
+          "existing_single_family",
+          "proposed_single_family"
+        ]
       }
     ],
     "citation": {
-      "source": "Gov. Code \u00a7\u00a7 66315, 66323(e), 66333(g) \u2014 HCD ADU Handbook (March 2026)",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "Only ADUs which are sold separately to a qualified buyer under Government Code section 66341, subdivision (c)(3), can require owner-occupancy. Otherwise, a local agency cannot impose an owner-occupancy requirement on any other ADU (Gov. Code, \u00a7 66315). [...] Local agencies may require that ADUs and JADUs be rented for terms longer than 30 days (Gov. Code, \u00a7 66315; 66323, subd. (e); 66333, subd. (g)).",
+      "source": "Gov. Code § 66315",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66315",
+      "excerpt": "No additional standards, other than those provided in Section 66314, shall be used or imposed, including an owner-occupant requirement, except that a local agency may require that the property may be used for rentals of terms 30 days or longer.",
       "verified_on": "2026-07-27"
     },
     "required_documents": [],
-    "notes": "A jurisdiction cannot require the owner to live on the property to permit an ADU (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). Jurisdictions may require rental terms longer than 30 days \u2014 no short-term rentals."
+    "notes": "For an ADU evaluated under §§ 66314–66315 on a lot with a proposed or existing single-family dwelling, a jurisdiction cannot impose an owner-occupancy condition. A jurisdiction may require a rental term of at least 30 days; § 66315 does not require a term longer than 30 days. Separately conveyed ADUs under § 66341 and units created under § 66323 have distinct conditions and are not described by this rental-term record."
   },
   {
     "rule_id": "adu-conversion-exemptions",
-    "pathway": "ADU \u2014 conversion of existing space (setback and standards exemptions)",
+    "pathway": "ADU — existing-space conversion or same-footprint replacement",
+    "display_group": "standard",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66314",
+      "ca-gov-66323",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
       {
-        "field": "project_type",
-        "op": "eq",
-        "value": "adu"
+        "field": "primary_dwelling_status",
+        "op": "in",
+        "value": [
+          "existing_single_family",
+          "existing_multifamily",
+          "proposed_single_family",
+          "proposed_multifamily"
+        ]
       },
       {
-        "field": "has_primary_dwelling",
-        "op": "eq",
-        "value": true
+        "field": "adu_project_form",
+        "op": "in",
+        "value": [
+          "conversion",
+          "same_footprint_rebuild"
+        ]
       }
     ],
     "citation": {
-      "source": "Gov. Code \u00a7\u00a7 66314(d)(7), 66323(a)(1), (a)(3)(A) \u2014 HCD ADU Handbook (March 2026)",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "No setback shall be required for an ADU or JADU created within an existing living area or accessory structure or an ADU created in a new structure in the same location and to the same dimensions as an existing structure (Gov. Code, \u00a7 66314, subd. (d)(7)). [...] Objective standards related to height, lot coverage, landscape, design, development, and architectural standards in the local ADU ordinance do not apply to ADU conversions. [...] ADU conversions are not subject to setback requirements because they are created within an existing living area or are constructed in the same location and to the same dimensions as an existing structure.",
+      "source": "Gov. Code §§ 66314(d)(7), 66323(a)(1), 66323(a)(3)",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66314",
+      "excerpt": "No setback shall be required for an existing living area or accessory structure or a structure constructed in the same location and to the same dimensions as an existing structure that is converted to an accessory dwelling unit or to a portion of an accessory dwelling unit.",
       "verified_on": "2026-07-27"
     },
-    "required_documents": [],
-    "notes": "Converting existing space (garage, accessory structure, part of the house) or rebuilding in the same location and dimensions: no setback requirements, and local height/lot-coverage/design standards do not apply. Conversions remain subject to building, health and safety, and fire codes."
+    "required_documents": [
+      "existing-condition plans or photographs showing the space, location, and dimensions"
+    ],
+    "notes": "This record matches only when the intake identifies an existing-space conversion or a new structure replacing an existing structure in the same location and dimensions. Those projects receive the no-setback treatment in § 66314(d)(7). Qualifying § 66323 conversions also receive the standards exemptions stated there. Building, health-and-safety, and fire requirements still apply."
   },
   {
     "rule_id": "adu-unpermitted-legalization",
-    "pathway": "ADU \u2014 legalizing an unpermitted unit built before 2020",
+    "pathway": "ADU — possible legalization of a unit built before 2020",
+    "display_group": "route",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66311-7",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
       {
-        "field": "project_type",
-        "op": "eq",
-        "value": "adu"
+        "field": "primary_dwelling_status",
+        "op": "in",
+        "value": [
+          "existing_single_family",
+          "existing_multifamily"
+        ]
       },
-      {
-        "field": "unpermitted_existing",
-        "op": "eq",
-        "value": true
-      }
+      {"field": "unpermitted_existing", "op": "eq", "value": "yes"}
     ],
     "citation": {
-      "source": "Gov. Code \u00a7 66311.7 \u2014 HCD ADU Handbook (March 2026)",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "A local agency shall not deny a permit for an unpermitted ADU that was constructed before January 1, 2020, due to the ADU being in violation of building standards, non-compliance with State ADU Law, or any local ordinance regulating ADUs (Gov. Code, \u00a7 66311.7, subd. (a)). However, the local agency may deny the permit if the local agency makes a finding that correcting the violation is necessary to protect the health and safety of the public or occupants of the structure, or if the building is deemed substandard pursuant to section 17920.3 of the Health and Safety Code.",
+      "source": "Gov. Code § 66311.7",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66311.7",
+      "excerpt": "A local agency shall not deny a permit for an unpermitted accessory dwelling unit or an unpermitted junior accessory dwelling unit that was constructed before January 1, 2020 [because of listed building-standard, state-law, or local-ordinance violations, subject to the substandard-building exception]. [...] A homeowner [...] shall not be required to pay impact fees or connection or capacity charges except [for the stated utility-infrastructure exception].",
       "verified_on": "2026-07-27"
     },
     "required_documents": [
       "permit application for the existing unit",
-      "optional: confidential third-party code inspection report from a licensed contractor (Gov. Code \u00a7 66311.7(d)(2))"
+      "optional confidential third-party code inspection report from a licensed contractor"
     ],
-    "notes": "Units built before January 1, 2020 without permits can generally be legalized: denial requires specific health-and-safety or substandard-building findings. The agency must publish a checklist of substandard conditions (HSC \u00a7 17920.3) and inform homeowners they may obtain a confidential third-party inspection before applying."
+    "notes": "For an unpermitted ADU built before January 1, 2020, denial cannot rest only on the violations listed in § 66311.7(a). The protection does not apply when the building is deemed substandard under HSC § 17920.3, and an agency may require corrections needed to meet those standards. The agency must publish its substandard-condition checklist and tell homeowners about the optional confidential pre-application inspection. Impact fees and connection or capacity charges are barred except for the limited utility-infrastructure exception. A local inspection may recommend health-and-safety corrections; the agency may not penalize the applicant for the unpermitted unit and must approve permits needed to correct noncompliance."
   },
   {
-    "rule_id": "adu-multifamily-66323",
-    "pathway": "ADU \u2014 multifamily lot allowances (66323 Units)",
+    "rule_id": "jadu-unpermitted-legalization",
+    "pathway": "JADU — possible legalization of a unit built before 2020",
+    "display_group": "route",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66311-7",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "jadu"},
       {
-        "field": "project_type",
+        "field": "primary_dwelling_status",
         "op": "eq",
-        "value": "adu"
+        "value": "existing_single_family"
       },
-      {
-        "field": "dwelling_type",
-        "op": "eq",
-        "value": "multifamily"
-      }
+      {"field": "unpermitted_existing", "op": "eq", "value": "yes"}
     ],
     "citation": {
-      "source": "Gov. Code \u00a7 66323(a)(3)\u2013(a)(4) \u2014 HCD ADU Handbook (March 2026)",
-      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "Under Government Code section 66323, an applicant may apply to build up to eight detached ADUs (Gov. Code, \u00a7 66323, subd. (a)(4)(A)) and at least one conversion ADU within an existing multifamily dwelling and up to 25 percent of the number of units in the existing multifamily dwelling (Gov. Code, \u00a7 66323, subd. (a)(3)(B)).",
+      "source": "Gov. Code § 66311.7",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66311.7",
+      "excerpt": "A local agency shall not deny a permit for an unpermitted accessory dwelling unit or an unpermitted junior accessory dwelling unit that was constructed before January 1, 2020 [because of listed building-standard, state-law, or local-ordinance violations, subject to the substandard-building exception]. [...] A homeowner [...] shall not be required to pay impact fees or connection or capacity charges except [for the stated utility-infrastructure exception].",
       "verified_on": "2026-07-27"
     },
     "required_documents": [
-      "site plan showing existing multifamily structure and proposed ADU locations"
+      "permit application for the existing unit",
+      "optional confidential third-party code inspection report from a licensed contractor"
     ],
-    "notes": "On a lot with an existing multifamily dwelling: up to eight detached ADUs (not exceeding the number of existing units on the lot; 16-ft height limit and 4-ft rear/side setbacks apply), plus conversion ADUs in non-livable space (storage rooms, passageways) up to 25% of existing unit count. 66323 Units are exempt from local design/development standards not specified in \u00a7 66323."
+    "notes": "The same § 66311.7 legalization protections for pre-2020 unpermitted units expressly cover JADUs. They remain subject to the substandard-building and necessary-correction boundaries, public-checklist requirements, limited fee exception, and inspection/remedy process described in this section."
   },
   {
-    "rule_id": "sb9-adu-interaction",
-    "pathway": "SB 9 + ADU law \u2014 how unit counts combine",
+    "rule_id": "adu-multifamily-66323",
+    "pathway": "ADU — allowances on a lot with an existing multifamily dwelling",
+    "display_group": "route",
     "route_class": "ministerial",
     "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66321",
+      "ca-gov-66323",
+      "hcd-adu-handbook-2026-03"
+    ],
     "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
       {
-        "field": "project_type",
-        "op": "in",
-        "value": [
-          "two_unit",
-          "lot_split"
-        ]
-      },
-      {
-        "field": "zone_class",
+        "field": "primary_dwelling_status",
         "op": "eq",
-        "value": "single_family_residential"
-      },
-      {
-        "field": "in_urbanized_area",
-        "op": "eq",
-        "value": true
-      },
-      {
-        "field": "demolishes_protected_housing",
-        "op": "eq",
-        "value": false
-      },
-      {
-        "field": "tenant_occupied_last_3_years",
-        "op": "eq",
-        "value": false
-      },
-      {
-        "field": "in_historic_district",
-        "op": "eq",
-        "value": false
-      },
-      {
-        "field": "on_protected_site",
-        "op": "eq",
-        "value": false
+        "value": "existing_multifamily"
       }
     ],
     "citation": {
-      "source": "Gov. Code \u00a7\u00a7 65852.21, 66411.7 + State ADU Law \u2014 HCD ADU Handbook (March 2026)",
+      "source": "Gov. Code § 66323(a)(3)–(4)",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66323",
+      "excerpt": "A local agency shall allow at least one accessory dwelling unit within an existing multifamily dwelling and shall allow up to 25 percent of the existing multifamily dwelling units. [...] On a lot with an existing multifamily dwelling, not more than eight detached accessory dwelling units. However, the number [...] shall not exceed the number of existing units on the lot.",
+      "verified_on": "2026-07-27"
+    },
+    "required_documents": [
+      "site plan showing the existing multifamily dwelling, existing unit count, and proposed ADU locations",
+      "floor plan identifying any non-livable space proposed for conversion"
+    ],
+    "notes": "An existing multifamily property can use two § 66323 branches. Non-livable portions of the existing structure can be converted into at least one ADU and up to 25 percent of the existing unit count. The lot can also add up to eight detached ADUs, never more than its existing unit count. Detached ADUs are subject to no more than four-foot side and rear setbacks and to the applicable § 66321(b)(4)(A), (B), or (C) height branch—not a blanket 16-foot cap. Rentals of units created under § 66323 must be longer than 30 days."
+  },
+  {
+    "rule_id": "adu-multifamily-proposed-66323",
+    "pathway": "ADU — allowances with a proposed multifamily dwelling",
+    "display_group": "route",
+    "route_class": "ministerial",
+    "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66321",
+      "ca-gov-66323",
+      "hcd-adu-handbook-2026-03"
+    ],
+    "criteria": [
+      {"field": "project_type", "op": "eq", "value": "adu"},
+      {
+        "field": "primary_dwelling_status",
+        "op": "eq",
+        "value": "proposed_multifamily"
+      }
+    ],
+    "citation": {
+      "source": "Gov. Code § 66323(a)(4)(A)(iii)",
+      "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66323",
+      "excerpt": "On a lot with a proposed multifamily dwelling, not more than two detached accessory dwelling units.",
+      "verified_on": "2026-07-27"
+    },
+    "required_documents": [
+      "site plan showing the proposed multifamily dwelling and both proposed detached ADU locations"
+    ],
+    "notes": "A lot with a proposed multifamily dwelling can receive no more than two detached ADUs under § 66323(a)(4)(A)(iii). The existing-building conversion allowance does not apply until there is an existing multifamily dwelling with qualifying non-livable space. Detached ADUs are subject to no more than four-foot side and rear setbacks and to the applicable § 66321(b)(4)(A), (B), or (C) height branch. Rentals of units created under § 66323 must be longer than 30 days."
+  },
+  {
+    "rule_id": "sb9-adu-interaction",
+    "pathway": "SB 9 two-unit development — interaction with ADU and JADU rules",
+    "display_group": "standard",
+    "route_class": "ministerial",
+    "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-65852-21",
+      "hcd-adu-handbook-2026-03"
+    ],
+    "criteria": [
+      {"field": "project_type", "op": "eq", "value": "two_unit"},
+      {"field": "sf_zone", "op": "eq", "value": "yes"},
+      {"field": "in_urbanized_area", "op": "eq", "value": "yes"},
+      {"field": "demolishes_protected_housing", "op": "eq", "value": "no"},
+      {"field": "tenant_occupied_last_3_years", "op": "eq", "value": "no"},
+      {"field": "ellis_withdrawal_last_15_years", "op": "eq", "value": "no"},
+      {"field": "two_unit_contributing_historic_location", "op": "eq", "value": "no"},
+      {"field": "two_unit_individually_listed_historic_property", "op": "eq", "value": "no"},
+      {"field": "on_protected_site", "op": "eq", "value": "no"}
+    ],
+    "citation": {
+      "source": "Gov. Code § 65852.21 and State ADU Law — HCD ADU Handbook (March 2026)",
       "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
-      "excerpt": "When a lot split occurs, SB 9 requires the local agency to approve up to two units on each parcel but specifically states that only two units are allowed per parcel, despite what ADU Law would otherwise allow. Those two units could be two primary \"SB 9 units,\" or one primary unit and one ADU, or one primary unit and one JADU. [...] When an SB 9 lot split has not occurred, the lot is eligible to receive up to two primary units under SB 9, as well as whatever combination of ADUs and JADUs it would otherwise be entitled to under ADU Law.",
+      "excerpt": "When an SB 9 lot split has not occurred, the lot is eligible to receive up to two primary units under SB 9, as well as whatever combination of ADUs and JADUs it would otherwise be entitled to under ADU Law.",
       "verified_on": "2026-07-27"
     },
     "required_documents": [],
-    "notes": "After an SB 9 lot split: hard cap of two units per resulting parcel (any mix of primary units, ADU, or JADU). Without a lot split: two primary units plus normal ADU/JADU entitlements \u2014 but if that combination exceeds four total units, the agency is not required to also approve a lot split."
+    "notes": "This interaction record applies to the two-unit development route without an SB 9 lot split. Up to two primary units may be combined with the ADU and JADU units otherwise allowed by State ADU Law. If a proposal also seeks a lot split and the combined development would exceed four units, § 66411.7 is not required to provide the additional lot-split approval."
+  },
+  {
+    "rule_id": "sb9-lot-split-adu-interaction",
+    "pathway": "SB 9 lot split — two-unit-per-parcel interaction with ADU and JADU rules",
+    "display_group": "standard",
+    "route_class": "ministerial",
+    "jurisdiction_scope": "statewide",
+    "source_dependencies": [
+      "ca-gov-66411-7",
+      "hcd-adu-handbook-2026-03"
+    ],
+    "criteria": [
+      {"field": "project_type", "op": "eq", "value": "lot_split"},
+      {"field": "sf_zone", "op": "eq", "value": "yes"},
+      {"field": "in_urbanized_area", "op": "eq", "value": "yes"},
+      {"field": "demolishes_protected_housing", "op": "eq", "value": "no"},
+      {"field": "tenant_occupied_last_3_years", "op": "eq", "value": "no"},
+      {"field": "ellis_withdrawal_last_15_years", "op": "eq", "value": "no"},
+      {"field": "lot_split_on_historic_landmark_site", "op": "eq", "value": "no"},
+      {"field": "lot_split_alters_historic_district_resource", "op": "eq", "value": "no"},
+      {"field": "on_protected_site", "op": "eq", "value": "no"},
+      {"field": "parcel_created_by_sb9_split", "op": "eq", "value": "no"},
+      {"field": "adjacent_sb9_split_same_actor", "op": "eq", "value": "no"},
+      {"field": "proposed_lot_ratio_compliant", "op": "eq", "value": "yes"},
+      {"field": "proposed_lot_size_compliant", "op": "eq", "value": "yes"}
+    ],
+    "citation": {
+      "source": "Gov. Code § 66411.7 and State ADU Law — HCD ADU Handbook (March 2026)",
+      "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
+      "excerpt": "When a lot split occurs, SB 9 requires the local agency to approve up to two units on each parcel but specifically states that only two units are allowed per parcel, despite what ADU Law would otherwise allow. Those two units could be two primary \"SB 9 units,\" or one primary unit and one ADU, or one primary unit and one JADU.",
+      "verified_on": "2026-07-27"
+    },
+    "required_documents": [],
+    "notes": "After a qualifying SB 9 lot split, each resulting parcel is capped at two total units in an allowed combination of primary units, ADUs, and JADUs. This record is separate from the no-lot-split interaction so missing lot-split eligibility facts cannot produce a favorable unit-count result."
   }
 ]
