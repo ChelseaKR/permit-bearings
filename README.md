@@ -1,9 +1,13 @@
-# Permit Pathways
+# Permit Bearings
 
-**Housing-law conformance infrastructure for California jurisdictions:
-an ordinance conformance scanner regression-checked against provisions from
-an HCD enforcement letter, a citation-grounded permit navigator, statutory
-review clocks, and a verification harness for detecting source drift.**
+**Find a candidate route. See the sources behind it. Take open questions to
+staff.**
+
+Prototype source-grounded housing-law conformance infrastructure for California
+jurisdictions: an ordinance conformance scanner regression-checked against
+provisions from an HCD enforcement letter, a citation-grounded permit
+navigator, statutory review clocks, and a verification harness for detecting
+source drift.
 
 **Live demo:** https://chelseakr.github.io/permit-pathways/
 
@@ -34,8 +38,8 @@ evaluation. Presence-based screening flags candidate provisions with the
 controlling state law and HCD precedent for staff/counsel review; it cannot
 certify compliance or detect every omission.
 
-Working title. Conceived 2026-07-27 for the California AI Permitting Innovation
-Showcase (ODI / GovOps / CHHA / GO-Biz). See [PROVENANCE.md](PROVENANCE.md).
+Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
+(ODI / GovOps / CHHA / GO-Biz). See [PROVENANCE.md](PROVENANCE.md).
 
 ## The premise
 
@@ -43,7 +47,7 @@ Every vendor can demo a permitting chatbot. The question jurisdictions actually
 ask is: *how do we know the answers are right — and how do we know they're
 still right after the next legislative session?*
 
-Permit Pathways treats that question as the product:
+Permit Bearings treats that question as the product:
 
 1. **Pathway screening** — structured intake (project type, applicant-supplied
    lot facts, jurisdiction) produces candidate ADU, JADU, and SB 9 pathways

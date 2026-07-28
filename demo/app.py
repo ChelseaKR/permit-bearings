@@ -1,4 +1,4 @@
-"""Permit Pathways demo server (stdlib only).
+"""Permit Bearings demo server (stdlib only).
 
     PYTHONPATH=src python3 demo/app.py
 
@@ -90,9 +90,9 @@ FIELD_VALUES.update(
 
 STRINGS = {
     "en": {
-        "title": "Permit Pathways — demo",
-        "tagline": "Every candidate answer cites a source. Selected statewide "
-                   "sources are watched for change.",
+        "title": "Permit Bearings — demo",
+        "tagline": "Find a candidate route. See the sources behind it. "
+                   "Take open questions to staff.",
         "scope": "The language choice applies to the applicant form and results. "
                  "The trust dashboard remains in English.",
         "project_type": "What are you proposing?",
@@ -240,9 +240,9 @@ STRINGS = {
         "dashboard": "Trust dashboard",
     },
     "es": {
-        "title": "Permit Pathways — demostración",
-        "tagline": "Cada respuesta posible cita una fuente. Se monitorean "
-                   "fuentes estatales seleccionadas.",
+        "title": "Permit Bearings — demostración",
+        "tagline": "Encuentre una posible ruta. Vea las fuentes que la respaldan. "
+                   "Consulte las preguntas pendientes con el personal de la agencia.",
         "scope": "El idioma elegido se aplica al formulario y a los resultados "
                  "para solicitantes. El panel de confianza permanece en inglés.",
         "project_type": "¿Qué propone construir?",
@@ -475,7 +475,7 @@ def page(title, body, lang="en"):
 <a class="skip-link" href="#main">{skip_label}</a>
 <main id="main">
 <nav aria-label="{nav_label}">
-<a href="/?lang={lang}">Permit Pathways</a>
+<a href="/?lang={lang}">Permit Bearings</a>
 <a href="/trust?lang=en" lang="en">Trust dashboard (English)</a>
 <a href="/?lang={other}" lang="{other}">{html.escape(other_label)}</a>
 </nav>
@@ -1164,5 +1164,5 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
-    print(f"Permit Pathways demo → http://localhost:{port}")
+    print(f"Permit Bearings demo → http://localhost:{port}")
     ThreadingHTTPServer(("127.0.0.1", port), Handler).serve_forever()

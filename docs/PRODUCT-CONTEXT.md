@@ -10,7 +10,7 @@ California's desired outcome is more housing permitted faster by making
 permitting clearer for applicants and less burdensome for staff, without
 assuming every jurisdiction can replace its existing systems.
 
-Permit Pathways should be the **auditable assurance layer behind a legible
+Permit Bearings should be the **auditable assurance layer behind a legible
 applicant journey**:
 
 > Turn official sources into testable rules and requirements; turn project

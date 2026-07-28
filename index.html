@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self'; base-uri 'none'">
-<title>Permit Pathways — cited housing-permit guidance for California jurisdictions</title>
-<meta name="description" content="Citation-grounded ADU, JADU, and SB 9 candidate pathway guidance for California jurisdictions, with a prototype source-drift review harness.">
-<meta property="og:title" content="Permit Pathways">
-<meta property="og:description" content="Every candidate answer cites a source. Selected statewide sources are watched for change. ADU, JADU, and SB 9 guidance with a public trust dashboard.">
+<title>Permit Bearings — cited housing-permit guidance for California jurisdictions</title>
+<meta name="description" content="Prototype source-grounded ADU, JADU, and SB 9 candidate-route guidance for California jurisdictions, with visible source status and a source-drift review harness.">
+<meta property="og:title" content="Permit Bearings">
+<meta property="og:description" content="Find a candidate route, see its cited source, and identify what still needs confirmation. Prototype ADU, JADU, and SB 9 guidance for California jurisdictions.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
 <style>
@@ -189,8 +189,8 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
   <button class="nav-button" id="langToggle" type="button">Español: formulario y resultados</button>
 </nav>
 
-<h1 id="t-title">Permit Pathways</h1>
-<p class="tag" id="t-tagline">Every candidate answer cites a source. Selected statewide sources are watched for change.</p>
+<h1 id="t-title">Permit Bearings</h1>
+<p class="tag" id="t-tagline">Find a candidate route. See the sources behind it. Take open questions to staff.</p>
 <p class="small translation-scope" id="translationScope">The language choice applies to the applicant form and pathway results. The ordinance, clock, and trust tools below remain in English.</p>
 
 <section id="screen" aria-labelledby="screenHeading">
@@ -320,7 +320,7 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
 <script>
 const STRINGS = {
   en: {
-    tagline: "Every candidate answer cites a source. Selected statewide sources are watched for change.",
+    tagline: "Find a candidate route. See the sources behind it. Take open questions to staff.",
     screenHeading: "Find a possible permit path",
     translationScope: "The language choice applies to the applicant form and pathway results. The ordinance, clock, and trust tools below remain in English.",
     juris: "Where is the property?",
@@ -421,7 +421,7 @@ const STRINGS = {
     langBtn: "Español: formulario y resultados",
   },
   es: {
-    tagline: "Cada respuesta posible cita una fuente. Se monitorean fuentes estatales seleccionadas.",
+    tagline: "Encuentre una posible ruta. Vea las fuentes que la respaldan. Consulte las preguntas pendientes con el personal de la agencia.",
     screenHeading: "Encuentre una posible vía de permiso",
     translationScope: "El idioma elegido se aplica al formulario y a los resultados para solicitantes. Las herramientas de ordenanzas, plazos y confianza que aparecen abajo permanecen en inglés.",
     juris: "¿Dónde está la propiedad?",
@@ -1714,7 +1714,7 @@ loadDemoData().then(async data => {
   syncDataControls();
   renderForm(); renderDashboard(); renderSources();
 }).catch(error => {
-  console.error("Permit Pathways demo data failed to load", error);
+  console.error("Permit Bearings demo data failed to load", error);
   syncDataControls();
   const message = STRINGS[lang].dataLoadError;
   document.getElementById("resultStatus").lang = lang;

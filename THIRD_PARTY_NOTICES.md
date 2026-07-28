@@ -1,6 +1,6 @@
 # Third-party notices
 
-The repository `LICENSE` applies to original Permit Pathways software and
+The repository `LICENSE` applies to original Permit Bearings software and
 project-authored material. It does not relicense source documents, government
 records, transit feeds, datasets, or other third-party material retained for
 evidence and testing. Those items remain subject to their publishers' terms.

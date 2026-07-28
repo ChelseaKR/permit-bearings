@@ -9,6 +9,7 @@ from demo.app import (
     Handler,
     MAX_BODY_BYTES,
     ROOT,
+    STRINGS as DEMO_STRINGS,
     result_page,
     static_path,
 )
@@ -34,6 +35,59 @@ def test_index_loads_offline_bundle_before_application_code():
     assert application_start in html
     assert html.index(bundle_tag) < html.index(application_start)
     assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in html
+
+
+def test_public_brand_name_and_tagline_are_consistent():
+    public_files = {
+        ROOT / "index.html",
+        ROOT / "demo" / "app.py",
+        ROOT / "README.md",
+        ROOT / "docs" / "PRODUCT-CONTEXT.md",
+        ROOT / "AGENTS.md",
+        ROOT / "LICENSE",
+        ROOT / "THIRD_PARTY_NOTICES.md",
+        ROOT / "src" / "permit_pathways" / "__init__.py",
+    }
+    legacy_human_name = "Permit " + "Pathways"
+    for path in public_files:
+        assert legacy_human_name not in path.read_text(encoding="utf-8")
+
+    html = (ROOT / "index.html").read_text(encoding="utf-8")
+    tagline = (
+        "Find a candidate route. See the sources behind it. "
+        "Take open questions to staff."
+    )
+    assert (
+        "<title>Permit Bearings — cited housing-permit guidance for "
+        "California jurisdictions</title>"
+    ) in html
+    assert '<meta property="og:title" content="Permit Bearings">' in html
+    assert '<h1 id="t-title">Permit Bearings</h1>' in html
+    assert f'<p class="tag" id="t-tagline">{tagline}</p>' in html
+    assert "Prototype source-grounded ADU, JADU, and SB 9" in html
+
+    assert DEMO_STRINGS["en"]["title"] == "Permit Bearings — demo"
+    assert DEMO_STRINGS["en"]["tagline"] == tagline
+    assert DEMO_STRINGS["es"]["title"] == "Permit Bearings — demostración"
+    assert DEMO_STRINGS["es"]["tagline"] == (
+        "Encuentre una posible ruta. Vea las fuentes que la respaldan. "
+        "Consulte las preguntas pendientes con el personal de la agencia."
+    )
+    rendered_page = result_page(
+        {
+            "jurisdiction": "Davis",
+            "project_type": "adu",
+            "primary_dwelling_status": "existing_single_family",
+            "adu_project_form": "new_detached",
+        },
+        "en",
+    )
+    assert '<a href="/?lang=en">Permit Bearings</a>' in rendered_page
+
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'name = "permit-pathways"' in pyproject
+    assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in html
+    assert (ROOT / "src" / "permit_pathways").is_dir()
 
 
 def test_static_result_cards_keep_explanations_separate_from_matching():
