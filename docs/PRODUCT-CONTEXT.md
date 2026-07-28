@@ -63,6 +63,7 @@ Status meanings are defined in `AGENTS.md`.
 | Capability | Current status | Evidence and boundary |
 |---|---|---|
 | ADU/JADU/SB 9 structured pathway screening | Prototype | Thirteen statewide rules in `data/rules/statewide.json`; deterministic matching in `screening.py`. SB 35 and AB 2011 are not encoded. |
+| Plain-language decision records | Prototype | `data/explanations/plain-language.json` contains a versioned English and Spanish draft for all 15 current statewide/local rule records. Results group routes, standards, and local process records and separate meaning, scannable deadline/threshold highlights where needed, suggested first steps, direct staff questions, and cited evidence. Copy is AI-assisted and review-pending; it has no legal, jurisdiction, comprehension, or semantic-parity review and cannot affect deterministic matching. Source-date, citation-fingerprint, or full-rule-fingerprint drift invalidates display copy; completed reviews must name the reviewed explanation version; and stale/unverified records withhold action copy, interpretive notes, and generic document hints. `tests/test_explanations.py` checks these contracts and selected semantic/jargon boundaries, not overall accuracy or comprehension. |
 | Local jurisdiction records | Prototype | Davis and Woodland records exist. Davis deliberately has no dated source check; neither record is comprehensive local-code coverage. |
 | Application completeness | Planned | Several rules list generic typical documents. There is no parcel-specific requirement manifest, document ingestion, cross-document validation, or detailed remedy engine. |
 | Golden regression harness | Prototype | Nine structured intake-to-expected-rule-ID fixtures. It does not evaluate natural-language answers, citation fidelity, remedies, or supporting passages. |
@@ -73,7 +74,7 @@ Status meanings are defined in `AGENTS.md`.
 | Transit proximity | Prototype | GTFS and statewide high-quality-transit data support screening in a CLI. Service effective dates/exceptions, peak-boundary gaps, planned-facility filtering, multi-operator completeness, walking-network confirmation, and parcel integration require correction before applicant-facing eligibility use. |
 | Jurisdiction/HCD-letter registry | Implemented dataset | 541 entries: 483 incorporated cities and 58 counties. The 2020 Census source is supplemented with official Mountain House incorporation evidence; an ongoing incorporation/dissolution refresh is still needed. Statewide baseline availability does not mean local codes are encoded. |
 | Static browser delivery | Implemented surface for prototype data | `index.html` can run directly from disk or over HTTP by loading the generated `data/demo-data.js` artifact. Canonical JSON remains authoritative; `tests/test_static_demo.py` fails when the bundle drifts. |
-| English/Spanish experience | Prototype | Intake and interface controls are localized. Source-derived pathways, notes, document hints, excerpts, and much dashboard content remain English and have not had semantic parity review. |
+| English/Spanish experience | Prototype | Intake, interface controls, and plain-language result explanations have English/Spanish variants. Spanish explanation copy is labeled as an unreviewed machine draft. Pathway titles, rule notes, document hints, source excerpts, and much dashboard content remain English; no semantic-parity review has been completed. |
 | Accessibility | Prototype | Static/code audit targets WCAG 2.2 AAA. Human screen-reader, keyboard, reflow, forced-colors, and Spanish pronunciation checks remain open. |
 | Free-text grounded Q&A | Planned | Described as an architectural direction; no executable question-answering surface exists. |
 | Scenario B staff workflows | Not targeted in v1 | No live status integration, report/letter drafting, plan check, or comment-resolution workflow exists. |
@@ -92,13 +93,16 @@ These are implementation defects or evidence gaps, not general roadmap ideas:
    citations. A changed official statute URL may leave handbook-cited rules
    current even when the browser's manually injected section marker makes them
    stale.
-2. **Applicant result badges do not consume watcher state.** The browser and
-   Python demo now apply the 180-day age window, but a live watcher result is
-   not persisted or passed into screening. Changed/unknown dependency state
-   must flow into every applicant output.
-3. **Verification strength is underspecified.** Excerpts, digests, reviewer,
-   method, source version, and jurisdiction approval are not jointly required
-   or cryptographically checked.
+2. **Live watcher state is not persisted into applicant results.** The browser
+   rehearsal rerenders matching cards and withholds their actions when the
+   simulated dependency changes, and both demos apply the 180-day age window.
+   A real watcher result is still not persisted or passed into screening.
+   Changed/unknown dependency state must flow into every applicant output.
+3. **Verification strength remains underspecified.** Explanation records bind
+   to digests of selected citation fields and the full normalized rule record;
+   completed review claims require reviewer, method, date, and reviewed
+   version. Source bytes/version, verification method, rule-author review, and
+   jurisdiction approval are not yet jointly required or independently signed.
 4. **Clock events are conflated.** Initial receipt and receipt of a completed
    or cured application need separate event dates before a 60-day deadline is
    shown.
@@ -111,6 +115,11 @@ These are implementation defects or evidence gaps, not general roadmap ideas:
    operative ordinance and sourced checklist.
 7. **Browser and Python behavior can drift.** Screening, staleness, scanning,
    and clocks are duplicated without cross-runtime contract tests.
+8. **Explanation review is pending.** The versioned English and Spanish
+   plain-language records are AI-assisted drafts. Schema and regression tests
+   catch missing links, same-day citation drift, malformed review metadata,
+   and selected wording boundaries, but no named reviewer has evaluated legal
+   fidelity, comprehension, or English/Spanish semantic parity.
 
 ## Product strategy
 

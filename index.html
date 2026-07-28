@@ -67,14 +67,16 @@ nav .nav-button { display: inline-flex; align-items: center; min-height: 44px;
   padding: 0 .2rem; border: 0; background: transparent; font: inherit;
   font-weight: 400; vertical-align: middle; }
 fieldset { border: 1px solid var(--grid); border-radius: 10px;
-  margin: 1rem 0; padding: .9rem 1rem; background: var(--surface); }
+  margin: 1rem 0; padding: .9rem 1rem; background: var(--surface);
+  min-width: 0; }
 legend { font-weight: 600; font-size: .92rem; padding: 0 .35rem; }
 label { display: flex; align-items: flex-start; gap: .6rem;
   min-height: 44px; padding: .3rem 0; }
 label > input[type="radio"], label > input[type="checkbox"] {
   flex: none; width: 1.25rem; height: 1.25rem; margin-top: .15rem; }
 select { font-size: 1rem; padding: .5rem; min-height: 44px; border-radius: 4px;
-  border: 1px solid var(--grid); background: var(--surface); color: var(--ink); }
+  border: 1px solid var(--grid); background: var(--surface); color: var(--ink);
+  width: 100%; max-width: 100%; }
 input[type="text"], input[type="date"], input[list], textarea { min-height: 44px; }
 button { background: var(--accent); color: var(--page); border: 0;
   border-radius: 4px; min-height: 44px; padding: .6rem 1.3rem;
@@ -89,9 +91,33 @@ button.ghost { background: transparent; color: var(--accent);
   padding: 1rem 1.1rem; margin: 1rem 0; }
 .card.unverified { border-left-color: var(--warning); }
 .card h3 { margin: 0 0 .3rem; font-size: 1.02rem; }
+.result-group { margin-top: 1.6rem; }
+.result-group > h3 { font-size: 1.03rem; margin: 1.2rem 0 .45rem; }
+.result-card { overflow-wrap: anywhere; border-left-color: var(--grid); }
+.result-card.unverified { border-left-color: var(--warning); }
+.result-card .result-head { display: flex; align-items: flex-start;
+  justify-content: space-between; gap: .65rem; flex-wrap: wrap; }
+.result-card .result-title { flex: 1 1 18rem; margin: 0;
+  font-size: 1.02rem; }
+.result-card h5 { font-size: .9rem; margin: 1rem 0 .25rem; }
+.result-card ol, .result-card ul { margin-top: .3rem; padding-left: 1.35rem; }
+.result-card .badge { max-width: 100%; white-space: normal; }
+.review-note { color: var(--ink-2); font-size: .82rem; font-weight: 650;
+  margin: .45rem 0 .8rem; }
+.confirmation { border: 1px solid var(--grid); border-radius: 8px;
+  padding: 0 .75rem .2rem; margin-top: .9rem; }
+.key-points { border-left: 4px solid var(--grid); padding: .05rem .75rem .15rem;
+  margin: .8rem 0; }
+.source-basis { font-size: .88rem; margin-top: 1rem; }
+.result-card details { border-top: 1px solid var(--grid); margin-top: 1rem;
+  padding-top: .25rem; }
+.result-card summary { color: var(--accent); cursor: pointer; font-weight: 650;
+  min-height: 44px; display: list-item; padding: .55rem 0; }
 .badge { display: inline-block; font-size: .78rem; font-weight: 600;
   padding: .12rem .55rem; border-radius: 999px; white-space: nowrap; }
 .badge.ok   { background: var(--good-bg); color: var(--good-text); }
+.badge.info { background: var(--surface); color: var(--ink-2);
+  border: 1px solid var(--grid); }
 .badge.warn { background: var(--warn-bg); color: var(--warn-text); }
 .badge.bad  { background: var(--crit-bg); color: var(--bad-text); }
 blockquote { font-size: .86rem; color: var(--ink-2);
@@ -110,6 +136,8 @@ a { color: var(--accent); }
 .meter .m-warn { background: var(--warning); }
 table { border-collapse: collapse; width: 100%; background: var(--surface);
   border-radius: 10px; font-size: .88rem; }
+.table-scroll { max-width: 100%; overflow-x: auto; }
+.table-scroll table { min-width: 36rem; }
 td, th { border-bottom: 1px solid var(--grid); padding: .45rem .6rem;
   text-align: left; vertical-align: top; }
 th { color: var(--ink-2); font-weight: 600; }
@@ -117,6 +145,9 @@ tr:last-child td { border-bottom: 0; }
 .status-ico { font-weight: 700; margin-right: .25rem; }
 footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
 .hidden { display: none; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0; }
 </style>
 </head>
 <body>
@@ -155,9 +186,10 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
       <select name="dwelling_type" id="dwellingSel"></select>
     </fieldset>
     <fieldset id="factBoxes"></fieldset>
-    <button type="submit" id="t-submit" disabled>Find my pathway</button>
+    <button type="submit" id="t-submit" disabled>Check candidate pathways</button>
   </form>
-  <div id="results" aria-live="polite"></div>
+  <p id="resultStatus" class="visually-hidden" aria-live="polite"></p>
+  <div id="results"></div>
 </section>
 
 <section id="conformance">
@@ -212,9 +244,13 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
     against the new text. This rehearsal uses citation text matching; stable
     dependency IDs and persisted watcher state are the next step.
   </div>
+  <p id="simulationStatus" class="visually-hidden" aria-live="polite"></p>
+  <div class="table-scroll" role="region" aria-label="Rule source status table"
+       tabindex="0">
   <table id="ruleTable" aria-describedby="t-dash"><thead>
     <tr><th>Rule</th><th>Scope</th><th>Status</th></tr>
   </thead><tbody></tbody></table>
+  </div>
 </section>
 
 <section id="sources">
@@ -223,9 +259,12 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
   recorded and re-fetched so revisions or fetch failures become visible.
   Local-source coverage, explicit dependencies, and a persisted impact queue
   are planned.</p>
+  <div class="table-scroll" role="region" aria-label="Watched source table"
+       tabindex="0">
   <table id="sourceTable"><thead>
     <tr><th>Source</th><th>Recorded</th><th>SHA-256</th></tr>
   </thead><tbody></tbody></table>
+  </div>
 </section>
 
 <footer>
@@ -263,13 +302,36 @@ const STRINGS = {
             ["sf_zone","The property is zoned single-family residential",true],
             ["unpermitted_existing","The unit already exists but was built without permits (before 2020)",false],
             ["no_exclusions","None of these apply: demolishing rent-restricted or affordable housing · a tenant lived there in the last 3 years · historic district · wetlands or other protected site · parcel already created by an SB 9 lot split",true]],
-    submit: "Find my pathway",
-    results: "Candidate pathways",
-    none: "No state pathway matched your answers. This does not mean your project is impossible — it means it needs staff review. Contact your jurisdiction's planning counter.",
-    docs: "Typical documents", source: "Source",
-    verifiedOn: "source record dated", stale: "STALE — source review needed",
-    unverified: "NO DATED SOURCE RECORD",
-    ministerial: "ministerial — approved on objective standards, no public hearing",
+    submit: "Check candidate pathways",
+    results: "Possible permit paths and rules",
+    resultIntro: "This prototype deterministically matched your answers against its bounded encoded rule set. It did not verify parcel facts, eligibility, or approval. Plain-language explanations are AI-assisted drafts; cited source records remain separate below.",
+    resultCount: count => count === 1 ? "1 matched rule record." : `${count} matched rule records.`,
+    none: "No pathway in this prototype's encoded state rule set matched your answers. This does not mean your project is impossible — it means it needs staff review. Contact your jurisdiction's planning counter.",
+    groups: {
+      route: "Possible permit paths",
+      standard: "Rules that may apply",
+      local_process: "Local process information",
+      other: "Other matching rules",
+    },
+    means: "What this result means",
+    next: "What you can do next",
+    confirm: "Questions to ask staff",
+    docs: "Typical document hints",
+    source: "Source",
+    evidence: "Why we're saying this",
+    evidenceUnavailable: "No supporting excerpt is recorded for this non-current source record.",
+    copyRecord: "Explanation details",
+    aiDraft: "Draft explanation · made with AI · not reviewed by a person",
+    translationDraft: "Spanish draft · made with AI · not reviewed for accuracy",
+    unavailable: "This explanation is not available. The matching rule and source are still shown.",
+    withheldUnverified: "We are not showing next steps because this source has no date on file. Ask staff to confirm the source before you rely on it.",
+    withheldStale: "We are not showing next steps because the source needs a new check. Confirm it before you rely on it.",
+    nextScope: "These are starting points, not a complete checklist. Ask local staff what your project needs.",
+    englishOnly: "English explanation shown because no valid Spanish draft is available.",
+    simulationApplied: count => `${count} matching guidance record${count === 1 ? " was" : "s were"} marked stale and withheld by the amendment rehearsal.`,
+    simulationReset: count => `The amendment rehearsal was reset. ${count} matching guidance record${count === 1 ? " is" : "s are"} available again.`,
+    verifiedOn: "source date on file", stale: "SOURCE NEEDS A NEW CHECK",
+    unverified: "NO SOURCE DATE ON FILE",
     langBtn: "Español",
   },
   es: {
@@ -297,18 +359,42 @@ const STRINGS = {
             ["sf_zone","La propiedad tiene zonificación residencial unifamiliar",true],
             ["unpermitted_existing","La unidad ya existe pero se construyó sin permisos (antes de 2020)",false],
             ["no_exclusions","Ninguno de estos aplica: demoler vivienda de renta restringida o asequible · un inquilino vivió allí en los últimos 3 años · distrito histórico · humedales u otro sitio protegido · parcela ya creada por una división SB 9",true]],
-    submit: "Encontrar mi trámite",
-    results: "Trámites posibles",
-    none: "Ninguna vía estatal coincidió con sus respuestas. Esto no significa que su proyecto sea imposible — significa que necesita revisión del personal. Contacte a su departamento de planificación.",
-    docs: "Documentos típicos", source: "Fuente",
-    verifiedOn: "registro de fuente con fecha", stale: "DESACTUALIZADO — requiere revisión",
-    unverified: "SIN REGISTRO DE FUENTE FECHADO",
-    ministerial: "ministerial — se aprueba con estándares objetivos, sin audiencia pública",
+    submit: "Revisar posibles vías",
+    results: "Posibles vías de permiso y reglas",
+    resultIntro: "Este prototipo comparó sus respuestas de forma determinista con su conjunto limitado de reglas codificadas. No verificó los datos de la parcela, la elegibilidad ni la aprobación. Las explicaciones en lenguaje sencillo son borradores asistidos por IA; los registros de las fuentes citadas se muestran por separado.",
+    resultCount: count => count === 1 ? "1 registro de regla coincidente." : `${count} registros de reglas coincidentes.`,
+    none: "Ninguna vía del conjunto de reglas estatales codificadas de este prototipo coincidió con sus respuestas. Esto no significa que su proyecto sea imposible — significa que necesita revisión del personal. Contacte a su departamento de planificación.",
+    groups: {
+      route: "Posibles vías de permiso",
+      standard: "Reglas que podrían aplicarse",
+      local_process: "Información del proceso local",
+      other: "Otras reglas coincidentes",
+    },
+    means: "Qué significa este resultado",
+    next: "Qué puede hacer ahora",
+    confirm: "Preguntas para el personal",
+    docs: "Sugerencias de documentos típicos",
+    source: "Fuente",
+    evidence: "Por qué decimos esto",
+    evidenceUnavailable: "No hay un extracto de respaldo registrado para este registro de fuente no vigente.",
+    copyRecord: "Detalles de la explicación",
+    aiDraft: "Borrador de explicación · creado con IA · no revisado por una persona",
+    translationDraft: "Borrador en español · creado con IA · no revisado para comprobar su exactitud",
+    unavailable: "Esta explicación no está disponible. Aun así se muestran la regla coincidente y la fuente.",
+    withheldUnverified: "No mostramos los próximos pasos porque esta fuente no tiene una fecha registrada. Pida al personal que confirme la fuente antes de usarla.",
+    withheldStale: "No mostramos los próximos pasos porque la fuente necesita una nueva comprobación. Confírmela antes de usarla.",
+    nextScope: "Estos son puntos de partida, no una lista completa. Pregunte al personal local qué necesita su proyecto.",
+    englishOnly: "Se muestra la explicación en inglés porque no hay un borrador válido en español.",
+    simulationApplied: count => `El ensayo de la enmienda marcó como desactualizado${count === 1 ? "" : "s"} y ocultó ${count} registro${count === 1 ? "" : "s"} coincidente${count === 1 ? "" : "s"} de orientación.`,
+    simulationReset: count => `Se restableció el ensayo de la enmienda. ${count} registro${count === 1 ? "" : "s"} coincidente${count === 1 ? " está" : " están"} disponible${count === 1 ? "" : "s"} de nuevo.`,
+    verifiedOn: "fecha de la fuente registrada", stale: "LA FUENTE NECESITA UNA NUEVA COMPROBACIÓN",
+    unverified: "SIN FECHA DE LA FUENTE",
     langBtn: "English",
   },
 };
 let lang = "en";
 let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [], JURIS = [], LETTERS = {}, SCANS = {};
+let EXPLANATIONS = new Map();
 let jurisByName = new Map();
 const SAMPLE_ORDINANCE =
   "Accessory dwelling units shall not exceed sixteen (16) feet in height if " +
@@ -343,11 +429,173 @@ function ruleStatus(rule, changedMarkers) {
 
 function esc(s) { const d = document.createElement("span"); d.textContent = s ?? ""; return d.innerHTML; }
 
+function nonBlank(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function validIsoDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime())
+    && parsed.toISOString().slice(0, 10) === value;
+}
+
+function validTextList(value) {
+  return Array.isArray(value) && value.length > 0 && value.every(nonBlank);
+}
+
+function validHighlights(value) {
+  return value == null || (
+    typeof value === "object"
+    && nonBlank(value.title)
+    && Array.isArray(value.items)
+    && value.items.length > 0
+    && value.items.every(item => item && typeof item === "object"
+      && nonBlank(item.label) && nonBlank(item.text))
+  );
+}
+
+function validReview(review, version, updatedOn) {
+  if (!review || typeof review !== "object") return false;
+  const allowed = ["prototype_review_pending", "human_reviewed",
+                   "jurisdiction_approved"];
+  if (!allowed.includes(review.status)) return false;
+  const metadata = [review.reviewer, review.reviewed_on, review.method,
+                    review.reviewed_version];
+  if (review.status === "prototype_review_pending")
+    return metadata.every(value => value == null);
+  return metadata.every(nonBlank)
+    && validIsoDate(review.reviewed_on)
+    && review.reviewed_on >= updatedOn
+    && review.reviewed_version === version;
+}
+
+function validLocalizedCopy(copy, language, version, updatedOn) {
+  if (!copy || typeof copy !== "object"
+      || !nonBlank(copy.summary)
+      || !validTextList(copy.next_steps)
+      || !validTextList(copy.confirm_with_staff)
+      || !validHighlights(copy.highlights)) return false;
+  if (language !== "es") return true;
+  const allowed = ["machine_draft", "human_reviewed", "jurisdiction_approved"];
+  if (!allowed.includes(copy.translation_status)) return false;
+  const metadata = [copy.reviewer, copy.reviewed_on, copy.method,
+                    copy.reviewed_version];
+  if (copy.translation_status === "machine_draft")
+    return metadata.every(value => value == null);
+  return metadata.every(nonBlank)
+    && validIsoDate(copy.reviewed_on)
+    && copy.reviewed_on >= updatedOn
+    && copy.reviewed_version === version;
+}
+
+function stableJson(value) {
+  if (Array.isArray(value))
+    return `[${value.map(stableJson).join(",")}]`;
+  if (value && typeof value === "object")
+    return `{${Object.keys(value).sort().map(key =>
+      `${JSON.stringify(key)}:${stableJson(value[key])}`).join(",")}}`;
+  return JSON.stringify(value);
+}
+
+async function sha256Fingerprint(value) {
+  if (!globalThis.crypto || !globalThis.crypto.subtle) return null;
+  const normalized = stableJson(value);
+  const digest = await globalThis.crypto.subtle.digest(
+    "SHA-256", new TextEncoder().encode(normalized)
+  );
+  return "sha256:" + Array.from(new Uint8Array(digest))
+    .map(byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function normalizedCitation(rule) {
+  const citation = rule.citation || {};
+  return {
+    excerpt: citation.excerpt ?? null,
+    excerpt_sha256: citation.excerpt_sha256 ?? null,
+    source: citation.source,
+    url: citation.url,
+    verified_on: citation.verified_on ?? null,
+  };
+}
+
+async function citationFingerprint(rule) {
+  return sha256Fingerprint(normalizedCitation(rule));
+}
+
+async function ruleFingerprint(rule) {
+  return sha256Fingerprint({
+    citation: normalizedCitation(rule),
+    criteria: rule.criteria,
+    jurisdiction_scope: rule.jurisdiction_scope,
+    notes: rule.notes,
+    pathway: rule.pathway,
+    required_documents: rule.required_documents,
+    route_class: rule.route_class,
+    rule_id: rule.rule_id,
+  });
+}
+
+async function normalizeExplanations(payload, rules) {
+  if (!payload || payload.schema_version !== 1
+      || !Array.isArray(payload.entries)) return new Map();
+  if (!globalThis.crypto || !globalThis.crypto.subtle) return new Map();
+  const rulesById = new Map(rules.map(rule => [rule.rule_id, rule]));
+  if (rulesById.size !== rules.length) return new Map();
+  const normalized = new Map();
+  const seen = new Set();
+  const blocked = new Set();
+  for (const record of payload.entries) {
+    const ruleId = record && record.source_rule_id;
+    if (!nonBlank(ruleId)) continue;
+    if (seen.has(ruleId)) {
+      normalized.delete(ruleId);
+      blocked.add(ruleId);
+      continue;
+    }
+    seen.add(ruleId);
+    if (blocked.has(ruleId)) continue;
+    const rule = rulesById.get(ruleId);
+    const version = record.version;
+    const updatedOn = record.updated_on;
+    if (!rule || !/^\d+\.\d+\.\d+$/.test(version || "")
+        || !validIsoDate(updatedOn)
+        || !["route", "standard", "local_process"].includes(record.display_group)
+        || record.drafted_by !== "ai_assisted"
+        || (record.source_verified_on ?? null)
+           !== (rule.citation.verified_on ?? null)
+        || (record.source_verified_on
+            && updatedOn < record.source_verified_on)
+        || !validReview(record.review, version, updatedOn)
+        || !validLocalizedCopy(record.en, "en", version, updatedOn)) continue;
+    let expectedFingerprint;
+    let expectedRuleFingerprint;
+    try {
+      expectedFingerprint = await citationFingerprint(rule);
+      expectedRuleFingerprint = await ruleFingerprint(rule);
+    } catch {
+      return new Map();
+    }
+    if (!nonBlank(record.citation_fingerprint)
+        || !nonBlank(record.rule_fingerprint)
+        || !expectedFingerprint
+        || !expectedRuleFingerprint
+        || record.citation_fingerprint !== expectedFingerprint
+        || record.rule_fingerprint !== expectedRuleFingerprint) continue;
+    normalized.set(ruleId, {
+      ...record,
+      es: validLocalizedCopy(record.es, "es", version, updatedOn)
+        ? record.es : null,
+    });
+  }
+  return normalized;
+}
+
 function renderForm() {
   const s = STRINGS[lang];
   const translatedIds = ["t-tagline", "t-juris", "t-project", "t-submit",
                          "t-dwelling", "typeRadios", "dwellingSel", "factBoxes",
-                         "jurisStatus"];
+                         "jurisStatus", "resultStatus"];
   translatedIds.forEach(id => { document.getElementById(id).lang = lang; });
   document.getElementById("t-tagline").textContent = s.tagline;
   document.getElementById("t-juris").textContent = s.juris;
@@ -368,39 +616,161 @@ function renderForm() {
     s.facts.map(([v,t,on]) => `<label><input type="checkbox" name="${v}" ${on?"checked":""}> ${esc(t)}</label>`).join("");
 }
 
+function usableLocalizedExplanation(explanation) {
+  if (!explanation || typeof explanation !== "object") return null;
+  const preferred = lang === "es" ? explanation.es : explanation.en;
+  const fallback = lang === "es" ? explanation.en : null;
+  const localized = preferred || fallback;
+  if (!localized || typeof localized.summary !== "string"
+      || !Array.isArray(localized.next_steps)
+      || !localized.next_steps.every(item => typeof item === "string")
+      || !Array.isArray(localized.confirm_with_staff)
+      || !localized.confirm_with_staff.every(item => typeof item === "string")
+      || !validHighlights(localized.highlights)
+      || typeof explanation.source_rule_id !== "string"
+      || typeof explanation.version !== "string"
+      || typeof explanation.updated_on !== "string") return null;
+  return {localized, copyLang: preferred ? lang : "en"};
+}
+
+function baseExplanationReviewLabel(explanation) {
+  const s = STRINGS[lang];
+  const review = explanation.review || {};
+  if (review.status === "jurisdiction_approved") {
+    return lang === "es"
+      ? `Explicación aprobada por la jurisdicción · ${review.reviewer} · ${review.reviewed_on} · v${review.reviewed_version}`
+      : `Jurisdiction-approved explanation · ${review.reviewer} · ${review.reviewed_on} · v${review.reviewed_version}`;
+  }
+  if (review.status === "human_reviewed") {
+    return lang === "es"
+      ? `Explicación revisada por una persona · ${review.reviewer} · ${review.reviewed_on} · v${review.reviewed_version}`
+      : `Human-reviewed explanation · ${review.reviewer} · ${review.reviewed_on} · v${review.reviewed_version}`;
+  }
+  return s.aiDraft;
+}
+
+function explanationReviewLabels(explanation, localized, copyLang) {
+  const s = STRINGS[lang];
+  const labels = [baseExplanationReviewLabel(explanation)];
+  if (lang !== "es") return labels;
+  if (copyLang !== "es") return [...labels, s.englishOnly];
+  if (localized.translation_status === "machine_draft")
+    return [...labels, s.translationDraft];
+  if (localized.translation_status === "jurisdiction_approved")
+    return [...labels,
+      `Traducción aprobada por la jurisdicción · ${localized.reviewer} · ${localized.reviewed_on} · v${localized.reviewed_version}`];
+  return [...labels,
+    `Traducción revisada por una persona · ${localized.reviewer} · ${localized.reviewed_on} · v${localized.reviewed_version}`];
+}
+
+function renderResultCard(rule, explanation) {
+  const s = STRINGS[lang];
+  const c = rule.citation;
+  const status = ruleStatus(rule, simulating ? ["66321"] : []);
+  const ok = status === "verified";
+  const badge = ok
+    ? `<span class="badge info" lang="${lang}"><span class="status-ico" aria-hidden="true">◷</span>${esc(s.verifiedOn)} ${esc(c.verified_on)}</span>`
+    : status === "stale"
+    ? `<span class="badge bad" lang="${lang}"><span class="status-ico" aria-hidden="true">✕</span>${esc(s.stale)}</span>`
+    : `<span class="badge warn" lang="${lang}"><span class="status-ico" aria-hidden="true">⚠</span>${esc(s.unverified)}</span>`;
+  const localizedRecord = ok ? usableLocalizedExplanation(explanation) : null;
+  let plainLanguage = status === "unverified"
+    ? `<div class="notice small" lang="${lang}">${esc(s.withheldUnverified)}</div>`
+    : status === "stale"
+    ? `<div class="notice small" lang="${lang}">${esc(s.withheldStale)}</div>`
+    : `<div class="notice small" lang="${lang}">${esc(s.unavailable)}</div>`;
+  let reviewNote = "";
+  let copyRecord = "";
+  if (localizedRecord) {
+    const {localized, copyLang} = localizedRecord;
+    const steps = localized.next_steps.map(step => `<li>${esc(step)}</li>`).join("");
+    const confirmations = localized.confirm_with_staff.map(item => `<li>${esc(item)}</li>`).join("");
+    const highlights = localized.highlights
+      ? `<div class="key-points">
+          <h5 lang="${copyLang}">${esc(localized.highlights.title)}</h5>
+          <ul lang="${copyLang}">${localized.highlights.items.map(item =>
+            `<li><strong>${esc(item.label)}:</strong> ${esc(item.text)}</li>`
+          ).join("")}</ul>
+        </div>`
+      : "";
+    plainLanguage = `<div class="plain-layer">
+      <h5 lang="${lang}">${esc(s.means)}</h5>
+      <p lang="${copyLang}">${esc(localized.summary)}</p>
+      ${highlights}
+      <h5 lang="${lang}">${esc(s.next)}</h5>
+      <p class="small" lang="${lang}">${esc(s.nextScope)}</p>
+      <ol lang="${copyLang}">${steps}</ol>
+      <div class="confirmation">
+        <h5 lang="${lang}">${esc(s.confirm)}</h5>
+        <ul lang="${copyLang}">${confirmations}</ul>
+      </div>
+    </div>`;
+    reviewNote = explanationReviewLabels(explanation, localized, copyLang)
+      .map(label => `<p class="review-note" lang="${lang}">${esc(label)}</p>`)
+      .join("");
+    copyRecord = `<p class="small"><span lang="${lang}">${esc(s.copyRecord)}:</span>
+      <span lang="en">${esc(explanation.source_rule_id)} v${esc(explanation.version)}, ${esc(explanation.updated_on)}</span></p>`;
+  }
+  const docs = (rule.required_documents || []).map(d => `<li>${esc(d)}</li>`).join("");
+  const evidence = `<details>
+    <summary lang="${lang}">${esc(s.evidence)}</summary>
+    ${ok && rule.notes ? `<p class="small" lang="en">${esc(rule.notes)}</p>` : ""}
+    ${c.excerpt ? `<blockquote lang="en">${esc(c.excerpt)}</blockquote>` : ""}
+    ${!ok && !c.excerpt ? `<p class="small" lang="${lang}">${esc(s.evidenceUnavailable)}</p>` : ""}
+    ${ok && docs ? `<h5 lang="${lang}">${esc(s.docs)}</h5><ul class="small" lang="en">${docs}</ul>` : ""}
+    ${copyRecord}
+  </details>`;
+  const safeId = String(rule.rule_id).replace(/[^A-Za-z0-9_-]/g, "-");
+  return `<article class="card result-card ${ok ? "" : "unverified"}"
+      data-rule-id="${esc(rule.rule_id)}" aria-labelledby="result-title-${safeId}">
+    <div class="result-head">
+      <h4 class="result-title" id="result-title-${safeId}" lang="en">${esc(rule.pathway)}</h4>
+      ${badge}
+    </div>
+    ${reviewNote}
+    ${plainLanguage}
+    <p class="source-basis"><b lang="${lang}">${esc(s.source)}:</b>
+      <a lang="en" href="${esc(c.url)}" rel="noopener">${esc(c.source)}</a></p>
+    ${evidence}
+  </article>`;
+}
+
 function renderResults(list) {
   const s = STRINGS[lang];
   const el = document.getElementById("results");
+  LAST_RESULTS = list;
+  const status = document.getElementById("resultStatus");
+  status.lang = lang;
+  status.textContent = list.length
+    ? s.resultCount(list.length)
+    : `${s.resultCount(0)} ${s.none}`;
   if (!list.length) {
     el.innerHTML = `<div lang="${lang}"><h2>${esc(s.results)}</h2>
       <div class="notice">${esc(s.none)}</div></div>`;
     return;
   }
-  el.innerHTML = `<h2 lang="${lang}">${esc(s.results)}</h2>` + list.map(r => {
-    const c = r.citation;
-    const status = ruleStatus(r, []);
-    const ok = status === "verified";
-    const badge = ok
-      ? `<span class="badge ok" lang="${lang}"><span class="status-ico">✓</span>${esc(s.verifiedOn)} ${esc(c.verified_on)}</span>`
-      : status === "stale"
-      ? `<span class="badge bad" lang="${lang}"><span class="status-ico">✕</span>${esc(s.stale)}</span>`
-      : `<span class="badge warn" lang="${lang}"><span class="status-ico">⚠</span>${esc(s.unverified)}</span>`;
-    const docs = (r.required_documents||[]).map(d => `<li>${esc(d)}</li>`).join("");
-    const route = r.route_class === "ministerial"
-      ? `<p class="small mutedtxt" lang="${lang}">${esc(s.ministerial)}</p>` : "";
-    return `<div class="card ${ok?"":"unverified"}">
-      <h3><span lang="en">${esc(r.pathway)}</span> ${badge}</h3>
-      ${route}
-      <p class="small" lang="en">${esc(r.notes)}</p>
-      ${c.excerpt ? `<blockquote lang="en">${esc(c.excerpt)}</blockquote>` : ""}
-      <p class="small"><span lang="${lang}">${esc(s.source)}:</span>
-        <a lang="en" href="${esc(c.url)}" rel="noopener">${esc(c.source)}</a></p>
-      ${docs ? `<p class="small" lang="${lang}"><b>${esc(s.docs)}:</b></p><ul class="small" lang="en">${docs}</ul>` : ""}
-    </div>`;
+  const groupOrder = ["route", "standard", "local_process", "other"];
+  const grouped = new Map(groupOrder.map(group => [group, []]));
+  list.forEach(rule => {
+    const explanation = EXPLANATIONS.get(rule.rule_id);
+    const group = explanation && ["route", "standard", "local_process"].includes(explanation.display_group)
+      ? explanation.display_group : "other";
+    grouped.get(group).push(renderResultCard(rule, explanation));
+  });
+  const sections = groupOrder.map(group => {
+    const cards = grouped.get(group);
+    return cards.length
+      ? `<section class="result-group" aria-labelledby="result-group-${group}">
+          <h3 id="result-group-${group}" lang="${lang}">${esc(s.groups[group])}</h3>
+          ${cards.join("")}
+        </section>` : "";
   }).join("");
+  el.innerHTML = `<h2 lang="${lang}">${esc(s.results)}</h2>
+    <p class="small" lang="${lang}">${esc(s.resultIntro)}</p>${sections}`;
 }
 
 let simulating = false;
+let LAST_RESULTS = null;
 function renderDashboard() {
   const changed = simulating ? ["66321"] : [];
   const statuses = RULES.map(r => ({ rule: r, st: ruleStatus(r, changed) }));
@@ -415,9 +785,9 @@ function renderDashboard() {
     `<div class="m-bad" style="width:${100*n.stale/total}%"></div>` +
     `<div class="m-warn" style="width:${100*n.unverified/total}%"></div>`;
   document.getElementById("meterLegend").innerHTML =
-    `<span class="badge ok"><span class="status-ico">✓</span>within review window ${n.verified}</span> ` +
-    `<span class="badge bad"><span class="status-ico">✕</span>stale/simulated change ${n.stale}</span> ` +
-    `<span class="badge warn"><span class="status-ico">⚠</span>no dated source record ${n.unverified}</span>`;
+    `<span class="badge ok"><span class="status-ico" aria-hidden="true">✓</span>within review window ${n.verified}</span> ` +
+    `<span class="badge bad"><span class="status-ico" aria-hidden="true">✕</span>stale/simulated change ${n.stale}</span> ` +
+    `<span class="badge warn"><span class="status-ico" aria-hidden="true">⚠</span>no dated source record ${n.unverified}</span>`;
   // Golden replay runs live in the page: same matcher, same data.
   let pass = 0;
   GOLDEN.forEach(g => {
@@ -438,10 +808,10 @@ function renderDashboard() {
   }
   document.querySelector("#ruleTable tbody").innerHTML = statuses.map(({rule, st}) => {
     const b = st === "verified"
-      ? `<span class="badge ok"><span class="status-ico">✓</span>within review window</span>`
+      ? `<span class="badge ok"><span class="status-ico" aria-hidden="true">✓</span>within review window</span>`
       : st === "stale"
-      ? `<span class="badge bad"><span class="status-ico">✕</span>STALE — re-verify</span>`
-      : `<span class="badge warn"><span class="status-ico">⚠</span>no dated source record</span>`;
+      ? `<span class="badge bad"><span class="status-ico" aria-hidden="true">✕</span>STALE — re-verify</span>`
+      : `<span class="badge warn"><span class="status-ico" aria-hidden="true">⚠</span>no dated source record</span>`;
     return `<tr><td>${esc(rule.pathway)}</td><td class="mutedtxt">${esc(rule.jurisdiction_scope)}</td><td>${b}</td></tr>`;
   }).join("");
   document.getElementById("simNote").classList.toggle("hidden", !simulating);
@@ -464,9 +834,11 @@ document.getElementById("intake").addEventListener("submit", e => {
   const jurisdiction = resolveJurisdiction();
   if (!jurisdiction) {
     const s = STRINGS[lang];
+    LAST_RESULTS = null;
     document.getElementById("results").innerHTML =
       `<div lang="${lang}"><h2>${esc(s.results)}</h2>
        <div class="notice">${esc(s.jurisRequired)}</div></div>`;
+    document.getElementById("resultStatus").textContent = s.jurisRequired;
     document.getElementById("jurisInput").focus();
     return;
   }
@@ -485,7 +857,10 @@ document.getElementById("intake").addEventListener("submit", e => {
     parcel_created_by_sb9_split: !noExcl,
     jurisdiction: jurisdiction.slug,
   }));
-  document.getElementById("results").scrollIntoView({behavior: "smooth"});
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.getElementById("results").scrollIntoView({
+    behavior: reduceMotion ? "auto" : "smooth",
+  });
 });
 function jurisDisplay(j) {
   return j.kind === "county" ? j.name : `${j.name} (${j.county.replace(" County","")} Co.)`;
@@ -503,17 +878,17 @@ function renderJurisStatus() {
   if (!j) { el.textContent = s.statusUnknown; return; }
   const localCount = JURIS.filter(x => x.has_local_layer).length;
   let html = j.has_local_layer
-    ? `<span class="badge ok"><span class="status-ico">✓</span>local metadata</span> ${esc(s.statusLocal)}`
+    ? `<span class="badge ok"><span class="status-ico" aria-hidden="true">✓</span>local metadata</span> ${esc(s.statusLocal)}`
     : `${esc(s.statusBaseline)} (${esc(s.localCoverage(localCount, JURIS.length))})`;
   const scanRec = SCANS[j.slug];
   if (scanRec) {
-    html += `<br><span class="badge ok"><span class="status-ico">✓</span>scanned</span> ` +
+    html += `<br><span class="badge ok"><span class="status-ico" aria-hidden="true">✓</span>scanned</span> ` +
       `Ordinance screened ${esc(scanRec.scanned_on)}: ${scanRec.findings} provision(s) ` +
       `flagged for review — <a href="data/conformance/results/${esc(j.slug)}.json" rel="noopener">view scan findings (JSON)</a>.`;
   }
   const history = LETTERS[j.slug] || [];
   if (history.length) {
-    html += `<br><span class="badge warn"><span class="status-ico">⚠</span>HCD</span> ` +
+    html += `<br><span class="badge warn"><span class="status-ico" aria-hidden="true">⚠</span>HCD</span> ` +
       `${esc(s.hcdHistory)}: ${history.length} letter(s) on record.`;
     for (const letter of history.slice(0, 3)) {
       const label = `${esc(letter.kind)}, ${esc(letter.date)}` +
@@ -573,7 +948,7 @@ document.getElementById("scanBtn").addEventListener("click", () => {
       style="border-left-color:${definite ? "var(--critical)" : "var(--warning)"}">
       <h3>${esc(f.check.title)}
         <span class="badge ${definite ? "bad" : "warn"}">
-        <span class="status-ico">${definite ? "✕" : "⚠"}</span>${definite ? "finding" : "review"}</span></h3>
+        <span class="status-ico" aria-hidden="true">${definite ? "✕" : "⚠"}</span>${definite ? "finding" : "review"}</span></h3>
       <blockquote>…${esc(f.excerpt)}…</blockquote>
       <p class="small"><b>State law:</b> ${esc(f.check.state_law)}</p>
       <p class="small"><b>Explanation:</b> ${esc(f.check.explanation)}</p>
@@ -645,11 +1020,69 @@ document.getElementById("clockBtn").addEventListener("click", () => {
   decision clock (Gov. Code §§ 65852.21, 66411.7).</p>`;
 });
 
-document.getElementById("simBtn").addEventListener("click", () => { simulating = true; renderDashboard(); });
-document.getElementById("resetBtn").addEventListener("click", () => { simulating = false; renderDashboard(); });
+function matchingSimulationCount() {
+  if (LAST_RESULTS === null) return 0;
+  return LAST_RESULTS.filter(rule =>
+    ruleStatus(rule, []) === "verified"
+    && ruleStatus(rule, ["66321"]) === "stale"
+  ).length;
+}
+
+function rerenderSimulationState() {
+  renderDashboard();
+  if (LAST_RESULTS !== null) renderResults(LAST_RESULTS);
+}
+document.getElementById("simBtn").addEventListener("click", () => {
+  const affected = matchingSimulationCount();
+  simulating = true;
+  rerenderSimulationState();
+  document.getElementById("simulationStatus").textContent =
+    STRINGS[lang].simulationApplied(affected);
+  document.getElementById("resetBtn").focus();
+});
+document.getElementById("resetBtn").addEventListener("click", () => {
+  const restored = matchingSimulationCount();
+  simulating = false;
+  rerenderSimulationState();
+  document.getElementById("simulationStatus").textContent =
+    STRINGS[lang].simulationReset(restored);
+  document.getElementById("simBtn").focus();
+});
+
+function captureIntakeState() {
+  const form = document.getElementById("intake");
+  const data = new FormData(form);
+  return {
+    projectType: data.get("project_type"),
+    dwellingType: data.get("dwelling_type"),
+    checked: new Set(
+      ["has_primary_dwelling", "in_urbanized_area", "sf_zone",
+       "unpermitted_existing", "no_exclusions"].filter(name => data.has(name))
+    ),
+  };
+}
+
+function restoreIntakeState(state) {
+  const project = document.querySelector(
+    `input[name="project_type"][value="${state.projectType}"]`
+  );
+  if (project) project.checked = true;
+  const dwelling = document.getElementById("dwellingSel");
+  if (state.dwellingType) dwelling.value = state.dwellingType;
+  ["has_primary_dwelling", "in_urbanized_area", "sf_zone",
+   "unpermitted_existing", "no_exclusions"].forEach(name => {
+    const input = document.querySelector(`input[name="${name}"]`);
+    if (input) input.checked = state.checked.has(name);
+  });
+}
+
 document.getElementById("langToggle").addEventListener("click", e => {
+  const intakeState = captureIntakeState();
   e.preventDefault(); lang = lang === "en" ? "es" : "en";
-  renderForm(); document.getElementById("results").innerHTML = "";
+  renderForm();
+  restoreIntakeState(intakeState);
+  renderJurisStatus();
+  if (LAST_RESULTS !== null) renderResults(LAST_RESULTS);
 });
 
 function fetchJson(path) {
@@ -680,12 +1113,15 @@ function loadDemoData() {
     fetchJson("data/jurisdictions/registry.json"),
     fetchOptionalJson("data/jurisdictions/hcd-letters.json", {letters: {}}),
     fetchOptionalJson("data/conformance/results/index.json", {}),
+    fetchOptionalJson("data/explanations/plain-language.json",
+                      {schema_version: 1, entries: []}),
   ]).then(([statewideRules, davisRules, woodlandRules, golden, sources,
-            checks, registry, letters, scans]) => ({
+            checks, registry, letters, scans, plainLanguage]) => ({
     statewide_rules: statewideRules,
     davis_rules: davisRules,
     woodland_rules: woodlandRules,
     golden, sources, checks, registry, letters, scans,
+    plain_language: plainLanguage,
   }));
 }
 
@@ -697,10 +1133,11 @@ function syncDataControls() {
 }
 
 renderForm();
-loadDemoData().then(data => {
+loadDemoData().then(async data => {
   RULES = [...data.statewide_rules, ...data.davis_rules, ...data.woodland_rules];
   GOLDEN = data.golden; SOURCES = data.sources; CHECKS = data.checks;
   LETTERS = data.letters.letters || {}; SCANS = data.scans;
+  EXPLANATIONS = await normalizeExplanations(data.plain_language, RULES);
   const localSlugs = new Set(RULES.filter(r => r.jurisdiction_scope !== "statewide")
                                   .map(r => r.jurisdiction_scope));
   JURIS = data.registry.jurisdictions.map(j => ({
@@ -720,6 +1157,7 @@ loadDemoData().then(data => {
 }).catch(error => {
   console.error("Permit Pathways demo data failed to load", error);
   syncDataControls();
+  document.getElementById("resultStatus").textContent = "Demo data did not load.";
   document.getElementById("results").innerHTML =
     `<div class="notice"><b>Demo data did not load.</b> Keep
     <code>data/demo-data.js</code> beside <code>index.html</code>, or serve the

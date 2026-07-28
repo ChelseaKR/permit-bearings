@@ -1,0 +1,654 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "version": "1.0.0",
+      "source_rule_id": "adu-ministerial-review",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:d863eb96100179c9451c00659a2f150ca84ed43d0d1ad0e608f64734c6fd3319",
+      "rule_fingerprint": "sha256:8c1e591b85cd85195d62b62dc20bb829bb544a65ecb0c7639d9306095ffb6250",
+      "display_group": "route",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "Your ADU may use a review process with no public hearing.",
+        "highlights": {
+          "title": "Deadlines in this rule",
+          "items": [
+            {
+              "label": "15 business days",
+              "text": "After the agency receives your application, it must tell you in writing whether the application is complete."
+            },
+            {
+              "label": "60 days",
+              "text": "After the agency receives a complete application, it must approve or deny—but only if a single-family home or multifamily building already exists on the lot."
+            }
+          ]
+        },
+        "next_steps": [
+          "Gather the local ADU application, site plan, and floor plan.",
+          "Keep the receipt or other proof showing when you submitted the application.",
+          "If the agency says information is missing, ask for a list of what is missing and how to fix each item."
+        ],
+        "confirm_with_staff": [
+          "Is there already a single-family or multifamily home on the lot? If not, ask which decision timeline applies.",
+          "What receipt date does the agency have on file?",
+          "Has the agency said the application is complete? If yes, ask when the 60-day decision period started."
+        ]
+      },
+      "es": {
+        "summary": "Su ADU podría seguir un proceso de revisión sin audiencia pública.",
+        "highlights": {
+          "title": "Plazos de esta regla",
+          "items": [
+            {
+              "label": "15 días hábiles",
+              "text": "Después de recibir su solicitud, la agencia debe informarle por escrito si está completa."
+            },
+            {
+              "label": "60 días",
+              "text": "Después de recibir una solicitud completa, la agencia debe aprobar o denegar, pero solo si ya existe una vivienda unifamiliar o un edificio multifamiliar en el lote."
+            }
+          ]
+        },
+        "next_steps": [
+          "Reúna la solicitud local de ADU, el plano del sitio y el plano de planta.",
+          "Guarde el recibo u otro comprobante que muestre cuándo entregó la solicitud.",
+          "Si la agencia dice que falta información, pida una lista de lo que falta y cómo corregir cada punto."
+        ],
+        "confirm_with_staff": [
+          "¿Ya existe una vivienda unifamiliar o multifamiliar en el lote? Si no, pregunte qué plazo de decisión se aplica.",
+          "¿Qué fecha de recepción tiene registrada la agencia?",
+          "¿La agencia ya indicó que la solicitud está completa? Si es así, pregunte cuándo comenzó el plazo de 60 días."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "adu-protected-minimum",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:e38877dfeb4db191f51ff933283dca82250ee843056c82c4d2aaaad735fd2266",
+      "rule_fingerprint": "sha256:6d1728ea47b5e0405a97beb9f1456ee9c094295e53211686322b010d8a1584c4",
+      "display_group": "standard",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "State rules preserve a route for an ADU of at least 800 square feet with 4-foot side and rear setbacks when all other local development standards are met.",
+        "next_steps": [
+          "Compare the proposed unit size and side and rear setbacks with these state-protected dimensions.",
+          "Check the proposal against the other local development standards."
+        ],
+        "confirm_with_staff": [
+          "Which other local development standards apply to the proposal.",
+          "Whether staff agrees that the proposal preserves the state-protected 800-square-foot option."
+        ]
+      },
+      "es": {
+        "summary": "Las reglas estatales protegen una vía para una ADU de al menos 800 pies cuadrados con retiros laterales y traseros de 4 pies, siempre que se cumplan las demás normas locales de desarrollo.",
+        "next_steps": [
+          "Compare el tamaño propuesto y los retiros laterales y traseros con estas dimensiones protegidas por el estado.",
+          "Revise la propuesta según las demás normas locales de desarrollo."
+        ],
+        "confirm_with_staff": [
+          "Qué otras normas locales de desarrollo se aplican a la propuesta.",
+          "Si el personal coincide en que la propuesta conserva la opción protegida de 800 pies cuadrados."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "adu-height-standards",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:918e768717b0ed4d3481bfa256fd24681c704f5c79c769f0ccc25adaac51006d",
+      "rule_fingerprint": "sha256:7fe68e4a040ab60598af661feca873578e079b586855d12efa5070998dc859c9",
+      "display_group": "standard",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "The height limit depends on the ADU and the lot. A detached ADU is generally allowed up to 16 feet. It may be allowed up to 18 feet if it is within a half-mile walking distance of a major transit stop or high-quality transit corridor, or if the lot has an existing or proposed multistory multifamily building. A roof pitch that matches the main home may add 2 feet. An attached ADU may be allowed up to 25 feet, unless the main home's height limit is lower.",
+        "next_steps": [
+          "Identify whether the proposed ADU is attached or detached.",
+          "Note whether the lot is within a half-mile walking distance of qualifying transit, has a multistory multifamily building, or has a main-home roof pitch the ADU could match."
+        ],
+        "confirm_with_staff": [
+          "Which height limit applies to this ADU?",
+          "If the ADU will be attached, what is the main home's height limit?"
+        ]
+      },
+      "es": {
+        "summary": "El límite de altura depende de la ADU y del lote. Una ADU separada generalmente puede medir hasta 16 pies. Puede llegar a 18 pies si está a una distancia peatonal de media milla de una parada principal de transporte público o un corredor de transporte de alta calidad, o si el lote tiene un edificio multifamiliar de varios pisos existente o propuesto. Una pendiente de techo que coincida con la vivienda principal puede añadir 2 pies. Una ADU adosada puede llegar a 25 pies, salvo que el límite de la vivienda principal sea menor.",
+        "next_steps": [
+          "Identifique si la ADU propuesta será adosada o separada.",
+          "Anote si el lote está a una distancia peatonal de media milla del transporte público indicado, tiene un edificio multifamiliar de varios pisos o tiene una pendiente de techo principal que la ADU podría igualar."
+        ],
+        "confirm_with_staff": [
+          "¿Qué límite de altura se aplica a esta ADU?",
+          "Si la ADU será adosada, ¿cuál es el límite de altura de la vivienda principal?"
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "jadu-standards",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:fc238fd29d2081788c5ac916e20447184e69edb6e94cf27598a8280278d6abf7",
+      "rule_fingerprint": "sha256:a7bfd0881e0a287cb541a977dbb02ff6def892ba5bd2171df04188dd204a7fe6",
+      "display_group": "route",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "Under this candidate rule, a JADU is no more than 500 square feet and is entirely within a single-family residence. Shared sanitation facilities can require owner occupancy, and any rental must be longer than 30 days.",
+        "next_steps": [
+          "Prepare a floor plan showing the JADU inside the single-family residence.",
+          "Obtain the jurisdiction's JADU application form."
+        ],
+        "confirm_with_staff": [
+          "Whether the JADU will share sanitation facilities with the primary residence.",
+          "Which owner-occupancy and rental-term conditions apply."
+        ]
+      },
+      "es": {
+        "summary": "Según esta posible regla, una JADU no supera los 500 pies cuadrados y está completamente dentro de una vivienda unifamiliar. Compartir instalaciones sanitarias puede exigir que el propietario ocupe la propiedad, y cualquier alquiler debe durar más de 30 días.",
+        "next_steps": [
+          "Prepare un plano de planta que muestre la JADU dentro de la vivienda unifamiliar.",
+          "Obtenga el formulario de solicitud de JADU de la jurisdicción."
+        ],
+        "confirm_with_staff": [
+          "Si la JADU compartirá instalaciones sanitarias con la vivienda principal.",
+          "Qué condiciones de ocupación por el propietario y duración del alquiler se aplican."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "sb9-two-unit-ministerial",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:9a500b431cc30550b818d96c06e20e657c7353438a39392fb1c3fbe0da1a191a",
+      "rule_fingerprint": "sha256:79d8a22cf7aea79d3a6a6c3d437bbc8d3c9a18b4612dce414093c96d61d9f8e3",
+      "display_group": "route",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "This screen identifies a possible SB 9 route for no more than two primary units on a qualifying single-family-zoned lot in an urbanized area. Protected-housing, tenant, historic, and protected-site conditions can take a project outside this route.",
+        "next_steps": [
+          "Prepare the site plan, proposed-unit floor plans, and jurisdiction SB 9 application form.",
+          "Review every protected-housing, tenant, historic, and protected-site screening answer."
+        ],
+        "confirm_with_staff": [
+          "Whether the lot meets every SB 9 screening condition.",
+          "Which local objective standards and rental-term conditions apply."
+        ]
+      },
+      "es": {
+        "summary": "Esta evaluación identifica una posible vía de la SB 9 para no más de dos unidades principales en un lote que califique, con zonificación unifamiliar y dentro de un área urbanizada. Las condiciones de vivienda protegida, inquilinos, recursos históricos y sitios protegidos pueden excluir el proyecto de esta vía.",
+        "next_steps": [
+          "Prepare el plano del sitio, los planos de planta de las unidades propuestas y el formulario de solicitud SB 9 de la jurisdicción.",
+          "Revise cada respuesta sobre vivienda protegida, inquilinos, recursos históricos y sitios protegidos."
+        ],
+        "confirm_with_staff": [
+          "Si el lote cumple todas las condiciones de evaluación de la SB 9.",
+          "Qué normas objetivas locales y condiciones de duración del alquiler se aplican."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "sb9-urban-lot-split",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:a86da41d04d1e29e19222d3114bfcd9643a17a6eb20b4b42a71446a38c77101a",
+      "rule_fingerprint": "sha256:393e54efe9ddc1c5442be15a72f6a9fa0ab7cb58934049c494545ed386b96f28",
+      "display_group": "route",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "Based on your answers, the property may have an SB 9 path to split into two roughly equal lots. A prior SB 9 split may block this path. So may certain nearby splits by the same owner or someone acting with that owner, or housing, tenant, historic, and protected-site restrictions.",
+        "next_steps": [
+          "Find the local SB 9 lot-split application and tentative parcel map requirements.",
+          "Unless the applicant is a qualifying community land trust or nonprofit, prepare a signed statement (affidavit). It must say the applicant plans to live in one unit as their main home (principal residence) for at least three years after approval.",
+          "Review the proposed lot sizes and every exclusion recorded in the intake."
+        ],
+        "confirm_with_staff": [
+          "Does an earlier split of this parcel or a nearby parcel block this path?",
+          "Does the affidavit exception for a qualifying community land trust or nonprofit apply?",
+          "Which local objective standards apply?"
+        ]
+      },
+      "es": {
+        "summary": "Según sus respuestas, la propiedad podría tener una vía SB 9 para dividirse en dos lotes de tamaño aproximadamente igual. Una división SB 9 anterior puede impedir esta vía. También pueden impedirla ciertas divisiones cercanas por el mismo propietario o alguien que actúe con ese propietario, o restricciones de vivienda, inquilinos, recursos históricos y sitios protegidos.",
+        "next_steps": [
+          "Busque los requisitos locales para la solicitud de división de lote SB 9 y el mapa parcelario tentativo.",
+          "A menos que el solicitante sea un fideicomiso comunitario de tierras o una organización sin fines de lucro que califique, prepare una declaración firmada. Debe indicar que el solicitante piensa vivir en una unidad como vivienda principal durante al menos tres años después de la aprobación.",
+          "Revise los tamaños propuestos de los lotes y cada exclusión registrada en el formulario."
+        ],
+        "confirm_with_staff": [
+          "¿Una división anterior de esta parcela o de una parcela cercana impide esta vía?",
+          "¿Se aplica la excepción a la declaración para un fideicomiso comunitario de tierras o una organización sin fines de lucro que califique?",
+          "¿Qué normas objetivas locales se aplican?"
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "adu-size-allowances",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:c8d421c1f48759170fde0037a3c6349abb9914f75ac9d26b2b5d8f3291a184d4",
+      "rule_fingerprint": "sha256:f608381c5b3403ac3d8823c9847fc45bce07b5d52914c5c1be4ebf30868fa776",
+      "display_group": "standard",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "Local maximum-size rules must leave room for at least an 850-square-foot ADU, or 1,000 square feet with more than one bedroom. Different limits apply where no compliant local ordinance exists, and conversions are not subject to unit-size limits.",
+        "next_steps": [
+          "Identify whether the proposal is attached, detached, or a conversion and record its bedroom count.",
+          "Compare the proposed size with the applicable state and local limits."
+        ],
+        "confirm_with_staff": [
+          "Whether the jurisdiction has a compliant local ADU ordinance.",
+          "Which maximum size applies to this ADU type."
+        ]
+      },
+      "es": {
+        "summary": "Las reglas locales de tamaño máximo deben permitir al menos una ADU de 850 pies cuadrados, o de 1,000 pies cuadrados si tiene más de un dormitorio. Se aplican límites diferentes donde no existe una ordenanza local que cumpla los requisitos, y las conversiones no están sujetas a límites de tamaño de la unidad.",
+        "next_steps": [
+          "Identifique si la propuesta es adosada, separada o una conversión, y registre el número de dormitorios.",
+          "Compare el tamaño propuesto con los límites estatales y locales aplicables."
+        ],
+        "confirm_with_staff": [
+          "Si la jurisdicción tiene una ordenanza local de ADU que cumpla los requisitos.",
+          "Qué tamaño máximo se aplica a este tipo de ADU."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "adu-parking-limits",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:d4dc3143817db23c53bdf0f989c2f518b8a3eb3c44bdd4daf045cc5d26fb5035",
+      "rule_fingerprint": "sha256:cd5118a8a9d72fd1743fcfeebbd8988c82f2b04fdc821c69298e7b05970f93bc",
+      "display_group": "standard",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "At most, the agency may require one parking space per ADU or per bedroom, whichever is fewer. It cannot require guest parking. You may not need an ADU parking space if an exemption applies. If ADU construction removes a garage, carport, covered space, or uncovered space, the agency cannot require a replacement space.",
+        "next_steps": [
+          "Check whether the project fits any of the parking exemptions listed in the source.",
+          "Note whether ADU construction will remove a garage, carport, covered space, or uncovered space."
+        ],
+        "confirm_with_staff": [
+          "Does a parking exemption apply, including the half-mile walking-distance exemption?",
+          "Will the jurisdiction require one parking space or no parking?"
+        ]
+      },
+      "es": {
+        "summary": "Como máximo, la agencia puede exigir un espacio de estacionamiento por ADU o por dormitorio, lo que sea menor. No puede exigir estacionamiento para visitantes. Es posible que no se necesite un espacio para la ADU si se aplica una exención. Si la construcción de la ADU elimina un garaje, una cochera, un espacio cubierto o un espacio descubierto, la agencia no puede exigir un espacio de reemplazo.",
+        "next_steps": [
+          "Compruebe si el proyecto cumple alguna de las exenciones de estacionamiento indicadas en la fuente.",
+          "Anote si la construcción de la ADU eliminará un garaje, una cochera, un espacio cubierto o un espacio descubierto."
+        ],
+        "confirm_with_staff": [
+          "¿Se aplica una exención de estacionamiento, incluida la exención por distancia peatonal de media milla?",
+          "¿La jurisdicción exigirá un espacio de estacionamiento o ninguno?"
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "adu-no-owner-occupancy-rental",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:5432f60f5a6b7572afd9399872c90d2ab614670ad1f65e6d50ab646519488cde",
+      "rule_fingerprint": "sha256:d6813a06da9f54fc349c6d3612fd6cfa953d462a36a158c1c34bcafc152609c5",
+      "display_group": "standard",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "Most ADUs cannot be conditioned on owner occupancy. A narrow separate-sale exception may differ, and a jurisdiction may require rentals to last longer than 30 days.",
+        "next_steps": [
+          "Record the intended rental term, if the ADU will be rented.",
+          "Identify whether the proposal involves the narrow separate-sale arrangement described by the rule."
+        ],
+        "confirm_with_staff": [
+          "Which local minimum rental term applies.",
+          "Whether the separate-sale exception changes the owner-occupancy condition."
+        ]
+      },
+      "es": {
+        "summary": "La mayoría de las ADU no pueden condicionarse a que el propietario ocupe la propiedad. Una excepción limitada para ciertas ventas por separado puede ser diferente, y una jurisdicción puede exigir alquileres de más de 30 días.",
+        "next_steps": [
+          "Registre la duración prevista del alquiler, si se alquilará la ADU.",
+          "Identifique si la propuesta incluye el acuerdo limitado de venta por separado descrito por la regla."
+        ],
+        "confirm_with_staff": [
+          "Qué duración mínima local de alquiler se aplica.",
+          "Si la excepción de venta por separado cambia la condición de ocupación por el propietario."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "adu-conversion-exemptions",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:1e6558580f6c5f635116f116755d301f8803da8ce8944cd65cd554dbde12e9c1",
+      "rule_fingerprint": "sha256:b16e9f91ee1b984561f252bbf28c8bab232d8381ff662847d68a103b40fae2aa",
+      "display_group": "standard",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "Converting existing space, or rebuilding in the same location and to the same dimensions, may avoid setbacks and certain local height, lot-coverage, landscaping, design, development, and architectural standards. Building, health and safety, and fire codes still apply.",
+        "next_steps": [
+          "Document the existing space, location, and dimensions and compare them with the proposal.",
+          "Identify whether the work is a conversion or a same-location, same-dimensions replacement."
+        ],
+        "confirm_with_staff": [
+          "Whether the proposal qualifies for the conversion exemptions.",
+          "Which building, health and safety, and fire-code requirements still apply."
+        ]
+      },
+      "es": {
+        "summary": "Convertir un espacio existente, o reconstruir en el mismo lugar y con las mismas dimensiones, puede evitar retiros y ciertas normas locales de altura, cobertura del lote, paisajismo, diseño, desarrollo y arquitectura. Los códigos de construcción, salud y seguridad, e incendios aún se aplican.",
+        "next_steps": [
+          "Documente el espacio, la ubicación y las dimensiones existentes y compárelos con la propuesta.",
+          "Identifique si el trabajo es una conversión o un reemplazo en el mismo lugar y con las mismas dimensiones."
+        ],
+        "confirm_with_staff": [
+          "Si la propuesta califica para las exenciones de conversión.",
+          "Qué requisitos de construcción, salud y seguridad, e incendios aún se aplican."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "adu-unpermitted-legalization",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:7b45e3999355cf44f4a5700bc421808e132b30083e26a147b7226e66f74ba653",
+      "rule_fingerprint": "sha256:2c7b8f07a161af77c99136119eb11c4c870858c7ec045522b382071b1f696d6f",
+      "display_group": "route",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "An unpermitted ADU built before January 1, 2020 may have a legalization route. The agency can still identify health-and-safety or substandard-building conditions that need correction.",
+        "next_steps": [
+          "Prepare a permit application for the existing unit.",
+          "Consider the optional confidential inspection report described by the rule before applying."
+        ],
+        "confirm_with_staff": [
+          "Whether the unit was built before January 1, 2020.",
+          "Which published substandard-condition checklist and health-and-safety findings apply."
+        ]
+      },
+      "es": {
+        "summary": "Una ADU sin permiso construida antes del 1 de enero de 2020 puede tener una vía de legalización. La agencia aún puede identificar condiciones de salud y seguridad o de edificio deficiente que deban corregirse.",
+        "next_steps": [
+          "Prepare una solicitud de permiso para la unidad existente.",
+          "Considere el informe opcional de inspección confidencial descrito por la regla antes de presentar la solicitud."
+        ],
+        "confirm_with_staff": [
+          "Si la unidad fue construida antes del 1 de enero de 2020.",
+          "Qué lista publicada de condiciones deficientes y qué conclusiones de salud y seguridad se aplican."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "adu-multifamily-66323",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:f47d5e01fd48e4a17aa470330a696fa442440d16c1b890e386e1fe8b600d3553",
+      "rule_fingerprint": "sha256:5dca54922c4a046d828731951a8987a63ed6ed8216524c7bacf9b5e8bcc60678",
+      "display_group": "route",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "An existing multifamily property may support two types of ADUs. It may add detached ADUs—up to eight, but never more than the number of existing homes. It may also convert storage rooms, passageways, or other non-living space inside the existing building. The conversion allowance is at least one ADU and may reach 25 percent of the existing home count.",
+        "next_steps": [
+          "Gather a site plan showing the existing multifamily building and the proposed ADU locations.",
+          "Count the existing units and identify any non-livable space proposed for conversion."
+        ],
+        "confirm_with_staff": [
+          "How many detached and conversion ADUs does the existing home count support?",
+          "Do the proposed locations meet the height and setback rules?"
+        ]
+      },
+      "es": {
+        "summary": "Una propiedad multifamiliar existente puede admitir dos tipos de ADU. Puede añadir ADU separadas, hasta ocho, pero nunca más que el número de viviendas existentes. También puede convertir cuartos de almacenamiento, pasillos u otros espacios no habitables dentro del edificio existente. La cantidad permitida por conversión es de al menos una ADU y puede llegar al 25 por ciento del número de viviendas existentes.",
+        "next_steps": [
+          "Reúna un plano del sitio que muestre el edificio multifamiliar existente y las ubicaciones propuestas de las ADU.",
+          "Cuente las unidades existentes e identifique cualquier espacio no habitable propuesto para conversión."
+        ],
+        "confirm_with_staff": [
+          "¿Cuántas ADU separadas y convertidas permite el número de viviendas existentes?",
+          "¿Las ubicaciones propuestas cumplen las reglas de altura y retiro?"
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "sb9-adu-interaction",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:4687e4661806dd4798493249eea8f69f7f14346844824b0ea83ed2c9a370da76",
+      "rule_fingerprint": "sha256:3e26abf181811f174c72e2f430a7c3ebab81e56cae9642248c9b4ffa2fc329a8",
+      "display_group": "standard",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "After an SB 9 lot split, each resulting parcel is capped at two total units in an allowed mix. Without a lot split, two primary units may be combined with ADUs or JADUs, although an agency need not also approve a lot split when the combination exceeds four units.",
+        "next_steps": [
+          "Map the proposed primary-unit, ADU, and JADU count before and after any lot split.",
+          "Compare the proposed unit mix with the two-unit-per-parcel limit."
+        ],
+        "confirm_with_staff": [
+          "Whether an SB 9 lot split has occurred or is part of the proposal.",
+          "Which unit combination and total count staff will review."
+        ]
+      },
+      "es": {
+        "summary": "Después de una división de lote SB 9, cada parcela resultante tiene un máximo de dos unidades totales en una combinación permitida. Sin una división, dos unidades principales pueden combinarse con ADU o JADU, aunque la agencia no tiene que aprobar también una división si la combinación supera cuatro unidades.",
+        "next_steps": [
+          "Trace el número propuesto de unidades principales, ADU y JADU antes y después de cualquier división del lote.",
+          "Compare la combinación propuesta con el límite de dos unidades por parcela."
+        ],
+        "confirm_with_staff": [
+          "Si ya ocurrió una división SB 9 o si forma parte de la propuesta.",
+          "Qué combinación y número total de unidades revisará el personal."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "davis-local-adu-process",
+      "source_verified_on": null,
+      "citation_fingerprint": "sha256:cb7885f4129e93ba659d16468532a6eaaba8751b7885aaa9ab05d43e9238201c",
+      "rule_fingerprint": "sha256:d78b1c9acf116324fe2d347267673b4c2c88a3a619f5ae730fbba8392300d150",
+      "display_group": "local_process",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "Only a possible Davis local ADU or JADU process is identified here. The underlying code text could not be retrieved and this rule is unverified, so it should not be used as a statement of current local requirements.",
+        "next_steps": [
+          "Obtain the current official text of Davis Municipal Code § 40.26.450 and the current city application materials.",
+          "Prepare a site plan and floor plan after confirming the local submission requirements."
+        ],
+        "confirm_with_staff": [
+          "Whether the cited code section is current.",
+          "Which local form, plans, and other materials are required."
+        ]
+      },
+      "es": {
+        "summary": "Aquí solo se identifica un posible proceso local de Davis para ADU o JADU. No se pudo obtener el texto del código y esta regla no está verificada, por lo que no debe usarse como declaración de los requisitos locales vigentes.",
+        "next_steps": [
+          "Obtenga el texto oficial vigente del Código Municipal de Davis § 40.26.450 y los materiales actuales de solicitud de la ciudad.",
+          "Prepare un plano del sitio y un plano de planta después de confirmar los requisitos locales de presentación."
+        ],
+        "confirm_with_staff": [
+          "Si la sección citada del código está vigente.",
+          "Qué formulario, planos y otros materiales locales se requieren."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    },
+    {
+      "version": "1.0.0",
+      "source_rule_id": "woodland-adu-ordinance-2026",
+      "source_verified_on": "2026-07-27",
+      "citation_fingerprint": "sha256:6fe6e50a654e90d902f9667f413a143ee13b4649cd373c0b06252070ee13ce63",
+      "rule_fingerprint": "sha256:c65a39a38bfa93268991a6b611d3a378e8ad47b88fefa400b4ae48ce6c543db7",
+      "display_group": "local_process",
+      "drafted_by": "ai_assisted",
+      "updated_on": "2026-07-28",
+      "review": {
+        "status": "prototype_review_pending",
+        "reviewer": null,
+        "reviewed_on": null,
+        "method": null
+      },
+      "en": {
+        "summary": "The available source confirms that Woodland adopted ADU and JADU ordinance amendments on February 17, 2026 to conform with state law. It does not establish the ordinance's operative requirements, so this result is only a comparable-jurisdiction lead.",
+        "next_steps": [
+          "Review the current text of Woodland Municipal Code § 17.84.030.",
+          "Obtain the current City of Woodland ADU application."
+        ],
+        "confirm_with_staff": [
+          "Which local requirements in § 17.84.030 apply to the proposal.",
+          "Which application form and supporting materials are current."
+        ]
+      },
+      "es": {
+        "summary": "La fuente disponible confirma que Woodland adoptó enmiendas a su ordenanza de ADU y JADU el 17 de febrero de 2026 para ajustarse a la ley estatal. No establece los requisitos operativos de la ordenanza, por lo que este resultado es solo una referencia para comparar jurisdicciones.",
+        "next_steps": [
+          "Revise el texto vigente del Código Municipal de Woodland § 17.84.030.",
+          "Obtenga la solicitud actual de ADU de la Ciudad de Woodland."
+        ],
+        "confirm_with_staff": [
+          "Qué requisitos locales de § 17.84.030 se aplican a la propuesta.",
+          "Qué formulario de solicitud y materiales de apoyo están vigentes."
+        ],
+        "translation_status": "machine_draft",
+        "reviewer": null,
+        "reviewed_on": null
+      }
+    }
+  ]
+}

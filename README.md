@@ -50,11 +50,20 @@ Permit Pathways treats that question as the product:
    with cited objective rules. Parcel-data retrieval, SB 35, AB 2011, and
    AI-assisted interpretation are expansion directions, not current runtime
    capabilities.
-2. **Citation-grounded guidance** — every answer carries the specific statute,
+2. **Plain-language decision records** — matched rules are grouped into
+   candidate routes, relevant standards, and local process records. Each card
+   separates what the rule may mean, scannable deadlines or thresholds,
+   suggested next steps, direct staff questions, and its source basis. The
+   English and Spanish explanations are versioned AI-assisted prototype
+   drafts, not reviewed guidance; they never
+   participate in matching. When a matched source is stale or unverified, the
+   action-oriented explanation and generic document hints are withheld while
+   the warning and available source evidence remain visible.
+3. **Citation-grounded guidance** — every answer carries the specific statute,
    HCD guidance document, or local code section that supports it. When the
    corpus doesn't support an answer, the system abstains and routes to staff
    instead of guessing.
-3. **Currency & verification harness** — nine structured golden cases replay
+4. **Currency & verification harness** — nine structured golden cases replay
    intake against expected rule IDs; each underlying rule carries dated source
    evidence. The CLI hash-checks selected statewide sources and can mark
    citation-matched rules stale; the browser separately rehearses a source
@@ -65,7 +74,7 @@ Permit Pathways treats that question as the product:
 
 | Scenario | Coverage |
 |---|---|
-| A — Guiding applicants to a complete, well-routed application | Primary prototype: ADU/JADU/SB 9 routing + cited, generic document hints. Parcel-specific packet completeness, remedies, and fully translated results are planned. |
+| A — Guiding applicants to a complete, well-routed application | Primary prototype: ADU/JADU/SB 9 routing, grouped plain-language decision records, citations, and generic document hints. English and Spanish explanation drafts are AI-assisted and unreviewed. Parcel-specific packet completeness, remedies, and reviewed translation are planned. |
 | B — Supporting internal review | Not targeted in v1 (harness architecture extends there later) |
 | C — Staying current with changing state housing law (supplementary) | Core prototype: selected-source watcher, staleness harness, and HCD-letter dataset. Search, change discovery, comparables UI, and a durable review queue are planned. |
 
@@ -80,8 +89,9 @@ Permit Pathways treats that question as the product:
   existing permitting systems rather than replacing them.
 - WCAG 2.2 AAA target with a static computed-contrast audit
   (`docs/ACCESSIBILITY.md`); required human/assistive-technology checks remain
-  open. English/Spanish intake and interface controls are prototyped, but
-  source-derived pathways, excerpts, and document hints remain English.
+  open. English/Spanish intake, interface controls, and plain-language result
+  drafts are prototyped. Spanish drafts have no human or semantic-parity
+  review; pathway titles, source excerpts, and document hints remain English.
   Styling uses the open-source California Design System's cagov theme tokens
   (no state branding; use implies no affiliation).
 
@@ -95,6 +105,13 @@ Machine-assisted encoding — a documented human spot-check against the PDFs in
 `corpus/hcd/` is the intended next verification pass. In the current schema,
 `verified_on` means dated source evidence is recorded; it does not mean a
 jurisdiction, counsel, or named human reviewer approved the interpretation.
+The separate plain-language layer records its own version, linked rule-source
+date, citation fingerprint, full-rule fingerprint, AI-assisted authorship, and
+pending review status. Review metadata is bound to the explanation version it
+covered. If browser-side fingerprint validation is unavailable, the display
+fails closed to matched rules and evidence without explanation copy. All 15
+current rule records have English and Spanish drafts; none is represented as
+human-reviewed or jurisdiction-approved.
 
 A period detail that proves the concept: state ADU law was renumbered from
 Gov. Code § 65852.2 et seq. to §§ 66310–66342 by SB 477 (2024), with further
@@ -159,19 +176,25 @@ issue if any changed or became unreachable. Local-code sources and newly
 enacted-law discovery are not yet covered.
 
 The full static showcase serves an English/Spanish structured-intake shell,
-pathway results with inline statutory citations and source-status badges, an
-abstention path ("needs staff review") when no encoded state pathway matches,
-the conformance scanner, review clocks, and a trust dashboard. Source-derived
-rule content remains English. The dashboard includes a clearly labeled
-one-click rehearsal of an amendment to Gov. Code § 66321; it is not persisted
-production state. The smaller Python reference demo keeps a separate `/trust`
-route for parity work.
+grouped decision-record results with plain-language explanation drafts,
+always-visible citations and source-status badges, an abstention path ("needs
+staff review") when no encoded state pathway matches, the conformance scanner,
+review clocks, and a trust dashboard. Spanish explanation copy is an
+unreviewed machine draft; source-derived pathway titles, excerpts, and document
+hints remain English when shown. Stale and unverified records suppress action
+copy, interpretive notes, and document hints. The dashboard includes a clearly
+labeled one-click rehearsal of an amendment to Gov. Code § 66321; matching
+result cards rerender as stale, but that rehearsal is not persisted production
+state. The smaller Python reference demo renders the same explanation sidecar
+and keeps a separate `/trust` route.
 
 ## Layout
 
 - `src/permit_pathways/screening.py` — deterministic pathway-screening engine
+- `src/permit_pathways/explanations.py` — versioned explanation validation
 - `src/permit_pathways/harness/` — verification runner + CLI
 - `data/rules/` — the cited rule base; `data/golden/` — golden cases
+- `data/explanations/plain-language.json` — English/Spanish explanation drafts
 - `data/demo-data.js` — generated offline bundle for the static showcase
 - `corpus/hcd/` — HCD source documents recorded by rule citations
 - `demo/app.py` — stdlib reference demo and safe static-file server

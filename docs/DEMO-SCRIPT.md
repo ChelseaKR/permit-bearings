@@ -35,12 +35,22 @@ run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
   mechanism is a liability with a friendly interface.
 
 ### 2. Applicant flow — Scenario A (7 min)
-- Live intake: Davis homeowner, backyard ADU. Show pathway cards: ministerial
-  routing and size/height/parking standards, each citing a code section and
-  dated source evidence. Then show the separate clock prototype and name its
-  single-date assumption.
-- Switch the intake/interface controls to Spanish. Be explicit that
-  source-derived rule content is still English pending reviewed translation.
+- Live intake: Davis homeowner, backyard ADU. Show the grouped decision
+  records: candidate routes first, relevant standards second, and the
+  unverified Davis local-process record last. In one card, walk from “What
+  this result means” through the separate 15-business-day and conditional
+  60-day deadlines, then “What you can do next” and “Questions to ask staff.”
+  Point to the always-visible citation and expand “Why we're saying this.”
+- Name the integrity boundary: deterministic rules selected the record; the
+  plain-language explanation is a versioned AI-assisted draft and cannot
+  change the match. The unverified Davis card keeps the visible source and
+  no-dated-source warning but withholds drafted actions, interpretive notes,
+  and generic document hints rather than turning weak evidence into a
+  confident answer.
+- Switch the intake/results to Spanish. Be explicit that Spanish
+  plain-language copy is an unreviewed machine draft with no semantic-parity
+  review; pathway titles, source excerpts, and document hints remain English.
+- Show the separate clock prototype and name its single-date assumption.
 - The trust moment: select an SB 9 fact combination with no matching encoded
   rule → the system abstains and routes to staff. "No match means insufficient
   encoded evidence, not ineligibility."
@@ -55,10 +65,11 @@ run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
   April 2026 SB 9 fact sheet; weekly automated re-fetch (show the GitHub
   Action) reports when either changes or becomes unreachable.
 - One click: rehearse an amendment to § 66321. Three dependent rules flip
-  stale; unrelated records remain unchanged. Label this as a simulation; stable
-  dependency IDs and a persisted review queue are the next implementation
-  step. "This is what the morning after the legislative session should look
-  like."
+  stale; matching result cards rerender and withhold their drafted actions,
+  while unrelated records remain unchanged. Label this as a simulation;
+  stable dependency IDs and a persisted review queue are the next
+  implementation step. "This is what the morning after the legislative
+  session should look like."
 - Nine structured golden scenarios replay in the browser. They prove matcher
   regression behavior, not natural-language accuracy or jurisdiction
   acceptance.

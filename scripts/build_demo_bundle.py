@@ -11,10 +11,16 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+from permit_pathways.explanations import load_explanations  # noqa: E402
+from permit_pathways.screening import load_rules  # noqa: E402
+
 OUTPUT = ROOT / "data" / "demo-data.js"
 INPUTS = {
     "statewide_rules": Path("data/rules/statewide.json"),
@@ -26,11 +32,18 @@ INPUTS = {
     "registry": Path("data/jurisdictions/registry.json"),
     "letters": Path("data/jurisdictions/hcd-letters.json"),
     "scans": Path("data/conformance/results/index.json"),
+    "plain_language": Path("data/explanations/plain-language.json"),
 }
 
 
 def build_bundle(root: Path = ROOT) -> str:
     """Return the generated bundle text from canonical JSON inputs."""
+
+    rules = load_rules(root / "data" / "rules")
+    load_explanations(
+        root / "data" / "explanations" / "plain-language.json",
+        rules,
+    )
 
     payload: dict[str, object] = {}
     digests: dict[str, str] = {}

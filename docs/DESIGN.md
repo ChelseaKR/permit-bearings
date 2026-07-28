@@ -32,10 +32,55 @@ JADU, and SB 9; it does not yet encode SB 35, AB 2011, authoritative parcel
 facts, comprehensive local requirements, application-file review, or detailed
 remedies.
 
-The next coherent output is a single permit-readiness evidence packet, not a
-list that visually treats each standard as a separate route. It should
-separate routing, submission completeness, consistency standards, and
-unresolved staff questions.
+The result surface now groups matched records into candidate routes, relevant
+standards, and local process records instead of visually presenting every
+standard as a separate route. The next coherent output is a single
+permit-readiness evidence packet that also separates submission completeness,
+consistency standards, and unresolved staff questions.
+
+#### Plain-language explanation layer (prototype)
+
+`data/explanations/plain-language.json` is a canonical sidecar keyed by stable
+rule ID. It stores an explanation version, the linked rule's source-check
+date, citation fingerprint, and full-rule fingerprint, plus display group,
+AI-assisted authorship, explicit review metadata, and English/Spanish copy for:
+
+- what this candidate result may mean;
+- an optional scannable highlight group for multiple deadlines or thresholds;
+- suggested next steps;
+- facts or interpretations staff still need to confirm; and
+- the evidence record shown separately in the interface.
+
+`src/permit_pathways/explanations.py` requires exact rule coverage, rejects
+duplicates and orphaned IDs, and fails validation when an explanation's
+recorded source date, normalized citation fingerprint, or normalized full-rule
+fingerprint drifts from its linked rule. The latter covers criteria, pathway,
+scope, route class, notes, document hints, citation, and rule ID. A completed
+review requires reviewer, method, date, and the exact explanation version
+reviewed; translation review is tracked and displayed independently. The build
+performs strict whole-corpus validation. At display time, malformed records
+fail independently and missing Spanish copy visibly falls back to English. If
+browser-side SHA-256 is unavailable or rejects, all explanation copy is
+withheld while deterministic screening remains available. The rule engine
+neither imports nor accepts explanation data, so copy cannot create or change
+a match.
+
+Both demos preserve the matched rule, source citation, and available excerpt
+when explanation copy is unavailable. If the source is stale or unverified,
+they deliberately withhold the action-oriented explanation, interpretive rule
+notes, and generic document hints; a weak evidence record cannot become an
+applicant checklist.
+
+All current English explanations are labeled AI-assisted and not
+human-reviewed. Spanish records are additionally labeled `machine_draft`;
+source excerpts and document hints stay in English. Human legal/content
+review, comprehension testing, and English/Spanish semantic-parity review are
+required before these drafts can be treated as applicant-ready guidance.
+The applicant-facing style starts with the practical consequence, keeps one
+condition or number per sentence, defines unavoidable legal terms, and uses
+direct questions for unresolved facts. The structured highlight group is used
+for the ADU review deadlines so the 15-business-day and conditional 60-day
+rules are not compressed into one paragraph.
 
 ### 2. Citation-grounded Q&A (planned)
 
@@ -73,13 +118,14 @@ affected nodes while proving that unrelated nodes remain current.
 ### 4. Static delivery (implemented)
 
 The browser showcase remains dependency-free and static-host friendly.
-Canonical rules, registries, fixtures, checks, and source metadata stay in
-JSON. `scripts/build_demo_bundle.py` deterministically compiles those files
-into `data/demo-data.js`, which loads before the page application code. This
-lets `index.html` work when opened directly from disk, where browsers normally
-block JSON `fetch()` calls, while retaining checked-HTTP JSON loading as a
-fallback. The stdlib server exposes the static page at `/index.html` and
-`/showcase` and limits static-file access to `index.html` and `data/`.
+Canonical rules, explanations, registries, fixtures, checks, and source
+metadata stay in JSON. `scripts/build_demo_bundle.py` deterministically
+compiles those files into `data/demo-data.js`, which loads before the page
+application code. This lets `index.html` work when opened directly from disk,
+where browsers normally block JSON `fetch()` calls, while retaining
+checked-HTTP JSON loading as a fallback. The stdlib server exposes the static
+page at `/index.html` and `/showcase` and limits static-file access to
+`index.html` and `data/`.
 
 The generated bundle must never become a second hand-edited source of truth;
 the test suite compares it byte-for-byte with the canonical JSON inputs.

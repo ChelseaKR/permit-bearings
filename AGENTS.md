@@ -51,6 +51,10 @@ Keep these distinctions explicit:
   citation evaluations.
 - A source-change rehearsal is not a durable production review queue.
 - Interface localization is not translated source-derived guidance.
+- A plain-language explanation draft does not change rule matching and is not
+  evidence of human, counsel, or jurisdiction review.
+- A Spanish machine draft is not a semantically reviewed translation of the
+  source record.
 - A presence-based text screen is not a compliance determination and cannot
   prove that required language is present.
 - A source-linked rule is not necessarily human-reviewed,
@@ -81,6 +85,28 @@ canonical citation and URL, a short supporting excerpt or content digest, a
 source-check date, and explicit dependencies. Preserve effective dates and
 distinguish enactment, effective, and source-check dates.
 
+Every published plain-language explanation should live outside the matching
+rule, link to a stable rule ID, source-check date, normalized citation
+fingerprint, and normalized full-rule fingerprint, carry its own
+version/authorship/review metadata, and preserve the citation as a separately
+visible evidence record. A completed review claim must record reviewer,
+method, review date, and the exact explanation version reviewed; translation
+review is independent and both statuses must remain visible. Missing,
+malformed, stale, or unverified explanation data must degrade to an
+evidence-only result, never suppress or create a rule match. Do not show action
+copy, interpretive notes, or generic document hints when the matched source is
+stale or unverified. If runtime fingerprint validation is unavailable or
+fails, fail closed on explanation display without disabling deterministic
+screening.
+
+Plain language is a user-interface requirement, not a synonym for shorter
+legal prose. Start with the applicant consequence; use one condition or number
+per sentence; define unavoidable legal terms once; turn unresolved items into
+direct questions; and use a scannable list when a rule contains multiple
+deadlines or thresholds. Keep detailed exception lists and legal terminology
+in the evidence disclosure. Readability tests can flag regressions but do not
+replace review with applicants, staff, counsel, or translators.
+
 The current `verified_on` field means that dated source evidence is recorded;
 it does not encode who reviewed it or whether a jurisdiction accepted the
 interpretation. New verification work should move toward explicit levels such
@@ -98,6 +124,9 @@ person re-verifies them.
 - Use AI for bounded extraction, retrieval, explanation, translation drafts,
   and staff-document drafts when its evidence can be shown.
 - Never let model prose silently create or modify a published rule.
+- Keep AI-assisted explanation and translation copy versioned, visibly
+  labeled, and review-pending until named review metadata exists. Do not
+  promote review status by editing interface prose alone.
 - Require page/passage evidence for extracted facts and citations for
   generated remedies or explanations.
 - Expose unknown, conflicting, stale, and unsupported states. Abstain and
@@ -131,6 +160,12 @@ because the design anticipates it.
 
 - Keep rules, sources, golden cases, and review artifacts in portable,
   human-readable formats owned by the jurisdiction.
+- Keep `data/explanations/plain-language.json` separate from deterministic
+  criteria. Validate exact rule coverage, duplicate/orphan IDs, review
+  metadata and version binding, locale status, linked source-date drift, and
+  same-date citation-content drift. Bind display copy to all rule fields that
+  affect its meaning, including criteria, pathway, scope, notes, and document
+  hints.
 - Preserve the dependency-light Python core and static-friendly demo unless a
   change has a clear product reason.
 - `data/demo-data.js` is generated from canonical JSON by
@@ -151,6 +186,12 @@ and wrong-jurisdiction cases as relevant. For source changes, test both the
 affected dependency set and unaffected controls. For the conformance scanner,
 use held-out positive and negative material before publishing accuracy or
 coverage metrics.
+
+For explanation changes, test English and Spanish status independently,
+selected legal/semantic boundaries, high-priority jargon regressions,
+unavailable-copy fallback, source visibility, and the invariant that matching
+output is unchanged. Human readability, legal fidelity, and translation parity
+remain separate review activities; schema tests are not substitutes.
 
 Before handing off a code or data change:
 

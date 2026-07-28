@@ -22,10 +22,12 @@ from urllib.parse import parse_qs, unquote, urlparse
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from permit_pathways.explanations import load_explanations  # noqa: E402
 from permit_pathways.harness import verify_rules  # noqa: E402
 from permit_pathways.screening import load_rules, screen  # noqa: E402
 
 RULES_PATH = ROOT / "data" / "rules"
+EXPLANATIONS_PATH = ROOT / "data" / "explanations" / "plain-language.json"
 GOLDEN_PATH = ROOT / "data" / "golden" / "example.json"
 DATA_ROOT = (ROOT / "data").resolve()
 
@@ -59,17 +61,50 @@ STRINGS = {
                    "affordable housing · a tenant lived there in the last 3 "
                    "years · historic district · wetlands or other protected "
                    "site · parcel was already created by an SB 9 lot split",
-        "submit": "Find my pathway",
+        "submit": "Check candidate pathways",
         "disclaimer": "Decision support only — not legal advice and not a "
                       "substitute for your jurisdiction's review.",
-        "results": "Candidate pathways",
-        "none": "No state pathway matched your answers. This does not mean "
-                "your project is impossible — it means it needs staff "
-                "review. Contact your jurisdiction's planning counter.",
-        "docs": "Typical documents",
+        "results": "Possible permit paths and rules",
+        "result_intro": "This prototype deterministically matched your answers "
+                        "against its bounded encoded rule set. It did not verify "
+                        "parcel facts, eligibility, or approval. Plain-language "
+                        "explanations are AI-assisted drafts; cited source records "
+                        "remain separate below.",
+        "none": "No pathway in this prototype's encoded state rule set matched "
+                "your answers. This does not mean your project is impossible — "
+                "it means it needs staff review. Contact your jurisdiction's "
+                "planning counter.",
+        "groups": {
+            "route": "Possible permit paths",
+            "standard": "Rules that may apply",
+            "local_process": "Local process information",
+            "other": "Other matching rules",
+        },
+        "means": "What this result means",
+        "next": "What you can do next",
+        "confirm": "Questions to ask staff",
+        "docs": "Typical document hints",
         "source": "Source",
-        "verified": "source record dated",
-        "stale": "STALE — source review needed",
+        "evidence": "Why we're saying this",
+        "evidence_unavailable": "No supporting excerpt is recorded for this "
+                                "non-current source record.",
+        "copy_record": "Explanation details",
+        "ai_draft": "Draft explanation · made with AI · not reviewed by a person",
+        "translation_draft": "Spanish draft · made with AI · not reviewed for accuracy",
+        "unavailable": "This explanation is not available. The matching rule "
+                       "and source are still shown.",
+        "withheld_unverified": "We are not showing next steps because this "
+                               "source has no date on file. Ask staff to confirm "
+                               "the source before you rely on it.",
+        "withheld_stale": "We are not showing next steps because the source "
+                          "needs a new check. Confirm it before you rely on it.",
+        "next_scope": "These are starting points, not a complete checklist. "
+                      "Ask local staff what your project needs.",
+        "english_only": "English explanation shown because no valid Spanish draft "
+                        "is available.",
+        "verified": "source date on file",
+        "stale": "SOURCE NEEDS A NEW CHECK",
+        "unverified": "NO SOURCE DATE ON FILE",
         "back": "Start over",
         "dashboard": "Trust dashboard",
     },
@@ -103,18 +138,53 @@ STRINGS = {
                    "últimos 3 años · distrito histórico · humedales u otro "
                    "sitio protegido · la parcela ya fue creada por una "
                    "división SB 9",
-        "submit": "Encontrar mi trámite",
+        "submit": "Revisar posibles vías",
         "disclaimer": "Solo apoyo a la decisión — no es asesoría legal ni "
                       "sustituye la revisión de su jurisdicción.",
-        "results": "Trámites posibles",
-        "none": "Ninguna vía estatal coincidió con sus respuestas. Esto no "
-                "significa que su proyecto sea imposible — significa que "
-                "necesita revisión del personal. Contacte a su departamento "
-                "de planificación.",
-        "docs": "Documentos típicos",
+        "results": "Posibles vías de permiso y reglas",
+        "result_intro": "Este prototipo comparó sus respuestas de forma "
+                        "determinista con su conjunto limitado de reglas "
+                        "codificadas. No verificó los datos de la parcela, la "
+                        "elegibilidad ni la aprobación. Las explicaciones en "
+                        "lenguaje sencillo son borradores asistidos por IA; los "
+                        "registros de las fuentes citadas se muestran por separado.",
+        "none": "Ninguna vía del conjunto de reglas estatales codificadas de "
+                "este prototipo coincidió con sus respuestas. Esto no significa "
+                "que su proyecto sea imposible — significa que necesita "
+                "revisión del personal. Contacte a su departamento de "
+                "planificación.",
+        "groups": {
+            "route": "Posibles vías de permiso",
+            "standard": "Reglas que podrían aplicarse",
+            "local_process": "Información del proceso local",
+            "other": "Otras reglas coincidentes",
+        },
+        "means": "Qué significa este resultado",
+        "next": "Qué puede hacer ahora",
+        "confirm": "Preguntas para el personal",
+        "docs": "Sugerencias de documentos típicos",
         "source": "Fuente",
-        "verified": "registro de fuente con fecha",
-        "stale": "DESACTUALIZADO — requiere revisión",
+        "evidence": "Por qué decimos esto",
+        "evidence_unavailable": "No hay un extracto de respaldo registrado "
+                                "para este registro de fuente no vigente.",
+        "copy_record": "Detalles de la explicación",
+        "ai_draft": "Borrador de explicación · creado con IA · no revisado por una persona",
+        "translation_draft": "Borrador en español · creado con IA · no revisado "
+                             "para comprobar su exactitud",
+        "unavailable": "Esta explicación no está disponible. Aun así se muestran "
+                       "la regla coincidente y la fuente.",
+        "withheld_unverified": "No mostramos los próximos pasos porque esta fuente "
+                               "no tiene una fecha registrada. Pida al personal que "
+                               "confirme la fuente antes de usarla.",
+        "withheld_stale": "No mostramos los próximos pasos porque la fuente necesita "
+                          "una nueva comprobación. Confírmela antes de usarla.",
+        "next_scope": "Estos son puntos de partida, no una lista completa. "
+                      "Pregunte al personal local qué necesita su proyecto.",
+        "english_only": "Se muestra la explicación en inglés porque no hay un "
+                        "borrador válido en español.",
+        "verified": "fecha de la fuente registrada",
+        "stale": "LA FUENTE NECESITA UNA NUEVA COMPROBACIÓN",
+        "unverified": "SIN FECHA DE LA FUENTE",
         "back": "Empezar de nuevo",
         "dashboard": "Panel de confianza",
     },
@@ -131,8 +201,22 @@ button{background:#1a4a8a;color:#fff;border:0;border-radius:6px;
 .card{border:1px solid #ccd;border-left:6px solid #2a7;border-radius:8px;
       padding:1rem;margin:1rem 0}
 .card.unverified{border-left-color:#d80}
+.result-card{border-left-color:#ccd}.result-card.unverified{border-left-color:#d80}
+.result-group{margin:1.5rem 0}.result-group>h2{font-size:1.08rem}
+.result-card h3{margin:.15rem 0 .4rem}.result-card h4{font-size:.92rem;
+      margin:1rem 0 .25rem}.result-card ol,.result-card ul{margin-top:.3rem}
+.result-head{display:flex;align-items:flex-start;justify-content:space-between;
+      gap:.75rem;flex-wrap:wrap}.review-note{font-size:.82rem;font-weight:600;
+      color:#555}.confirmation{background:#f5f7fb;border-radius:6px;
+      padding:.15rem .75rem;margin-top:.8rem}.source-basis{font-size:.88rem}
+.key-points{border-left:4px solid #ccd;padding:.05rem .75rem .15rem;
+      margin:.8rem 0}.key-points strong{display:inline}
+details{border-top:1px solid #dde;margin-top:1rem;padding-top:.35rem}
+summary{color:#1a4a8a;cursor:pointer;font-weight:600;min-height:44px;
+      display:list-item;padding:.55rem 0}
 .badge{font-size:.8rem;padding:.15rem .5rem;border-radius:999px;
        background:#e6f6ee;color:#166534}
+.badge.info{background:#fff;color:#555;border:1px solid #ccd}
 .badge.warn{background:#fef3e2;color:#92400e}
 .badge.stale{background:#fee2e2;color:#991b1b}
 blockquote{font-size:.85rem;color:#444;border-left:3px solid #ddd;
@@ -149,13 +233,17 @@ table{border-collapse:collapse;width:100%} td,th{border-bottom:1px solid #eee;
 
 def page(title, body, lang="en"):
     other = "es" if lang == "en" else "en"
-    other_label = "Español" if lang == "en" else "English"
+    other_label = (
+        "Empezar de nuevo en español"
+        if lang == "en"
+        else "Start over in English"
+    )
     return f"""<!doctype html><html lang="{lang}"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title><style>{CSS}</style></head><body>
 <p class="small"><a href="/?lang={lang}">Permit Pathways</a> ·
 <a href="/trust?lang={lang}">{STRINGS[lang]['dashboard']}</a> ·
-<a href="/?lang={other}">{other_label}</a></p>
+<a href="/?lang={other}" lang="{other}">{other_label}</a></p>
 {body}
 <p class="small">{STRINGS[lang]['disclaimer']}</p>
 </body></html>"""
@@ -191,6 +279,187 @@ def intake_form(lang):
 </form>""", lang)
 
 
+def _base_review_label(explanation, lang):
+    review = explanation.review
+    if review.status == "prototype_review_pending":
+        return STRINGS[lang]["ai_draft"]
+    if review.status == "jurisdiction_approved":
+        if lang == "es":
+            return (
+                f"Explicación aprobada por la jurisdicción · "
+                f"{review.reviewer} · {review.reviewed_on} · "
+                f"v{review.reviewed_version}"
+            )
+        return (
+            f"Jurisdiction-approved explanation · "
+            f"{review.reviewer} · {review.reviewed_on} · "
+            f"v{review.reviewed_version}"
+        )
+    if lang == "es":
+        return (
+            f"Explicación revisada por una persona · {review.reviewer} · "
+            f"{review.reviewed_on} · v{review.reviewed_version}"
+        )
+    return (
+        f"Human-reviewed explanation · {review.reviewer} · "
+        f"{review.reviewed_on} · v{review.reviewed_version}"
+    )
+
+
+def _review_labels(explanation, lang, copy_lang):
+    labels = [_base_review_label(explanation, lang)]
+    if lang != "es":
+        return labels
+    if copy_lang != "es":
+        labels.append(STRINGS[lang]["english_only"])
+        return labels
+    localized = explanation.es
+    if localized.translation_status == "machine_draft":
+        labels.append(STRINGS[lang]["translation_draft"])
+    elif localized.translation_status == "jurisdiction_approved":
+        labels.append(
+            f"Traducción aprobada por la jurisdicción · "
+            f"{localized.reviewer} · {localized.reviewed_on} · "
+            f"v{localized.reviewed_version}"
+        )
+    else:
+        labels.append(
+            f"Traducción revisada por una persona · "
+            f"{localized.reviewer} · {localized.reviewed_on} · "
+            f"v{localized.reviewed_version}"
+        )
+    return labels
+
+
+def _result_badge(result, strings):
+    citation = result.rule.citation
+    status = "unverified"
+    if result.verified:
+        status = "stale" if citation.is_stale(180, date.today()) else "verified"
+    if status == "verified":
+        markup = (
+            f"<span class='badge info'>{strings['verified']} "
+            f"{html.escape(citation.verified_on or '')}</span>"
+        )
+    elif status == "stale":
+        markup = f"<span class='badge stale'>{strings['stale']}</span>"
+    else:
+        markup = f"<span class='badge warn'>{strings['unverified']}</span>"
+    return status, markup
+
+
+def render_result_card(result, explanation, lang):
+    """Render one decision record without affecting the underlying match."""
+
+    s = STRINGS[lang]
+    rule = result.rule
+    citation = rule.citation
+    status, badge = _result_badge(result, s)
+    safe_rule_id = "".join(
+        character if character.isalnum() or character in "-_" else "-"
+        for character in rule.rule_id
+    )
+    card_id = f"result-title-{safe_rule_id}"
+    source = (
+        f"<p class='source-basis'><b>{s['source']}:</b> "
+        f"<a lang='en' href='{html.escape(citation.url)}' rel='noopener'>"
+        f"{html.escape(citation.source)}</a></p>"
+    )
+    docs = "".join(
+        f"<li>{html.escape(document)}</li>"
+        for document in rule.required_documents
+    )
+    docs_html = (
+        f"<h4 lang='{lang}'>{s['docs']}</h4>"
+        f"<ul class='small' lang='en'>{docs}</ul>"
+        if docs
+        else ""
+    )
+    evidence = f"""
+<details>
+  <summary lang="{lang}">{s['evidence']}</summary>
+  {f'<p class="small" lang="en">{html.escape(rule.notes)}</p>' if status == "verified" and rule.notes else ''}
+  {f'<blockquote lang="en">{html.escape(citation.excerpt)}</blockquote>' if citation.excerpt else ''}
+  {f'<p class="small" lang="{lang}">{s["evidence_unavailable"]}</p>' if status != "verified" and not citation.excerpt else ''}
+  {docs_html if status == "verified" else ""}
+</details>"""
+
+    if status != "verified":
+        message = (
+            s["withheld_unverified"]
+            if status == "unverified"
+            else s["withheld_stale"]
+        )
+        plain_language = (
+            f"<div class='notice small' lang='{lang}'>{message}</div>"
+        )
+        review_note = ""
+    elif explanation is None:
+        plain_language = (
+            f"<div class='notice small' lang='{lang}'>{s['unavailable']}</div>"
+        )
+        review_note = ""
+    else:
+        localized = explanation.localized(lang)
+        copy_lang = explanation.localized_language(lang)
+        next_steps = "".join(
+            f"<li>{html.escape(step)}</li>" for step in localized.next_steps
+        )
+        confirmations = "".join(
+            f"<li>{html.escape(item)}</li>"
+            for item in localized.confirm_with_staff
+        )
+        highlights = ""
+        if localized.highlights is not None:
+            highlight_items = "".join(
+                f"<li><strong>{html.escape(item.label)}:</strong> "
+                f"{html.escape(item.text)}</li>"
+                for item in localized.highlights.items
+            )
+            highlights = f"""
+  <div class="key-points">
+    <h4 lang="{copy_lang}">{html.escape(localized.highlights.title)}</h4>
+    <ul lang="{copy_lang}">{highlight_items}</ul>
+  </div>"""
+        plain_language = f"""
+<div class="plain-layer">
+  <h4 lang="{lang}">{s['means']}</h4>
+  <p lang="{copy_lang}">{html.escape(localized.summary)}</p>
+  {highlights}
+  <h4 lang="{lang}">{s['next']}</h4>
+  <p class="small" lang="{lang}">{s['next_scope']}</p>
+  <ol lang="{copy_lang}">{next_steps}</ol>
+  <div class="confirmation">
+    <h4 lang="{lang}">{s['confirm']}</h4>
+    <ul lang="{copy_lang}">{confirmations}</ul>
+  </div>
+</div>"""
+        review_note = "".join(
+            f"<p class='review-note' lang='{lang}'>"
+            f"{html.escape(label)}</p>"
+            for label in _review_labels(explanation, lang, copy_lang)
+        )
+        evidence = evidence.replace(
+            "</details>",
+            f"<p class='small'><span lang='{lang}'>{s['copy_record']}:</span> "
+            f"<span lang='en'>{html.escape(explanation.source_rule_id)} "
+            f"v{html.escape(explanation.version)}, "
+            f"{html.escape(explanation.updated_on)}</span></p></details>",
+        )
+
+    return f"""<article class="card result-card{'' if status == 'verified' else ' unverified'}"
+  data-rule-id="{html.escape(rule.rule_id)}" aria-labelledby="{card_id}">
+<div class="result-head">
+  <h3 id="{card_id}" lang="en">{html.escape(rule.pathway)}</h3>
+{badge}
+</div>
+{review_note}
+{plain_language}
+{source}
+{evidence}
+</article>"""
+
+
 def result_page(form, lang):
     s = STRINGS[lang]
     no_excl = "no_exclusions" in form
@@ -208,29 +477,36 @@ def result_page(form, lang):
         "parcel_created_by_sb9_split": not no_excl,
         "jurisdiction": form.get("jurisdiction", ["example-city"])[0],
     }
-    results = screen(intake, load_rules(RULES_PATH))
+    rules = load_rules(RULES_PATH)
+    results = screen(intake, rules)
+    try:
+        explanations = load_explanations(
+            EXPLANATIONS_PATH, rules, strict=False
+        )
+    except (OSError, ValueError):
+        # Screening remains available and evidence remains visible if display
+        # copy is missing, malformed, or drifts from the rule source date.
+        explanations = {}
     if not results:
         body = f"<h1>{s['results']}</h1><div class='notice'>{s['none']}</div>"
     else:
-        cards = []
+        grouped = {key: [] for key in ("route", "standard", "local_process", "other")}
         for r in results:
-            c = r.rule.citation
-            current = r.verified and not c.is_stale(180, date.today())
-            if current:
-                badge = f"<span class='badge'>{s['verified']} {c.verified_on}</span>"
-            elif r.verified:
-                badge = f"<span class='badge stale'>{s['stale']}</span>"
-            else:
-                badge = "<span class='badge warn'>NO DATED SOURCE RECORD</span>"
-            docs = "".join(f"<li>{html.escape(d)}</li>" for d in r.rule.required_documents)
-            docs_html = f"<p class='small'><b>{s['docs']}:</b></p><ul class='small'>{docs}</ul>" if docs else ""
-            cards.append(f"""<div class="card{'' if current else ' unverified'}">
-<h2>{html.escape(r.rule.pathway)} {badge}</h2>
-<p class="small">{html.escape(r.rule.notes)}</p>
-<blockquote>{html.escape(c.excerpt or '')}</blockquote>
-<p class="small">{s['source']}: <a href="{html.escape(c.url)}">{html.escape(c.source)}</a></p>
-{docs_html}</div>""")
-        body = f"<h1>{s['results']}</h1>" + "".join(cards)
+            explanation = explanations.get(r.rule.rule_id)
+            group = explanation.display_group if explanation else "other"
+            grouped[group].append(render_result_card(r, explanation, lang))
+        sections = "".join(
+            f"<section class='result-group' aria-labelledby='group-{group}'>"
+            f"<h2 id='group-{group}' lang='{lang}'>{s['groups'][group]}</h2>"
+            f"{''.join(cards)}</section>"
+            for group, cards in grouped.items()
+            if cards
+        )
+        body = (
+            f"<h1>{s['results']}</h1>"
+            f"<p class='small' lang='{lang}'>{s['result_intro']}</p>"
+            f"{sections}"
+        )
     body += f"<p><a href='/?lang={lang}'>{s['back']}</a></p>"
     return page(s["results"], body, lang)
 
