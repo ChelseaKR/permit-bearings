@@ -15,7 +15,7 @@ scope and evidence are product behavior, not editorial polish.
 
 ## Product objective and scope
 
-Permit Pathways is an auditable decision-support and verification layer for
+Permit Bearings is an auditable decision-support and verification layer for
 California housing permitting. Its primary wedge is Scenario A: help an
 applicant identify a candidate route and reach a complete, well-routed
 submission. Scenario C is the assurance layer underneath that experience:
