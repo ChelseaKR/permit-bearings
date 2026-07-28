@@ -18,6 +18,11 @@ Business days exclude weekends and California state holidays (Gov. Code
 Friday, Sunday holidays to Monday). Jurisdictions may observe additional
 local holidays — a deployment should confirm the local calendar; the
 state list is the floor.
+
+The current `adu_clocks` helper models the bounded case in which the
+application is complete on initial receipt. It does not model an incompleteness
+notice, cure/resubmittal date, applicant delay, or tolling; production output
+must collect those events separately.
 """
 
 from __future__ import annotations
@@ -92,12 +97,15 @@ class ClockStatus:
             "  (Gov. Code § 66317(a)(2)(A), 15 business days)",
             f"Deemed complete if no notice by: {self.deemed_complete_if_silent.isoformat()}"
             "  (Gov. Code § 66317(a)(2)(F))",
-            f"Decision due (once complete):    {self.decision_deadline_if_complete.isoformat()}"
+            f"Decision due (assuming complete on receipt): "
+            f"{self.decision_deadline_if_complete.isoformat()}"
             "  (Gov. Code § 66317(a)(3), 60 days)",
         ])
 
 
 def adu_clocks(received: date) -> ClockStatus:
+    """Illustrate both deadlines assuming the application is complete on
+    initial receipt. Correction cycles require a separate completion event."""
     completeness = add_business_days(received, COMPLETENESS_BUSINESS_DAYS)
     return ClockStatus(
         received=received,

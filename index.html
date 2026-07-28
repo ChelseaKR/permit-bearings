@@ -3,15 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self'; base-uri 'none'">
 <title>Permit Pathways — cited housing-permit guidance for California jurisdictions</title>
-<meta name="description" content="Citation-grounded ADU, JADU, and SB 9 pathway guidance for California jurisdictions, with a verification harness that flags stale guidance when state housing law changes.">
+<meta name="description" content="Citation-grounded ADU, JADU, and SB 9 candidate pathway guidance for California jurisdictions, with a prototype source-drift review harness.">
 <meta property="og:title" content="Permit Pathways">
-<meta property="og:description" content="Every answer cites its source. Every source is watched for change. ADU, JADU, and SB 9 guidance with a public trust dashboard.">
+<meta property="og:description" content="Every candidate answer cites a source. Selected statewide sources are watched for change. ADU, JADU, and SB 9 guidance with a public trust dashboard.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap">
 <style>
 /* Color tokens from the California Design System (open-source "cagov"
    theme, @cagov/ds-base-css). Steps are chosen to meet WCAG 2.2 AAA 7:1
@@ -51,7 +50,7 @@
   --good-bg: #12310f; --warn-bg: #33270a; --crit-bg: #351212;
 }
 * { box-sizing: border-box; }
-body { font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   margin: 0; background: var(--page); color: var(--ink); line-height: 1.55; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
@@ -62,7 +61,11 @@ h1 { font-size: 1.45rem; margin: .4rem 0 .2rem; }
 h2 { font-size: 1.15rem; margin-top: 2rem; }
 .tag { color: var(--ink-2); margin-top: 0; }
 nav { font-size: .85rem; }
-nav a { color: var(--accent); text-decoration: none; margin-right: .9rem; }
+nav a, nav .nav-button { color: var(--accent); text-decoration: none;
+  margin-right: .9rem; }
+nav .nav-button { display: inline-flex; align-items: center; min-height: 44px;
+  padding: 0 .2rem; border: 0; background: transparent; font: inherit;
+  font-weight: 400; vertical-align: middle; }
 fieldset { border: 1px solid var(--grid); border-radius: 10px;
   margin: 1rem 0; padding: .9rem 1rem; background: var(--surface); }
 legend { font-weight: 600; font-size: .92rem; padding: 0 .35rem; }
@@ -77,6 +80,8 @@ button { background: var(--accent); color: var(--page); border: 0;
   border-radius: 4px; min-height: 44px; padding: .6rem 1.3rem;
   font-size: 1rem; font-weight: 600; cursor: pointer; }
 button:hover { text-decoration: underline; box-shadow: 0 0 0 2px var(--primary-500); }
+button:disabled { cursor: wait; opacity: .58; text-decoration: none;
+  box-shadow: none; }
 button.ghost { background: transparent; color: var(--accent);
   border: 1px solid var(--accent); }
 .card { background: var(--surface); border: 1px solid var(--border);
@@ -122,11 +127,11 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
   <a href="#clocks">Review clocks</a>
   <a href="#trust">Trust dashboard</a>
   <a href="#sources">Watched sources</a>
-  <a id="langToggle" href="#" role="button">Español</a>
+  <button class="nav-button" id="langToggle" type="button">Español</button>
 </nav>
 
 <h1 id="t-title">Permit Pathways</h1>
-<p class="tag" id="t-tagline">Every answer cites its source. Every source is watched for change.</p>
+<p class="tag" id="t-tagline">Every candidate answer cites a source. Selected statewide sources are watched for change.</p>
 
 <section id="screen">
   <form id="intake">
@@ -134,6 +139,7 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
       <legend id="t-juris">Where is the property?</legend>
       <input id="jurisInput" name="jurisdiction_name" list="jurisList"
              autocomplete="off" aria-label="California city or county"
+             required
              placeholder="Type any California city or county…"
              style="width:100%;font-size:1rem;padding:.45rem;border:1px solid var(--grid);
                     border-radius:6px;background:var(--surface);color:var(--ink)">
@@ -149,35 +155,37 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
       <select name="dwelling_type" id="dwellingSel"></select>
     </fieldset>
     <fieldset id="factBoxes"></fieldset>
-    <button type="submit" id="t-submit">Find my pathway</button>
+    <button type="submit" id="t-submit" disabled>Find my pathway</button>
   </form>
   <div id="results" aria-live="polite"></div>
 </section>
 
 <section id="conformance">
-  <h2>Scan an ordinance for state-law conflicts</h2>
+  <h2>Scan an ordinance for potential state-law issues</h2>
   <p class="small">Paste local ADU/SB 9 ordinance or handout text. It is screened
   against the failure modes HCD documents in its enforcement letters — stale
   SB 477 citations, height caps below state allowances, unit undercounts,
   subjective standards, and more. <b>Text never leaves your browser.</b>
   Presence-based screening for staff/counsel review — not a certification of
   compliance, and silence is not a clean bill of health.</p>
-  <p class="small">Validated against HCD's June 2025 findings letter to Santa
-  Clara County: the scanner independently re-derives HCD's findings from the
-  ordinance provisions quoted in the letter.
+  <p class="small">Named regression fixture: six provisions quoted in HCD's
+  June 2025 Santa Clara County findings letter reproduce the six expected
+  review flags. This is not a statewide accuracy evaluation.
   <a href="#" id="loadSample">Load two of those provisions as a sample</a>.</p>
   <textarea id="ordText" rows="8" aria-label="Ordinance text to scan"
     style="width:100%;font-size:.9rem;
     border:1px solid var(--grid);border-radius:8px;background:var(--surface);
     color:var(--ink);padding:.6rem" placeholder="Paste ordinance text here…"></textarea>
-  <p><button id="scanBtn">Scan</button></p>
+  <p><button id="scanBtn" disabled>Scan</button></p>
   <div id="scanResults" aria-live="polite"></div>
 </section>
 
 <section id="clocks">
   <h2>Statutory review clocks</h2>
   <p class="small">State law puts the permitting agency on a clock. Enter the
-  date a complete ADU/JADU application was received:</p>
+  initial receipt date. This bounded prototype assumes the application was
+  complete on receipt for the illustrative 60-day decision row; it does not
+  model a correction/resubmittal cycle:</p>
   <p><input type="date" id="recvDate" aria-label="Date the application was received"
     style="font-size:1rem;padding:.35rem;
     border:1px solid var(--grid);border-radius:6px;background:var(--surface);
@@ -189,19 +197,20 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
   <h2 id="t-dash">Trust dashboard</h2>
   <p class="small" id="t-dashsub">What a jurisdiction sees before deciding to rely on this guidance.</p>
   <p class="hero"><span id="pct">–</span><span style="font-size:1.2rem">%</span></p>
-  <p class="small" id="t-pctlabel">of guidance rules verified-current against their cited sources</p>
-  <div class="meter" id="meter" role="img" aria-label="share of rules verified, stale, and unverified"></div>
+  <p class="small" id="t-pctlabel">of rule records have dated source evidence within the 180-day review window</p>
+  <div class="meter" id="meter" role="img" aria-label="share of rule records inside the review window, stale, or without a dated source record"></div>
   <p class="small" id="meterLegend"></p>
   <p class="small"><span id="goldenLine"></span></p>
   <p class="small mutedtxt" id="covLine"></p>
   <p>
-    <button class="ghost" id="simBtn">Rehearse a legislative amendment to Gov. Code § 66321</button>
-    <button class="ghost hidden" id="resetBtn">Reset</button>
+    <button class="ghost" id="simBtn" disabled>Rehearse a legislative amendment to Gov. Code § 66321</button>
+    <button class="ghost hidden" id="resetBtn" disabled>Reset</button>
   </p>
   <div class="notice hidden" id="simNote">
     Simulating: Gov. Code § 66321 (ADU size, setback, and height standards) has been
-    amended. Every rule citing it is <b>stale</b> until staff re-verify it against the
-    new text — this is the review queue a real amendment produces.
+    amended. Citation-matched rules are <b>stale</b> until staff re-check them
+    against the new text. This rehearsal uses citation text matching; stable
+    dependency IDs and persisted watcher state are the next step.
   </div>
   <table id="ruleTable" aria-describedby="t-dash"><thead>
     <tr><th>Rule</th><th>Scope</th><th>Status</th></tr>
@@ -210,9 +219,10 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
 
 <section id="sources">
   <h2 id="t-sources">Watched sources</h2>
-  <p class="small" id="t-sourcesub">Each source document's content hash is recorded at verification time;
-  the harness re-fetches and diffs them, so a revised handbook or fact sheet
-  flags every dependent rule.</p>
+  <p class="small" id="t-sourcesub">Selected statewide source hashes are
+  recorded and re-fetched so revisions or fetch failures become visible.
+  Local-source coverage, explicit dependencies, and a persisted impact queue
+  are planned.</p>
   <table id="sourceTable"><thead>
     <tr><th>Source</th><th>Recorded</th><th>SHA-256</th></tr>
   </thead><tbody></tbody></table>
@@ -225,15 +235,19 @@ footer { margin-top: 2.5rem; font-size: .8rem; color: var(--muted); }
 </footer>
 </main>
 
+<script src="data/demo-data.js"></script>
 <script>
 const STRINGS = {
   en: {
-    tagline: "Every answer cites its source. Every source is watched for change.",
+    tagline: "Every candidate answer cites a source. Selected statewide sources are watched for change.",
     juris: "Where is the property?",
     jurisPlaceholder: "Type any California city or county…",
-    statusLocal: "Local rule layer encoded, on top of the statewide baseline.",
-    statusBaseline: "Statewide rules apply here in full. A local rule layer has not been encoded yet",
-    statusUnknown: "Not a recognized California jurisdiction — the statewide baseline is applied.",
+    jurisAria: "California city or county",
+    statusLocal: "A jurisdiction-scoped metadata record exists; inspect its source status below.",
+    statusBaseline: "The statewide candidate-rule set is available. No local requirements layer is encoded",
+    statusUnknown: "Choose a recognized California city or county; screening will not run until it resolves.",
+    jurisRequired: "Select a recognized California city or county before screening.",
+    localCoverage: (count, total) => `${count} of ${total} have a jurisdiction-scoped record.`,
     hcdHistory: "Known HCD accountability letter",
     project: "What are you proposing?",
     types: [["adu","Accessory dwelling unit (backyard cottage, garage conversion)"],
@@ -253,17 +267,21 @@ const STRINGS = {
     results: "Candidate pathways",
     none: "No state pathway matched your answers. This does not mean your project is impossible — it means it needs staff review. Contact your jurisdiction's planning counter.",
     docs: "Typical documents", source: "Source",
-    verifiedOn: "verified", unverified: "UNVERIFIED — pending source check",
+    verifiedOn: "source record dated", stale: "STALE — source review needed",
+    unverified: "NO DATED SOURCE RECORD",
     ministerial: "ministerial — approved on objective standards, no public hearing",
     langBtn: "Español",
   },
   es: {
-    tagline: "Cada respuesta cita su fuente. Cada fuente se vigila por cambios.",
+    tagline: "Cada respuesta posible cita una fuente. Se monitorean fuentes estatales seleccionadas.",
     juris: "¿Dónde está la propiedad?",
     jurisPlaceholder: "Escriba cualquier ciudad o condado de California…",
-    statusLocal: "Capa de reglas locales codificada, sobre la base estatal.",
-    statusBaseline: "Las reglas estatales aplican aquí en su totalidad. Aún no se codifica una capa local",
-    statusUnknown: "No es una jurisdicción reconocida de California — se aplica la base estatal.",
+    jurisAria: "Ciudad o condado de California",
+    statusLocal: "Existe un registro de metadatos de la jurisdicción; revise el estado de sus fuentes abajo.",
+    statusBaseline: "El conjunto estatal de reglas posibles está disponible. Aún no se codifican los requisitos locales",
+    statusUnknown: "Elija una ciudad o condado reconocido de California; no se ejecutará la evaluación hasta resolverlo.",
+    jurisRequired: "Seleccione una ciudad o condado reconocido de California antes de continuar.",
+    localCoverage: (count, total) => `${count} de ${total} tienen un registro específico de la jurisdicción.`,
     hcdHistory: "Carta de responsabilidad de HCD conocida",
     project: "¿Qué propone construir?",
     types: [["adu","Vivienda accesoria (casita de patio, conversión de garaje)"],
@@ -283,7 +301,8 @@ const STRINGS = {
     results: "Trámites posibles",
     none: "Ninguna vía estatal coincidió con sus respuestas. Esto no significa que su proyecto sea imposible — significa que necesita revisión del personal. Contacte a su departamento de planificación.",
     docs: "Documentos típicos", source: "Fuente",
-    verifiedOn: "verificado", unverified: "SIN VERIFICAR — pendiente de revisión",
+    verifiedOn: "registro de fuente con fecha", stale: "DESACTUALIZADO — requiere revisión",
+    unverified: "SIN REGISTRO DE FUENTE FECHADO",
     ministerial: "ministerial — se aprueba con estándares objetivos, sin audiencia pública",
     langBtn: "English",
   },
@@ -326,12 +345,19 @@ function esc(s) { const d = document.createElement("span"); d.textContent = s ??
 
 function renderForm() {
   const s = STRINGS[lang];
+  const translatedIds = ["t-tagline", "t-juris", "t-project", "t-submit",
+                         "t-dwelling", "typeRadios", "dwellingSel", "factBoxes",
+                         "jurisStatus"];
+  translatedIds.forEach(id => { document.getElementById(id).lang = lang; });
   document.getElementById("t-tagline").textContent = s.tagline;
   document.getElementById("t-juris").textContent = s.juris;
   document.getElementById("t-project").textContent = s.project;
   document.getElementById("t-submit").textContent = s.submit;
   document.getElementById("langToggle").textContent = s.langBtn;
+  document.getElementById("langToggle").lang = lang === "en" ? "es" : "en";
   document.getElementById("jurisInput").placeholder = s.jurisPlaceholder;
+  document.getElementById("jurisInput").lang = lang;
+  document.getElementById("jurisInput").setAttribute("aria-label", s.jurisAria);
   renderJurisStatus();
   document.getElementById("typeRadios").innerHTML =
     s.types.map(([v,t],i) => `<label><input type="radio" name="project_type" value="${v}" ${i===0?"checked":""}> ${esc(t)}</label>`).join("");
@@ -346,25 +372,30 @@ function renderResults(list) {
   const s = STRINGS[lang];
   const el = document.getElementById("results");
   if (!list.length) {
-    el.innerHTML = `<h2>${esc(s.results)}</h2><div class="notice">${esc(s.none)}</div>`;
+    el.innerHTML = `<div lang="${lang}"><h2>${esc(s.results)}</h2>
+      <div class="notice">${esc(s.none)}</div></div>`;
     return;
   }
-  el.innerHTML = `<h2>${esc(s.results)}</h2>` + list.map(r => {
+  el.innerHTML = `<h2 lang="${lang}">${esc(s.results)}</h2>` + list.map(r => {
     const c = r.citation;
-    const ok = !!c.verified_on;
+    const status = ruleStatus(r, []);
+    const ok = status === "verified";
     const badge = ok
-      ? `<span class="badge ok"><span class="status-ico">✓</span>${esc(s.verifiedOn)} ${esc(c.verified_on)}</span>`
-      : `<span class="badge warn"><span class="status-ico">⚠</span>${esc(s.unverified)}</span>`;
+      ? `<span class="badge ok" lang="${lang}"><span class="status-ico">✓</span>${esc(s.verifiedOn)} ${esc(c.verified_on)}</span>`
+      : status === "stale"
+      ? `<span class="badge bad" lang="${lang}"><span class="status-ico">✕</span>${esc(s.stale)}</span>`
+      : `<span class="badge warn" lang="${lang}"><span class="status-ico">⚠</span>${esc(s.unverified)}</span>`;
     const docs = (r.required_documents||[]).map(d => `<li>${esc(d)}</li>`).join("");
     const route = r.route_class === "ministerial"
-      ? `<p class="small mutedtxt">${esc(s.ministerial)}</p>` : "";
+      ? `<p class="small mutedtxt" lang="${lang}">${esc(s.ministerial)}</p>` : "";
     return `<div class="card ${ok?"":"unverified"}">
-      <h3>${esc(r.pathway)} ${badge}</h3>
+      <h3><span lang="en">${esc(r.pathway)}</span> ${badge}</h3>
       ${route}
-      <p class="small">${esc(r.notes)}</p>
-      ${c.excerpt ? `<blockquote>${esc(c.excerpt)}</blockquote>` : ""}
-      <p class="small">${esc(s.source)}: <a href="${esc(c.url)}" rel="noopener">${esc(c.source)}</a></p>
-      ${docs ? `<p class="small"><b>${esc(s.docs)}:</b></p><ul class="small">${docs}</ul>` : ""}
+      <p class="small" lang="en">${esc(r.notes)}</p>
+      ${c.excerpt ? `<blockquote lang="en">${esc(c.excerpt)}</blockquote>` : ""}
+      <p class="small"><span lang="${lang}">${esc(s.source)}:</span>
+        <a lang="en" href="${esc(c.url)}" rel="noopener">${esc(c.source)}</a></p>
+      ${docs ? `<p class="small" lang="${lang}"><b>${esc(s.docs)}:</b></p><ul class="small" lang="en">${docs}</ul>` : ""}
     </div>`;
   }).join("");
 }
@@ -384,9 +415,9 @@ function renderDashboard() {
     `<div class="m-bad" style="width:${100*n.stale/total}%"></div>` +
     `<div class="m-warn" style="width:${100*n.unverified/total}%"></div>`;
   document.getElementById("meterLegend").innerHTML =
-    `<span class="badge ok"><span class="status-ico">✓</span>current ${n.verified}</span> ` +
-    `<span class="badge bad"><span class="status-ico">✕</span>stale ${n.stale}</span> ` +
-    `<span class="badge warn"><span class="status-ico">⚠</span>never verified ${n.unverified}</span>`;
+    `<span class="badge ok"><span class="status-ico">✓</span>within review window ${n.verified}</span> ` +
+    `<span class="badge bad"><span class="status-ico">✕</span>stale/simulated change ${n.stale}</span> ` +
+    `<span class="badge warn"><span class="status-ico">⚠</span>no dated source record ${n.unverified}</span>`;
   // Golden replay runs live in the page: same matcher, same data.
   let pass = 0;
   GOLDEN.forEach(g => {
@@ -394,22 +425,23 @@ function renderDashboard() {
     if (got === [...g.expected_rule_ids].sort().join(",")) pass++;
   });
   document.getElementById("goldenLine").textContent =
-    `${pass}/${GOLDEN.length} golden question cases replayed and passing in this browser`;
+    `${pass}/${GOLDEN.length} structured golden scenarios replayed and passing in this browser`;
   if (JURIS.length) {
     const nCities = JURIS.filter(j => j.kind === "city").length;
     const nLocal = JURIS.filter(j => j.has_local_layer).length;
     const nHcd = Object.keys(LETTERS).length;
     document.getElementById("covLine").textContent =
-      `Coverage: all ${JURIS.length} California jurisdictions (${nCities} cities, ` +
-      `${JURIS.length - nCities} counties) carry the verified statewide baseline; ` +
-      `${nLocal} have encoded local layers; ${nHcd} have known HCD letter history.`;
+      `Registry: ${JURIS.length} California jurisdictions (${nCities} cities, ` +
+      `${JURIS.length - nCities} counties) can screen the same statewide ` +
+      `candidate-rule set; ${nLocal} have jurisdiction-scoped metadata records; ` +
+      `${nHcd} have known HCD letter history.`;
   }
   document.querySelector("#ruleTable tbody").innerHTML = statuses.map(({rule, st}) => {
     const b = st === "verified"
-      ? `<span class="badge ok"><span class="status-ico">✓</span>current</span>`
+      ? `<span class="badge ok"><span class="status-ico">✓</span>within review window</span>`
       : st === "stale"
       ? `<span class="badge bad"><span class="status-ico">✕</span>STALE — re-verify</span>`
-      : `<span class="badge warn"><span class="status-ico">⚠</span>never verified</span>`;
+      : `<span class="badge warn"><span class="status-ico">⚠</span>no dated source record</span>`;
     return `<tr><td>${esc(rule.pathway)}</td><td class="mutedtxt">${esc(rule.jurisdiction_scope)}</td><td>${b}</td></tr>`;
   }).join("");
   document.getElementById("simNote").classList.toggle("hidden", !simulating);
@@ -429,6 +461,15 @@ function renderSources() {
 document.getElementById("intake").addEventListener("submit", e => {
   e.preventDefault();
   const f = new FormData(e.target);
+  const jurisdiction = resolveJurisdiction();
+  if (!jurisdiction) {
+    const s = STRINGS[lang];
+    document.getElementById("results").innerHTML =
+      `<div lang="${lang}"><h2>${esc(s.results)}</h2>
+       <div class="notice">${esc(s.jurisRequired)}</div></div>`;
+    document.getElementById("jurisInput").focus();
+    return;
+  }
   const noExcl = f.has("no_exclusions");
   renderResults(screen({
     project_type: f.get("project_type"),
@@ -442,7 +483,7 @@ document.getElementById("intake").addEventListener("submit", e => {
     in_historic_district: !noExcl,
     on_protected_site: !noExcl,
     parcel_created_by_sb9_split: !noExcl,
-    jurisdiction: (resolveJurisdiction() || {slug: "unrecognized"}).slug,
+    jurisdiction: jurisdiction.slug,
   }));
   document.getElementById("results").scrollIntoView({behavior: "smooth"});
 });
@@ -462,8 +503,8 @@ function renderJurisStatus() {
   if (!j) { el.textContent = s.statusUnknown; return; }
   const localCount = JURIS.filter(x => x.has_local_layer).length;
   let html = j.has_local_layer
-    ? `<span class="badge ok"><span class="status-ico">✓</span>local layer</span> ${esc(s.statusLocal)}`
-    : `${esc(s.statusBaseline)} (${localCount} of ${JURIS.length} jurisdictions have one).`;
+    ? `<span class="badge ok"><span class="status-ico">✓</span>local metadata</span> ${esc(s.statusLocal)}`
+    : `${esc(s.statusBaseline)} (${esc(s.localCoverage(localCount, JURIS.length))})`;
   const scanRec = SCANS[j.slug];
   if (scanRec) {
     html += `<br><span class="badge ok"><span class="status-ico">✓</span>scanned</span> ` +
@@ -595,7 +636,7 @@ document.getElementById("clockBtn").addEventListener("click", () => {
         <td class="mutedtxt">Gov. Code § 66317(a)(2)(A) — 15 business days</td></tr>
     <tr><td>Deemed complete if the agency stays silent</td><td>${fmt(addCal(completeness, 1))}</td>
         <td class="mutedtxt">Gov. Code § 66317(a)(2)(F)</td></tr>
-    <tr><td>Approve/deny decision due (once complete)</td><td>${fmt(addCal(received, 60))}</td>
+    <tr><td>Approve/deny decision due (illustrative: complete on receipt)</td><td>${fmt(addCal(received, 60))}</td>
         <td class="mutedtxt">Gov. Code § 66317(a)(3) — 60 days</td></tr>
   </table>
   <p class="small mutedtxt">Business days exclude weekends and California state
@@ -608,26 +649,64 @@ document.getElementById("simBtn").addEventListener("click", () => { simulating =
 document.getElementById("resetBtn").addEventListener("click", () => { simulating = false; renderDashboard(); });
 document.getElementById("langToggle").addEventListener("click", e => {
   e.preventDefault(); lang = lang === "en" ? "es" : "en";
-  document.documentElement.lang = lang;
   renderForm(); document.getElementById("results").innerHTML = "";
 });
 
-Promise.all([
-  fetch("data/rules/statewide.json").then(r => r.json()),
-  fetch("data/rules/davis.json").then(r => r.json()),
-  fetch("data/rules/woodland.json").then(r => r.json()),
-  fetch("data/golden/example.json").then(r => r.json()),
-  fetch("data/sources.json").then(r => r.json()),
-  fetch("data/conformance/checks.json").then(r => r.json()),
-  fetch("data/jurisdictions/registry.json").then(r => r.json()),
-  fetch("data/jurisdictions/hcd-letters.json").then(r => r.json()),
-  fetch("data/conformance/results/index.json").then(r => r.json()).catch(() => ({})),
-]).then(([a, b, c, golden, sources, checks, registry, letters, scans]) => {
-  RULES = [...a, ...b, ...c]; GOLDEN = golden; SOURCES = sources; CHECKS = checks;
-  LETTERS = letters.letters; SCANS = scans;
+function fetchJson(path) {
+  return fetch(path).then(response => {
+    if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+    return response.json();
+  });
+}
+
+function fetchOptionalJson(path, fallback) {
+  return fetchJson(path).catch(error => {
+    console.warn(`Optional demo data unavailable: ${error.message}`);
+    return fallback;
+  });
+}
+
+function loadDemoData() {
+  if (globalThis.PERMIT_PATHWAYS_DEMO_DATA) {
+    return Promise.resolve(globalThis.PERMIT_PATHWAYS_DEMO_DATA);
+  }
+  return Promise.all([
+    fetchJson("data/rules/statewide.json"),
+    fetchOptionalJson("data/rules/davis.json", []),
+    fetchOptionalJson("data/rules/woodland.json", []),
+    fetchOptionalJson("data/golden/example.json", []),
+    fetchOptionalJson("data/sources.json", {}),
+    fetchOptionalJson("data/conformance/checks.json", []),
+    fetchJson("data/jurisdictions/registry.json"),
+    fetchOptionalJson("data/jurisdictions/hcd-letters.json", {letters: {}}),
+    fetchOptionalJson("data/conformance/results/index.json", {}),
+  ]).then(([statewideRules, davisRules, woodlandRules, golden, sources,
+            checks, registry, letters, scans]) => ({
+    statewide_rules: statewideRules,
+    davis_rules: davisRules,
+    woodland_rules: woodlandRules,
+    golden, sources, checks, registry, letters, scans,
+  }));
+}
+
+function syncDataControls() {
+  document.getElementById("t-submit").disabled = !(RULES.length && JURIS.length);
+  document.getElementById("scanBtn").disabled = !CHECKS.length;
+  document.getElementById("simBtn").disabled = !RULES.length;
+  document.getElementById("resetBtn").disabled = !RULES.length;
+}
+
+renderForm();
+loadDemoData().then(data => {
+  RULES = [...data.statewide_rules, ...data.davis_rules, ...data.woodland_rules];
+  GOLDEN = data.golden; SOURCES = data.sources; CHECKS = data.checks;
+  LETTERS = data.letters.letters || {}; SCANS = data.scans;
   const localSlugs = new Set(RULES.filter(r => r.jurisdiction_scope !== "statewide")
                                   .map(r => r.jurisdiction_scope));
-  JURIS = registry.jurisdictions.map(j => ({...j, has_local_layer: localSlugs.has(j.slug)}));
+  JURIS = data.registry.jurisdictions.map(j => ({
+    ...j,
+    has_local_layer: localSlugs.has(j.slug),
+  }));
   const dl = document.getElementById("jurisList");
   dl.innerHTML = JURIS.map(j => `<option value="${esc(jurisDisplay(j))}">`).join("");
   for (const j of JURIS) {
@@ -636,10 +715,17 @@ Promise.all([
     jurisByName.set(j.slug, j);
   }
   document.getElementById("jurisInput").addEventListener("input", renderJurisStatus);
+  syncDataControls();
   renderForm(); renderDashboard(); renderSources();
-}).catch(() => {
+}).catch(error => {
+  console.error("Permit Pathways demo data failed to load", error);
+  syncDataControls();
   document.getElementById("results").innerHTML =
-    `<div class="notice">This page loads its rule data from the repository — serve it over HTTP (e.g. <code>python3 -m http.server</code>) or view the hosted demo.</div>`;
+    `<div class="notice"><b>Demo data did not load.</b> Keep
+    <code>data/demo-data.js</code> beside <code>index.html</code>, or serve the
+    repository over HTTP with <code>python3 -m http.server 8765</code>. The
+    pathway and ordinance-screening controls are disabled until the data is
+    available.</div>`;
 });
 </script>
 </body>

@@ -1,12 +1,13 @@
 """Statewide jurisdiction registry.
 
-Every California locality — 482 incorporated cities and 58 counties from
-the Census 2020 FIPS place files — is a first-class jurisdiction in the
-system. Statewide rules apply everywhere by construction; the registry
-records, per jurisdiction, whether a local rule layer has been encoded and
-any known HCD Housing Accountability Unit letter history, so coverage
-claims stay honest: "statewide baseline" and "local layer encoded" are
-different things and are labeled as such.
+Every California locality in the registry — 483 incorporated cities and 58
+counties, built from the Census 2020 FIPS place files and supplemented for
+post-vintage incorporation — is selectable. Statewide rules can be screened
+for each entry by construction; the registry records, per jurisdiction,
+whether a local rule layer has been encoded and any known HCD Housing
+Accountability Unit letter history, so coverage claims stay honest:
+"statewide baseline available" and "local layer encoded" are different
+things and are labeled as such.
 """
 
 from __future__ import annotations
@@ -37,7 +38,8 @@ class Coverage:
     def summary(self) -> str:
         return (f"{self.total} California jurisdictions in registry "
                 f"({self.cities} cities, {self.counties} counties); "
-                f"statewide rules apply to all; local layers encoded: "
+                f"same statewide candidate-rule set is screenable for each; "
+                f"jurisdiction-scoped records: "
                 f"{self.local_layers}; known HCD letter history: "
                 f"{self.with_hcd_letters}.")
 

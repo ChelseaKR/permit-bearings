@@ -44,17 +44,17 @@ def test_multifamily_lot_adds_66323_allowances(rules):
     }
 
 
-def test_statewide_rules_are_verified_and_cited(rules):
+def test_statewide_rules_have_dated_source_evidence_and_citations(rules):
     for rule in rules:
         if rule.jurisdiction_scope == "statewide":
             assert rule.citation.is_verified, rule.rule_id
             assert rule.citation.excerpt, rule.rule_id
     results = screen(ADU_INTAKE, rules)
     assert all(r.verified for r in results)
-    assert "verified" in results[0].summary()
+    assert "dated source record" in results[0].summary()
 
 
-def test_davis_intake_includes_local_layer_flagged_unverified(rules):
+def test_davis_record_is_flagged_without_dated_source_evidence(rules):
     results = screen({**ADU_INTAKE, "jurisdiction": "davis"}, rules)
     by_id = {r.rule.rule_id: r for r in results}
     assert "davis-local-adu-process" in by_id

@@ -1,8 +1,8 @@
-# Accessibility audit — static pass, updated 2026-07-27
+# Accessibility audit — static pass, updated 2026-07-28
 
 Scope: the public demo page (`index.html`). **Target: WCAG 2.2 Level AAA.**
 Styling uses the open-source **California Design System** ("cagov" theme
-tokens from `@cagov/ds-base-css`, Public Sans type); token steps were chosen
+tokens from `@cagov/ds-base-css`, with a system UI type stack); token steps were chosen
 to meet AAA contrast on these surfaces, and the dark theme derives from the
 same hues (CDS ships light-only). No state branding, logo, or header is
 used — the design system is open source and its use does not imply
@@ -35,10 +35,13 @@ input; the trust meter has `role="img"` with a descriptive label.
 **Dynamic updates.** Results, scan findings, clock output, and jurisdiction
 status carry `aria-live="polite"`.
 
+**Data-loading state.** Data-dependent pathway, scanner, and trust-rehearsal
+buttons use the native `disabled` state until their datasets are ready. A
+load failure places a visible explanation in the results live region instead
+of leaving empty controls that appear operable.
+
 **Link purpose (2.4.9 AAA).** Every link's text alone states its target
 ("view scan findings (JSON)", full source citations, named statutes).
-
-**Language.** `<html lang>` tracks the EN/ES toggle.
 
 **Not color-alone.** Statuses are icon + word badges; hue never carries
 meaning by itself.
@@ -72,6 +75,11 @@ colors/spacing beyond browser and OS mechanisms are not provided.
 - 200% zoom and 320px reflow visual check on real devices.
 - `forced-colors` / high-contrast mode spot check.
 - Spanish screen-reader pronunciation check.
+- Mixed-language audit: translated intake/result labels and English
+  source-derived result regions now carry explicit `lang` metadata. The
+  jurisdiction-status details and English-only scanner, clocks, dashboard,
+  and sources still need a screen-reader pass and full translation/parity
+  review.
 - Keyboard-only end-to-end run of all four flows.
 - AAA content-level judgments (3.1.5 reading level — plain language and a
   full Spanish interface are design goals, but no formal readability

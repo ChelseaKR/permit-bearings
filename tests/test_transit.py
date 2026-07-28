@@ -81,9 +81,9 @@ def test_point_near_cluster_gets_both_candidates(stops):
     assert any("major transit stop" in r or "high-quality" in r for r in reasons)
 
 
-def test_remote_point_is_conclusively_no(stops):
-    # ~20+ miles from every stop: straight-line beats walking distance,
-    # so both determinations are conclusive negatives.
+def test_remote_point_has_no_candidate_in_supplied_data(stops):
+    # ~20+ miles from every supplied stop: no candidate is found in this feed.
+    # This does not establish that the feed covers every relevant operator.
     d = determine(38.9000, -121.4000, stops)
     assert d.parking_exemption == "no"
     assert d.height_18ft == "no"

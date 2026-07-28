@@ -25,13 +25,13 @@ _OPS = {
 
 @dataclass(frozen=True)
 class Citation:
-    """The source a rule encodes. `verified_on` is None until the rule text
-    has been checked against the cited source; the harness reports such
-    rules as UNVERIFIED and the engine labels their results accordingly."""
+    """The source a rule encodes. `verified_on` records the date attached to
+    its source evidence; it does not identify a reviewer or jurisdiction
+    approval. The harness reports records without a date separately."""
 
     source: str          # e.g. "Gov. Code § 66321(b)(3)" or an HCD document title
     url: str
-    excerpt: str | None = None      # the source text the rule was verified against
+    excerpt: str | None = None      # supporting source text recorded for the rule
     excerpt_sha256: str | None = None
     verified_on: str | None = None  # ISO date of last verification against source
 
@@ -71,7 +71,8 @@ class PathwayResult:
     verified: bool
 
     def summary(self) -> str:
-        badge = "verified" if self.verified else "UNVERIFIED — pending source check"
+        badge = ("dated source record" if self.verified
+                 else "NO DATED SOURCE RECORD")
         return (
             f"{self.rule.pathway} ({self.rule.route_class}) — "
             f"{self.rule.citation.source} [{badge}]"
@@ -96,8 +97,8 @@ def load_rules(path: Path) -> list[Rule]:
 
 def screen(intake: dict[str, Any], rules: list[Rule]) -> list[PathwayResult]:
     """Return candidate pathways for a structured intake. Results from
-    unverified rules are still returned — flagged, never hidden — because
-    hiding them would misrepresent coverage."""
+    rules without dated source evidence are still returned — flagged, never
+    hidden — because hiding them would misrepresent coverage."""
     jurisdiction = intake.get("jurisdiction")
     applicable = [
         r for r in rules

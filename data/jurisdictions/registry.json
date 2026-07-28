@@ -1,6 +1,14 @@
 {
- "source": "U.S. Census Bureau, 2020 FIPS place-by-county codes for California (st06_ca_place_by_county2020.txt); incorporated places with active functional status, plus all 58 counties.",
+ "source": "U.S. Census Bureau, 2020 FIPS place-by-county codes for California (st06_ca_place_by_county2020.txt); incorporated places with active functional status, plus all 58 counties; supplemented for post-vintage incorporations from official city sources.",
  "generated_from_census_vintage": "2020",
+ "supplemental_sources": [
+  {
+   "jurisdiction": "mountain-house",
+   "url": "https://www.mountainhouseca.gov/27/Government",
+   "fact": "Mountain House became California's 483rd incorporated city in July 2024.",
+   "retrieved_on": "2026-07-28"
+  }
+ ],
  "jurisdictions": [
   {
    "slug": "adelanto",
@@ -1946,6 +1954,13 @@
    "name": "Mount Shasta",
    "kind": "city",
    "county": "Siskiyou County",
+   "multi_county": null
+  },
+  {
+   "slug": "mountain-house",
+   "name": "Mountain House",
+   "kind": "city",
+   "county": "San Joaquin County",
    "multi_county": null
   },
   {

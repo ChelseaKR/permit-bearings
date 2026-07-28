@@ -7,14 +7,17 @@ Routes:
     /screen      POST target: pathway results with citations
     /trust       jurisdiction trust dashboard; ?changed=66321 rehearses a
                  legislative amendment to Gov. Code § 66321
+    /index.html  full static showcase (also available at /showcase)
+    /data/...    repository-local data used by the static showcase
 """
 
 import html
+import mimetypes
 import sys
 from datetime import date
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -24,11 +27,13 @@ from permit_pathways.screening import load_rules, screen  # noqa: E402
 
 RULES_PATH = ROOT / "data" / "rules"
 GOLDEN_PATH = ROOT / "data" / "golden" / "example.json"
+DATA_ROOT = (ROOT / "data").resolve()
 
 STRINGS = {
     "en": {
         "title": "Permit Pathways — demo",
-        "tagline": "Every answer cites its source. Every source is watched for change.",
+        "tagline": "Every candidate answer cites a source. Selected statewide "
+                   "sources are watched for change.",
         "project_type": "What are you proposing?",
         "types": [
             ("adu", "Accessory dwelling unit (backyard cottage, garage conversion)"),
@@ -63,13 +68,15 @@ STRINGS = {
                 "review. Contact your jurisdiction's planning counter.",
         "docs": "Typical documents",
         "source": "Source",
-        "verified": "verified",
+        "verified": "source record dated",
+        "stale": "STALE — source review needed",
         "back": "Start over",
         "dashboard": "Trust dashboard",
     },
     "es": {
         "title": "Permit Pathways — demostración",
-        "tagline": "Cada respuesta cita su fuente. Cada fuente se vigila por cambios.",
+        "tagline": "Cada respuesta posible cita una fuente. Se monitorean "
+                   "fuentes estatales seleccionadas.",
         "project_type": "¿Qué propone construir?",
         "types": [
             ("adu", "Vivienda accesoria (casita de patio, conversión de garaje)"),
@@ -106,7 +113,8 @@ STRINGS = {
                 "de planificación.",
         "docs": "Documentos típicos",
         "source": "Fuente",
-        "verified": "verificado",
+        "verified": "registro de fuente con fecha",
+        "stale": "DESACTUALIZADO — requiere revisión",
         "back": "Empezar de nuevo",
         "dashboard": "Panel de confianza",
     },
@@ -207,11 +215,16 @@ def result_page(form, lang):
         cards = []
         for r in results:
             c = r.rule.citation
-            badge = (f"<span class='badge'>{s['verified']} {c.verified_on}</span>"
-                     if r.verified else "<span class='badge warn'>UNVERIFIED</span>")
+            current = r.verified and not c.is_stale(180, date.today())
+            if current:
+                badge = f"<span class='badge'>{s['verified']} {c.verified_on}</span>"
+            elif r.verified:
+                badge = f"<span class='badge stale'>{s['stale']}</span>"
+            else:
+                badge = "<span class='badge warn'>NO DATED SOURCE RECORD</span>"
             docs = "".join(f"<li>{html.escape(d)}</li>" for d in r.rule.required_documents)
             docs_html = f"<p class='small'><b>{s['docs']}:</b></p><ul class='small'>{docs}</ul>" if docs else ""
-            cards.append(f"""<div class="card{'' if r.verified else ' unverified'}">
+            cards.append(f"""<div class="card{'' if current else ' unverified'}">
 <h2>{html.escape(r.rule.pathway)} {badge}</h2>
 <p class="small">{html.escape(r.rule.notes)}</p>
 <blockquote>{html.escape(c.excerpt or '')}</blockquote>
@@ -229,13 +242,13 @@ def trust_page(query, lang):
     total = len(report.verified) + len(report.stale) + len(report.unverified)
     pct = round(100 * len(report.verified) / total) if total else 0
     rows = "".join(
-        f"<tr><td>{rid}</td><td><span class='badge'>current</span></td></tr>"
+        f"<tr><td>{rid}</td><td><span class='badge'>within review window</span></td></tr>"
         for rid in report.verified
     ) + "".join(
         f"<tr><td>{rid}</td><td><span class='badge stale'>STALE — re-verify</span></td></tr>"
         for rid in report.stale
     ) + "".join(
-        f"<tr><td>{rid}</td><td><span class='badge warn'>never verified</span></td></tr>"
+        f"<tr><td>{rid}</td><td><span class='badge warn'>no dated source record</span></td></tr>"
         for rid in report.unverified
     )
     sim = ("<p class='notice'>Rehearsing an amendment to Gov. Code § "
@@ -247,11 +260,29 @@ def trust_page(query, lang):
     golden = (f"{len(report.golden_passed)}/"
               f"{len(report.golden_passed) + len(report.golden_failed)} golden cases passing")
     body = f"""<h1>{STRINGS[lang]['dashboard']}</h1>
-<p><b>{pct}%</b> of guidance verified-current · {golden} · checked {report.checked_on}</p>
+<p><b>{pct}%</b> of rule records have dated source evidence within the
+180-day review window · {golden} · checked {report.checked_on}</p>
 <div class="bar"><div style="width:{pct}%"></div><div class="stale" style="width:{100 - pct}%"></div></div>
 {sim}
 <table><tr><th>Rule</th><th>Status</th></tr>{rows}</table>"""
     return page(STRINGS[lang]["dashboard"], body, lang)
+
+
+def static_path(url_path):
+    """Resolve a public static-demo path without allowing path traversal."""
+
+    decoded = unquote(url_path)
+    if decoded in {"/index.html", "/showcase"}:
+        return ROOT / "index.html"
+    if not decoded.startswith("/data/"):
+        return None
+
+    candidate = (ROOT / decoded.lstrip("/")).resolve()
+    try:
+        candidate.relative_to(DATA_ROOT)
+    except ValueError:
+        return None
+    return candidate if candidate.is_file() else None
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -263,6 +294,17 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def _send_file(self, path):
+        data = path.read_bytes()
+        media_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+        self.send_response(200)
+        self.send_header("Content-Type", media_type)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.end_headers()
+        self.wfile.write(data)
+
     def _lang(self, query):
         lang = query.get("lang", ["en"])[0]
         return lang if lang in STRINGS else "en"
@@ -271,7 +313,10 @@ class Handler(BaseHTTPRequestHandler):
         url = urlparse(self.path)
         query = parse_qs(url.query)
         lang = self._lang(query)
-        if url.path == "/":
+        public_file = static_path(url.path)
+        if public_file:
+            self._send_file(public_file)
+        elif url.path == "/":
             self._send(intake_form(lang))
         elif url.path == "/trust":
             self._send(trust_page(query, lang))

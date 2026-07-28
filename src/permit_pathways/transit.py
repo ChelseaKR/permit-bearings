@@ -16,14 +16,15 @@ self-attestation:
   § 21155(b): fixed-route bus service with ≤15-minute peak intervals).
 
 Honesty model. Distances here are straight-line (haversine). Walking
-distance is never shorter than straight-line, so a stop farther than the
-threshold as the crow flies is a CONCLUSIVE "no". A stop within the
-threshold is a CANDIDATE "yes" pending a walking-network check (production
-deployments should confirm with a router). Headways are measured from the
-busiest weekday service in the feed within the peak windows 6–9 AM and
-4–7 PM, using the maximum gap between consecutive trips — a screening
+distance is never shorter than straight-line, so a supplied stop farther than
+the threshold can be eliminated. That does not prove every relevant operator,
+stop, planned/current facility, or service record is present. A stop within
+the threshold is a CANDIDATE "yes" pending a walking-network check
+(production deployments should confirm with a router). Headways are measured
+from the busiest weekday service in the feed within the peak windows 6–9 AM
+and 4–7 PM, using the maximum gap between consecutive trips — a screening
 approximation of the statutes' "service interval" language, and only as
-current as the feed (a summer feed reflects summer service).
+current and complete as the supplied feed.
 """
 
 from __future__ import annotations
@@ -208,8 +209,9 @@ class Determination:
                 "transit within a half mile straight-line; confirm walking distance.")
         else:
             lines.append(
-                "Parking exemption (Gov. Code § 66322(a)(1)): NO — nearest stop is "
-                "beyond a half mile straight-line, so walking distance must exceed it.")
+                "Parking exemption (Gov. Code § 66322(a)(1)): NO CANDIDATE FOUND "
+                "IN SUPPLIED DATA — confirm operator/feed coverage before relying "
+                "on this result.")
         if self.height_18ft == "candidate":
             stop, miles, reason = self.qualifying_stops[0]
             lines.append(
@@ -217,13 +219,13 @@ class Determination:
                 f"{stop.name} ({miles:.2f} mi) is a {reason}; confirm walking distance.")
         else:
             lines.append(
-                "18-ft height allowance (Gov. Code § 66321(b)(4)(B)): NO — no major "
-                "transit stop or high-quality transit corridor stop within a half "
-                "mile straight-line in this feed.")
+                "18-ft height allowance (Gov. Code § 66321(b)(4)(B)): NO CANDIDATE "
+                "FOUND IN SUPPLIED DATA — no encoded qualifying stop was found "
+                "within a half mile; confirm source coverage.")
         lines.append(
-            "Screening determination from GTFS peak headways (busiest weekday "
-            "service in the feed); straight-line distance is conclusive only for "
-            "'no'. Not a legal determination.")
+            "Screening result from GTFS peak headways (busiest weekday service "
+            "in the feed); straight-line distance can eliminate a supplied stop "
+            "but cannot prove dataset completeness. Not a legal determination.")
         return "\n".join(lines)
 
 

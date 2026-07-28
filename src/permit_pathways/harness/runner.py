@@ -1,8 +1,8 @@
 """Verification harness.
 
-Answers three questions a jurisdiction will ask before trusting guidance:
-which rules are verified against their cited source, which have gone stale,
-and whether the golden questions still produce the expected pathways.
+Reports which rules have dated source evidence inside the configured review
+window, which have gone stale, which lack a dated source record, and whether
+the structured golden scenarios still produce the expected pathways.
 """
 
 from __future__ import annotations
@@ -41,9 +41,9 @@ class VerificationReport:
     def summary(self) -> str:
         lines = [
             f"Verification report ({self.checked_on})",
-            f"  rules verified-current: {len(self.verified)}",
+            f"  rules inside source-review window: {len(self.verified)}",
             f"  rules stale:            {len(self.stale)}",
-            f"  rules never verified:   {len(self.unverified)}",
+            f"  rules without dated source record: {len(self.unverified)}",
             f"  golden cases passing:   {len(self.golden_passed)}",
             f"  golden cases failing:   {len(self.golden_failed)}",
         ]

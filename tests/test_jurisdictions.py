@@ -17,9 +17,9 @@ def registry():
 
 def test_full_statewide_coverage(registry):
     cov = coverage(registry)
-    assert cov.cities == 482
+    assert cov.cities == 483
     assert cov.counties == 58
-    assert cov.total == 540
+    assert cov.total == 541
     assert cov.local_layers == 2       # davis, woodland
     # Full HAU letter dataset: 469 jurisdictions have letter history.
     assert cov.with_hcd_letters >= 400
@@ -44,6 +44,7 @@ def test_slugs_are_unique(registry):
 
 def test_local_layer_flags(registry):
     by_slug = {j.slug: j for j in registry}
+    assert by_slug["mountain-house"].county == "San Joaquin County"
     assert by_slug["davis"].has_local_layer
     assert by_slug["woodland"].has_local_layer
     assert not by_slug["san-francisco"].has_local_layer
