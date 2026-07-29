@@ -6,6 +6,9 @@ This draft is written for the official application preview dated July 2026.
 Confirm the fields and limits in Authorium before pasting. Do not include
 confidential, proprietary, or trade-secret material.
 
+Current gap status and evidence are tracked in
+[SHOWCASE-REMEDIATION-PLAN.md](SHOWCASE-REMEDIATION-PLAN.md).
+
 - Submission window closes August 11, 2026 at 5:00 p.m. Pacific.
 - Primary scenario: Scenario 1, guiding applicants to a complete and
   well-routed application.
@@ -34,23 +37,40 @@ Applying as a team: `[YES / NO]`
 
 Limit: 50 words. Draft count: 43 words by whitespace.
 
-> Permit Bearings is a tested California permitting prototype
-> combining deterministic pathway screening with source-linked, AI-assisted
-> explanations. It helps applicants identify ADU, JADU, and SB 9 routes,
-> inspect evidence, and recognize open questions without replacing staff
-> judgment, legal review, permitting systems, or
-> approval authority.
+> Permit Bearings is a tested permitting prototype combining
+> deterministic pathway screening and one bounded packet-presence sample with
+> source-linked, AI-assisted draft guidance. It helps applicants identify
+> ADU, JADU, and SB 9 routes, inspect evidence, and recognize
+> questions without replacing staff judgment or approval authority.
 
 If applying as a team, add only verified team members and describe the actual
 working relationship. Otherwise skip the team fields.
 
-Qualifications evidence: `[VERIFIED EXPERIENCE, ROLE, AND RELEVANT DELIVERY OR
-TECHNICAL QUALIFICATIONS]`
+### Qualifications draft
 
-The program page says qualifications are required, although the application
-preview has no separately labeled qualifications field. Confirm placement at
-the Vendor Information Forum or in Authorium. Add only experience that can be
-verified.
+**User confirmation required before submission.** This draft is based only on
+the applicant's self-published [chelseakr.com](https://chelseakr.com/) site. It
+has not been independently verified and does not establish that any current or
+former employer is participating in, endorsing, or responsible for Permit
+Bearings.
+
+Draft text:
+
+Chelsea Kelly-Reif's public site describes a decade building public-interest
+technology in California state government and as a government delivery
+partner. It describes engineering leadership for statewide workforce, health,
+energy, utilities, licensing, and social-services systems, including secure
+and accessible resident-facing services. The site also describes hands-on
+architecture, Python and JavaScript development, cloud delivery, continuous
+integration, applied AI, data interoperability, security, and accessibility
+experience. Permit Bearings is identified separately in this repository as a
+personal project.
+
+Before using this paragraph, the user must confirm the current title, dates,
+project descriptions, legal applicant name, relationship to the personal
+project, and permission to reference employer or client work. The program page
+says qualifications are required, although the application preview has no
+separately labeled qualifications field. Confirm placement in Authorium.
 
 ## Section 2: Which challenges you address
 
@@ -69,50 +89,53 @@ additional scenario for this submission.
 
 Limit: 200 words. Draft count: 189 words by whitespace.
 
-> An applicant with an ADU starts with a jurisdiction, project type,
-> and applicant-supplied facts about the lot and existing dwelling. Permit
-> Bearings applies deterministic California housing rules and returns candidate
-> routes, standards, and process records. Every match shows source status and a
-> citation. When copy is valid and evidence current, it also shows an
-> explanation, excerpt, starting steps,
-> and questions for staff.
+> An applicant starts with a jurisdiction, project type, and
+> applicant-supplied facts. Permit Bearings applies deterministic California
+> housing rules and returns candidate routes, standards, local information
+> records, source status, citations, and questions for staff.
 >
 > An unknown fact produces direct questions without a favorable assumption. If
 > complete facts match no encoded route, the product abstains and routes to
 > staff. If evidence is stale, unverified, or fails a fingerprint check, the
-> matched rule and evidence remain
-> visible, but action copy and document hints are withheld.
+> matched rule and available evidence remain visible, but action copy and
+> document hints are withheld.
 >
-> The prototype covers statewide ADU, JADU, and SB 9 screening plus two bounded
-> local records. It does not determine final eligibility, retrieve
-> authoritative parcel facts, or evaluate packet completeness.
+> A separate deterministic sample compares one made-up Woodland preapproved ADU
+> inventory with 25 requirements mapped from one official City checklist. It
+> labels items present, missing, needing staff review, not applicable, or not
+> evaluated and emits a source-bound evidence manifest. "Present" means only
+> that the synthetic inventory reports the item present. The prototype does not
+> inspect files, verify parcel facts, determine legal sufficiency, certify
+> completeness, or limit what staff may request.
 >
-> For a homeowner or small builder, the value is a cited candidate route and
-> focused open questions instead of reconstructing state law alone. This may
-> reduce repetitive routing questions and work on a mismatched pathway. No
-> effect on time or rework has been measured with applicants or jurisdiction
+> This bounded flow is a testable example, not a real applicant record, pilot,
+> or external validation result. No effect on time, rework, submission quality,
+> or staff effort has been measured with external applicants or jurisdiction
 > staff.
 
 ### AI technical workflow
 
-Limit: 150 words. Draft count: 137 words by whitespace.
+Limit: 150 words. Draft count: 145 words by whitespace.
 
-> Before runtime, AI drafts English explanations and Spanish translations from
-> a rule record and linked official citation. No applicant input is sent to a
-> model. Runtime matching uses deterministic criteria.
+> During development, AI assisted with mapping one official checklist into
+> structured requirements and drafting versioned remedy actions. The mapping
+> and remedies are review-pending. Mapping errors can affect deterministic
+> findings, so no human, counsel, or jurisdiction approval is claimed.
+> Mapping metadata records source fingerprints; provider, model, and run
+> record were not recorded.
+> Runtime calls no model. It reads facts and inventory states,
+> applies conditions, and produces packet-presence findings.
 >
-> Each explanation is stored separately with stable rule ID, version,
-> authorship status, source-check date, citation fingerprint, and full-rule
-> fingerprint. Source-date or rule-content drift invalidates explanation. Stale
-> or unverified evidence suppresses action copy.
+> Remedy text is display-only and cannot change a finding. It is stored
+> with version, AI-assisted authorship, pending review status,
+> workflow fingerprint, and requirement fingerprints. Source or requirement
+> drift blocks use.
 >
-> To promote a draft, the file-based review procedure would require a reviewer
-> to check citation and excerpt against the underlying rule, then correct or
-> reject the record. Review status changes only when reviewer, method, date,
-> and reviewed version are recorded. This procedure has not been exercised
-> with a named reviewer. English and Spanish remain labeled AI-assisted and
-> review-pending, and Spanish remains a machine draft. AI is bounded to
-> explanation; deterministic screening remains reproducible and testable.
+> AI also drafted route explanations and Spanish translations before runtime.
+> They remain versioned and review-pending, and Spanish remains a
+> machine draft. No applicant input is sent to a model. A completed review
+> would require a named reviewer, method, date, exact version, and recorded
+> disposition before release or reliance.
 
 ### Maturity
 
@@ -125,12 +148,11 @@ Limit: 100 words. Draft count: 89 words by whitespace.
 > wrong-jurisdiction cases. Automated tests check rule and explanation linkage,
 > duplicate or orphan records, fingerprint drift, stale-source behavior,
 > browser bundle parity, clock conditions, and selected plain-language
-> boundaries. Retained HCD and statutory materials include citations and source
-> metadata. The public demo stores no applicant input. Assumed source changes
-> mark dependent rules stale, suppress guidance, and leave unrelated controls
-> available. No
-> applicant, planner, counsel, translator, or jurisdiction has validated
-> usability, legal fidelity, outcomes, or Spanish semantic parity.
+> boundaries. The readiness CLI produces a reproducible source-bound manifest
+> for one synthetic inventory and one City checklist. "Present" does not mean
+> inspected or complete. No applicant, planner, counsel, translator, or
+> jurisdiction has validated usability, mapping fidelity, legal fidelity,
+> outcomes, or Spanish semantic parity in any independent study or review.
 
 ## Section 4: Deployment in a California jurisdiction
 
@@ -139,21 +161,43 @@ starting with one new detached ADU workflow.
 
 ### Time to first usable result
 
-Decision needed before submission.
+#### Measured prototype automation
 
-Proposed planning estimate: `8 to 12 weeks for one bounded ADU workflow`
+These measurements describe an already configured public prototype repository,
+not deployment in a jurisdiction. On the three latest successful `main` runs
+observed July 29, 2026:
 
-This is an estimate, not a result from a prior deployment. Confirm that the
-scope and estimate in
-[SHOWCASE-PILOT-BRIEF.md](SHOWCASE-PILOT-BRIEF.md) are acceptable before using
-it.
+| Measurement | Observed elapsed times | Evidence |
+|---|---|---|
+| CI | 13, 16, and 15 seconds | [30410892005](https://github.com/ChelseaKR/permit-pathways/actions/runs/30410892005), [30428315210](https://github.com/ChelseaKR/permit-pathways/actions/runs/30428315210), [30478495913](https://github.com/ChelseaKR/permit-pathways/actions/runs/30478495913) |
+| GitHub Pages build and deployment | 39, 42, and 47 seconds | [30410891433](https://github.com/ChelseaKR/permit-pathways/actions/runs/30410891433), [30428314821](https://github.com/ChelseaKR/permit-pathways/actions/runs/30428314821), [30478494564](https://github.com/ChelseaKR/permit-pathways/actions/runs/30478494564) |
 
-Estimate assumptions: one English-language ADU workflow, applicant-supplied
-parcel facts, public and jurisdiction-provided sources available at kickoff,
+Elapsed time is calculated from GitHub's `startedAt` to `updatedAt` values.
+These runs precede the current unmerged readiness implementation. They do not
+measure jurisdiction configuration, source review, integration, production
+authorization, support, or time to a usable permitting result.
+
+#### Production planning estimate
+
+Status: unvalidated estimate, decision required before submission.
+
+Proposed estimate: `8 to 12 weeks for one bounded ADU workflow`
+
+This is a planning hypothesis, not a prior deployment result or quote. The
+[pilot brief](SHOWCASE-PILOT-BRIEF.md) assumes one English-language workflow,
+applicant-supplied parcel facts, a complete source package at kickoff,
 synthetic test projects, file-based review, timely staff decisions, and no
 production integration, accounts, uploads, or security authorization. The
-delivery team and its capacity are not yet identified. Do not use the estimate
-until that team confirms it.
+delivery team and capacity are not identified. Do not use this estimate until
+that team validates it.
+
+#### Cost
+
+Status: unknown.
+
+No production implementation, hosting, integration, support, or maintenance
+cost has been estimated. The speed of the current static CI and Pages pipeline
+is not production cost evidence.
 
 ### Work required from jurisdiction staff
 
@@ -175,30 +219,31 @@ Limit: 100 words. Draft count: 89 words by whitespace.
 
 Limit: 100 words. Draft count: 86 words by whitespace.
 
-> The prototype uses official state statutes, HCD guidance, selected municipal
-> sources, structured JSON, a jurisdiction registry, transit datasets, and
-> applicant facts. The public applicant flow has no live parcel, permitting,
-> document management, identity, or model integration. The proposed first
-> result uses applicant-supplied parcel facts and the jurisdiction's ordinance,
-> forms, checklist, procedures, and calendar. A parcel, zoning, or GIS
-> connection would be assessed separately and is excluded from the estimate.
-> Portable rule and review files can be inspected without vendor-only tooling;
-> ownership and export terms require agreement.
+> The prototype uses HCD guidance, selected municipal sources, structured JSON,
+> transit datasets, and applicant facts. One synthetic packet-presence sample
+> uses a City checklist,
+> an explicit made-up inventory, and a generated evidence manifest. The public
+> applicant flow has no live parcel, permitting, document-management, identity,
+> upload, or model integration. A parcel, zoning, GIS, or permitting connection
+> would be assessed separately and is excluded from the estimate. Portable
+> source, rule, workflow, inventory, remedy, and evidence files can be inspected
+> without vendor-only tooling; operational ownership and export terms require
+> agreement.
 
 ### Known exceptions
 
 Limit: 100 words. Draft count: 88 words by whitespace.
 
-> The prototype does not retrieve parcel facts, assess documents, determine
-> packet completeness, validate cross-document consistency, or provide
-> remedies. It
-> encodes statewide ADU, JADU, and SB 9 rules, not SB 35, AB 2011, or
-> comprehensive local codes. Monitoring covers selected URLs; it does not
-> discover new laws or persist change state into applicant results. No
-> jurisdiction, counsel, applicant, accessibility tester, or translator has
-> reviewed outputs. Spanish explanations are machine drafts. Production
-> privacy, security, retention, CPRA retrieval, integration, support, and cost
-> remain deployment work. The demo stores no applicant input.
+> The readiness sample checks reported presence against one City checklist. It
+> does not inspect files, verify parcel facts, assess document
+> contents, determine legal sufficiency, validate cross-document consistency,
+> certify completeness, or provide reviewed remedies. Its mapping and
+> AI-assisted remedy draft await named review. The prototype does not
+> encode comprehensive local codes, SB 35, or AB 2011. Monitoring covers
+> URLs and does not discover new laws or persist production change
+> state. No participant or jurisdiction has validated outputs.
+> Privacy, security, records, integration, support, time,
+> and cost all remain deployment work.
 
 ### Large jurisdiction experience
 
@@ -218,26 +263,37 @@ Recommended screenshot set:
    status, citation, and evidence disclosure visible. Caption: "The result
    separates review-pending explanation copy from the official source record."
 
+If a readable packet-presence view is published and verified before
+submission, consider replacing the second screenshot with that view. Its
+caption must say that the inventory is synthetic, "present" is not file
+inspection, and the result is not a completeness determination.
+
 Recommended video outline, 90 seconds:
 
 1. State the user and scope.
 2. Open the hypothetical ADU sample.
 3. Show the candidate route, staff questions, and evidence disclosure.
-4. Change one material fact to “I'm not sure,” resubmit, and show direct staff
-   questions instead of an assumed favorable answer.
-5. End on current limitations and the one-workflow pilot proposal.
+4. If the packet-presence view is ready, show one missing item, one staff
+   question, and its source-bound evidence. State the presence-only boundary.
+5. Change one material route fact to “I'm not sure,” resubmit, and show direct
+   staff questions instead of an assumed favorable answer.
+6. End on no external validation, unknown production cost, and the bounded
+   pilot hypothesis.
 
 ## Final checks before submission
 
 - Replace every bracketed placeholder.
-- Add only verifiable qualifications and confirm where Authorium asks for
-  them.
-- Decide whether the proposed 8 to 12 week planning estimate is defensible.
+- Confirm the qualifications draft, applicant authority, and where Authorium
+  asks for qualifications.
+- Decide whether a delivery team can support the proposed 8 to 12 week
+  unvalidated planning estimate.
+- Leave production cost unknown unless a supportable estimate is supplied.
 - Attend or review notes from the July 30 Vendor Information Forum.
 - Verify live Authorium fields and word counters.
 - Open every supporting link without authentication.
 - Confirm screenshots show the sample disclosure and no personal information.
 - Do not claim a pilot, production deployment, applicant validation, staff
   validation, legal review, translation review, measured time savings, or
-  packet-level completeness.
+  packet-level completeness. Describe the readiness feature only as a
+  deterministic presence check over one synthetic inventory and one checklist.
 - Save a draft in Authorium before final submission.

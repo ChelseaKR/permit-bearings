@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "packet": {
+    "packet_id": "woodland-preapproved-adu-hypothetical-001",
+    "workflow_id": "woodland-preapproved-detached-adu",
+    "label": "Made-up Woodland preapproved ADU packet",
+    "synthetic": true,
+    "evaluated_on": "2026-07-29",
+    "jurisdiction": "woodland",
+    "project_type": "adu",
+    "facts": [
+      {
+        "fact_id": "uses_city_preapproved_plan",
+        "value": "yes",
+        "provenance": "synthetic_applicant_assertion"
+      },
+      {
+        "fact_id": "connects_to_primary_home_electrical",
+        "value": "yes",
+        "provenance": "synthetic_applicant_assertion"
+      },
+      {
+        "fact_id": "solar_plans_applicable",
+        "value": "unknown",
+        "provenance": "synthetic_applicant_assertion"
+      },
+      {
+        "fact_id": "fire_sprinkler_plans_applicable",
+        "value": "unknown",
+        "provenance": "synthetic_applicant_assertion"
+      },
+      {
+        "fact_id": "uses_septic_or_well",
+        "value": "no",
+        "provenance": "synthetic_applicant_assertion"
+      },
+      {
+        "fact_id": "in_spring_lake",
+        "value": "no",
+        "provenance": "synthetic_applicant_assertion"
+      },
+      {
+        "fact_id": "in_flood_zone",
+        "value": "unknown",
+        "provenance": "synthetic_applicant_assertion"
+      }
+    ],
+    "inventory": [
+      {
+        "requirement_id": "building-permit-application",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plan-owner-contract-or-authorization",
+        "status": "present"
+      },
+      {
+        "requirement_id": "dimensioned-plot-plan",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-address-apn",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "plot-plan-owner-contact",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-scale",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-lot-dimensions",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-footprints-setbacks",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-other-structures",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-easements",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "plot-plan-utilities",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-drainage",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "plot-plan-tree-removal",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "plot-plan-driveway",
+        "status": "present"
+      },
+      {
+        "requirement_id": "site-specific-construction-details",
+        "status": "present"
+      },
+      {
+        "requirement_id": "foundation-plan",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plumbing-electrical-tie-in",
+        "status": "present"
+      },
+      {
+        "requirement_id": "electrical-load-calculations",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "waste-reduction-recycling-plan",
+        "status": "present"
+      },
+      {
+        "requirement_id": "solar-plans",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "fire-sprinkler-plans",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "upgrade-to-city-services",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "spring-lake-geotechnical-report",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "spring-lake-post-tension-slab",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "flood-elevation-certificate",
+        "status": "unknown"
+      }
+    ]
+  }
+}

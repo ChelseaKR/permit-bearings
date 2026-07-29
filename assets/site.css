@@ -241,11 +241,14 @@ h5 {
 }
 
 .brand {
+  align-items: center;
   color: var(--ink);
+  display: inline-flex;
   font-family: var(--display);
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.01em;
+  min-height: 44px;
   text-decoration: none;
 }
 
@@ -635,6 +638,25 @@ button.link-button:hover {
 
 .sample-notice p + p {
   margin-top: 0.6rem;
+}
+
+.packet-route-link {
+  border-bottom: 1px solid var(--gray-700);
+  border-top: 1px solid var(--gray-700);
+  margin: var(--s-3) 0;
+  padding: var(--s-2) 0;
+}
+
+.packet-route-link p {
+  margin: 0;
+}
+
+.packet-route-link p + p {
+  margin-top: var(--s-sm);
+}
+
+.packet-route-link a {
+  font-weight: 800;
 }
 
 fieldset {
@@ -1375,6 +1397,393 @@ tr:last-child td {
   margin: 0;
 }
 
+.readiness-hero {
+  border-top: 0.5rem solid var(--primary-900);
+}
+
+.readiness-hero-grid {
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: minmax(0, 1.65fr) minmax(17rem, 0.7fr);
+}
+
+.readiness-hero .boundary-note {
+  align-self: end;
+  margin: 0;
+}
+
+.readiness-main {
+  padding-bottom: var(--s-6);
+  padding-top: var(--s-4);
+}
+
+.packet-cover {
+  background: var(--surface);
+  border: 1px solid var(--gray-700);
+  border-left: 0.7rem solid var(--primary-900);
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: minmax(15rem, 0.9fr) minmax(0, 1.6fr);
+  margin-bottom: var(--s-4);
+  padding: clamp(1.2rem, 3vw, 2rem);
+}
+
+.packet-cover h2 {
+  font-size: clamp(var(--font-size-6), 3vw, var(--font-size-8));
+  margin-bottom: 0;
+  max-width: 24ch;
+}
+
+.packet-facts {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.packet-facts > div {
+  border-left: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  min-width: 0;
+  padding: 0.75rem 1rem;
+}
+
+.packet-facts > div:nth-child(-n + 2) {
+  border-top: 0;
+}
+
+.packet-facts dt,
+.packet-evidence dt,
+.decision-record dt {
+  color: var(--gray-800);
+  font-family: var(--utility);
+  font-size: var(--font-size-0);
+  font-weight: 800;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.packet-facts dd,
+.packet-evidence dd,
+.decision-record dd {
+  margin: 0.15rem 0 0;
+}
+
+.readiness-verdict {
+  background: var(--surface);
+  border: 2px solid var(--black);
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: minmax(0, 1.35fr) minmax(22rem, 1fr);
+  margin-bottom: var(--s-5);
+}
+
+.readiness-verdict::before {
+  background: var(--cagov-highlight);
+  content: "";
+  grid-column: 1 / -1;
+  height: 0.65rem;
+}
+
+.readiness-verdict.needs-source::before {
+  background: var(--danger-700);
+}
+
+.verdict-copy {
+  padding: 0 var(--s-4) var(--s-4);
+}
+
+.verdict-copy h2 {
+  font-size: clamp(var(--font-size-7), 4vw, var(--font-size-10));
+  margin-bottom: var(--s-2);
+  max-width: 24ch;
+}
+
+.verdict-copy > :last-child {
+  color: var(--ink-soft);
+  margin-bottom: 0;
+  max-width: 44rem;
+}
+
+.packet-counts {
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 var(--s-4) var(--s-4) 0;
+}
+
+.packet-counts > div {
+  border-left: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  padding: 0.85rem 1rem;
+}
+
+.packet-counts dt {
+  font-size: var(--font-size-1);
+  font-weight: 700;
+  line-height: var(--font-lineheight-3);
+}
+
+.packet-counts dd {
+  font-size: var(--font-size-8);
+  font-weight: 850;
+  line-height: 1;
+  margin: 0.4rem 0 0;
+}
+
+.source-review-hold {
+  align-self: center;
+  border-left: 0.45rem solid var(--danger-700);
+  margin: 0 var(--s-4) var(--s-4) 0;
+  padding: var(--s-2);
+}
+
+.packet-ledger,
+.packet-inventory,
+.packet-evidence,
+.readiness-method {
+  border-top: 2px solid var(--black);
+  margin-top: var(--s-5);
+  padding-top: var(--s-3);
+}
+
+.packet-ledger {
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: minmax(13rem, 0.62fr) minmax(0, 1.5fr);
+}
+
+.ledger-heading {
+  align-self: start;
+  position: sticky;
+  top: 1rem;
+}
+
+.ledger-heading h2,
+.packet-inventory > h2,
+.packet-evidence h2,
+.readiness-method > h2 {
+  font-size: clamp(var(--font-size-7), 3.3vw, var(--font-size-9));
+  margin-bottom: var(--s-2);
+}
+
+.ledger-heading > :last-child {
+  color: var(--ink-soft);
+  font-size: var(--font-size-2);
+}
+
+.finding-list {
+  border-top: 1px solid var(--gray-700);
+}
+
+.packet-finding {
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  padding: var(--s-3) 0;
+}
+
+.finding-state {
+  align-self: start;
+  font-family: var(--utility);
+  font-size: var(--font-size-0);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.finding-state span {
+  border-left: 0.45rem solid var(--danger-700);
+  display: block;
+  padding: 0.55rem 0.5rem;
+}
+
+.packet-finding-question .finding-state span {
+  border-left-color: var(--warning-500);
+}
+
+.packet-finding-conflict .finding-state span {
+  border-left-color: var(--primary-900);
+}
+
+.finding-category,
+.finding-source {
+  color: var(--gray-800);
+  font-family: var(--utility);
+  font-size: var(--font-size-0);
+  letter-spacing: 0.025em;
+}
+
+.finding-category {
+  margin: 0 0 var(--s-1);
+  text-transform: uppercase;
+}
+
+.finding-copy h3 {
+  font-size: var(--font-size-5);
+  margin-bottom: var(--s-1);
+}
+
+.finding-copy > p {
+  margin-top: 0;
+}
+
+.finding-action {
+  border-left: 0.3rem solid var(--primary-900);
+  margin: var(--s-2) 0;
+  padding: 0.15rem 0 0.15rem var(--s-2);
+}
+
+.finding-action p {
+  margin: 0;
+}
+
+.finding-action .utility-label {
+  color: var(--primary-900);
+  margin-bottom: var(--s-sm);
+}
+
+.finding-action-reconcile {
+  border-left-color: var(--info-900);
+}
+
+.finding-review {
+  background: var(--gray-100);
+  border: 1px solid var(--gray-700);
+  color: var(--black);
+  display: inline-block;
+  font-family: var(--body);
+  font-size: var(--font-size-0);
+  font-weight: 750;
+  letter-spacing: 0;
+  margin-left: var(--s-sm);
+  padding: 0.1rem 0.3rem;
+  text-transform: none;
+}
+
+.finding-source {
+  margin-bottom: 0;
+}
+
+.staff-question-list {
+  background: var(--yellow-pale);
+  border-left: 0.45rem solid var(--warning-500);
+  margin-top: var(--s-3);
+  padding: var(--s-3);
+}
+
+.staff-question-list h3 {
+  font-size: var(--font-size-5);
+  margin-bottom: var(--s-1);
+}
+
+.staff-question-list ul {
+  margin-bottom: 0;
+}
+
+.packet-inventory {
+  max-width: var(--reading);
+}
+
+.packet-detail {
+  border-bottom: 1px solid var(--line);
+}
+
+.packet-detail:first-of-type {
+  border-top: 1px solid var(--gray-700);
+}
+
+.packet-detail summary {
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 48px;
+  padding: 0.65rem 0;
+}
+
+.packet-detail summary span {
+  font-family: var(--utility);
+  font-size: var(--font-size-1);
+  font-weight: 600;
+}
+
+.packet-detail ul {
+  margin: 0 0 var(--s-3);
+}
+
+.packet-detail li + li {
+  margin-top: var(--s-1);
+}
+
+.packet-detail li span {
+  color: var(--ink-soft);
+  display: block;
+  font-size: var(--font-size-2);
+}
+
+.packet-evidence {
+  background: var(--blue-pale);
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: minmax(0, 1fr) minmax(19rem, 0.85fr);
+  padding: var(--s-3);
+}
+
+.packet-evidence > div > :last-child {
+  margin-bottom: 0;
+}
+
+.packet-evidence dl,
+.decision-record dl {
+  margin: 0;
+}
+
+.packet-evidence dl > div,
+.decision-record dl > div {
+  border-top: 1px solid var(--line);
+  padding: 0.65rem 0;
+}
+
+.packet-evidence dl > div:first-child,
+.decision-record dl > div:first-child {
+  border-top: 0;
+}
+
+.packet-evidence a {
+  align-items: center;
+  display: inline-flex;
+  min-height: 44px;
+}
+
+.evidence-record-note {
+  color: var(--gray-800);
+  display: block;
+  font-size: var(--font-size-1);
+  margin-top: var(--s-sm);
+}
+
+.readiness-method {
+  max-width: var(--reading);
+}
+
+.decision-record {
+  border-bottom: 1px solid var(--gray-700);
+  border-top: 1px solid var(--gray-700);
+  margin-top: var(--s-3);
+}
+
+.decision-record dl > div {
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: 10rem minmax(0, 1fr);
+  padding: var(--s-2) 0;
+}
+
+.readiness-method > .small {
+  color: var(--ink-soft);
+}
+
 .site-footer {
   border-top: 1px solid var(--line);
   color: var(--ink-soft);
@@ -1399,6 +1808,12 @@ tr:last-child td {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
+}
+
+.footer-links a {
+  align-items: center;
+  display: inline-flex;
+  min-height: 44px;
 }
 
 .visually-hidden {
@@ -1442,6 +1857,26 @@ tr:last-child td {
     padding-left: 0;
     padding-top: 1.25rem;
   }
+
+  .readiness-hero-grid,
+  .packet-cover,
+  .readiness-verdict,
+  .packet-ledger,
+  .packet-evidence {
+    grid-template-columns: 1fr;
+  }
+
+  .readiness-hero .boundary-note {
+    margin-top: 0;
+  }
+
+  .packet-counts {
+    margin-left: var(--s-4);
+  }
+
+  .ledger-heading {
+    position: static;
+  }
 }
 
 @media (max-width: 42rem) {
@@ -1475,7 +1910,8 @@ tr:last-child td {
 
   .result-fields > div,
   .result-facts > div,
-  .method-list > div {
+  .method-list > div,
+  .decision-record dl > div {
     grid-template-columns: 1fr;
   }
 
@@ -1512,6 +1948,36 @@ tr:last-child td {
     border-top: 1px solid var(--line);
   }
 
+  .packet-facts,
+  .packet-counts {
+    grid-template-columns: 1fr;
+  }
+
+  .packet-facts > div,
+  .packet-facts > div:nth-child(-n + 2) {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .packet-facts > div:first-child {
+    border-top: 0;
+  }
+
+  .packet-counts {
+    margin-left: var(--s-3);
+  }
+
+  .packet-finding {
+    gap: var(--s-1);
+    grid-template-columns: 1fr;
+  }
+
+  .finding-state span {
+    display: inline-block;
+  }
+
   .footer-inner {
     grid-template-columns: 1fr;
   }
@@ -1533,7 +1999,11 @@ tr:last-child td {
 }
 
 @media (forced-colors: active) {
-  .simulation-box {
+  .simulation-box,
+  .packet-cover,
+  .readiness-verdict,
+  .packet-evidence,
+  .staff-question-list {
     border: 2px solid CanvasText;
   }
 

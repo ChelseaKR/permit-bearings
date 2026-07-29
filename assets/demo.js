@@ -2,10 +2,12 @@
 
 function detectActivePage() {
   const declared = document.body && document.body.dataset.page;
-  if (["project", "review", "evidence"].includes(declared)) return declared;
+  if (["project", "readiness", "review", "evidence"].includes(declared))
+    return declared;
 
   const present = [
     ["project", "intake"],
+    ["readiness", "readinessOutput"],
     ["review", "scanBtn"],
     ["evidence", "ruleTable"],
   ].filter(([, id]) => document.getElementById(id));
@@ -33,6 +35,9 @@ const STRINGS = {
     sampleUnavailableLabel: "Example unavailable.",
     sampleUnavailableNotice: "The example could not be loaded from its canonical test case. Continue with a blank form.",
     sampleUnavailableClear: "Continue with a blank project check",
+    packetSampleTitle: "Continue with the made-up Woodland packet",
+    packetSampleText: "See the same example compared with Woodland’s source-bound preapproved ADU checklist.",
+    packetSampleLink: "Review the packet sample",
     juris: "Where is the property?",
     jurisPlaceholder: "Type any California city or county…",
     jurisHelp: "Choose a suggestion, or enter the exact city or county name.",
@@ -170,6 +175,9 @@ const STRINGS = {
     sampleUnavailableLabel: "El ejemplo no está disponible.",
     sampleUnavailableNotice: "No se pudo cargar el ejemplo desde su caso de prueba canónico. Continúe con un formulario en blanco.",
     sampleUnavailableClear: "Continuar con un formulario en blanco",
+    packetSampleTitle: "Continúe con el paquete ficticio de Woodland",
+    packetSampleText: "Vea el mismo ejemplo comparado con la lista de verificación de ADU preaprobada de Woodland.",
+    packetSampleLink: "Revisar la muestra del paquete en inglés",
     juris: "¿Dónde está la propiedad?",
     jurisPlaceholder: "Escriba cualquier ciudad o condado de California…",
     jurisHelp: "Elija una sugerencia o escriba el nombre exacto de la ciudad o el condado.",
@@ -295,6 +303,7 @@ const STRINGS = {
 let lang = "en";
 let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [], JURIS = [], LETTERS = {}, SCANS = {};
 let EXPLANATIONS = new Map();
+let READINESS = null;
 let jurisByName = new Map();
 let intakeDraft = {};
 const SAMPLE_ORDINANCE =
@@ -1230,13 +1239,20 @@ function renderResults(list) {
         <p>${esc(s.none)}</p>
         <p>${esc(s.supportingOnly)}</p>
       </div>`;
+  const packetSampleLink = projectSampleState === "active"
+    ? `<aside class="packet-route-link" lang="${lang}">
+        <p class="utility-label">${esc(s.packetSampleTitle)}</p>
+        <p>${esc(s.packetSampleText)}</p>
+        <p><a href="prepare.html">${esc(s.packetSampleLink)}</a></p>
+      </aside>`
+    : "";
   el.innerHTML = `<h2 class="result-heading" id="resultsHeading"
       tabindex="-1" lang="${lang}">${esc(s.results)}</h2>
     ${renderProjectFacts()}
     <p class="result-count" lang="${lang}">${esc(summaryText)}</p>
     <p class="small result-limit" lang="${lang}">${esc(s.resultIntro)}
       ${hasRoute ? esc(s.routeOrientation) : ""}</p>
-    ${noRouteNotice}${draftBanner}${renderResultIndex(grouped)}${sections}`;
+    ${noRouteNotice}${packetSampleLink}${draftBanner}${renderResultIndex(grouped)}${sections}`;
 }
 
 function questionLabel(name, projectType = intakeDraft.project_type) {
@@ -1835,6 +1851,562 @@ if (pageIs("project") && languageToggleElement) {
   });
 }
 
+const READINESS_FINDING_STATUSES = new Set([
+  "present",
+  "missing",
+  "not_applicable",
+  "conflicting",
+  "needs_staff_review",
+  "not_evaluated",
+]);
+
+const READINESS_OVERALL_STATUSES = new Set([
+  "known_gaps",
+  "needs_review",
+  "no_known_gaps_in_bounded_manifest",
+  "outside_bounded_workflow",
+  "source_review_required",
+]);
+
+const READINESS_SOURCE_STATUSES = new Set([
+  "current",
+  "source_review_required",
+]);
+
+function readinessReviewDueOn(data) {
+  const candidates = [
+    data?.source_review_due_on,
+    data?.result?.source_review_due_on,
+    data?.evidence_manifest?.source_review_due_on,
+  ].filter(value => value != null);
+  if (!candidates.length || !candidates.every(validIsoDate)) return null;
+  const unique = new Set(candidates);
+  return unique.size === 1 ? candidates[0] : null;
+}
+
+function readinessSourceStatusAsOf(data) {
+  const candidates = [
+    data?.result?.source_status_as_of,
+    data?.evidence_manifest?.source_status_as_of,
+  ].filter(value => value != null);
+  if (!candidates.length) return data?.result?.evaluated_on || null;
+  if (!candidates.every(validIsoDate)) return null;
+  const unique = new Set(candidates);
+  return unique.size === 1 ? candidates[0] : null;
+}
+
+function validReadinessData(data) {
+  if (!data || typeof data !== "object"
+      || !data.workflow || !data.packet || !data.result
+      || !data.remedies || !data.counts || !data.evidence_manifest
+      || data.packet.synthetic !== true
+      || !validStableId(data.workflow.workflow_id)
+      || data.packet.workflow_id !== data.workflow.workflow_id
+      || data.result.workflow_id !== data.workflow.workflow_id
+      || data.result.packet_id !== data.packet.packet_id
+      || !validIsoDate(data.packet.evaluated_on)
+      || !validIsoDate(data.result.evaluated_on)
+      || data.result.evaluated_on !== data.packet.evaluated_on
+      || !readinessReviewDueOn(data)
+      || !readinessSourceStatusAsOf(data)
+      || !READINESS_OVERALL_STATUSES.has(data.result.overall_status)
+      || !READINESS_SOURCE_STATUSES.has(data.result.source_status)
+      || (
+        data.result.overall_status === "source_review_required"
+          ? data.result.source_status !== "source_review_required"
+          : data.result.source_status !== "current"
+      )
+      || !Array.isArray(data.workflow.source_bindings)
+      || data.workflow.source_bindings.length < 1
+      || !Array.isArray(data.workflow.requirements)
+      || !Array.isArray(data.result.findings)
+      || data.workflow.requirements.length !== data.result.findings.length
+      || !Array.isArray(data.remedies.entries)
+      || data.remedies.entries.length !== data.workflow.requirements.length
+      || !Array.isArray(data.result.staff_questions)
+      || !data.result.staff_questions.every(nonBlank)
+      || !nonBlank(data.result.boundary)) return false;
+  const requirementIds = data.workflow.requirements.map(
+    requirement => requirement.requirement_id
+  );
+  const findingIds = data.result.findings.map(
+    finding => finding.requirement_id
+  );
+  const remedyIds = data.remedies.entries.map(
+    remedy => remedy.requirement_id
+  );
+  const review = data.remedies.review;
+  const reviewStatuses = [
+    "prototype_review_pending",
+    "human_reviewed",
+    "jurisdiction_approved",
+  ];
+  const reviewMetadata = [
+    review?.reviewer,
+    review?.method,
+    review?.reviewed_on,
+    review?.reviewed_version,
+    review?.content_fingerprint,
+  ];
+  const reviewValid = review
+    && reviewStatuses.includes(review.status)
+    && (
+      review.status === "prototype_review_pending"
+        ? reviewMetadata.every(value => value == null)
+        : reviewMetadata.every(nonBlank)
+          && validIsoDate(review.reviewed_on)
+          && review.reviewed_version === data.remedies.version
+          && /^sha256:[0-9a-f]{64}$/.test(
+            review.content_fingerprint || ""
+          )
+    );
+  const countsMatch = [...READINESS_FINDING_STATUSES].every(status =>
+    Number.isInteger(data.counts[status])
+    && data.counts[status] >= 0
+    && data.counts[status] === data.result.findings.filter(
+      finding => finding.status === status
+    ).length
+  );
+  const unresolvedCount = data.counts.conflicting
+    + data.counts.needs_staff_review
+    + data.counts.not_evaluated;
+  const overallMatchesFindings = {
+    known_gaps: data.counts.missing > 0,
+    needs_review: data.counts.missing === 0 && unresolvedCount > 0,
+    no_known_gaps_in_bounded_manifest:
+      data.counts.missing === 0 && unresolvedCount === 0,
+    outside_bounded_workflow:
+      data.counts.not_evaluated === data.result.findings.length,
+    source_review_required:
+      data.counts.needs_staff_review === data.result.findings.length,
+  }[data.result.overall_status] === true;
+  return requirementIds.every(validStableId)
+    && new Set(requirementIds).size === requirementIds.length
+    && findingIds.every((id, index) => id === requirementIds[index])
+    && new Set(remedyIds).size === remedyIds.length
+    && remedyIds.every(id => requirementIds.includes(id))
+    && data.result.findings.every(finding =>
+      nonBlank(finding.label)
+      && nonBlank(finding.category)
+      && nonBlank(finding.reason)
+      && READINESS_FINDING_STATUSES.has(finding.status)
+    )
+    && data.workflow.source_bindings.every(binding =>
+      validStableId(binding.source_id)
+      && validHttpsUrl(binding.url)
+      && validIsoDate(binding.source_checked_on)
+      && /^[0-9a-f]{64}$/.test(binding.sha256 || "")
+    )
+    && data.remedies.entries.every(entry =>
+      nonBlank(entry.action)
+      && /^sha256:[0-9a-f]{64}$/.test(
+        entry.requirement_fingerprint || ""
+      )
+    )
+    && reviewValid
+    && countsMatch
+    && overallMatchesFindings;
+}
+
+function readinessSourceIsCurrent(data) {
+  if (data.result.source_status !== "current") return false;
+  const reviewDueOn = readinessReviewDueOn(data);
+  if (!reviewDueOn) return false;
+  const now = new Date();
+  const today = [
+    now.getUTCFullYear(),
+    String(now.getUTCMonth() + 1).padStart(2, "0"),
+    String(now.getUTCDate()).padStart(2, "0"),
+  ].join("-");
+  return today <= reviewDueOn;
+}
+
+function readinessCount(data, status) {
+  const value = data.counts[status];
+  return Number.isInteger(value) && value >= 0 ? value : 0;
+}
+
+function readinessFindingRow(
+  finding,
+  remedy,
+  showAction,
+  tone,
+  review,
+) {
+  const stateLabels = {
+    missing: "Reported missing",
+    conflict: "Reported conflict",
+    question: "Needs confirmation",
+  };
+  const stateLabel = stateLabels[tone];
+  const pendingReview = review.status === "prototype_review_pending";
+  const actionLabel = pendingReview
+    ? "AI-assisted draft next step"
+    : "Reviewed next step";
+  const actionReview = pendingReview
+    ? `<span class="finding-review">Not human-reviewed</span>`
+    : "";
+  const action = showAction && remedy
+    ? `<div class="finding-action">
+        <p class="utility-label">${actionLabel} ${actionReview}</p>
+        <p>${esc(remedy.action)}</p>
+      </div>` : "";
+  const reconcile = tone === "conflict"
+    ? `<div class="finding-action finding-action-reconcile">
+        <p class="utility-label">Reconcile before submission</p>
+        <p>Confirm which reported version is correct, then align the packet.
+          Ask Woodland staff which record controls if the conflict remains.</p>
+      </div>`
+    : "";
+  return `<article class="packet-finding packet-finding-${tone}">
+    <div class="finding-state" aria-label="${esc(stateLabel)}">
+      <span aria-hidden="true">${esc(stateLabel)}</span>
+    </div>
+    <div class="finding-copy">
+      <p class="finding-category">${esc(finding.category)}</p>
+      <h3>${esc(finding.label)}</h3>
+      <p>${esc(finding.reason)}</p>
+      ${action}
+      ${reconcile}
+      <p class="finding-source">Checklist location:
+        ${esc(finding.source_locator)}</p>
+    </div>
+  </article>`;
+}
+
+function readinessCompactList(findings, label) {
+  if (!findings.length) return "";
+  return `<details class="packet-detail">
+    <summary>${esc(label)} <span>(${findings.length})</span></summary>
+    <ul>${findings.map(finding =>
+      `<li><strong>${esc(finding.label)}</strong>
+        <span>${esc(finding.reason)}</span></li>`
+    ).join("")}</ul>
+  </details>`;
+}
+
+function readinessReviewLabel(review) {
+  if (review.status === "jurisdiction_approved")
+    return `Jurisdiction-approved action wording. ${review.reviewer}, ${formatSourceDate(review.reviewed_on)}, version ${review.reviewed_version}.`;
+  if (review.status === "human_reviewed")
+    return `Human-reviewed action wording. ${review.reviewer}, ${formatSourceDate(review.reviewed_on)}, version ${review.reviewed_version}.`;
+  return "Action wording is an AI-assisted draft. It has not been reviewed by Woodland staff or a named human reviewer.";
+}
+
+function readinessCountPhrase(count, singular, plural = `${singular}s`) {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+function readinessStatusSummary(data, current) {
+  const overall = data.result.overall_status;
+  const missing = readinessCount(data, "missing");
+  const conflicts = readinessCount(data, "conflicting");
+  const needsConfirmation = readinessCount(data, "needs_staff_review");
+  const notEvaluated = readinessCount(data, "not_evaluated");
+  const staffQuestions = data.result.staff_questions.length;
+  const staffQuestionText = staffQuestions
+    ? `${readinessCountPhrase(
+      staffQuestions,
+      "direct question",
+    )} for staff ${staffQuestions === 1 ? "is" : "are"} included in the generated result.`
+    : "";
+
+  if (!current || overall === "source_review_required") {
+    return {
+      headline: "Source review is required before using this packet result",
+      intro: [
+        "The dated checklist record is outside its review window or was marked changed.",
+        staffQuestionText,
+        "Draft actions and packet findings are withheld until the source is checked again.",
+      ].filter(Boolean).join(" "),
+    };
+  }
+  if (overall === "outside_bounded_workflow") {
+    return {
+      headline: "This packet is outside the encoded Woodland workflow",
+      intro: [
+        `${readinessCountPhrase(
+          notEvaluated,
+          "checklist item",
+        )} ${notEvaluated === 1 ? "was" : "were"} not evaluated.`,
+        "This prototype only covers the City preapproved detached ADU workflow.",
+        staffQuestionText,
+      ].filter(Boolean).join(" "),
+    };
+  }
+  if (overall === "needs_review") {
+    const headline = conflicts
+      ? `${readinessCountPhrase(
+        conflicts,
+        "reported conflict",
+      )} ${conflicts === 1 ? "needs" : "need"} reconciliation`
+      : notEvaluated
+        ? "Confirm the workflow before using this checklist result"
+        : "This bounded checklist result needs confirmation";
+    return {
+      headline,
+      intro: [
+        conflicts
+          ? `${readinessCountPhrase(
+            conflicts,
+            "item",
+          )} has information that does not agree.`
+          : "",
+        needsConfirmation
+          ? `${readinessCountPhrase(
+            needsConfirmation,
+            "item",
+          )} ${needsConfirmation === 1 ? "needs" : "need"} an answer or staff confirmation.`
+          : "",
+        notEvaluated
+          ? `${readinessCountPhrase(
+            notEvaluated,
+            "item",
+          )} ${notEvaluated === 1 ? "was" : "were"} not evaluated.`
+          : "",
+        staffQuestionText,
+        "Reported presence is not a review of the files.",
+      ].filter(Boolean).join(" "),
+    };
+  }
+  if (overall === "no_known_gaps_in_bounded_manifest") {
+    return {
+      headline: "No reported gaps in this bounded checklist",
+      intro: "The generated inventory has no missing, conflicting, unresolved, or unevaluated items. Reported presence is not a review of the files and does not certify completeness.",
+    };
+  }
+  return {
+    headline: `${readinessCountPhrase(
+      missing,
+      "reported missing item",
+    )} in this bounded checklist`,
+    intro: [
+      conflicts
+        ? `${readinessCountPhrase(
+          conflicts,
+          "reported conflict",
+        )} ${conflicts === 1 ? "also needs" : "also need"} reconciliation.`
+        : "",
+      needsConfirmation
+        ? `${readinessCountPhrase(
+          needsConfirmation,
+          "other item",
+        )} ${needsConfirmation === 1 ? "needs" : "need"} an answer or staff confirmation.`
+        : "",
+      notEvaluated
+        ? `${readinessCountPhrase(
+          notEvaluated,
+          "item",
+        )} ${notEvaluated === 1 ? "was" : "were"} not evaluated.`
+        : "",
+      staffQuestionText,
+      "Reported presence is not a review of the files.",
+    ].filter(Boolean).join(" "),
+  };
+}
+
+function readinessCountMarkup(data) {
+  const entries = [
+    ["Reported missing", readinessCount(data, "missing")],
+    ["Reported conflicts", readinessCount(data, "conflicting")],
+    ["Need confirmation", readinessCount(data, "needs_staff_review")],
+    ["Not evaluated", readinessCount(data, "not_evaluated")],
+    ["Reported present", readinessCount(data, "present")],
+    ["Not applicable", readinessCount(data, "not_applicable")],
+  ].filter(([, count]) => count > 0);
+  return `<dl class="packet-counts" aria-label="Finding counts">
+    ${entries.map(([label, count]) =>
+      `<div><dt>${esc(label)}</dt><dd>${count}</dd></div>`
+    ).join("")}
+  </dl>`;
+}
+
+function renderReadiness(data) {
+  if (!validReadinessData(data))
+    throw new Error("generated packet-presence data failed validation");
+  READINESS = data;
+  const output = document.getElementById("readinessOutput");
+  const remedyById = new Map(
+    data.remedies.entries.map(entry => [entry.requirement_id, entry])
+  );
+  const current = readinessSourceIsCurrent(data);
+  const missing = data.result.findings.filter(
+    finding => finding.status === "missing"
+  );
+  const conflicts = data.result.findings.filter(
+    finding => finding.status === "conflicting"
+  );
+  const questions = data.result.findings.filter(
+    finding => finding.status === "needs_staff_review"
+  );
+  const present = data.result.findings.filter(
+    finding => finding.status === "present"
+  );
+  const notApplicable = data.result.findings.filter(
+    finding => finding.status === "not_applicable"
+  );
+  const notEvaluated = data.result.findings.filter(
+    finding => finding.status === "not_evaluated"
+  );
+  const source = data.workflow.source_bindings[0];
+  const sourceUrl = safeExternalUrl(source.url);
+  const reviewDueOn = readinessReviewDueOn(data);
+  const summary = readinessStatusSummary(data, current);
+  const missingRows = current
+    ? missing.map(finding => readinessFindingRow(
+      finding,
+      remedyById.get(finding.requirement_id),
+      true,
+      "missing",
+      data.remedies.review,
+    )).join("")
+    : "";
+  const conflictRows = current
+    ? conflicts.map(finding => readinessFindingRow(
+      finding,
+      null,
+      false,
+      "conflict",
+      data.remedies.review,
+    )).join("")
+    : "";
+  const questionRows = current
+    ? questions.map(finding => readinessFindingRow(
+      finding,
+      remedyById.get(finding.requirement_id),
+      true,
+      "question",
+      data.remedies.review,
+    )).join("")
+    : "";
+  const directQuestions = current && data.result.staff_questions.length
+    ? `<div class="staff-question-list">
+        <h3>Questions to take to Woodland staff</h3>
+        <ul>${data.result.staff_questions.map(question =>
+          `<li>${esc(question)}</li>`
+        ).join("")}</ul>
+      </div>` : "";
+  const sourceLink = sourceUrl
+    ? `<a href="${esc(sourceUrl)}">City of Woodland preapproved ADU
+        checklist</a>`
+    : "City of Woodland preapproved ADU checklist";
+  const reviewLabel = readinessReviewLabel(data.remedies.review);
+  const countsMarkup = current
+    ? readinessCountMarkup(data)
+    : `<p class="source-review-hold"><strong>Action copy is
+        withheld.</strong> The dated source must be checked before this
+        result can be used again.</p>`;
+  const inventoryMarkup = current
+    ? `<section class="packet-inventory" aria-labelledby="inventoryHeading">
+        <p class="section-kicker">Full bounded record</p>
+        <h2 id="inventoryHeading">What happened to every checklist item</h2>
+        ${readinessCompactList(present, "Reported present")}
+        ${readinessCompactList(notApplicable, "Not applicable from the made-up facts")}
+        ${readinessCompactList(notEvaluated, "Not evaluated")}
+      </section>`
+    : "";
+  const sourceStatusAsOf = readinessSourceStatusAsOf(data);
+  const recordedSourceStatus = data.evidence_manifest.source_status
+    || data.result.source_status;
+  const manifestLink = current
+    ? `<a href="data/readiness/generated/woodland-preapproved-adu-evidence.json">Open the generated evidence manifest</a>`
+    : `<a href="data/readiness/generated/woodland-preapproved-adu-evidence.json">Open the historical generated evidence manifest</a>
+      <span class="evidence-record-note">This record captured source status
+        “${esc(recordedSourceStatus)}” as of
+        ${esc(formatSourceDate(sourceStatusAsOf))}. It is not a current source
+        check.</span>`;
+  const runtimeSourceStatus = current
+    ? ""
+    : `<div>
+        <dt>Browser source status now</dt>
+        <dd>Source review required. The generated result is historical.</dd>
+      </div>`;
+
+  document.getElementById("readinessPacketId").textContent =
+    data.packet.packet_id;
+  document.getElementById("readinessDate").textContent =
+    formatSourceDate(data.packet.evaluated_on);
+  output.innerHTML = `
+    <section class="readiness-verdict ${current ? "is-current" : "needs-source"}"
+      aria-labelledby="readinessVerdictHeading">
+      <div class="verdict-copy">
+        <p class="section-kicker">Deterministic packet-presence result</p>
+        <h2 id="readinessVerdictHeading">${esc(summary.headline)}</h2>
+        <p>${esc(summary.intro)}</p>
+      </div>
+      ${countsMarkup}
+    </section>
+
+    ${current && missing.length ? `<section class="packet-ledger"
+      aria-labelledby="missingHeading">
+      <div class="ledger-heading">
+        <p class="section-kicker">Act before submission</p>
+        <h2 id="missingHeading">Reported missing items</h2>
+        <p>${esc(reviewLabel)}</p>
+      </div>
+      <div class="finding-list">${missingRows}</div>
+    </section>` : ""}
+
+    ${current && conflicts.length ? `<section class="packet-ledger"
+      aria-labelledby="conflictHeading">
+      <div class="ledger-heading">
+        <p class="section-kicker">Reconcile before submission</p>
+        <h2 id="conflictHeading">Reported conflicts</h2>
+        <p>A conflict means two reported packet facts do not agree. It is not
+          treated as a missing document.</p>
+      </div>
+      <div class="finding-list">${conflictRows}</div>
+    </section>` : ""}
+
+    ${current && (questions.length || data.result.staff_questions.length)
+    ? `<section class="packet-ledger" aria-labelledby="questionHeading">
+      <div class="ledger-heading">
+        <p class="section-kicker">Do not guess</p>
+        <h2 id="questionHeading">Items and questions to confirm</h2>
+        <p>Use the generated questions to confirm unknown facts, unresolved
+          packet assertions, or which City workflow applies.</p>
+      </div>
+      <div class="finding-list">${questionRows}</div>
+      ${directQuestions}
+    </section>` : ""}
+
+    ${inventoryMarkup}
+
+    <section class="packet-evidence" aria-labelledby="packetEvidenceHeading">
+      <div>
+        <p class="section-kicker">Evidence record</p>
+        <h2 id="packetEvidenceHeading">Trace this result to its source</h2>
+        <p>${esc(data.result.boundary)}</p>
+      </div>
+      <dl>
+        <div>
+          <dt>Official source</dt>
+          <dd>${sourceLink}</dd>
+        </div>
+        <div>
+          <dt>Source recorded</dt>
+          <dd>${esc(formatSourceDate(source.source_checked_on))}</dd>
+        </div>
+        <div>
+          <dt>Review window through</dt>
+          <dd>${esc(formatSourceDate(reviewDueOn))}</dd>
+        </div>
+        ${runtimeSourceStatus}
+        <div>
+          <dt>AI draft review</dt>
+          <dd>${esc(reviewLabel)}</dd>
+        </div>
+        <div>
+          <dt>${current
+            ? "Machine-readable record"
+            : "Historical machine-readable record"}</dt>
+          <dd>${manifestLink}</dd>
+        </div>
+      </dl>
+    </section>`;
+  output.setAttribute("aria-busy", "false");
+}
+
 function fetchJson(path) {
   return fetch(path).then(response => {
     if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
@@ -1920,11 +2492,17 @@ function showDataLoadError(error) {
   }
   const output = document.getElementById("dataLoadError")
     || document.getElementById("results")
-    || document.getElementById("scanResults");
+    || document.getElementById("scanResults")
+    || document.getElementById("readinessOutput");
   if (output) {
     output.classList.remove("hidden");
     output.innerHTML =
       `<div class="notice" lang="${lang}">${esc(message)}</div>`;
+  }
+  const readinessOutput = document.getElementById("readinessOutput");
+  if (readinessOutput) {
+    readinessOutput.innerHTML = "";
+    readinessOutput.setAttribute("aria-busy", "false");
   }
 }
 
@@ -1940,6 +2518,9 @@ async function initializeDemo() {
     CHECKS = data.checks;
     LETTERS = data.letters.letters || {};
     SCANS = data.scans;
+    if (pageIs("readiness")) {
+      renderReadiness(data.readiness);
+    }
     if (pageIs("project")) {
       EXPLANATIONS = await normalizeExplanations(
         data.plain_language,

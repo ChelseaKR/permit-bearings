@@ -1,18 +1,21 @@
 # Accessibility audit: static pass, updated 2026-07-29
 
-Scope: the four-page public static site (`index.html`, `check.html`,
-`review.html`, and `evidence.html`) and the separate applicant flow in
-`demo/app.py`. **Target: WCAG 2.2 Level AAA.**
+Scope: the five-page public static site (`index.html`, `check.html`,
+`prepare.html`, `review.html`, and `evidence.html`) and the separate applicant
+flow in `demo/app.py`. **Target: WCAG 2.2 Level AAA.**
 The static site implements the published California Design System `cagov`
 tokens locally: Public Sans-first typography, 18px body copy, 1.75 line
 height, state color/status tokens, spacing steps, and the 1,176px shell /
 876px reading widths. No State logo, official-site banner, branding, or
 affiliation is claimed. See `docs/DESIGN-SYSTEM.md`.
 
-This is a static (code-level) audit with computed contrast; items under
-"Remaining" require a human with assistive technology.
+This audit combines static and code-level checks, computed contrast, and one
+limited local browser inspection of the packet sample. It is not a browser
+conformance test or a completed manual or assistive-technology review. Items
+under "Remaining" require a person using the named browsers, input methods, or
+assistive technology.
 
-## Checked and passing
+## Static and code checks recorded
 
 **Semantics & structure.** Each page has a skip link, one `<main>`, one
 `<h1>`, a labeled primary navigation, and `aria-current` on the active page.
@@ -26,6 +29,26 @@ outside those disclosures. Tables use `<th>` header rows. Multiple deadlines
 or thresholds use a semantic heading and list rather than visual-only layout.
 All interactive elements are native controls, so keyboard operability and
 focus order come from the platform.
+
+The packet sample has one labeled main region and one page heading. Its
+made-up packet cover, finding counts, and source record use definition lists.
+Missing and unresolved findings are labeled articles with headings and
+visible text states. Reported-present, not-applicable, and not-evaluated
+groups use native disclosures. The generated manifest and official checklist
+use descriptive links. These observations come from markup, regression
+checks, and limited visual inspection; browser reading order and
+assistive-technology output remain pending.
+
+## Limited local browser checks recorded
+
+On 2026-07-29, the generated packet sample was inspected in the local in-app
+browser at 1280, 390, and 320 CSS-pixel viewport widths. The page had no
+horizontal document overflow at those widths, the generated output replaced
+its busy state without a visible load error, and the expected headings and
+visible trust labels rendered. Computed token contrast checks and spot checks
+of link and disclosure target heights were also recorded. This inspection did
+not establish keyboard operation, screen reader output, real-device zoom
+behavior, or conformance for the other four static pages.
 
 **Focus appearance (2.4.13, AAA-new).** Global `:focus-visible` uses a 3px
 `accent2-300` ring with a 2px offset and a 5px `primary-900` outer ring.
@@ -59,6 +82,12 @@ moves focus to the newly available reset/rehearse control. After screening,
 keyboard focus moves to the result heading; scanner and clock live regions
 announce a concise summary instead of their full result tables or cards.
 
+The packet page marks its generated output `aria-live="polite"` and
+`aria-busy="true"` until rendering completes. Static checks confirm those
+attributes and the visible loading and error containers. Actual announcement
+timing, verbosity, and focus behavior have not been checked with a browser or
+screen reader.
+
 The shareable ADU sample is introduced by descriptive link text and followed
 by a visible disclosure that identifies the facts as hypothetical. It fills
 the same native form controls and invokes the same form submission path as
@@ -74,9 +103,11 @@ result from remaining visible beside facts that no longer produced it.
 
 **Data-loading state.** Data-dependent pathway, scanner, and trust-rehearsal
 buttons use the native `disabled` state until their datasets are ready. A
-load failure places a visible explanation in the results area and a short
-message in the result status region instead of leaving empty controls that
-appear operable.
+load failure places a visible explanation in the relevant results area and a
+short message in the result status region instead of leaving empty controls
+that appear operable. The packet page also clears its busy state and presents
+a visible load error. These behaviors are covered by code inspection and
+static tests, not a manual browser failure rehearsal.
 
 **Link purpose (2.4.9 AAA).** Every link's text alone states its target
 ("view scan findings (JSON)", full source citations, named statutes).
@@ -120,8 +151,10 @@ staff-facing trust, ordinance, and clock tools remain English.
 ## Remaining (human/AT pass not done)
 
 - Screen-reader walkthrough (VoiceOver/NVDA): reading order, datalist
-  combobox behavior, live-region verbosity.
-- 200% zoom and 320px reflow visual check on real devices.
+  combobox behavior, packet-result reading order, and live-region verbosity.
+- 200% zoom and 320px reflow visual check on real devices. The packet page
+  passed a local 320 CSS-pixel viewport check, which is not a real-device or
+  browser-zoom test.
 - `forced-colors` / high-contrast mode spot check.
 - Spanish screen-reader pronunciation check.
 - Mixed-language audit: translated intake/result labels and Spanish
@@ -130,7 +163,7 @@ staff-facing trust, ordinance, and clock tools remain English.
   Spanish drafts have not had human or semantic-parity review, and the
   source-linked letter metadata, scanner, clocks, dashboard, and sources
   remain partly or wholly English.
-- Keyboard-only end-to-end run of all four flows.
+- Keyboard-only end-to-end run of all five static flows.
 - AAA content-level judgments (3.1.5 reading level): the new plain-language
   layer is structurally simpler, but no formal readability or comprehension
   assessment has been done).

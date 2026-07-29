@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "workflow_id": "woodland-preapproved-detached-adu",
+  "workflow_fingerprint": "sha256:ff9e8d9a1c94ae19e74fa648913cb66e8052ea8a43ad68b78d5af37d6bca6569",
+  "version": "1.0.0",
+  "updated_on": "2026-07-29",
+  "drafted_by": "ai_assisted",
+  "review": {
+    "status": "prototype_review_pending",
+    "reviewer": null,
+    "method": null,
+    "reviewed_on": null,
+    "reviewed_version": null,
+    "content_fingerprint": null
+  },
+  "entries": [
+    {
+      "requirement_id": "building-permit-application",
+      "requirement_fingerprint": "sha256:868b054e3f87ebdef088c65538c4db2c03a7efc0884a7f65e4843dedb9da4212",
+      "action": "Add the completed building permit application."
+    },
+    {
+      "requirement_id": "plan-owner-contract-or-authorization",
+      "requirement_fingerprint": "sha256:b4a93c77960458aca9d9310ddefc1c863b729b3ebc834511fb239e66802e1f22",
+      "action": "Add the contract with the preapproved plan owner or ask staff whether an authorization letter is acceptable."
+    },
+    {
+      "requirement_id": "dimensioned-plot-plan",
+      "requirement_fingerprint": "sha256:1ec6f51ebd13df18a656ad42fa755476272daaeafb3b1a666cb574cf8da2dd04",
+      "action": "Add a dimensioned plot plan."
+    },
+    {
+      "requirement_id": "plot-plan-address-apn",
+      "requirement_fingerprint": "sha256:ad06b3f2b33bb151b86e2dbc54c5e995379c1f8bc467f8569b91c1235c13ed91",
+      "action": "Add the property address and assessor parcel number to the plot plan."
+    },
+    {
+      "requirement_id": "plot-plan-owner-contact",
+      "requirement_fingerprint": "sha256:d42c5a284339705e83216c14fd87d6807bdcb318a9b788093ed4a541ea1969bc",
+      "action": "Add the property owner name and contact information to the plot plan."
+    },
+    {
+      "requirement_id": "plot-plan-scale",
+      "requirement_fingerprint": "sha256:ba3972318e04916d1645e2fd1326a9aea8f11f18ab9cf0e600751f0a64264424",
+      "action": "Add the drawing scale to the plot plan."
+    },
+    {
+      "requirement_id": "plot-plan-lot-dimensions",
+      "requirement_fingerprint": "sha256:4521f4bc42959127ee2be6ccc66660b4f10ec42df01011623d11b6d8605e7ba2",
+      "action": "Add the lot dimensions to the plot plan."
+    },
+    {
+      "requirement_id": "plot-plan-footprints-setbacks",
+      "requirement_fingerprint": "sha256:c27b532b1586e18dd66518c9ce8e533adf07b708ba09861f43b63ca90eed08ea",
+      "action": "Add building footprints and setbacks to property lines to the plot plan."
+    },
+    {
+      "requirement_id": "plot-plan-other-structures",
+      "requirement_fingerprint": "sha256:aa8158fb5dff55c7c1a0124bf6cee2b405c4585a73882e14639e19a7e03c4f30",
+      "action": "Show accessory structures, retaining walls, pools, fences, and other structures on the plot plan."
+    },
+    {
+      "requirement_id": "plot-plan-easements",
+      "requirement_fingerprint": "sha256:552047d18b53f9d2e7314759616b4a762917409e6e3ec20fb1c6c8c4c302c137",
+      "action": "Confirm whether the plot plan shows all easements."
+    },
+    {
+      "requirement_id": "plot-plan-utilities",
+      "requirement_fingerprint": "sha256:c8ee671f929d95b0fe92d22dd64b1e3d95d36451b748c361790f6c8abd6ea618",
+      "action": "Show existing and proposed water, gas, electric, and sewer locations on the plot plan."
+    },
+    {
+      "requirement_id": "plot-plan-drainage",
+      "requirement_fingerprint": "sha256:dca66325344c4fa9a2cdc9df1dbfdd35b18742a0359534ddf8ccfa711ee5d3a5",
+      "action": "Add lot drainage information to the plot plan."
+    },
+    {
+      "requirement_id": "plot-plan-tree-removal",
+      "requirement_fingerprint": "sha256:3ccd2bf0e086cc21362460f533c7a8c72dec72b5ad7eb9e5228cdd987279f267",
+      "action": "Confirm whether any trees are proposed for removal and show their locations when applicable."
+    },
+    {
+      "requirement_id": "plot-plan-driveway",
+      "requirement_fingerprint": "sha256:7b89702d371b779da18b195b3dbc4d06f34135e4d00efe90080241064a555e7a",
+      "action": "Add the driveway location and dimensions to the plot plan."
+    },
+    {
+      "requirement_id": "site-specific-construction-details",
+      "requirement_fingerprint": "sha256:de65dd6616bfaf5e63ea1efeceae04da4815563987b0346b11874a2a84169bb6",
+      "action": "Add the site-specific construction details."
+    },
+    {
+      "requirement_id": "foundation-plan",
+      "requirement_fingerprint": "sha256:3248a1ab85a816df94e3377be30e3384fb7a7ff78cebab8901d8cb314d20ce05",
+      "action": "Add the foundation plan to the site-specific construction details."
+    },
+    {
+      "requirement_id": "plumbing-electrical-tie-in",
+      "requirement_fingerprint": "sha256:37f68d6d8ef30365f42301ad4e86c864a4715dd173d634477cdc5bce36cbc5fa",
+      "action": "Add the plumbing and electrical tie-in details."
+    },
+    {
+      "requirement_id": "electrical-load-calculations",
+      "requirement_fingerprint": "sha256:4ff9492d2132128176fc9ed15d9832ae1dbcde457463973ab0fa2480d5b213b1",
+      "action": "Add electrical load calculations because this sample says the ADU connects to the primary home."
+    },
+    {
+      "requirement_id": "waste-reduction-recycling-plan",
+      "requirement_fingerprint": "sha256:9dd814cf0c2118dd8392cd0a5d9fdec434e5ac8f28dac53dac609492aaba7449",
+      "action": "Add the waste reduction and recycling plan."
+    },
+    {
+      "requirement_id": "solar-plans",
+      "requirement_fingerprint": "sha256:f1c304ae5745acb2dc9b028854f2ad10eb3c25b005dd205c4dcaf50528abdec6",
+      "action": "Confirm whether solar plans apply. Add them if staff says they are required."
+    },
+    {
+      "requirement_id": "fire-sprinkler-plans",
+      "requirement_fingerprint": "sha256:c5695c4f76e069324708a2f8d2333ef545b3fd233bb16b2213b89a3e72bbc9bf",
+      "action": "Confirm whether fire sprinkler plans apply. Add them if staff says they are required."
+    },
+    {
+      "requirement_id": "upgrade-to-city-services",
+      "requirement_fingerprint": "sha256:67de3f2b4e0dc3e8256ebbb4f7489030f85ca58a551c242e398f6f934bd648ca",
+      "action": "If the property uses a septic system or well, ask staff how to document the required upgrade to City services."
+    },
+    {
+      "requirement_id": "spring-lake-geotechnical-report",
+      "requirement_fingerprint": "sha256:a3836228e4ac3226654b17e3fcc9976627a491a4704c841551227f3deda06ceb",
+      "action": "If the property is in Spring Lake, add a signed geotechnical report or ask staff whether the listed engineer letter alternative applies."
+    },
+    {
+      "requirement_id": "spring-lake-post-tension-slab",
+      "requirement_fingerprint": "sha256:6bb76a5be1e82286506322506696d2a34c4709e445914c5ce13d67aa6fffc340",
+      "action": "If the property is in Spring Lake, confirm that the preapproved plans include the required post-tension slab."
+    },
+    {
+      "requirement_id": "flood-elevation-certificate",
+      "requirement_fingerprint": "sha256:1b3319d31d35dbf288db034c37cbb943efbf006558fa03fa7790774f111c3bfa",
+      "action": "Confirm whether the property is in a flood zone. Add a flood elevation certificate if it is."
+    }
+  ]
+}

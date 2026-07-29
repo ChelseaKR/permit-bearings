@@ -7,11 +7,11 @@ Preflight: use the hosted demo, open `index.html` directly, or serve the
 repository with `python3 -m http.server 8765`. After changing canonical JSON,
 run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
 Start at `/` for the product boundary, then use `/review.html`,
-`/check.html`, and `/evidence.html` for the three live jobs.
+`/check.html`, `/prepare.html`, and `/evidence.html` for the four live jobs.
 
 ## Arc: “Every tool will show you an answer. I’ll show you the evidence and when it needs review.”
 
-### 0. The opener: scan an ordinance live (4 min)
+### 0. The opener: scan an ordinance live (3 min)
 - From the landing page, choose **Review local rules**. The separation is
   intentional: this is a staff review aid, not an applicant chatbot.
 - Paste an ADU ordinance provision into the conformance scanner. Watch it
@@ -26,7 +26,7 @@ Start at `/` for the product boundary, then use `/review.html`,
   file. This component makes the rule, handout, or AI corpus auditable as its
   sources change and can sit inside somebody else's stack."
 
-### 1. The problem nobody demos (3 min)
+### 1. The problem nobody demos (2 min)
 - Housing law changes every session. SB 477 (2024) renumbered all of state
   ADU law (§ 65852.2 → §§ 66310–66342); 2025 legislation renumbered sections
   again. Every handout, chatbot, and ordinance citing the old sections became
@@ -38,7 +38,7 @@ Start at `/` for the product boundary, then use `/review.html`,
 - Frame: correctness *decays*. An AI guidance tool without a currency
   mechanism is a liability with a friendly interface.
 
-### 2. Applicant flow: Scenario A (7 min)
+### 2. Applicant flow: Scenario A (6 min)
 - Open the labeled hypothetical ADU sample at
   `check.html?sample=adu`. Point out that it loads an existing Woodland golden
   fixture, fills the native form controls, and submits through the same
@@ -82,7 +82,41 @@ Start at `/` for the product boundary, then use `/review.html`,
 - Show the unpermitted-unit legalization path (§ 66311.7) as an example of a
   homeowner workflow often omitted by developer-oriented intake.
 
-### 3. The verification harness: Scenario C (7 min)
+### 2b. Bounded packet-presence sample (5 min)
+
+- Follow the link from the hypothetical route to `prepare.html`. State first
+  that this is a generated, made-up record, not a real applicant packet,
+  completeness assessment, pilot, or external validation result.
+- Show that the Python evaluator compared explicit synthetic facts and
+  inventory statuses with 25 requirements from one dated City of Woodland
+  preapproved ADU checklist. The public browser validates and renders the
+  generated result; it does not run a second evaluator.
+- Read the result: three known gaps, five items needing confirmation, 14
+  reported present, and three not applicable from the made-up facts. Open one
+  missing item, one staff question, and one reported-present item. Emphasize
+  that reported presence is not file inspection or a finding that contents
+  are correct.
+- Open the generated evidence manifest. Point to the source binding,
+  requirement and packet fingerprints, per-item source locators, inventory,
+  source-status date and review deadline, findings, staff questions, and
+  explicit boundary.
+- Show the action-copy status. AI proposed the checklist mapping and
+  plain-language actions before runtime. The mapping and actions are
+  fingerprint-bound, versioned, and `prototype_review_pending`; no named
+  applicant, planner, counsel, Woodland reviewer, or other jurisdiction
+  representative has approved them. The mapping records exact input-source
+  fingerprints, but provider, model, and a reproducible run record were not
+  retained.
+- Name the runtime and privacy boundary: no model runs in the Python evaluator,
+  CLI, build, or public browser; the bundled sample stores no applicant data.
+  The evaluator does not open files, retrieve parcel records, determine legal
+  sufficiency, certify completeness, limit staff requests, or predict
+  approval.
+- If demonstrating the CLI, run
+  `PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-29`.
+  Its JSON is the same evidence-manifest shape committed for the sample.
+
+### 3. The verification harness: Scenario C (5 min)
 - Open **Evidence & updates**. Show the percentage of rule records with dated
   source evidence inside the
   review window, plus the Davis record with no dated source check because its
@@ -101,7 +135,7 @@ Start at `/` for the product boundary, then use `/review.html`,
   regression behavior, not natural-language accuracy or jurisdiction
   acceptance.
 
-### 3b. Data-driven determinations, not self-attestation (3 min)
+### 3b. Data-driven determinations, not self-attestation (2 min)
 - The parking exemption and 18-ft height allowance both turn on transit
   proximity. Run the GTFS module live against the Unitrans feed for a
   downtown Davis point. The local summer bus feed contains no stop meeting the
@@ -112,7 +146,7 @@ Start at `/` for the product boundary, then use `/review.html`,
   and service-calendar logic all need confirmation. "Even the map and
   schedule are versioned evidence."
 
-### 4. Fit and posture (3 min)
+### 4. Fit and posture (4 min)
 - Rules, sources, and the golden set are portable files that can be copied and
   inspected without vendor-only tooling. Operational export, ownership terms,
   production retention, CPRA export, privacy review, and security controls
@@ -124,8 +158,9 @@ Start at `/` for the product boundary, then use `/review.html`,
   happy to be the trust layer inside someone else's stack.
 
 ### 5. What I want from you (3 min)
-- Market-research honesty: the permit-readiness requirement manifest and the
-  staleness review queue are where jurisdiction feedback matters most.
+- Market-research honesty: the bounded packet-presence manifest is executable,
+  but its checklist mapping, action copy, and usefulness have not been
+  validated. The source review queue is also still a rehearsal.
 - Ask: which one jurisdiction and ADU subtype should be the deep pilot, which
   public/redacted packet examples can staff review, and who approves rule and
   translation changes?
@@ -135,15 +170,17 @@ Start at `/` for the product boundary, then use `/review.html`,
   reports and consistency review; v1 does one thing well per the challenge's
   own scope note.
 - "LLM involvement?" → Deterministic rules where the standard is objective;
-  the current runtime has no live LLM. The next bounded AI step is
-  page-evidenced document extraction and cited remedy drafting, with human
-  approval and model-independent regression fixtures.
+  the current runtime has no live LLM. AI-assisted mapping and remedy drafts
+  are implemented for the one Woodland sample but remain review-pending.
+  Page-evidenced document extraction and human-approved remedies are next.
 - "Solo vendor risk?" → Working public code, dated history, CI, and a design
   based on portable, exportable artifacts. That reduces lock-in but does not
   remove key-person risk. Open to teaming.
 - "Accuracy of the rule base?" → Each rule with dated evidence links a source
-  and supporting excerpt; the Davis pilot record remains explicitly
+  and supporting excerpt; the Davis local record remains explicitly
   unverified because its source could not be retrieved. The current
   `verified_on` field records dated source evidence, not jurisdiction or
   counsel approval. Encoding was machine-assisted; a named human review level
-  and held-out evaluation are next.
+  and held-out evaluation are next. The separate Woodland checklist mapping
+  has automated source, schema, and fingerprint checks, but no applicant,
+  planner, counsel, or jurisdiction validation.

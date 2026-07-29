@@ -9,7 +9,9 @@ relevant standards, cited official sources, and questions for local staff. The
 matcher is deterministic. Separate English and Spanish explanations are
 AI-assisted, review-pending drafts.
 
-It does not verify parcel facts, reproduce a complete local checklist,
+A separate bounded sample compares a made-up Woodland packet inventory with
+25 source-bound items from one City preapproved ADU checklist. It does not
+open files, verify parcel facts, reproduce a complete local checklist,
 determine final eligibility, certify submission completeness, or approve
 permits.
 
@@ -18,11 +20,14 @@ permits.
 **Hypothetical ADU sample:**
 https://chelseakr.github.io/permit-pathways/check.html?sample=adu
 
+**Synthetic packet-presence sample:**
+https://chelseakr.github.io/permit-pathways/prepare.html
+
 **Local static demo:** open `index.html` directly, or run
 `python3 -m http.server 8765` and visit `http://localhost:8765/`. The landing,
-applicant guide, ordinance screen, and evidence page use relative links and
-work without network requests. Only the three interactive pages load the
-generated `data/demo-data.js` bundle.
+applicant guide, packet sample, ordinance screen, and evidence page use
+relative links and work without network requests. Only the four data-driven
+pages load the generated `data/demo-data.js` bundle.
 
 See [docs/PRODUCT-CONTEXT.md](docs/PRODUCT-CONTEXT.md) for the capability
 truth, challenge fit, and prioritized opportunity map. Repository-specific
@@ -39,10 +44,11 @@ PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
 PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff
 PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
+PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-29
 python3 -m http.server 8765                         # full static showcase
 PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
 # The Python server exposes the landing at /index.html and tools at
-# /check.html, /review.html, and /evidence.html.
+# /check.html, /prepare.html, /review.html, and /evidence.html.
 python3 scripts/build_demo_bundle.py                # after canonical JSON changes
 ```
 
@@ -74,10 +80,44 @@ python3 scripts/build_demo_bundle.py                # after canonical JSON chang
    set found no path and routes the applicant generally to local staff.
 
 The current app covers statewide ADU, JADU, and SB 9 screening and two bounded
-local records. Parcel retrieval, packet-level completeness, detailed remedies,
-SB 35, AB 2011, reviewed translation, and comprehensive local rules are
-planned rather than implemented. The temporary result packet does not change
-those boundaries.
+local rule records. Parcel retrieval, application-file inspection,
+packet-level completeness, reviewed remedies, SB 35, AB 2011, reviewed
+translation, and comprehensive local rules are planned rather than
+implemented. The temporary result packet does not change those boundaries.
+
+## How the bounded packet sample works
+
+1. `data/readiness/workflows/woodland-preapproved-detached-adu.json` encodes
+   25 requirements from one dated City of Woodland checklist for projects
+   using a City preapproved detached ADU plan.
+2. `data/readiness/samples/woodland-preapproved-adu.json` supplies one made-up
+   project and an explicit inventory status for every requirement. The
+   evaluator does not open or inspect a plan, form, or other file.
+3. `src/permit_pathways/readiness.py` deterministically applies the workflow
+   conditions. Missing items remain gaps, unknown facts become staff
+   questions, and a changed or stale bound source prevents a favorable packet
+   summary.
+4. `python3 -m permit_pathways.readiness_cli` prints the machine-readable
+   evidence manifest. By default, source age is checked against the current
+   UTC date; historical replay requires an explicit `--as-of` date. The build
+   uses the same Python evaluator with the sample's recorded date to generate
+   `data/readiness/generated/woodland-preapproved-adu-evidence.json` and the
+   static bundle.
+5. `prepare.html` validates and renders that generated Python result. It does
+   not contain a second packet evaluator.
+6. The checklist mapping and plain-language action copy are AI-assisted
+   drafts. They are versioned, fingerprint-bound, and marked
+   `prototype_review_pending`; no named human, planner, or Woodland reviewer
+   has approved them. Mapping metadata binds the exact input-source digest and
+   records that provider, model, and a reproducible run record are unknown or
+   were not retained.
+7. No model runs in the CLI, build evaluator, or public browser. The public
+   sample is bundled synthetic data, and the page stores no applicant record.
+
+The sample reports item presence against one checklist. It does not inspect
+file contents, verify parcel facts, determine legal sufficiency, certify
+completeness, limit what staff may request, or predict approval. It has not
+been validated with applicants, planners, or a jurisdiction.
 
 ## Trust and source currency
 
@@ -92,6 +132,12 @@ IDs. The command-line harness checks selected source hashes and uses explicit
 dependency IDs to mark affected rules stale. The browser source-change control
 is a rehearsal, not persisted production state. Durable change discovery,
 review assignment, approval, and publication remain planned.
+
+The separate readiness tests cover positive, negative, boundary, unknown,
+wrong-workflow, changed-source, schema, fingerprint, review-metadata, manifest,
+and CLI behavior for the synthetic Woodland packet. These tests establish
+bounded software behavior, not checklist completeness, legal accuracy, or
+external validation.
 
 ## Supporting ordinance screen
 
@@ -113,7 +159,7 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 
 | Scenario | Coverage |
 |---|---|
-| Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, a temporary grouped result packet, citations, uncertainty routing, and generic document hints are implemented. Parcel-specific packet completeness, detailed remedies, and reviewed translation are planned. |
+| Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, a temporary grouped result packet, citations, uncertainty routing, and one generated synthetic Woodland packet-presence sample are implemented. The sample uses 25 source-bound checklist requirements and review-pending AI-assisted action drafts. File inspection, parcel-specific packet completeness, reviewed remedies, and reviewed translation are planned. |
 | Scenario 2 (B): supporting internal review | Not targeted in v1. |
 | Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, dependency invalidation, and an HCD-letter dataset are implemented in bounded form. Search, change discovery, comparable-jurisdiction research, and a durable review queue are planned. |
 
@@ -156,6 +202,14 @@ covered. If browser-side fingerprint validation is unavailable, the display
 fails closed to matched rules and evidence without explanation copy. All 19
 current rule records have English and Spanish drafts; none is represented as
 human-reviewed or jurisdiction-approved.
+
+The separate Woodland readiness workflow is also machine-assisted. Its 25
+checklist mappings and action drafts have automated schema, coverage, source,
+and fingerprint checks, but remain review-pending. Mapping metadata explicitly
+records the absence of retained provider, model, and run details. The
+generated synthetic packet result has not been reviewed or validated by an
+applicant, planner, Woodland staff member, counsel, or another jurisdiction
+representative.
 
 A period detail that demonstrates the currency problem: state ADU law was
 renumbered from
@@ -200,44 +254,54 @@ height allowances, parking limits and exemptions, the owner-occupancy
 prohibition, conversion exemptions, pre-2020 unpermitted-unit legalization,
 multifamily-lot 66323 allowances, JADU standards, SB 9 two-unit developments,
 SB 9 urban lot splits, and the SB 9 × ADU unit-count interaction, plus
-pilot local metadata records for the Cities of Davis and Woodland. A weekly
+bounded local metadata records for the Cities of Davis and Woodland. A weekly
 GitHub Action re-fetches selected statewide sources and is intended to open an
-issue if any changed or became unreachable. Local-code sources and newly
-enacted-law discovery are not yet covered.
+issue if any changed or became unreachable. Two selected Woodland workflow
+sources are now recorded and watched; comprehensive local-source and newly
+enacted-law discovery are not implemented.
 
-The full static showcase has four task-focused pages: a lightweight landing
-page; an English/Spanish applicant guide with review clocks; a bounded
-ordinance screen; and an evidence-and-updates page. The applicant guide renders
-a temporary answers-used cover sheet, a dynamic grouped summary with jump
-links, one candidate route open by default when the configured route matches,
-and compact supporting records. Citations and source-status badges stay
-visible outside the disclosures. Ordinary answer edits clear the old result
-until the applicant submits again. The applicant guide also includes
-plain-language explanation drafts and an abstention path ("needs staff review")
-when no encoded state pathway matches. Spanish explanation copy is an
-unreviewed machine draft; applicant-facing titles are localized drafts while
-canonical pathway labels, excerpts, citations, and document hints remain
-English when shown. Stale and unverified records suppress action copy,
-interpretive notes, and document hints. The evidence page includes a clearly
-labeled one-click rehearsal of an amendment to Gov. Code § 66321; matching
-applicant records can be opened in the stale state, but the rehearsal is not
-persisted production state. The smaller Python reference demo renders the same
+The full static showcase has five task-focused pages: a lightweight landing
+page; an English/Spanish applicant guide with review clocks; the generated
+synthetic packet-presence sample; a bounded ordinance screen; and an
+evidence-and-updates page. The applicant guide renders a temporary
+answers-used cover sheet, a dynamic grouped summary with jump links, one
+candidate route open by default when the configured route matches, and compact
+supporting records. Citations and source-status badges stay visible outside
+the disclosures. Ordinary answer edits clear the old result until the
+applicant submits again. The applicant guide also includes plain-language
+explanation drafts and an abstention path ("needs staff review") when no
+encoded state pathway matches. Spanish explanation copy is an unreviewed
+machine draft; applicant-facing titles are localized drafts while canonical
+pathway labels, excerpts, citations, and document hints remain English when
+shown. Stale and unverified records suppress action copy, interpretive notes,
+and document hints. The packet page renders a Python-generated result and
+links its evidence manifest. The evidence page includes a clearly labeled
+one-click rehearsal of an amendment to Gov. Code § 66321; matching applicant
+records can be opened in the stale state, but the rehearsal is not persisted
+production state. The smaller Python reference demo renders the same
 explanation sidecar and keeps a separate `/trust` route.
 
 ## Layout
 
 - `src/permit_pathways/screening.py`: deterministic pathway-screening engine
 - `src/permit_pathways/explanations.py`: versioned explanation validation
+- `src/permit_pathways/readiness.py`: deterministic bounded packet-presence
+  evaluator and evidence-manifest generator
+- `src/permit_pathways/readiness_cli.py`: packet-presence CLI
 - `src/permit_pathways/harness/`: verification runner and CLI
 - `data/rules/`: the cited rule base; `data/golden/`: golden cases
 - `data/explanations/plain-language.json`: English/Spanish explanation drafts
+- `data/readiness/`: the Woodland workflow, synthetic packet, review-pending
+  remedies, and generated evidence manifest
 - `data/demo-data.js`: generated offline bundle for the static showcase
-- `index.html`, `check.html`, `review.html`, `evidence.html`: task-focused
-  static pages; `assets/`: shared browser application and visual system
+- `index.html`, `check.html`, `prepare.html`, `review.html`,
+  `evidence.html`: task-focused static pages; `assets/`: shared browser
+  application and visual system
 - `corpus/hcd/`: HCD source documents recorded by rule citations
 - `demo/app.py`: stdlib reference demo and safe static-file server
 - `scripts/build_demo_bundle.py`: rebuild/check the static data bundle
 - `docs/DESIGN.md`: architecture and demo plan
+- `docs/DATA-FLOW.md`: current build-time and browser data boundaries
 - `docs/DESIGN-SYSTEM.md`: California Web Standards alignment and local
   extensions
 - `docs/PRODUCT-CONTEXT.md`: capability truth and opportunity priorities

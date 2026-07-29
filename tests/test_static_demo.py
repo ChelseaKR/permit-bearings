@@ -2,6 +2,7 @@ import json
 import re
 import shutil
 import subprocess
+from datetime import date
 from io import BytesIO
 
 import pytest
@@ -14,7 +15,11 @@ from demo.app import (
     result_page,
     static_path,
 )
-from scripts.build_demo_bundle import OUTPUT, build_bundle
+from scripts.build_demo_bundle import (
+    OUTPUT,
+    build_bundle,
+    build_readiness_payload,
+)
 
 
 def test_committed_demo_bundle_matches_canonical_json():
@@ -36,6 +41,7 @@ def test_static_pages_load_only_the_assets_they_need():
     assert application_src not in landing
     for page_name, page_id in {
         "check.html": "project",
+        "prepare.html": "readiness",
         "review.html": "review",
         "evidence.html": "evidence",
     }.items():
@@ -53,12 +59,14 @@ def test_static_pages_have_consistent_navigation_and_resolvable_links():
     pages = [
         ROOT / "index.html",
         ROOT / "check.html",
+        ROOT / "prepare.html",
         ROOT / "review.html",
         ROOT / "evidence.html",
     ]
     expected_nav = [
         "Home",
         "Check a project",
+        "Packet sample",
         "Review local rules",
         "Evidence &amp; updates",
     ]
@@ -86,7 +94,7 @@ def test_showcase_submission_draft_preserves_portal_word_limits():
     bounded_responses = [
         ("### Company description", "## Section 2", 43, 50),
         ("### Solution description", "### AI technical workflow", 189, 200),
-        ("### AI technical workflow", "### Maturity", 137, 150),
+        ("### AI technical workflow", "### Maturity", 145, 150),
         ("### Maturity", "## Section 4", 89, 100),
         (
             "### Work required from jurisdiction staff",
@@ -130,6 +138,7 @@ def test_public_brand_name_and_tagline_are_consistent():
     public_files = {
         ROOT / "index.html",
         ROOT / "check.html",
+        ROOT / "prepare.html",
         ROOT / "review.html",
         ROOT / "evidence.html",
         ROOT / "assets" / "demo.js",
@@ -207,6 +216,7 @@ def test_public_interface_copy_uses_no_em_dashes():
     public_sources = [
         ROOT / "index.html",
         ROOT / "check.html",
+        ROOT / "prepare.html",
         ROOT / "review.html",
         ROOT / "evidence.html",
         ROOT / "assets" / "demo.js",
@@ -324,6 +334,284 @@ def test_static_result_cards_keep_explanations_separate_from_matching():
     assert 'id="scanStatus"' in review
     assert 'id="simBtn"' in evidence
     assert 'id="sourceTable"' in evidence
+
+
+def test_packet_sample_renders_only_the_generated_python_result():
+    readiness, _ = build_readiness_payload()
+    page = (ROOT / "prepare.html").read_text(encoding="utf-8")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+
+    assert readiness["packet"]["synthetic"] is True
+    assert readiness["result"]["overall_status"] == "known_gaps"
+    assert readiness["counts"] == {
+        "present": 14,
+        "missing": 3,
+        "not_applicable": 3,
+        "conflicting": 0,
+        "needs_staff_review": 5,
+        "not_evaluated": 0,
+    }
+    assert readiness["remedies"]["review"]["status"] == (
+        "prototype_review_pending"
+    )
+    assert readiness["ai_trace"]["runtime_model_call"] is False
+    assert readiness["ai_trace"]["applicant_data_sent_to_model"] is False
+    assert readiness["ai_trace"]["mapping_version"] == "1.0.0"
+    assert readiness["ai_trace"]["mapping_review_status"] == (
+        "prototype_review_pending"
+    )
+    assert readiness["ai_trace"]["mapping_provider"] == "unknown"
+    assert readiness["ai_trace"]["mapping_model"] == "unknown"
+    assert readiness["ai_trace"]["mapping_run_record_status"] == (
+        "not_recorded"
+    )
+    assert readiness["ai_trace"]["remedy_review_status"] == (
+        "prototype_review_pending"
+    )
+    assert readiness["ai_trace"]["remedy_reviewer"] is None
+    assert readiness["source_review_due_on"] == "2027-01-25"
+
+    assert '<body data-page="readiness">' in page
+    assert "This is a synthetic packet." in page
+    assert re.search(r"certify\s+completeness", page)
+    assert 'id="readinessOutput"' in page
+    assert re.search(r"No model\s+runs in the public browser\.", page)
+    assert "function renderReadiness(data)" in application
+    assert "data.result.findings.filter" in application
+    assert "function evaluateReadiness" not in application
+    assert "function readinessSourceIsCurrent(data)" in application
+    assert "Action copy is" in application
+    assert "withheld." in application
+    assert "data.readiness" in application
+
+
+def test_packet_build_explicitly_replays_canonical_evaluation_date(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    monkeypatch.setattr(
+        "permit_pathways.dates.utc_today",
+        lambda: date(2027, 1, 26),
+    )
+
+    readiness, _ = build_readiness_payload()
+
+    assert readiness["packet"]["evaluated_on"] == "2026-07-29"
+    assert readiness["result"]["evaluated_on"] == "2026-07-29"
+    assert readiness["result"]["source_status"] == "current"
+    assert readiness["result"]["source_status_as_of"] == "2026-07-29"
+    assert readiness["result"]["source_review_due_on"] == "2027-01-25"
+    assert readiness["evidence_manifest"]["source_status_as_of"] == (
+        "2026-07-29"
+    )
+    assert readiness["evidence_manifest"]["source_review_due_on"] == (
+        "2027-01-25"
+    )
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
+def test_packet_renderer_honors_trust_states_and_conflicts():
+    readiness, _ = build_readiness_payload()
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+    renderer_source = application[
+        application.index("const READINESS_FINDING_STATUSES"):
+        application.index("function fetchJson")
+    ]
+    script = f"""
+function nonBlank(value) {{
+  return typeof value === "string" && value.trim().length > 0;
+}}
+function validStableId(value) {{
+  return /^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$/.test(value || "");
+}}
+function validIsoDate(value) {{
+  if (!/^\\d{{4}}-\\d{{2}}-\\d{{2}}$/.test(value || "")) return false;
+  const parsed = new Date(`${{value}}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime())
+    && parsed.toISOString().slice(0, 10) === value;
+}}
+function validHttpsUrl(value) {{
+  try {{
+    return new URL(value).protocol === "https:";
+  }} catch {{
+    return false;
+  }}
+}}
+function safeExternalUrl(value) {{
+  return validHttpsUrl(value) ? value : null;
+}}
+function formatSourceDate(value) {{
+  return value;
+}}
+function esc(value) {{
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}}
+let READINESS = null;
+const nodes = {{
+  readinessOutput: {{
+    innerHTML: "",
+    attributes: {{}},
+    setAttribute(name, value) {{ this.attributes[name] = value; }},
+  }},
+  readinessPacketId: {{textContent: ""}},
+  readinessDate: {{textContent: ""}},
+}};
+const document = {{
+  getElementById(id) {{ return nodes[id] || null; }},
+}};
+{renderer_source}
+const canonical = {json.dumps(readiness)};
+
+function check(condition, message) {{
+  if (!condition) throw new Error(message);
+}}
+function render(payload) {{
+  nodes.readinessOutput.innerHTML = "";
+  renderReadiness(payload);
+  return nodes.readinessOutput.innerHTML;
+}}
+function setDueDate(payload, value) {{
+  payload.source_review_due_on = value;
+  payload.result.source_review_due_on = value;
+  payload.evidence_manifest.source_review_due_on = value;
+}}
+function setAllFindings(payload, status) {{
+  for (const finding of payload.result.findings) finding.status = status;
+  for (const key of Object.keys(payload.counts)) payload.counts[key] = 0;
+  payload.counts[status] = payload.result.findings.length;
+}}
+
+check(validReadinessData(canonical), "canonical readiness data rejected");
+const canonicalHtml = render(structuredClone(canonical));
+check(
+  canonicalHtml.includes("3 reported missing items in this bounded checklist"),
+  "known-gaps headline ignored the overall status"
+);
+check(
+  canonicalHtml.includes("3 direct questions for staff are included"),
+  "staff questions were omitted from the summary"
+);
+
+const invalidOverall = structuredClone(canonical);
+invalidOverall.result.overall_status = "complete";
+check(
+  !validReadinessData(invalidOverall),
+  "unknown overall readiness status accepted"
+);
+
+const conflict = structuredClone(canonical);
+const conflictFinding = conflict.result.findings.find(
+  finding => finding.requirement_id === "plot-plan-address-apn"
+);
+conflictFinding.status = "conflicting";
+conflict.counts.missing -= 1;
+conflict.counts.conflicting += 1;
+const missingAction = conflict.remedies.entries.find(
+  entry => entry.requirement_id === "plot-plan-address-apn"
+).action;
+const conflictHtml = render(conflict);
+check(
+  conflictHtml.includes('aria-label="Reported conflict"')
+    && conflictHtml.includes('id="conflictHeading">Reported conflicts'),
+  "conflicting finding was not rendered distinctly"
+);
+check(
+  conflictHtml.includes("Confirm which reported version is correct"),
+  "conflicting finding omitted reconcile copy"
+);
+check(
+  !conflictHtml.includes(missingAction),
+  "conflicting finding reused its missing-item remedy"
+);
+
+const outside = structuredClone(canonical);
+outside.result.overall_status = "outside_bounded_workflow";
+outside.result.staff_questions = [
+  "Ask Woodland staff which current checklist applies to this project.",
+];
+setAllFindings(outside, "not_evaluated");
+const outsideHtml = render(outside);
+check(
+  outsideHtml.includes("This packet is outside the encoded Woodland workflow"),
+  "outside-workflow status was reduced to a gap count"
+);
+check(
+  outsideHtml.includes("25 checklist items were not evaluated")
+    && outsideHtml.includes(outside.result.staff_questions[0]),
+  "outside-workflow summary omitted unevaluated items or staff routing"
+);
+check(
+  !outsideHtml.includes('id="missingHeading"'),
+  "outside-workflow result rendered a missing-item ledger"
+);
+
+const needsReview = structuredClone(canonical);
+needsReview.result.overall_status = "needs_review";
+needsReview.result.staff_questions = [
+  "Does this project use the City preapproved plan workflow?",
+];
+setAllFindings(needsReview, "not_evaluated");
+const needsReviewHtml = render(needsReview);
+check(
+  needsReviewHtml.includes(
+    "Confirm the workflow before using this checklist result"
+  ),
+  "needs-review status was reduced to a gap count"
+);
+check(
+  needsReviewHtml.includes("25 items were not evaluated")
+    && needsReviewHtml.includes("1 direct question for staff is included"),
+  "needs-review summary omitted unresolved state"
+);
+
+const sourceReview = structuredClone(canonical);
+sourceReview.result.overall_status = "source_review_required";
+sourceReview.result.source_status = "source_review_required";
+sourceReview.evidence_manifest.source_status = "source_review_required";
+sourceReview.result.staff_questions = [
+  "Ask the City to confirm the current checklist.",
+];
+setAllFindings(sourceReview, "needs_staff_review");
+const sourceReviewHtml = render(sourceReview);
+check(
+  sourceReviewHtml.includes(
+    "Source review is required before using this packet result"
+  ),
+  "source-review status was reduced to a finding count"
+);
+check(
+  sourceReviewHtml.includes("1 direct question for staff is included"),
+  "source-review summary omitted the staff question"
+);
+
+const runtimeStale = structuredClone(canonical);
+setDueDate(runtimeStale, "2000-01-01");
+const staleHtml = render(runtimeStale);
+check(
+  staleHtml.includes("Open the historical generated evidence manifest"),
+  "stale runtime kept a current-looking manifest link"
+);
+check(
+  staleHtml.includes("source status")
+    && staleHtml.includes("as of")
+    && staleHtml.includes("It is not a current source"),
+  "stale manifest did not disclose its historical source status"
+);
+check(
+  !staleHtml.includes('id="missingHeading"'),
+  "stale runtime exposed action-oriented findings"
+);
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
@@ -840,6 +1128,7 @@ if (ruleStatus(futureRule, []) !== "stale")
 def test_demo_server_exposes_only_intended_static_files():
     assert static_path("/index.html") == ROOT / "index.html"
     assert static_path("/check.html") == ROOT / "check.html"
+    assert static_path("/prepare.html") == ROOT / "prepare.html"
     assert static_path("/review.html") == ROOT / "review.html"
     assert static_path("/evidence.html") == ROOT / "evidence.html"
     assert static_path("/showcase") == ROOT / "check.html"
