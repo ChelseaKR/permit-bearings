@@ -9,14 +9,14 @@ run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
 Start at `/` for the product boundary, then use `/review.html`,
 `/check.html`, and `/evidence.html` for the three live jobs.
 
-## Arc: “Every tool will show you an answer. I’ll show you the evidence—and when it needs review.”
+## Arc: “Every tool will show you an answer. I’ll show you the evidence and when it needs review.”
 
-### 0. The opener — scan an ordinance live (4 min)
+### 0. The opener: scan an ordinance live (4 min)
 - From the landing page, choose **Review local rules**. The separation is
   intentional: this is a staff review aid, not an applicant chatbot.
 - Paste an ADU ordinance provision into the conformance scanner. Watch it
   flag the stale SB 477 citation, the 16-ft height cap, the subjective
-  "similar styled roof design" — each with the controlling state law and
+  "similar styled roof design," each with the controlling state law and
   the HCD enforcement letter where that exact failure mode appeared.
 - The kicker: these are the *actual provisions* HCD quoted in its June 2025
   findings letter to Santa Clara County. For that named six-provision
@@ -24,7 +24,7 @@ Start at `/` for the product boundary, then use `/review.html`,
   It is a review queue, not a compliance verdict or statewide accuracy claim.
 - Positioning sentence: "Permit platforms can help applicants navigate and
   file. This component makes the rule, handout, or AI corpus auditable as its
-  sources change—and can sit inside somebody else's stack."
+  sources change and can sit inside somebody else's stack."
 
 ### 1. The problem nobody demos (3 min)
 - Housing law changes every session. SB 477 (2024) renumbered all of state
@@ -44,19 +44,32 @@ Start at `/` for the product boundary, then use `/review.html`,
   fixture, fills the native form controls, and submits through the same
   validation and matching path as manual answers. It is not a real parcel,
   applicant record, pilot, or external validation result.
-- Show the grouped decision records: candidate routes first, relevant
-  standards second, and the bounded Woodland local-process record last. State
-  that Woodland is not a comprehensive local code or checklist. In one card,
-  walk from “What
-  this result means” through the separate 15-business-day and conditional
-  60-day deadlines, then “What you can do next” and “Questions to ask staff.”
-  Point to the always-visible citation and expand “Why we're saying this.”
+- Start with the "Sample answers used for this result" cover sheet. It shows
+  exactly which made-up jurisdiction and project answers produced this view.
+  State that the cover sheet exists only in the current page. It is not a
+  stored applicant record, verified parcel record, completeness finding, or
+  exportable evidence manifest.
+- Read the generated result sentence and use the jump links. Show candidate
+  routes first, relevant standards second, and the bounded Woodland local
+  information record last. State that Woodland is not a comprehensive local
+  code or checklist.
+- The explicitly configured ADU candidate route starts open. Point to its
+  citation and source-status label, which remain visible even when the
+  disclosure is closed. Walk through the separate 15-business-day and
+  conditional 60-day deadlines, starting steps, staff questions, and evidence.
+  Then show how supporting standards and the local information record remain
+  compact until opened.
+- Follow "Edit these answers," change one ordinary project answer, and show
+  that the old cover sheet and result disappear. Submit again before discussing
+  the new result. This prevents changed facts from sitting beside a result they
+  did not produce.
 - Name the integrity boundary: deterministic rules selected the record; the
   plain-language explanation is a versioned AI-assisted draft and cannot
-  change the match. The unverified Davis card keeps the visible source and
-  no-dated-source warning but withholds drafted actions, interpretive notes,
-  and generic document hints rather than turning weak evidence into a
-  confident answer.
+  change the match. A source date does not mean a person, counsel, or
+  jurisdiction reviewed the explanation. The unverified Davis card keeps the
+  visible source and no-dated-source warning but withholds drafted actions,
+  interpretive notes, and generic document hints rather than turning weak
+  evidence into a confident answer.
 - Switch the intake/results to Spanish. Be explicit that Spanish
   plain-language copy is an unreviewed machine draft with no semantic-parity
   review. Applicant-facing result titles are localized drafts; canonical
@@ -69,7 +82,7 @@ Start at `/` for the product boundary, then use `/review.html`,
 - Show the unpermitted-unit legalization path (§ 66311.7) as an example of a
   homeowner workflow often omitted by developer-oriented intake.
 
-### 3. The verification harness — Scenario C (7 min)
+### 3. The verification harness: Scenario C (7 min)
 - Open **Evidence & updates**. Show the percentage of rule records with dated
   source evidence inside the
   review window, plus the Davis record with no dated source check because its
@@ -100,14 +113,14 @@ Start at `/` for the product boundary, then use `/review.html`,
   schedule are versioned evidence."
 
 ### 4. Fit and posture (3 min)
-- Rules, sources, and the golden set are portable files a deploying
-  jurisdiction can export and own. The demo persists no applicant data;
+- Rules, sources, and the golden set are portable files that can be copied and
+  inspected without vendor-only tooling. Operational export, ownership terms,
   production retention, CPRA export, privacy review, and security controls
-  remain deployment work. Decision support, not a legal agent, is stated on
-  every page.
+  remain deployment work. The demo persists no applicant data. Decision
+  support, not a legal agent, is stated on every page.
 - Built for low-capacity jurisdictions: static-friendly, runs beside existing
   permitting systems, no rip-and-replace.
-- Teaming: this verification layer composes with full-pipeline platforms —
+- Teaming: this verification layer composes with full-pipeline platforms and is
   happy to be the trust layer inside someone else's stack.
 
 ### 5. What I want from you (3 min)

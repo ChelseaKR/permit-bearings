@@ -30,10 +30,10 @@ def test_python_trust_rehearsal_uses_human_readable_source_label():
 def test_static_pages_load_only_the_assets_they_need():
     landing = (ROOT / "index.html").read_text(encoding="utf-8")
     bundle_tag = '<script src="data/demo-data.js"></script>'
-    application_tag = '<script src="assets/demo.js"></script>'
+    application_src = 'src="assets/demo.js'
 
     assert bundle_tag not in landing
-    assert application_tag not in landing
+    assert application_src not in landing
     for page_name, page_id in {
         "check.html": "project",
         "review.html": "review",
@@ -42,8 +42,8 @@ def test_static_pages_load_only_the_assets_they_need():
         html = (ROOT / page_name).read_text(encoding="utf-8")
         assert f'<body data-page="{page_id}">' in html
         assert bundle_tag in html
-        assert application_tag in html
-        assert html.index(bundle_tag) < html.index(application_tag)
+        assert application_src in html
+        assert html.index(bundle_tag) < html.index(application_src)
 
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in application
@@ -153,13 +153,29 @@ def test_public_brand_name_and_tagline_are_consistent():
         "Take open questions to staff."
     )
     assert (
-        "<title>Permit Bearings | California housing permit guidance</title>"
+        "<title>Permit Bearings | California ADU, JADU, and SB 9 prototype</title>"
         in landing
     )
-    assert '<meta property="og:title" content="Permit Bearings">' in landing
-    assert "Check a California housing project" in landing
+    assert (
+        '<meta property="og:title" content="Permit Bearings | California ADU, '
+        'JADU, and SB 9 prototype">' in landing
+    )
+    assert (
+        '<meta property="og:url" '
+        'content="https://chelseakr.github.io/permit-pathways/">' in landing
+    )
+    assert (
+        '<meta property="og:image" content="https://chelseakr.github.io/'
+        'permit-pathways/assets/social-card.png">' in landing
+    )
+    assert '<meta name="twitter:card" content="summary_large_image">' in landing
+    assert "Check an ADU, JADU, or SB 9 project" in landing
     assert "Start a project check" in landing
     assert 'href="check.html?sample=adu"' in landing
+    social_card = (ROOT / "assets" / "social-card.png").read_bytes()
+    assert social_card[:8] == b"\x89PNG\r\n\x1a\n"
+    assert int.from_bytes(social_card[16:20], "big") == 1200
+    assert int.from_bytes(social_card[20:24], "big") == 630
     assert 'id="t-tagline"' in project
     assert tagline in application
 
@@ -235,6 +251,22 @@ def test_static_site_uses_published_california_design_tokens():
     assert "Avenir" not in css
 
 
+def test_section_headings_use_interface_type_instead_of_utility_mono():
+    css = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+
+    for selector in (
+        ".result-group > h3",
+        ".result-card h5",
+        ".scanner-notes h3",
+    ):
+        match = re.search(rf"{re.escape(selector)}\s*\{{(?P<body>[^}}]+)\}}", css)
+        assert match, selector
+        declarations = match.group("body")
+        assert "font-family: var(--display);" in declarations
+        assert "font-family: var(--utility);" not in declarations
+        assert "text-transform: uppercase;" not in declarations
+
+
 def test_static_result_cards_keep_explanations_separate_from_matching():
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     project = (ROOT / "check.html").read_text(encoding="utf-8")
@@ -259,16 +291,19 @@ def test_static_result_cards_keep_explanations_separate_from_matching():
     assert "EXPLANATIONS.get(rule.rule_id)" in application
     assert "EXPLANATIONS = await normalizeExplanations" in application
     assert "data-rule-id=" in application
-    assert "<details>" in application
+    assert '<details class="rule-details"' in application
     assert 'source: "Source"' in application
     assert "Draft explanation · made with AI · not reviewed by a person" in application
     assert "no revisado para comprobar su exactitud" in application
     assert "We are not showing next steps" in application
-    assert "limited set of rules in this prototype" in application
+    assert "limited rules in this prototype" in application
     assert '"primary_dwelling_status"' in application
     assert '"adu_project_form"' in application
     assert '["yes","Yes"],["no","No"],["unknown","I\'m not sure"]' in application
     assert 'id="resultsHeading" tabindex="-1"' in application
+    assert 'class="edit-answers" href="#screenHeading"' in application
+    assert 'id="screenHeading" tabindex="-1"' in project
+    assert 'heading.focus()' in application
     assert 'aria-invalid' in application
     assert 'name="has_primary_dwelling"' not in application
     assert (
@@ -357,8 +392,307 @@ if (prepareProjectSample(
     assert "function deactivateProjectSample()" in application
     assert "function removeProjectSampleFromUrl()" in application
     assert 'updatedUrl.searchParams.delete("sample")' in application
-    assert 'document.getElementById("results").innerHTML = ""' in application
+    assert "function invalidateRenderedProjectResult(" in application
+    assert 'if (results) results.innerHTML = ""' in application
     assert 'projectSampleState = "unavailable"' in application
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
+def test_static_sample_renders_a_grouped_result_packet_with_visible_sources():
+    application_path = ROOT / "assets" / "demo.js"
+    rule_paths = sorted(
+        path
+        for path in (ROOT / "data" / "rules").glob("*.json")
+        if path.name != "index.json"
+    )
+    script = f"""
+import fs from "node:fs";
+import vm from "node:vm";
+
+const application = fs.readFileSync(
+  {json.dumps(str(application_path))},
+  "utf8"
+);
+const testRules = {json.dumps([str(path) for path in rule_paths])}
+  .flatMap(path => JSON.parse(fs.readFileSync(path, "utf8")));
+const testExplanations = JSON.parse(fs.readFileSync(
+  {json.dumps(str(ROOT / "data" / "explanations" / "plain-language.json"))},
+  "utf8"
+));
+const testGolden = JSON.parse(fs.readFileSync(
+  {json.dumps(str(ROOT / "data" / "golden" / "example.json"))},
+  "utf8"
+));
+const testJurisdictions = JSON.parse(fs.readFileSync(
+  {json.dumps(str(ROOT / "data" / "jurisdictions" / "registry.json"))},
+  "utf8"
+)).jurisdictions;
+const context = {{
+  console,
+  URL,
+  URLSearchParams,
+  TEST_RULES: testRules,
+  TEST_EXPLANATIONS: testExplanations,
+  TEST_GOLDEN: testGolden,
+  TEST_JURISDICTIONS: testJurisdictions,
+  document: {{
+    body: {{dataset: {{}}}},
+    createElement: () => {{
+      let value = "";
+      return {{
+        set textContent(next) {{ value = String(next ?? ""); }},
+        get innerHTML() {{
+          return value
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;");
+        }},
+      }};
+    }},
+    getElementById: () => null,
+  }},
+}};
+const assertions = `
+function testAssert(condition, message) {{
+  if (!condition) throw new Error(message);
+}}
+RULES = normalizeRules(TEST_RULES);
+EXPLANATIONS = new Map(
+  TEST_EXPLANATIONS.entries.map(record => [record.source_rule_id, record])
+);
+const testSample = TEST_GOLDEN.find(
+  item => item.case_id === "woodland-new-detached-adu-local-layer"
+);
+const testJurisdiction = TEST_JURISDICTIONS.find(
+  item => item.slug === testSample.intake.jurisdiction
+);
+lang = "en";
+projectSampleState = "active";
+const testMatches = screen(testSample.intake);
+storeSubmittedProject(testSample.intake, testJurisdiction, testMatches);
+const testGrouped = groupResultRecords(testMatches);
+testAssert(testGrouped.get("route").length === 1, "wrong route count");
+testAssert(testGrouped.get("standard").length === 5, "wrong standard count");
+testAssert(
+  testGrouped.get("local_process").length === 1,
+  "wrong local information count"
+);
+testAssert(testGrouped.get("other").length === 0, "unexpected other group");
+testAssert(
+  resultSummaryText(testGrouped) ===
+    "Based on these answers, this prototype shows 1 possible permit path, " +
+    "5 other rules that may apply, and 1 local information record.",
+  "wrong grouped result summary"
+);
+
+const testFacts = renderProjectFacts();
+testAssert(
+  (testFacts.match(/data-field=/g) || []).length === 5,
+  "cover sheet does not show five submitted facts"
+);
+for (const field of [
+  "jurisdiction",
+  "project_type",
+  "primary_dwelling_status",
+  "adu_project_form",
+  "unpermitted_existing",
+]) testAssert(
+  testFacts.includes('data-field="' + field + '"'),
+  "missing cover-sheet field " + field
+);
+testAssert(
+  testFacts.includes("Build a new detached ADU"),
+  "cover sheet does not use the human ADU label"
+);
+testAssert(
+  !testFacts.includes(">new_detached<"),
+  "cover sheet exposes a raw intake value"
+);
+
+const testIndex = renderResultIndex(testGrouped);
+for (const group of ["route", "standard", "local_process"])
+  testAssert(
+    testIndex.includes('href="#result-group-' + group + '"'),
+    "missing result index link " + group
+  );
+testAssert(
+  !testIndex.includes('href="#result-group-other"'),
+  "empty result group was included"
+);
+
+const testCards = testMatches.map(rule =>
+  renderResultCard(rule, EXPLANATIONS.get(rule.rule_id), {{
+    suppressPendingReview: true,
+  }})
+);
+testAssert(
+  new Set(testCards.map(card =>
+    card.match(/<article id="([^"]+)"/)[1]
+  )).size === testCards.length,
+  "rule anchors are not unique"
+);
+let testOpenCount = 0;
+testCards.forEach(card => {{
+  const detailsTag = card.match(/<details class="rule-details"[^>]*>/)[0];
+  if (detailsTag.includes(" open")) testOpenCount += 1;
+  const detailsCount = (card.match(/<details /g) || []).length;
+  testAssert(
+    detailsCount === 1,
+    "a result contains " + detailsCount + " disclosures"
+  );
+  testAssert(
+    card.indexOf('class="source-basis"') < card.indexOf(detailsTag),
+    "citation is hidden inside the disclosure"
+  );
+  testAssert(
+    card.indexOf('class="badge') < card.indexOf(detailsTag),
+    "source status is hidden inside the disclosure"
+  );
+}});
+testAssert(testOpenCount === 1, "exactly one route should start open");
+testAssert(
+  OPEN_RULE_IDS.has("adu-ministerial-review"),
+  "the configured ADU route did not start open"
+);
+const testAduRouteCard = testCards.find(card =>
+  card.includes('data-rule-id="adu-ministerial-review"')
+);
+testAssert(
+  testAduRouteCard.includes('href="#clocks"'),
+  "the ADU route did not link to the ADU date tool"
+);
+
+const testSecondaryRoute = RULES.find(
+  rule => rule.rule_id === "adu-unpermitted-legalization"
+);
+const testSecondaryRouteCard = renderResultCard(
+  testSecondaryRoute,
+  EXPLANATIONS.get(testSecondaryRoute.rule_id)
+);
+testAssert(
+  testSecondaryRouteCard.includes("result-card-compact")
+    && !testSecondaryRouteCard.includes("result-route"),
+  "an additional matching route was not compact"
+);
+
+for (const [projectType, ruleId] of [
+  ["jadu", "jadu-ministerial-review"],
+  ["two_unit", "sb9-two-unit-ministerial"],
+  ["lot_split", "sb9-urban-lot-split"],
+]) {{
+  LAST_INTAKE = {{project_type: projectType}};
+  const routeRule = RULES.find(rule => rule.rule_id === ruleId);
+  const routeCard = renderResultCard(
+    routeRule,
+    EXPLANATIONS.get(routeRule.rule_id)
+  );
+  testAssert(
+    !routeCard.includes('href="#clocks"'),
+    projectType + " route incorrectly linked to the ADU date tool"
+  );
+}}
+
+LAST_INTAKE = {{...testSample.intake}};
+simulating = true;
+const testStaleRule = RULES.find(
+  rule => rule.rule_id === "adu-multifamily-66323"
+);
+const testStaleCard = renderResultCard(
+  testStaleRule,
+  EXPLANATIONS.get(testStaleRule.rule_id)
+);
+testAssert(
+  testStaleCard.includes(STRINGS.en.stale)
+    && testStaleCard.includes(STRINGS.en.withheldStale),
+  "stale result did not show its source warning"
+);
+testAssert(
+  testStaleCard.includes('class="source-basis"')
+    && !testStaleCard.includes('class="plain-layer"')
+    && !testStaleCard.includes(STRINGS.en.docs)
+    && !testStaleCard.includes("result-tool-link"),
+  "stale result exposed action-oriented explanation content"
+);
+
+simulating = false;
+const testCurrentRoute = RULES.find(
+  rule => rule.rule_id === "adu-ministerial-review"
+);
+const testUnverifiedRoute = {{
+  ...testCurrentRoute,
+  citation: {{...testCurrentRoute.citation, verified_on: ""}},
+}};
+const testUnverifiedCard = renderResultCard(
+  testUnverifiedRoute,
+  EXPLANATIONS.get(testUnverifiedRoute.rule_id)
+);
+testAssert(
+  testUnverifiedCard.includes(STRINGS.en.unverified)
+    && testUnverifiedCard.includes(STRINGS.en.withheldUnverified),
+  "unverified result did not show its source warning"
+);
+testAssert(
+  testUnverifiedCard.includes('class="source-basis"')
+    && !testUnverifiedCard.includes('class="plain-layer"')
+    && !testUnverifiedCard.includes(STRINGS.en.docs)
+    && !testUnverifiedCard.includes("result-tool-link"),
+  "unverified result exposed action-oriented explanation content"
+);
+
+const englishAnchors = testCards.map(card =>
+  card.match(/<article id="([^"]+)"/)[1]
+);
+lang = "es";
+const spanishFacts = renderProjectFacts();
+const spanishSummary = resultSummaryText(testGrouped);
+const spanishCards = testMatches.map(rule =>
+  renderResultCard(rule, EXPLANATIONS.get(rule.rule_id), {{
+    suppressPendingReview: true,
+  }})
+);
+const spanishAnchors = spanishCards.map(card =>
+  card.match(/<article id="([^"]+)"/)[1]
+);
+testAssert(
+  spanishFacts.includes("Construir una ADU nueva y separada"),
+  "Spanish cover sheet did not translate the submitted value"
+);
+testAssert(
+  spanishSummary.includes("1 posible vía de permiso") &&
+    spanishSummary.includes("5 reglas adicionales"),
+  "Spanish grouped count is missing"
+);
+testAssert(
+  JSON.stringify(spanishAnchors) === JSON.stringify(englishAnchors),
+  "localized rule anchors changed"
+);
+
+lang = "en";
+const resultNode = {{innerHTML: "old result"}};
+const statusNode = {{textContent: "old status"}};
+document.getElementById = id => ({{
+  results: resultNode,
+  resultStatus: statusNode,
+}}[id] || null);
+projectSampleState = null;
+deactivateProjectSample();
+testAssert(resultNode.innerHTML === "", "ordinary edit kept an old result");
+testAssert(
+  statusNode.textContent === STRINGS.en.resultCleared,
+  "ordinary edit did not announce that the old result was cleared"
+);
+testAssert(LAST_INTAKE === null, "ordinary edit kept submitted facts");
+testAssert(OPEN_RULE_IDS.size === 0, "ordinary edit kept disclosure state");
+`;
+vm.runInNewContext(application + "\\n" + assertions, context);
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
