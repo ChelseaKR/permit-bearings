@@ -79,6 +79,53 @@ def test_static_pages_have_consistent_navigation_and_resolvable_links():
             assert (ROOT / local_target).is_file(), (path.name, target)
 
 
+def test_showcase_submission_draft_preserves_portal_word_limits():
+    draft = (
+        ROOT / "docs" / "SHOWCASE-SUBMISSION-DRAFT.md"
+    ).read_text(encoding="utf-8")
+    bounded_responses = [
+        ("### Company description", "## Section 2", 43, 50),
+        ("### Solution description", "### AI technical workflow", 189, 200),
+        ("### AI technical workflow", "### Maturity", 137, 150),
+        ("### Maturity", "## Section 4", 89, 100),
+        (
+            "### Work required from jurisdiction staff",
+            "### Source data and integrations",
+            89,
+            100,
+        ),
+        (
+            "### Source data and integrations",
+            "### Known exceptions",
+            86,
+            100,
+        ),
+        (
+            "### Known exceptions",
+            "### Large jurisdiction experience",
+            88,
+            100,
+        ),
+    ]
+    for start, end, expected_words, word_limit in bounded_responses:
+        section = draft[draft.index(start) : draft.index(end)]
+        answer = " ".join(
+            line[1:].strip()
+            for line in section.splitlines()
+            if line.startswith(">") and line[1:].strip()
+        )
+        assert len(answer.split()) == expected_words, start
+        assert expected_words <= word_limit - 5, start
+        assert (
+            f"Draft count: {expected_words} words by whitespace." in section
+        ), start
+
+    assert "Status: working draft, not submitted." in draft
+    assert "[LEGAL ENTITY OR INDIVIDUAL APPLICANT NAME]" in draft
+    normalized = re.sub(r"\s+", " ", draft.replace(">", " "))
+    assert "No applicant, planner, counsel, translator, or jurisdiction" in normalized
+
+
 def test_public_brand_name_and_tagline_are_consistent():
     public_files = {
         ROOT / "index.html",
@@ -112,6 +159,7 @@ def test_public_brand_name_and_tagline_are_consistent():
     assert '<meta property="og:title" content="Permit Bearings">' in landing
     assert "Check a California housing project" in landing
     assert "Start a project check" in landing
+    assert 'href="check.html?sample=adu"' in landing
     assert 'id="t-tagline"' in project
     assert tagline in application
 
@@ -233,12 +281,84 @@ def test_static_result_cards_keep_explanations_separate_from_matching():
     assert 'fieldset data-question="${esc(name)}"${describedBy}' in application
 
     assert "Check candidate pathways" in project
+    assert 'href="check.html?sample=adu"' in project
+    assert 'id="projectSampleNotice"' in project
     assert 'id="resultStatus"' in project
     assert 'id="clockBtn"' in project
     assert 'id="loadSample"' in review
     assert 'id="scanStatus"' in review
     assert 'id="simBtn"' in evidence
     assert 'id="sourceTable"' in evidence
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
+def test_static_sample_uses_canonical_golden_case_and_normal_submission_path():
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+    helper_source = application[
+        application.index("const SB9_BASE_FIELDS"):
+        application.index("function renderProjectQuestions")
+    ]
+    apply_source = application[
+        application.index("function applyRequestedProjectSample"):
+        application.index('if (pageIs("project") && intakeFormElement)')
+    ]
+    golden = json.loads(
+        (ROOT / "data" / "golden" / "example.json").read_text(encoding="utf-8")
+    )
+    registry = json.loads(
+        (ROOT / "data" / "jurisdictions" / "registry.json").read_text(
+            encoding="utf-8"
+        )
+    )["jurisdictions"]
+    script = f"""
+function nonBlank(value) {{
+  return typeof value === "string" && value.trim().length > 0;
+}}
+{helper_source}
+const golden = {json.dumps(golden)};
+const jurisdictions = {json.dumps(registry)};
+const prepared = prepareProjectSample(
+  new URLSearchParams("sample=adu"),
+  golden,
+  jurisdictions
+);
+if (!prepared) throw new Error("canonical sample rejected");
+if (prepared.caseId !== "woodland-new-detached-adu-local-layer")
+  throw new Error("wrong fixture selected");
+if (prepared.intake.jurisdiction !== "woodland")
+  throw new Error("wrong jurisdiction selected");
+prepared.intake.project_type = "changed";
+const canonical = golden.find(item => item.case_id === prepared.caseId);
+if (canonical.intake.project_type !== "adu")
+  throw new Error("sample mutated canonical fixture");
+if (prepareProjectSample(
+  new URLSearchParams("sample=adu&sample=adu"), golden, jurisdictions
+)) throw new Error("duplicate sample parameter accepted");
+if (prepareProjectSample(
+  new URLSearchParams("sample=missing"), golden, jurisdictions
+)) throw new Error("unknown sample accepted");
+const incomplete = structuredClone(golden);
+incomplete.find(item =>
+  item.case_id === "woodland-new-detached-adu-local-layer"
+).intake.adu_project_form = "unknown";
+if (prepareProjectSample(
+  new URLSearchParams("sample=adu"), incomplete, jurisdictions
+)) throw new Error("incomplete sample accepted");
+"""
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert "intakeFormElement.requestSubmit()" in apply_source
+    assert "screen(" not in apply_source
+    assert "renderResults(" not in apply_source
+    assert "function deactivateProjectSample()" in application
+    assert "function removeProjectSampleFromUrl()" in application
+    assert 'updatedUrl.searchParams.delete("sample")' in application
+    assert 'document.getElementById("results").innerHTML = ""' in application
+    assert 'projectSampleState = "unavailable"' in application
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")

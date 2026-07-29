@@ -1,15 +1,22 @@
 # Permit Bearings
 
-**Find a candidate route. See the sources behind it. Take open questions to
-staff.**
+**Check a California housing project. See the sources behind the result. Take
+unresolved questions to staff.**
 
-Prototype source-grounded housing-law conformance infrastructure for California
-jurisdictions: an ordinance conformance scanner regression-checked against
-provisions from an HCD enforcement letter, a citation-grounded permit
-navigator, statutory review clocks, and a verification harness for detecting
-source drift.
+Permit Bearings is a prototype decision-support tool for California ADU, JADU,
+and SB 9 projects. Structured applicant facts produce candidate routes,
+relevant standards, cited official sources, and questions for local staff. The
+matcher is deterministic. Separate English and Spanish explanations are
+AI-assisted, review-pending drafts.
+
+It does not verify parcel facts, reproduce a complete local checklist,
+determine final eligibility, certify submission completeness, or approve
+permits.
 
 **Live demo:** https://chelseakr.github.io/permit-pathways/
+
+**Hypothetical ADU sample:**
+https://chelseakr.github.io/permit-pathways/check.html?sample=adu
 
 **Local static demo:** open `index.html` directly, or run
 `python3 -m http.server 8765` and visit `http://localhost:8765/`. The landing,
@@ -23,80 +30,93 @@ contributor and agent guardrails live in [AGENTS.md](AGENTS.md). The visual
 and interaction alignment with California Web Standards is recorded in
 [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md).
 
-## The conformance scanner
+## Run it
 
-Local housing ordinances drift out of conformance with state law every
-legislative session — SB 477 (2024) alone renumbered all of State ADU Law,
-and HCD's Housing Accountability Unit corrects jurisdictions one findings
-letter at a time. The scanner screens ordinance/handout text against the
-failure modes those letters document: stale statutory citations, height caps
-below the 18/25-ft allowances, "only one ADU per lot" undercounts, size caps
-that reach protected conversions, subjective design standards, owner-occupancy
-requirements, over-cap parking, and pre-SB 450 fire-exclusion language.
+```sh
+python3 -m pytest                                   # test suite
+PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip --lat 38.5449 --lon -121.7442
+PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
+PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
+PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff
+PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
+python3 -m http.server 8765                         # full static showcase
+PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
+# The Python server exposes the landing at /index.html and tools at
+# /check.html, /review.html, and /evidence.html.
+python3 scripts/build_demo_bundle.py                # after canonical JSON changes
+```
 
-**Named regression fixture:** run against six ordinance provisions HCD quoted
-in its June 24, 2025 findings letter to Santa Clara County
-(`corpus/hcd/letters/`), the scanner reproduces the six expected review flags
-(`tests/test_conformance.py`). This is not an independent statewide accuracy
-evaluation. Presence-based screening flags candidate provisions with the
-controlling state law and HCD precedent for staff/counsel review; it cannot
-certify compliance or detect every omission.
+## How the project check works
+
+1. The applicant selects a jurisdiction and supplies structured project facts.
+2. Deterministic criteria match those facts to the bounded rule set. No live
+   model and no free-text answer determine eligibility.
+3. Every match includes source status and a citation. When the linked
+   explanation is valid and the evidence is current, the result can also show
+   a candidate consequence, available excerpt, starting steps, and questions
+   for staff.
+4. Material facts marked "I'm not sure" stop the candidate result and become
+   questions for the local planning counter.
+5. A stale, unverified, or fingerprint-mismatched source leaves the rule and
+   available evidence visible but suppresses action copy and document hints.
+6. If complete answers match no encoded route, the app says the bounded rule
+   set found no path and routes the applicant generally to local staff.
+
+The current app covers statewide ADU, JADU, and SB 9 screening and two bounded
+local records. Parcel retrieval, packet-level completeness, detailed remedies,
+SB 35, AB 2011, reviewed translation, and comprehensive local rules are
+planned rather than implemented.
+
+## Trust and source currency
+
+The browser and Python demos render explanations from a sidecar that cannot
+change the matching result. Each explanation is linked to a stable rule ID,
+source date, citation fingerprint, full-rule fingerprint, version, authorship
+status, and review status. English and Spanish status are checked
+independently.
+
+The deterministic matcher replays 29 structured fixtures against expected rule
+IDs. The command-line harness checks selected source hashes and uses explicit
+dependency IDs to mark affected rules stale. The browser source-change control
+is a rehearsal, not persisted production state. Durable change discovery,
+review assignment, approval, and publication remain planned.
+
+## Supporting ordinance screen
+
+The separate ordinance screen checks pasted ordinance or handout text for
+selected phrases and patterns documented in an HCD enforcement letter. Against
+six quoted provisions from HCD's June 24, 2025 Santa Clara County findings
+letter, it reproduces six expected review flags in
+`tests/test_conformance.py`.
+
+This is a bounded presence-based screen. It is not a compliance test,
+statewide accuracy evaluation, legal interpretation, or proof that required
+language is present. Findings point staff or counsel to a candidate provision,
+state source, and documented precedent for review.
 
 Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 (ODI / GovOps / CHHA / GO-Biz). See [PROVENANCE.md](PROVENANCE.md).
-
-## The premise
-
-Every vendor can demo a permitting chatbot. The question jurisdictions actually
-ask is: *how do we know the answers are right — and how do we know they're
-still right after the next legislative session?*
-
-Permit Bearings treats that question as the product:
-
-1. **Pathway screening** — structured intake (project type, applicant-supplied
-   lot facts, jurisdiction) produces candidate ADU, JADU, and SB 9 pathways
-   with cited objective rules. Parcel-data retrieval, SB 35, AB 2011, and
-   AI-assisted interpretation are expansion directions, not current runtime
-   capabilities.
-2. **Plain-language decision records** — matched rules are grouped into
-   candidate routes, relevant standards, and local process records. Each card
-   separates what the rule may mean, scannable deadlines or thresholds,
-   suggested next steps, direct staff questions, and its source basis. The
-   English and Spanish explanations are versioned AI-assisted prototype
-   drafts, not reviewed guidance; they never
-   participate in matching. When a matched source is stale or unverified, the
-   action-oriented explanation and generic document hints are withheld while
-   the warning and available source evidence remain visible.
-3. **Citation-grounded guidance** — every answer carries the specific statute,
-   HCD guidance document, or local code section that supports it. When the
-   corpus doesn't support an answer, the system abstains and routes to staff
-   instead of guessing.
-4. **Currency & verification harness** — 29 structured golden cases replay
-   intake against expected rule IDs; each underlying rule carries dated source
-   evidence or an explicit unverified state. The CLI hash-checks selected
-   sources and uses stable source-dependency IDs to mark every dependent rule
-   stale; the browser separately rehearses a source amendment. Durable
-   changed-state persistence and a staffed review queue remain planned.
 
 ## Showcase scenario mapping
 
 | Scenario | Coverage |
 |---|---|
-| A — Guiding applicants to a complete, well-routed application | Primary prototype: ADU/JADU/SB 9 routing, grouped plain-language decision records, citations, and generic document hints. English and Spanish explanation drafts are AI-assisted and unreviewed. Parcel-specific packet completeness, remedies, and reviewed translation are planned. |
-| B — Supporting internal review | Not targeted in v1 (harness architecture extends there later) |
-| C — Staying current with changing state housing law (supplementary) | Core prototype: selected-source watcher, staleness harness, and HCD-letter dataset. Search, change discovery, comparables UI, and a durable review queue are planned. |
+| Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, grouped decision records, citations, uncertainty routing, and generic document hints are implemented. Parcel-specific packet completeness, detailed remedies, and reviewed translation are planned. |
+| Scenario 2 (B): supporting internal review | Not targeted in v1. |
+| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, dependency invalidation, and an HCD-letter dataset are implemented in bounded form. Search, change discovery, comparable-jurisdiction research, and a durable review queue are planned. |
 
 ## Design commitments (from the challenge statement's cross-cutting requirements)
 
 - Decision support, never a legal agent; abstention over confabulation.
-- Rules, sources, cases, and review artifacts use portable files that a
-  deploying jurisdiction can export and own; this prototype has no accounts,
+- Rules, sources, cases, and review artifacts use portable files that can be
+  copied and inspected without vendor-only tooling. Operational export and
+  ownership terms remain deployment work. This prototype has no accounts,
   uploads, or applicant-data store.
 - A production applicant-data flow would require deployment-specific privacy,
   retention, access-control, deletion, and public-records export review. This
   prototype does not claim CPRA or Information Practices Act compliance.
-- Deployable and affordable for low-capacity jurisdictions; sits alongside
-  existing permitting systems rather than replacing them.
+- Dependency-light and designed to sit alongside existing permitting systems.
+  Pilot integration, staffing, hosting, and cost evidence remain planned.
 - WCAG 2.2 AAA target with a static computed-contrast audit
   (`docs/ACCESSIBILITY.md`); required human/assistive-technology checks remain
   open. English/Spanish intake, interface controls, and plain-language result
@@ -113,7 +133,7 @@ Working prototype. The statewide rule base covers ADU, JADU, and both SB 9
 pathways, encoded from the **March 2026 HCD ADU Handbook** and the **April
 2026 HCD SB 9 fact sheet** (both in `corpus/hcd/`), each rule carrying the
 recorded supporting excerpt and a `verified_on` date.
-Machine-assisted encoding — a documented human spot-check against the PDFs in
+Machine-assisted encoding. A documented human spot-check against the PDFs in
 `corpus/hcd/` is the intended next verification pass. In the current schema,
 `verified_on` means dated source evidence is recorded; it does not mean a
 jurisdiction, counsel, or named human reviewer approved the interpretation.
@@ -125,14 +145,13 @@ fails closed to matched rules and evidence without explanation copy. All 19
 current rule records have English and Spanish drafts; none is represented as
 human-reviewed or jurisdiction-approved.
 
-A period detail that proves the concept: state ADU law was renumbered from
+A period detail that demonstrates the currency problem: state ADU law was
+renumbered from
 Gov. Code § 65852.2 et seq. to §§ 66310–66342 by SB 477 (2024), with further
-renumbering in 2025 legislation. Any tool that cited the old sections — as
-this repo's own first-day placeholder did — is exactly the staleness the
+renumbering in 2025 legislation. Any tool that cited the old sections, as
+this repo's own first-day placeholder did, has exactly the staleness the
 harness is built to catch. (HCD's own first finding against Santa Clara
 County's ordinance was this renumbering; see the conformance scanner below.)
-
-## Run it
 
 ## Transit-proximity determinations (GTFS)
 
@@ -141,7 +160,7 @@ jurisdiction's GTFS feed instead of applicant self-attestation: the
 § 66322(a)(1) parking exemption (half-mile walking distance of public
 transit) and the § 66321(b)(4)(B) 18-ft height allowance (half-mile of a
 major transit stop, PRC § 21064.3, or a high-quality transit corridor,
-PRC § 21155(b) — both requiring peak-headway analysis). `transit.py` parses
+PRC § 21155(b), both requiring peak-headway analysis). `transit.py` parses
 the feed, measures worst peak-window gaps per stop/route, clusters corner
 stops into intersections, and returns screening results over the supplied
 datasets. Straight-line distance can eliminate a supplied stop, but it cannot
@@ -153,20 +172,6 @@ transit dataset supplies the Davis Amtrak major-stop candidate near the depot.
 That disagreement is the useful finding: a local feed alone is incomplete,
 and schedule dates, planned facilities, multiple operators, and walking
 distance all need explicit confirmation before applicant-facing use.
-
-```sh
-python3 -m pytest                                   # test suite
-PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip --lat 38.5449 --lon -121.7442
-PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
-PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
-PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff
-PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
-python3 -m http.server 8765                         # full static showcase
-PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
-# The Python server exposes the landing at /index.html and tools at
-# /check.html, /review.html, and /evidence.html.
-python3 scripts/build_demo_bundle.py                # after canonical JSON changes
-```
 
 **Jurisdiction registry:** 541 California jurisdictions (483 incorporated
 cities + 58 counties) are selectable. The original Census 2020 FIPS snapshot
@@ -182,7 +187,7 @@ The rule base currently covers, statewide: ADU ministerial review and the
 height allowances, parking limits and exemptions, the owner-occupancy
 prohibition, conversion exemptions, pre-2020 unpermitted-unit legalization,
 multifamily-lot 66323 allowances, JADU standards, SB 9 two-unit developments,
-SB 9 urban lot splits, and the SB 9 × ADU unit-count interaction — plus
+SB 9 urban lot splits, and the SB 9 × ADU unit-count interaction, plus
 pilot local metadata records for the Cities of Davis and Woodland. A weekly
 GitHub Action re-fetches selected statewide sources and is intended to open an
 issue if any changed or became unreachable. Local-code sources and newly
@@ -205,21 +210,24 @@ the same explanation sidecar and keeps a separate `/trust` route.
 
 ## Layout
 
-- `src/permit_pathways/screening.py` — deterministic pathway-screening engine
-- `src/permit_pathways/explanations.py` — versioned explanation validation
-- `src/permit_pathways/harness/` — verification runner + CLI
-- `data/rules/` — the cited rule base; `data/golden/` — golden cases
-- `data/explanations/plain-language.json` — English/Spanish explanation drafts
-- `data/demo-data.js` — generated offline bundle for the static showcase
-- `index.html`, `check.html`, `review.html`, `evidence.html` — task-focused
-  static pages; `assets/` — shared browser application and visual system
-- `corpus/hcd/` — HCD source documents recorded by rule citations
-- `demo/app.py` — stdlib reference demo and safe static-file server
-- `scripts/build_demo_bundle.py` — rebuild/check the static data bundle
-- `docs/DESIGN.md` — architecture and demo plan
-- `docs/DESIGN-SYSTEM.md` — California Web Standards alignment and local
+- `src/permit_pathways/screening.py`: deterministic pathway-screening engine
+- `src/permit_pathways/explanations.py`: versioned explanation validation
+- `src/permit_pathways/harness/`: verification runner and CLI
+- `data/rules/`: the cited rule base; `data/golden/`: golden cases
+- `data/explanations/plain-language.json`: English/Spanish explanation drafts
+- `data/demo-data.js`: generated offline bundle for the static showcase
+- `index.html`, `check.html`, `review.html`, `evidence.html`: task-focused
+  static pages; `assets/`: shared browser application and visual system
+- `corpus/hcd/`: HCD source documents recorded by rule citations
+- `demo/app.py`: stdlib reference demo and safe static-file server
+- `scripts/build_demo_bundle.py`: rebuild/check the static data bundle
+- `docs/DESIGN.md`: architecture and demo plan
+- `docs/DESIGN-SYSTEM.md`: California Web Standards alignment and local
   extensions
-- `docs/PRODUCT-CONTEXT.md` — capability truth and opportunity priorities
-- `AGENTS.md` — evidence, scope, privacy, and quality guardrails
-- `LICENSE` and `THIRD_PARTY_NOTICES.md` — original-project license and
+- `docs/PRODUCT-CONTEXT.md`: capability truth and opportunity priorities
+- `docs/SHOWCASE-SUBMISSION-DRAFT.md`: word-limited application working draft
+- `docs/SHOWCASE-PILOT-BRIEF.md`: bounded small-jurisdiction deployment
+  hypothesis
+- `AGENTS.md`: evidence, scope, privacy, and quality guardrails
+- `LICENSE` and `THIRD_PARTY_NOTICES.md`: original-project license and
   attribution or separate terms for bundled source material
