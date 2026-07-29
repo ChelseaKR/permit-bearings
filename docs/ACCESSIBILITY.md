@@ -1,4 +1,4 @@
-# Accessibility audit: static pass, updated 2026-07-28
+# Accessibility audit: static pass, updated 2026-07-29
 
 Scope: the four-page public static site (`index.html`, `check.html`,
 `review.html`, and `evidence.html`) and the separate applicant flow in
@@ -16,12 +16,16 @@ This is a static (code-level) audit with computed contrast; items under
 
 **Semantics & structure.** Each page has a skip link, one `<main>`, one
 `<h1>`, a labeled primary navigation, and `aria-current` on the active page.
-Sections use `<h2>`s;
-grouped result headings; each decision record is an `<article>` labeled by
-its unique title; evidence uses native `<details>/<summary>`; `<th>` header
-rows. Multiple deadlines or thresholds use a semantic heading and list rather
-than visual-only layout. All interactive elements are native controls, so
-keyboard operability and focus order come from the platform.
+Sections use `<h2>`s. The applicant result cover sheet uses a `<dl>`, its
+group index is a labeled `<nav>`, and each nonempty group has a focusable
+heading that serves as a jump-link target. Each decision record is an
+`<article>` labeled by its unique title. One explicitly configured candidate
+route uses an open native `<details>` element when it matches; compact
+supporting records start closed. Citations and source-status text remain
+outside those disclosures. Tables use `<th>` header rows. Multiple deadlines
+or thresholds use a semantic heading and list rather than visual-only layout.
+All interactive elements are native controls, so keyboard operability and
+focus order come from the platform.
 
 **Focus appearance (2.4.13, AAA-new).** Global `:focus-visible` uses a 3px
 `accent2-300` ring with a 2px offset and a 5px `primary-900` outer ring.
@@ -44,16 +48,16 @@ explicit accessible names; the trust meter has `role="img"` with a
 descriptive label. Required applicant facts use explicit Yes / No / “I'm not
 sure” choices instead of favorable checkbox defaults.
 
-**Dynamic updates.** A visually hidden, concise result-count status,
-scan findings, clock output, and jurisdiction status carry
-`aria-live="polite"`. The full result-card collection is not a live region,
-which avoids announcing every source excerpt when several records match. The
-zero-result status includes the full staff-review routing message instead of
-announcing only a count. The amendment rehearsal announces how many matching
-guidance records were withheld or restored, then moves focus to the newly
-available reset/rehearse control. After screening, keyboard focus moves to
-the result heading; scanner and clock live regions announce a concise summary
-instead of their full result tables or cards.
+**Dynamic updates.** A visually hidden status announces the grouped result
+summary and boundary text without turning the full result collection into a
+live region. This avoids announcing every source excerpt when several records
+match. Scan findings, clock output, and jurisdiction status also use
+`aria-live="polite"`. The zero-result status includes the full staff-review
+routing message instead of announcing only a count. The amendment rehearsal
+announces how many matching guidance records were withheld or restored, then
+moves focus to the newly available reset/rehearse control. After screening,
+keyboard focus moves to the result heading; scanner and clock live regions
+announce a concise summary instead of their full result tables or cards.
 
 The shareable ADU sample is introduced by descriptive link text and followed
 by a visible disclosure that identifies the facts as hypothetical. It fills
@@ -63,6 +67,10 @@ automatically submitted sample, focus moves to the disclosure instead of
 skipping past it to the results. A plainly labeled link clears the sample.
 Editing a sample fact relabels the disclosure, removes the sample URL
 parameter, and clears the old results until the edited form is submitted.
+The same invalidation rule applies to ordinary applicant answers: changing the
+jurisdiction or a named project fact removes the rendered result, temporary
+answers-used cover sheet, and remembered disclosure state. This prevents a
+result from remaining visible beside facts that no longer produced it.
 
 **Data-loading state.** Data-dependent pathway, scanner, and trust-rehearsal
 buttons use the native `disabled` state until their datasets are ready. A
@@ -101,12 +109,13 @@ tables scroll in their own labeled region (no page horizontal scroll at
 not provided.
 
 **Language switching.** The applicant page preserves the current intake and
-rendered result set when English/Spanish interface copy is toggled. Source
-material that remains English carries `lang="en"`. The Python reference demo's
-language link is labeled as starting over because that server-rendered surface
-does not preserve form state. Both surfaces state that language selection
-covers the applicant form and results, while the staff-facing trust,
-ordinance, and clock tools remain English.
+rendered result set, temporary cover sheet, and disclosure state when
+English/Spanish interface copy is toggled. Stable rule anchors do not change
+with the language. Source material that remains English carries `lang="en"`.
+The Python reference demo's language link is labeled as starting over because
+that server-rendered surface does not preserve form state. Both surfaces state
+that language selection covers the applicant form and results, while the
+staff-facing trust, ordinance, and clock tools remain English.
 
 ## Remaining (human/AT pass not done)
 

@@ -32,11 +32,24 @@ JADU, and SB 9; it does not yet encode SB 35, AB 2011, authoritative parcel
 facts, comprehensive local requirements, application-file review, or detailed
 remedies.
 
-The result surface now groups matched records into candidate routes, relevant
-standards, and local process records instead of visually presenting every
-standard as a separate route. The next coherent output is a single
-permit-readiness evidence packet that also separates submission completeness,
-consistency standards, and unresolved staff questions.
+The browser result surface is implemented for prototype data as a temporary
+result packet. It starts with an answers-used cover sheet built from the last
+submitted jurisdiction and material project facts. It then generates a count
+summary and jump links for each nonempty group: candidate routes, relevant
+standards, local information records, and any other matching records. One
+explicitly configured candidate route for the selected project type starts
+open when it is among the matches. This default is a presentation choice, not
+a ranking, recommendation, final route, or eligibility finding. Supporting
+records use compact disclosures. Each citation and source-status label remains
+visible when its disclosure is closed.
+
+The submitted facts, grouped summary, jump links, and disclosure state exist
+only in current browser page memory. Changing the jurisdiction or any named
+project answer clears the old packet and requires a new submission. The
+surface does not persist an applicant record or implement parcel verification,
+packet completeness, or an exportable evidence manifest. The next coherent
+output is a permit-readiness evidence packet that also separates submission
+completeness, consistency standards, and unresolved staff questions.
 
 #### Plain-language explanation layer (prototype)
 
@@ -65,11 +78,13 @@ withheld while deterministic screening remains available. The rule engine
 neither imports nor accepts explanation data, so copy cannot create or change
 a match.
 
-Both demos preserve the matched rule, source citation, and available excerpt
-when explanation copy is unavailable. If the source is stale or unverified,
-they deliberately withhold the action-oriented explanation, interpretive rule
-notes, and generic document hints; a weak evidence record cannot become an
-applicant checklist.
+Both demos preserve the matched rule, source citation, source status, and
+available excerpt when explanation copy is unavailable. In the browser result
+packet, the citation and source status remain outside the expandable
+explanation and evidence body. If the source is stale or unverified, both
+demos deliberately withhold the action-oriented explanation, interpretive
+rule notes, and generic document hints; a weak evidence record cannot become
+an applicant checklist.
 
 All current English explanations are labeled AI-assisted and not
 human-reviewed. Spanish records are additionally labeled `machine_draft`;
@@ -123,11 +138,12 @@ metadata stay in JSON. `scripts/build_demo_bundle.py` deterministically
 compiles those files into `data/demo-data.js`. The static surface is split by
 user job:
 
-- `index.html` — lightweight orientation and scope; it loads no data bundle;
-- `check.html` — applicant intake, candidate records, a labeled shareable
-  sample that reuses a canonical golden fixture, and the separate clock;
-- `review.html` — bounded ordinance-text screen; and
-- `evidence.html` — source status, regression summary, and change rehearsal.
+- `index.html`: lightweight orientation and scope; it loads no data bundle;
+- `check.html`: applicant intake, a temporary grouped result packet, a labeled
+  shareable sample that reuses a canonical golden fixture, and the separate
+  clock;
+- `review.html`: bounded ordinance-text screen; and
+- `evidence.html`: source status, regression summary, and change rehearsal.
 
 The three interactive pages load the generated bundle before shared,
 page-gated `assets/demo.js`. Relative URLs let all four pages work from disk
@@ -157,9 +173,13 @@ product-specific extensions are documented in `docs/DESIGN-SYSTEM.md`.
 
 1. Start on the landing page to state the prototype boundary, then open
    `check.html?sample=adu`. The labeled hypothetical Woodland facts are
-   submitted through the normal intake and matcher path, producing candidate
-   rules with citations and generic document hints (current Scenario A
-   prototype).
+   submitted through the normal intake and matcher path. Show the temporary
+   answers-used cover sheet, dynamic group summary and jump links, one
+   candidate route open by default, compact supporting records, and
+   always-visible citations and source status. These are prototype candidate
+   rules and generic document hints, not a complete application checklist.
+   Change one answer to show that the old result is invalidated until the form
+   is submitted again.
 2. Select an unsupported fact combination → visible abstention + staff routing
    (current trust moment; free-text Q&A remains planned).
 3. Use the ordinance-review page to flag a documented sample provision.
@@ -173,7 +193,7 @@ ADU requirement manifest → missing-item remedies → exportable evidence packe
 
 ## Non-goals for v1
 
-- Scenario B (live status, staff report generation, plan-check) — the evidence
+- Scenario B (live status, staff report generation, plan-check). The evidence
   architecture can extend there, but v1 does one thing well, per the
   challenge's "start small" principle.
 - Being an authoritative legal source. Ever.

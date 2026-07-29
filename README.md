@@ -1,7 +1,7 @@
 # Permit Bearings
 
-**Check a California housing project. See the sources behind the result. Take
-unresolved questions to staff.**
+**Check a California ADU, JADU, or SB 9 project. See the sources behind the
+result. Take unresolved questions to staff.**
 
 Permit Bearings is a prototype decision-support tool for California ADU, JADU,
 and SB 9 projects. Structured applicant facts produce candidate routes,
@@ -51,21 +51,33 @@ python3 scripts/build_demo_bundle.py                # after canonical JSON chang
 1. The applicant selects a jurisdiction and supplies structured project facts.
 2. Deterministic criteria match those facts to the bounded rule set. No live
    model and no free-text answer determine eligibility.
-3. Every match includes source status and a citation. When the linked
-   explanation is valid and the evidence is current, the result can also show
-   a candidate consequence, available excerpt, starting steps, and questions
-   for staff.
-4. Material facts marked "I'm not sure" stop the candidate result and become
+3. The browser creates a temporary "answers used" cover sheet, summarizes the
+   matching records by group, and provides jump links to each nonempty group.
+   The cover sheet exists only in the current page and is not a stored or
+   exportable applicant record.
+4. When present, one explicitly configured candidate route for the selected
+   project type starts open. Supporting standards and local information records
+   use compact disclosures. Their citations and source-status labels remain
+   visible when the disclosures are closed.
+5. Every match includes source status and a citation. When the explanation
+   record passes the prototype's schema and fingerprint checks and the source
+   evidence is inside its review window, the result can also show a candidate
+   consequence, available excerpt, starting steps, and questions for staff.
+6. Changing the jurisdiction or any project answer clears the old cover sheet
+   and result. The applicant must submit the edited answers to produce a new
+   result.
+7. Material facts marked "I'm not sure" stop the candidate result and become
    questions for the local planning counter.
-5. A stale, unverified, or fingerprint-mismatched source leaves the rule and
+8. A stale, unverified, or fingerprint-mismatched source leaves the rule and
    available evidence visible but suppresses action copy and document hints.
-6. If complete answers match no encoded route, the app says the bounded rule
+9. If complete answers match no encoded route, the app says the bounded rule
    set found no path and routes the applicant generally to local staff.
 
 The current app covers statewide ADU, JADU, and SB 9 screening and two bounded
 local records. Parcel retrieval, packet-level completeness, detailed remedies,
 SB 35, AB 2011, reviewed translation, and comprehensive local rules are
-planned rather than implemented.
+planned rather than implemented. The temporary result packet does not change
+those boundaries.
 
 ## Trust and source currency
 
@@ -101,7 +113,7 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 
 | Scenario | Coverage |
 |---|---|
-| Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, grouped decision records, citations, uncertainty routing, and generic document hints are implemented. Parcel-specific packet completeness, detailed remedies, and reviewed translation are planned. |
+| Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, a temporary grouped result packet, citations, uncertainty routing, and generic document hints are implemented. Parcel-specific packet completeness, detailed remedies, and reviewed translation are planned. |
 | Scenario 2 (B): supporting internal review | Not targeted in v1. |
 | Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, dependency invalidation, and an HCD-letter dataset are implemented in bounded form. Search, change discovery, comparable-jurisdiction research, and a durable review queue are planned. |
 
@@ -196,17 +208,21 @@ enacted-law discovery are not yet covered.
 The full static showcase has four task-focused pages: a lightweight landing
 page; an English/Spanish applicant guide with review clocks; a bounded
 ordinance screen; and an evidence-and-updates page. The applicant guide renders
-grouped decision records with plain-language explanation drafts,
-always-visible citations and source-status badges, and an abstention path
-("needs staff review") when no encoded state pathway matches. Spanish
-explanation copy is an unreviewed machine draft; applicant-facing titles are
-localized drafts while canonical pathway labels, excerpts, citations, and
-document hints remain English when shown. Stale and unverified records suppress
-action copy, interpretive notes, and document hints. The evidence page includes
-a clearly labeled one-click rehearsal of an amendment to Gov. Code § 66321;
-matching applicant records can be opened in the stale state, but the rehearsal
-is not persisted production state. The smaller Python reference demo renders
-the same explanation sidecar and keeps a separate `/trust` route.
+a temporary answers-used cover sheet, a dynamic grouped summary with jump
+links, one candidate route open by default when the configured route matches,
+and compact supporting records. Citations and source-status badges stay
+visible outside the disclosures. Ordinary answer edits clear the old result
+until the applicant submits again. The applicant guide also includes
+plain-language explanation drafts and an abstention path ("needs staff review")
+when no encoded state pathway matches. Spanish explanation copy is an
+unreviewed machine draft; applicant-facing titles are localized drafts while
+canonical pathway labels, excerpts, citations, and document hints remain
+English when shown. Stale and unverified records suppress action copy,
+interpretive notes, and document hints. The evidence page includes a clearly
+labeled one-click rehearsal of an amendment to Gov. Code § 66321; matching
+applicant records can be opened in the stale state, but the rehearsal is not
+persisted production state. The smaller Python reference demo renders the same
+explanation sidecar and keeps a separate `/trust` route.
 
 ## Layout
 

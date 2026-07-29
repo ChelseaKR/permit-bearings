@@ -1,6 +1,6 @@
 # Product context and opportunity map
 
-Status: 2026-07-28. This is the canonical product and claim context for the
+Status: 2026-07-29. This is the canonical product and claim context for the
 repository. It summarizes the supplied California AI Permitting Innovation
 Showcase challenge statement; the original challenge remains authoritative.
 
@@ -40,12 +40,12 @@ feature.
 
 ## Challenge fit
 
-- **Scenario A — primary product:** project-, parcel-, and
+- **Scenario A, primary product:** project-, parcel-, and
   jurisdiction-specific routing; packet completeness; common gap detection;
   detailed remedies; plain-language and multilingual guidance.
-- **Scenario B — later extension:** cross-department status, cited staff
+- **Scenario B, later extension:** cross-department status, cited staff
   drafts, objective-standard review, and review-comment resolution.
-- **Scenario C — assurance layer:** current state/HCD/local sources,
+- **Scenario C, assurance layer:** current state/HCD/local sources,
   comparable-jurisdiction examples, legislative-change discovery, dependency
   impact, and human re-verification.
 - **Across all scenarios:** data minimization and ownership, CPRA-aware
@@ -63,7 +63,8 @@ Status meanings are defined in `AGENTS.md`.
 | Capability | Current status | Evidence and boundary |
 |---|---|---|
 | ADU/JADU/SB 9 structured pathway screening | Prototype | Seventeen statewide rules in `data/rules/statewide.json`; deterministic matching in `screening.py`. SB 35 and AB 2011 are not encoded. |
-| Plain-language decision records | Prototype | `data/explanations/plain-language.json` contains a versioned English and Spanish draft for all 19 current statewide/local rule records. Results group routes, standards, and local process records and separate meaning, scannable deadline/threshold highlights where needed, suggested first steps, direct staff questions, and cited evidence. Copy is AI-assisted and review-pending; it has no legal, jurisdiction, comprehension, or semantic-parity review and cannot affect deterministic matching. Source-date, citation-fingerprint, or full-rule-fingerprint drift invalidates display copy; completed reviews must name the reviewed explanation version; and stale/unverified records withhold action copy, interpretive notes, and generic document hints. `tests/test_explanations.py` checks these contracts and selected semantic/jargon boundaries, not overall accuracy or comprehension. |
+| Browser result packet | Implemented surface for prototype data | After submission, `check.html` renders a temporary answers-used cover sheet, a count summary and jump links for nonempty result groups, one explicitly configured candidate route open when it matches, and compact supporting records. Citations and source-status labels remain visible outside each disclosure. The submitted facts exist only in current page memory, and an ordinary answer edit clears the old result and disclosure state until resubmission. This is not a persisted applicant record, an exportable evidence manifest, a parcel verification, or a completeness assessment. |
+| Plain-language decision records | Prototype | `data/explanations/plain-language.json` contains a versioned English and Spanish draft for all 19 current statewide/local rule records. Results group routes, standards, and local information records and separate meaning, scannable deadline/threshold highlights where needed, suggested first steps, direct staff questions, and cited evidence. Copy is AI-assisted and review-pending; it has no legal, jurisdiction, comprehension, or semantic-parity review and cannot affect deterministic matching. Source-date, citation-fingerprint, or full-rule-fingerprint drift invalidates display copy; completed reviews must name the reviewed explanation version; and stale/unverified records withhold action copy, interpretive notes, and generic document hints. `tests/test_explanations.py` checks these contracts and selected semantic/jargon boundaries, not overall accuracy or comprehension. |
 | Local jurisdiction records | Prototype | Davis and Woodland records exist. Davis deliberately has no dated source check; neither record is comprehensive local-code coverage. |
 | Application completeness | Planned | Several rules list generic typical documents. There is no parcel-specific requirement manifest, document ingestion, cross-document validation, or detailed remedy engine. |
 | Golden regression harness | Prototype | 29 structured intake-to-expected-rule-ID fixtures. It does not evaluate natural-language answers, citation fidelity, remedies, or supporting passages. |
@@ -74,7 +75,7 @@ Status meanings are defined in `AGENTS.md`.
 | Transit proximity | Prototype | GTFS and statewide high-quality-transit data support screening in a CLI. Peak-window edge gaps and ferry-to-bus/rail connections are covered by regression tests. Service effective dates/exceptions, planned-facility filtering, multi-operator completeness, walking-network confirmation, and parcel integration still require correction before applicant-facing eligibility use. |
 | Jurisdiction/HCD-letter registry | Implemented dataset | 541 entries: 483 incorporated cities and 58 counties. The 2020 Census source is supplemented with official Mountain House incorporation evidence; an ongoing incorporation/dissolution refresh is still needed. Statewide baseline availability does not mean local codes are encoded. |
 | Static browser delivery | Implemented surface for prototype data | Four task-focused pages use relative links and can run directly from disk or over HTTP. The lightweight landing page loads no data JavaScript; the applicant, review, and evidence pages load the generated `data/demo-data.js` artifact before shared page-gated application code. Canonical JSON remains authoritative; `tests/test_static_demo.py` fails when the bundle drifts. |
-| Shareable hypothetical ADU sample | Implemented surface for prototype data | `check.html?sample=adu` resolves the existing `woodland-new-detached-adu-local-layer` golden fixture, fills the normal intake, and submits through the same validation and matcher path as manual answers. The page labels the facts as made up and provides a clear link. Editing a prefilled fact removes the sample URL state and clears the old result before recalculation. It is not a real parcel, applicant record, pilot, or external validation result. |
+| Shareable hypothetical ADU sample | Implemented surface for prototype data | `check.html?sample=adu` resolves the existing `woodland-new-detached-adu-local-layer` golden fixture, fills the normal intake, and submits through the same validation and matcher path as manual answers. The result cover sheet labels the facts as made up and the page provides a clear link. Editing a prefilled fact removes the sample URL state and clears the old result before recalculation. It is not a real parcel, applicant record, pilot, or external validation result. |
 | English/Spanish experience | Prototype | Intake, interface controls, applicant-facing result titles, and plain-language result explanations have English/Spanish variants. Spanish explanation copy is labeled as an unreviewed machine draft. Canonical pathway labels, rule notes, document hints, source excerpts, and much dashboard content remain English; no semantic-parity review has been completed. |
 | Accessibility | Prototype | Static/code audit targets WCAG 2.2 AAA. Human screen-reader, keyboard, reflow, forced-colors, and Spanish pronunciation checks remain open. |
 | Free-text grounded Q&A | Planned | Described as an architectural direction; no executable question-answering surface exists. |
@@ -146,6 +147,11 @@ output should contain:
 This creates a coherent Scenario A proof while making the currency harness
 essential: a source revision can invalidate a requirement or remedy in a
 specific packet.
+
+The current browser result packet is a transient presentation of
+applicant-supplied facts and matched prototype records. It does not implement
+this planned parcel-aware, document-aware, persisted, or exportable
+permit-readiness evidence packet.
 
 ### Bounded AI role
 

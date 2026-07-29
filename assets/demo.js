@@ -19,7 +19,7 @@ const pageIs = page => ACTIVE_PAGE === "all" || ACTIVE_PAGE === page;
 const STRINGS = {
   en: {
     tagline: "Find a candidate route. See the sources behind it. Take open questions to staff.",
-    screenHeading: "Find a possible permit path",
+    screenHeading: "About your project",
     translationScope: "The language choice applies to the applicant form and pathway results. The deadline tool and source records remain in English.",
     sampleLink: "Open a hypothetical detached ADU example",
     sampleSummary: "Made-up project facts run through the same screening logic as any other answers.",
@@ -29,19 +29,20 @@ const STRINGS = {
     sampleEditedLabel: "Example changed.",
     sampleEditedNotice: "These answers no longer match the made-up Woodland example. The old results were cleared. Choose Check candidate pathways to calculate results from your answers.",
     sampleEditedClear: "Start over with a blank project check",
+    resultCleared: "Your answers changed. The previous result was cleared. Choose Check candidate pathways to calculate a new result.",
     sampleUnavailableLabel: "Example unavailable.",
     sampleUnavailableNotice: "The example could not be loaded from its canonical test case. Continue with a blank form.",
     sampleUnavailableClear: "Continue with a blank project check",
     juris: "Where is the property?",
     jurisPlaceholder: "Type any California city or county…",
     jurisHelp: "Choose a suggestion, or enter the exact city or county name.",
-    statusLocal: "A jurisdiction-scoped metadata record exists; confirm its source status in Evidence & updates.",
+    statusLocal: "Confirm its source status in Evidence & updates.",
     statusBaseline: "The statewide candidate-rule set is available. No local requirements layer is encoded",
     statusUnknown: "Choose a recognized California city or county; screening will not run until it resolves.",
     jurisRequired: "Select a recognized California city or county before screening.",
     localCoverage: (count, total) => `${count} of ${total} have a jurisdiction-scoped record.`,
     hcdHistory: "Known HCD accountability letter",
-    localMetadata: "local metadata",
+    localMetadata: "Local source record available",
     scanned: "screened",
     scanRecord: (date, count) => `Ordinance screened ${date}: ${count} provision${count === 1 ? "" : "s"} flagged for review`,
     viewScan: "view scan findings (JSON)",
@@ -93,19 +94,37 @@ const STRINGS = {
       proposed_lot_size_compliant: "Would both new lots be at least 1,200 square feet, or meet a smaller minimum verified in a current local ordinance?",
     },
     submit: "Check candidate pathways",
-    results: "Possible permit paths and rules",
-    resultIntro: "We compared your answers with the limited set of rules in this prototype. We did not verify the property facts, decide eligibility, or approve the project.",
+    results: "Your result",
+    resultIntro: "This is not a complete list of requirements or a decision that the project qualifies. We did not verify the property facts or approve the project.",
+    routeOrientation: "The open path is shown first for orientation. The prototype did not rank or recommend it.",
     resultCount: count => count === 1 ? "1 result found." : `${count} results found.`,
+    answersHeading: "Answers used for this result",
+    sampleAnswersHeading: "Sample answers used for this result",
+    answersIntro: "We used these answers to compare the project with the limited rules in this prototype. We did not check them against parcel, zoning, or agency records.",
+    sampleAnswersIntro: "These answers are made up and do not describe a real property.",
+    jurisdictionFact: "Jurisdiction selected",
+    projectFact: "Project",
+    editAnswers: "Edit these answers",
+    resultSummary: parts => `Based on these answers, this prototype shows ${parts}.`,
+    groupCounts: {
+      route: count => `${count} possible permit path${count === 1 ? "" : "s"}`,
+      standard: count => `${count} other rule${count === 1 ? "" : "s"} that may apply`,
+      local_process: count => `${count} local information record${count === 1 ? "" : "s"}`,
+      other: count => `${count} other matching record${count === 1 ? "" : "s"}`,
+    },
+    resultNavLabel: "Result sections",
+    onThisPage: "In this result",
+    localBoundary: "This is supporting local information. It is not a complete local code, application checklist, or eligibility decision.",
     none: "The included rules do not identify a possible path from these answers. This does not mean the project is impossible. Ask the local planning counter to review it.",
     supportingOnly: "Supporting local information is shown below, but it is not a candidate permit path.",
     unknownHeading: "Staff review is needed before showing a possible path",
     unknownIntro: "You chose “I'm not sure” for a fact that can change the result. Confirm these items with the local planning counter:",
-    explanationBanner: "About these explanations: the text shown is an AI-assisted draft and has not been reviewed by a person. The cited source stays separate in each card.",
+    explanationBanner: "The explanation text is an AI-assisted draft and has not been reviewed by a person. A source date only tells you when evidence was recorded. It does not mean a person, counsel, or jurisdiction approved the explanation.",
     dataLoadError: "The demo data did not load. Keep the data and assets folders beside these HTML pages, or serve the repository over HTTP. Pathway and ordinance controls stay disabled until the data is available.",
     groups: {
       route: "Possible permit paths",
       standard: "Rules that may apply",
-      local_process: "Local process information",
+      local_process: "Local information",
       other: "Other matching rules",
     },
     means: "What this result means",
@@ -123,15 +142,21 @@ const STRINGS = {
     withheldStale: "We are not showing next steps because the source needs a new check. Confirm it before you rely on it.",
     nextScope: "These are starting points, not a complete checklist. Ask local staff what your project needs.",
     englishOnly: "English explanation shown because no valid Spanish draft is available.",
+    showDetails: "Show explanation, next steps, and evidence",
+    hideDetails: "Hide explanation, next steps, and evidence",
+    showEvidence: "Show source evidence",
+    hideEvidence: "Hide source evidence",
+    checkDates: "Check ADU review dates",
     simulationApplied: count => `${count} guidance record${count === 1 ? " was" : "s were"} marked stale by the source-change rehearsal.`,
-    simulationReset: count => `The source-change rehearsal was reset. ${count} guidance record${count === 1 ? " is" : "s are"} current again.`,
-    verifiedOn: "source date on file", stale: "SOURCE NEEDS A NEW CHECK",
-    unverified: "NO SOURCE DATE ON FILE",
-    langBtn: "Español: formulario y resultados",
+    simulationReset: count => `The source-change rehearsal was reset. ${count} guidance record${count === 1 ? "" : "s"} again show${count === 1 ? "s" : ""} the recorded source status.`,
+    verifiedOn: date => `Source evidence on file: ${date}`,
+    stale: "Source evidence needs a new check",
+    unverified: "No source evidence date on file",
+    langBtn: "Español",
   },
   es: {
     tagline: "Encuentre una posible ruta. Vea las fuentes que la respaldan. Consulte las preguntas pendientes con el personal de la agencia.",
-    screenHeading: "Encuentre una posible vía de permiso",
+    screenHeading: "Acerca de su proyecto",
     translationScope: "El idioma elegido se aplica al formulario y a los resultados para solicitantes. La herramienta de plazos y los registros de fuentes permanecen en inglés.",
     sampleLink: "Abrir un ejemplo hipotético de una ADU separada",
     sampleSummary: "Los datos inventados del proyecto pasan por la misma lógica de evaluación que cualquier otra respuesta.",
@@ -141,19 +166,20 @@ const STRINGS = {
     sampleEditedLabel: "El ejemplo cambió.",
     sampleEditedNotice: "Estas respuestas ya no coinciden con el ejemplo inventado de Woodland. Se borraron los resultados anteriores. Elija Revisar posibles vías para calcular resultados con sus respuestas.",
     sampleEditedClear: "Empezar de nuevo con un formulario en blanco",
+    resultCleared: "Sus respuestas cambiaron. Se borró el resultado anterior. Elija Revisar posibles vías para calcular un resultado nuevo.",
     sampleUnavailableLabel: "El ejemplo no está disponible.",
     sampleUnavailableNotice: "No se pudo cargar el ejemplo desde su caso de prueba canónico. Continúe con un formulario en blanco.",
     sampleUnavailableClear: "Continuar con un formulario en blanco",
     juris: "¿Dónde está la propiedad?",
     jurisPlaceholder: "Escriba cualquier ciudad o condado de California…",
     jurisHelp: "Elija una sugerencia o escriba el nombre exacto de la ciudad o el condado.",
-    statusLocal: "Existe un registro de metadatos de la jurisdicción; confirme el estado de sus fuentes en Evidencia y actualizaciones.",
+    statusLocal: "Confirme el estado de su fuente en Evidencia y actualizaciones.",
     statusBaseline: "El conjunto estatal de reglas posibles está disponible. Aún no se codifican los requisitos locales",
     statusUnknown: "Elija una ciudad o condado reconocido de California; no se ejecutará la evaluación hasta resolverlo.",
     jurisRequired: "Seleccione una ciudad o condado reconocido de California antes de continuar.",
     localCoverage: (count, total) => `${count} de ${total} tienen un registro específico de la jurisdicción.`,
     hcdHistory: "Carta de responsabilidad de HCD conocida",
-    localMetadata: "metadatos locales",
+    localMetadata: "Registro de fuente local disponible",
     scanned: "evaluada",
     scanRecord: (date, count) => `Ordenanza evaluada el ${date}: ${count} disposición${count === 1 ? "" : "es"} señalada${count === 1 ? "" : "s"} para revisión`,
     viewScan: "ver los resultados de la evaluación (JSON)",
@@ -205,19 +231,37 @@ const STRINGS = {
       proposed_lot_size_compliant: "¿Tendrían ambos lotes nuevos al menos 1,200 pies cuadrados, o cumplirían un mínimo menor verificado en una ordenanza local vigente?",
     },
     submit: "Revisar posibles vías",
-    results: "Posibles vías de permiso y reglas",
-    resultIntro: "Comparamos sus respuestas con el conjunto limitado de reglas de este prototipo. No verificamos los datos de la propiedad, decidimos la elegibilidad ni aprobamos el proyecto.",
+    results: "Su resultado",
+    resultIntro: "Esta no es una lista completa de requisitos ni una decisión de que el proyecto cumple los requisitos. No verificamos los datos de la propiedad ni aprobamos el proyecto.",
+    routeOrientation: "La vía abierta aparece primero para orientar. El prototipo no la clasificó ni la recomendó.",
     resultCount: count => count === 1 ? "Se encontró 1 resultado." : `Se encontraron ${count} resultados.`,
+    answersHeading: "Respuestas usadas para este resultado",
+    sampleAnswersHeading: "Respuestas de ejemplo usadas para este resultado",
+    answersIntro: "Usamos estas respuestas para comparar el proyecto con las reglas limitadas de este prototipo. No las verificamos con registros de parcelas, zonificación o de la agencia.",
+    sampleAnswersIntro: "Estas respuestas son inventadas y no describen una propiedad real.",
+    jurisdictionFact: "Jurisdicción seleccionada",
+    projectFact: "Proyecto",
+    editAnswers: "Editar estas respuestas",
+    resultSummary: parts => `Según estas respuestas, este prototipo muestra ${parts}.`,
+    groupCounts: {
+      route: count => `${count} posible${count === 1 ? "" : "s"} vía${count === 1 ? "" : "s"} de permiso`,
+      standard: count => `${count} regla${count === 1 ? "" : "s"} adicional${count === 1 ? "" : "es"} que podría${count === 1 ? "" : "n"} aplicarse`,
+      local_process: count => `${count} registro${count === 1 ? "" : "s"} de información local`,
+      other: count => `${count} registro${count === 1 ? "" : "s"} coincidente${count === 1 ? "" : "s"} adicional${count === 1 ? "" : "es"}`,
+    },
+    resultNavLabel: "Secciones del resultado",
+    onThisPage: "En este resultado",
+    localBoundary: "Esta es información local de apoyo. No es un código local completo, una lista de documentos para la solicitud ni una decisión de elegibilidad.",
     none: "Las reglas incluidas no identifican una posible vía con estas respuestas. Esto no significa que el proyecto sea imposible. Pida una revisión en el departamento local de planificación.",
     supportingOnly: "Abajo se muestra información local de apoyo, pero no es una posible vía de permiso.",
     unknownHeading: "Se necesita revisión del personal antes de mostrar una posible vía",
     unknownIntro: "Eligió “No lo sé” para un dato que puede cambiar el resultado. Confirme estos puntos con el departamento local de planificación:",
-    explanationBanner: "Sobre estas explicaciones: el texto mostrado es un borrador creado con ayuda de IA y no ha sido revisado por una persona. El texto en español es una traducción automática sin revisión de exactitud. La fuente citada se mantiene separada en cada tarjeta.",
+    explanationBanner: "El texto de la explicación es un borrador creado con ayuda de IA y no ha sido revisado por una persona. El texto en español es una traducción automática sin revisión de exactitud. Una fecha de fuente solo indica cuándo se registró la evidencia. No significa que una persona, un abogado o la jurisdicción haya aprobado la explicación.",
     dataLoadError: "No se pudieron cargar los datos de la demostración. Mantenga las carpetas data y assets junto a estas páginas HTML o sirva el repositorio por HTTP. Los controles de vías y ordenanzas permanecerán desactivados hasta que los datos estén disponibles.",
     groups: {
       route: "Posibles vías de permiso",
       standard: "Reglas que podrían aplicarse",
-      local_process: "Información del proceso local",
+      local_process: "Información local",
       other: "Otras reglas coincidentes",
     },
     means: "Qué significa este resultado",
@@ -235,11 +279,17 @@ const STRINGS = {
     withheldStale: "No mostramos los próximos pasos porque la fuente necesita una nueva comprobación. Confírmela antes de usarla.",
     nextScope: "Estos son puntos de partida, no una lista completa. Pregunte al personal local qué necesita su proyecto.",
     englishOnly: "Se muestra la explicación en inglés porque no hay un borrador válido en español.",
+    showDetails: "Mostrar explicación, próximos pasos y evidencia",
+    hideDetails: "Ocultar explicación, próximos pasos y evidencia",
+    showEvidence: "Mostrar evidencia de la fuente",
+    hideEvidence: "Ocultar evidencia de la fuente",
+    checkDates: "Revisar los plazos de la ADU (en inglés)",
     simulationApplied: count => `El ensayo del cambio de fuente marcó como desactualizado${count === 1 ? "" : "s"} ${count} registro${count === 1 ? "" : "s"} de orientación.`,
-    simulationReset: count => `Se restableció el ensayo del cambio de fuente. ${count} registro${count === 1 ? " está" : " están"} vigente${count === 1 ? "" : "s"} de nuevo.`,
-    verifiedOn: "fecha de la fuente registrada", stale: "LA FUENTE NECESITA UNA NUEVA COMPROBACIÓN",
-    unverified: "SIN FECHA DE LA FUENTE",
-    langBtn: "English: form and results",
+    simulationReset: count => `Se restableció el ensayo del cambio de fuente. ${count} registro${count === 1 ? "" : "s"} de orientación vuelve${count === 1 ? "" : "n"} a mostrar el estado de fuente registrado.`,
+    verifiedOn: date => `Evidencia de la fuente registrada: ${date}`,
+    stale: "La evidencia de la fuente necesita una nueva comprobación",
+    unverified: "No hay fecha de evidencia de la fuente",
+    langBtn: "English",
   },
 };
 let lang = "en";
@@ -688,6 +738,13 @@ const SB9_LOT_SPLIT_FIELDS = [
   "proposed_lot_ratio_compliant",
   "proposed_lot_size_compliant",
 ];
+const RESULT_GROUPS = ["route", "standard", "local_process", "other"];
+const INITIAL_OPEN_ROUTE_BY_PROJECT = Object.freeze({
+  adu: "adu-ministerial-review",
+  jadu: "jadu-ministerial-review",
+  two_unit: "sb9-two-unit-ministerial",
+  lot_split: "sb9-urban-lot-split",
+});
 
 function radioQuestion(name, legend, options, help = "") {
   const helpId = `${name}-help`;
@@ -884,24 +941,139 @@ function explanationReviewLabels(explanation, localized, copyLang) {
     `Traducción revisada por una persona · ${localized.reviewer} · ${localized.reviewed_on} · v${localized.reviewed_version}`];
 }
 
-function renderResultCard(rule, explanation, suppressPendingReview = false) {
+function formatResultList(items) {
+  if (items.length < 2) return items[0] || "";
+  if (items.length === 2) return `${items[0]} ${lang === "es" ? "y" : "and"} ${items[1]}`;
+  const conjunction = lang === "es" ? "y" : "and";
+  const comma = lang === "es" ? " " : ", ";
+  return `${items.slice(0, -1).join(", ")}${comma}${conjunction} ${items[items.length - 1]}`;
+}
+
+function formatSourceDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return value || "";
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat(lang === "es" ? "es-US" : "en-US", {
+    day: "numeric",
+    month: "long",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(date);
+}
+
+function optionLabel(options, value) {
+  return options.find(([candidate]) => candidate === value)?.[1] || value;
+}
+
+function factValueLabel(name, value, projectType) {
+  const s = STRINGS[lang];
+  if (name === "project_type") return optionLabel(s.types, value);
+  if (name === "primary_dwelling_status")
+    return optionLabel(s.primaryOptions, value);
+  if (name === "adu_project_form")
+    return optionLabel(s.aduFormOptions, value);
+  return optionLabel(s.tri, value);
+}
+
+function resultGroup(rule) {
+  const explanation = EXPLANATIONS.get(rule.rule_id);
+  const candidate = rule.display_group || explanation?.display_group;
+  return RESULT_GROUPS.includes(candidate) ? candidate : "other";
+}
+
+function groupResultRecords(list) {
+  const grouped = new Map(RESULT_GROUPS.map(group => [group, []]));
+  list.forEach(rule => grouped.get(resultGroup(rule)).push(rule));
+  return grouped;
+}
+
+function resultSummaryText(grouped) {
+  const s = STRINGS[lang];
+  const parts = RESULT_GROUPS
+    .map(group => [group, grouped.get(group).length])
+    .filter(([, count]) => count > 0)
+    .map(([group, count]) => s.groupCounts[group](count));
+  return s.resultSummary(formatResultList(parts));
+}
+
+function renderProjectFacts() {
+  if (!LAST_INTAKE || !LAST_JURISDICTION) return "";
+  const s = STRINGS[lang];
+  const projectType = LAST_INTAKE.project_type;
+  const facts = [
+    {
+      name: "jurisdiction",
+      label: s.jurisdictionFact,
+      value: jurisDisplay(LAST_JURISDICTION),
+    },
+    {
+      name: "project_type",
+      label: s.projectFact,
+      value: factValueLabel("project_type", projectType, projectType),
+    },
+    ...fieldsForProject(projectType).map(name => ({
+      name,
+      label: questionLabel(name, projectType),
+      value: factValueLabel(name, LAST_INTAKE[name], projectType),
+    })),
+  ];
+  const isSample = projectSampleState === "active";
+  return `<section class="result-cover-sheet" aria-labelledby="projectFactsHeading"
+      lang="${lang}">
+    <div class="result-cover-heading">
+      <h3 id="projectFactsHeading">
+        ${esc(isSample ? s.sampleAnswersHeading : s.answersHeading)}
+      </h3>
+      <a class="edit-answers" href="#screenHeading">${esc(s.editAnswers)}</a>
+    </div>
+    <p class="small">${esc(isSample ? s.sampleAnswersIntro : s.answersIntro)}</p>
+    <dl class="result-facts">
+      ${facts.map(fact => `<div data-field="${esc(fact.name)}">
+        <dt>${esc(fact.label)}</dt>
+        <dd>${esc(fact.value)}</dd>
+      </div>`).join("")}
+    </dl>
+  </section>`;
+}
+
+function renderResultIndex(grouped) {
+  const s = STRINGS[lang];
+  const links = RESULT_GROUPS
+    .map(group => [group, grouped.get(group).length])
+    .filter(([, count]) => count > 0)
+    .map(([group, count]) =>
+      `<li><a href="#result-group-${group}">${esc(s.groups[group])}
+        <span aria-hidden="true">(${count})</span></a></li>`
+    ).join("");
+  return `<nav class="result-index" aria-label="${esc(s.resultNavLabel)}"
+      lang="${lang}">
+    <p>${esc(s.onThisPage)}</p>
+    <ul>${links}</ul>
+  </nav>`;
+}
+
+function renderResultCard(rule, explanation, options = {}) {
+  const {suppressPendingReview = false} = options;
   const s = STRINGS[lang];
   const c = rule.citation;
+  const safeId = String(rule.rule_id).replace(/[^A-Za-z0-9_-]/g, "-");
+  const group = resultGroup(rule);
   const status = ruleStatus(
     rule, simulating ? ["ca-gov-66321"] : []
   );
   const ok = status === "verified";
   const badge = ok
-    ? `<span class="badge info" lang="${lang}"><span class="status-ico" aria-hidden="true">◷</span>${esc(s.verifiedOn)} ${esc(c.verified_on)}</span>`
+    ? `<span class="badge info" lang="${lang}"><span class="status-ico" aria-hidden="true">◷</span>${esc(s.verifiedOn(formatSourceDate(c.verified_on)))}</span>`
     : status === "stale"
     ? `<span class="badge bad" lang="${lang}"><span class="status-ico" aria-hidden="true">✕</span>${esc(s.stale)}</span>`
     : `<span class="badge warn" lang="${lang}"><span class="status-ico" aria-hidden="true">⚠</span>${esc(s.unverified)}</span>`;
   const localizedRecord = ok ? usableLocalizedExplanation(explanation) : null;
-  let plainLanguage = status === "unverified"
+  let consequence = status === "unverified"
     ? `<div class="notice small" lang="${lang}">${esc(s.withheldUnverified)}</div>`
     : status === "stale"
     ? `<div class="notice small" lang="${lang}">${esc(s.withheldStale)}</div>`
     : `<div class="notice small" lang="${lang}">${esc(s.unavailable)}</div>`;
+  let guidance = "";
   let reviewNote = "";
   let copyRecord = "";
   let displayTitle = rule.pathway;
@@ -920,9 +1092,9 @@ function renderResultCard(rule, explanation, suppressPendingReview = false) {
           ).join("")}</ul>
         </div>`
       : "";
-    plainLanguage = `<div class="plain-layer">
-      <h5 lang="${lang}">${esc(s.means)}</h5>
-      <p lang="${copyLang}">${esc(localized.summary)}</p>
+    consequence = `<p class="result-consequence"
+      lang="${copyLang}">${esc(localized.summary)}</p>`;
+    guidance = `<div class="plain-layer">
       ${highlights}
       <h5 lang="${lang}">${esc(s.next)}</h5>
       <p class="small" lang="${lang}">${esc(s.nextScope)}</p>
@@ -944,31 +1116,54 @@ function renderResultCard(rule, explanation, suppressPendingReview = false) {
       <span lang="en">${esc(explanation.source_rule_id)} v${esc(explanation.version)}, ${esc(explanation.updated_on)}</span></p>`;
   }
   const docs = (rule.required_documents || []).map(d => `<li>${esc(d)}</li>`).join("");
-  const evidence = `<details>
-    <summary lang="${lang}">${esc(s.evidence)}</summary>
+  const evidence = `<section class="evidence-block"
+      aria-labelledby="evidence-title-${safeId}">
+    <h5 id="evidence-title-${safeId}" lang="${lang}">${esc(s.evidence)}</h5>
     ${ok && rule.notes ? `<p class="small" lang="en">${esc(rule.notes)}</p>` : ""}
     ${c.excerpt ? `<blockquote lang="en">${escVerbatim(c.excerpt)}</blockquote>` : ""}
     ${!ok && !c.excerpt ? `<p class="small" lang="${lang}">${esc(s.evidenceUnavailable)}</p>` : ""}
     ${ok && docs ? `<h5 lang="${lang}">${esc(s.docs)}</h5><ul class="small" lang="en">${docs}</ul>` : ""}
     ${copyRecord}
-  </details>`;
-  const safeId = String(rule.rule_id).replace(/[^A-Za-z0-9_-]/g, "-");
+  </section>`;
   const sourceUrl = safeExternalUrl(c.url);
   const sourceMarkup = sourceUrl
     ? `<a lang="en" href="${esc(sourceUrl)}" rel="noopener">${esc(c.source)}</a>`
     : `<span lang="en">${esc(c.source)}</span>`;
-  return `<article class="card result-card ${ok ? "" : "unverified"}"
-      data-rule-id="${esc(rule.rule_id)}" aria-labelledby="result-title-${safeId}">
+  const hasGuidance = Boolean(localizedRecord);
+  const showLabel = hasGuidance ? s.showDetails : s.showEvidence;
+  const hideLabel = hasGuidance ? s.hideDetails : s.hideEvidence;
+  const isOpen = OPEN_RULE_IDS.has(rule.rule_id);
+  const isConfiguredRoute = group === "route"
+    && INITIAL_OPEN_ROUTE_BY_PROJECT[LAST_INTAKE?.project_type] === rule.rule_id;
+  const clockLink = ok
+    && LAST_INTAKE?.project_type === "adu"
+    && isConfiguredRoute
+    ? `<p class="result-tool-link" lang="${lang}">
+        <a href="#clocks">${esc(s.checkDates)}</a>
+      </p>` : "";
+  return `<article id="rule-${safeId}"
+      class="card result-card ${isConfiguredRoute ? "result-route" : "result-card-compact"} ${ok ? "" : "unverified"}"
+      data-rule-id="${esc(rule.rule_id)}" data-result-group="${group}"
+      aria-labelledby="result-title-${safeId}" tabindex="-1">
     <div class="result-head">
       <h4 class="result-title" id="result-title-${safeId}"
         lang="${displayTitleLang}">${esc(displayTitle)}</h4>
       ${badge}
     </div>
     ${reviewNote}
-    ${plainLanguage}
+    ${consequence}
     <p class="source-basis"><b lang="${lang}">${esc(s.source)}:</b>
       ${sourceMarkup}</p>
-    ${evidence}
+    <details class="rule-details" data-rule-id="${esc(rule.rule_id)}"
+        ${isOpen ? "open" : ""}>
+      <summary lang="${lang}">
+        <span class="when-closed">${esc(showLabel)}</span>
+        <span class="when-open">${esc(hideLabel)}</span>
+      </summary>
+      <div class="rule-details-body">
+        ${guidance}${clockLink}${evidence}
+      </div>
+    </details>
   </article>`;
 }
 
@@ -977,22 +1172,22 @@ function renderResults(list) {
   const el = document.getElementById("results");
   LAST_RESULTS = list;
   LAST_UNRESOLVED = null;
-  const hasRoute = list.some(rule => rule.display_group === "route");
+  const hasRoute = list.some(rule => resultGroup(rule) === "route");
   const status = document.getElementById("resultStatus");
   status.lang = lang;
-  status.textContent = list.length
-    ? hasRoute
-      ? s.resultCount(list.length)
-      : `${s.none} ${s.supportingOnly}`
-    : `${s.resultCount(0)} ${s.none}`;
   if (!list.length) {
+    status.textContent = `${s.resultCount(0)} ${s.none}`;
     el.innerHTML = `<div lang="${lang}">
       <h2 class="result-heading" id="resultsHeading" tabindex="-1">${esc(s.results)}</h2>
+      ${renderProjectFacts()}
       <div class="notice">${esc(s.none)}</div></div>`;
     return;
   }
-  const groupOrder = ["route", "standard", "local_process", "other"];
-  const grouped = new Map(groupOrder.map(group => [group, []]));
+  const grouped = groupResultRecords(list);
+  const summaryText = resultSummaryText(grouped);
+  status.textContent = hasRoute
+    ? `${summaryText} ${s.resultIntro} ${s.routeOrientation}`
+    : `${summaryText} ${s.none} ${s.supportingOnly}`;
   const shownExplanations = list.map(rule => {
     if (ruleStatus(
       rule, simulating ? ["ca-gov-66321"] : []
@@ -1007,24 +1202,27 @@ function renderResults(list) {
       && (lang !== "es"
         || (copyLang === "es" && localized.translation_status === "machine_draft"))
     );
-  list.forEach(rule => {
-    const explanation = EXPLANATIONS.get(rule.rule_id);
-    const candidateGroup = rule.display_group || explanation?.display_group;
-    const group = groupOrder.includes(candidateGroup) ? candidateGroup : "other";
-    grouped.get(group).push(
-      renderResultCard(rule, explanation, oneSharedDraftLabel)
-    );
-  });
-  const sections = groupOrder.map(group => {
-    const cards = grouped.get(group);
-    return cards.length
-      ? `<section class="result-group" aria-labelledby="result-group-${group}">
-          <h3 id="result-group-${group}" lang="${lang}">${esc(s.groups[group])}</h3>
-          ${cards.join("")}
-        </section>` : "";
+  const sections = RESULT_GROUPS.map(group => {
+    const records = grouped.get(group);
+    if (!records.length) return "";
+    const cards = records.map(rule =>
+      renderResultCard(rule, EXPLANATIONS.get(rule.rule_id), {
+        suppressPendingReview: oneSharedDraftLabel,
+      })
+    ).join("");
+    const localBoundary = group === "local_process"
+      ? `<p class="small result-local-boundary" lang="${lang}">
+          ${esc(s.localBoundary)}
+        </p>` : "";
+    return `<section class="result-group ${group === "local_process" ? "result-local" : ""}"
+        aria-labelledby="result-group-${group}">
+          <h3 id="result-group-${group}" tabindex="-1"
+            lang="${lang}">${esc(s.groups[group])}</h3>
+          ${localBoundary}<div class="result-records">${cards}</div>
+        </section>`;
   }).join("");
   const draftBanner = oneSharedDraftLabel
-    ? `<div class="notice small" lang="${lang}">${esc(s.explanationBanner)}</div>`
+    ? `<div class="result-trust-note small" lang="${lang}">${esc(s.explanationBanner)}</div>`
     : "";
   const noRouteNotice = hasRoute
     ? ""
@@ -1034,16 +1232,19 @@ function renderResults(list) {
       </div>`;
   el.innerHTML = `<h2 class="result-heading" id="resultsHeading"
       tabindex="-1" lang="${lang}">${esc(s.results)}</h2>
-    <p class="small" lang="${lang}">${esc(s.resultIntro)}</p>
-    ${noRouteNotice}${draftBanner}${sections}`;
+    ${renderProjectFacts()}
+    <p class="result-count" lang="${lang}">${esc(summaryText)}</p>
+    <p class="small result-limit" lang="${lang}">${esc(s.resultIntro)}
+      ${hasRoute ? esc(s.routeOrientation) : ""}</p>
+    ${noRouteNotice}${draftBanner}${renderResultIndex(grouped)}${sections}`;
 }
 
-function questionLabel(name) {
+function questionLabel(name, projectType = intakeDraft.project_type) {
   const s = STRINGS[lang];
   if (name === "primary_dwelling_status") return s.primaryQuestion;
   if (name === "adu_project_form") return s.aduFormQuestion;
   if (name === "unpermitted_existing")
-    return s.unpermittedQuestions[intakeDraft.project_type]
+    return s.unpermittedQuestions[projectType]
       || s.unpermittedQuestions.adu;
   return s.questions[name] || name;
 }
@@ -1060,9 +1261,12 @@ function renderNeedsStaffReview(fieldNames) {
       <h2 class="result-heading" id="resultsHeading" tabindex="-1">
         ${esc(s.unknownHeading)}
       </h2>
+      ${renderProjectFacts()}
       <div class="notice">
         <p>${esc(s.unknownIntro)}</p>
-        <ul>${fieldNames.map(name => `<li>${esc(questionLabel(name))}</li>`).join("")}</ul>
+        <ul>${fieldNames.map(name =>
+          `<li>${esc(questionLabel(name, LAST_INTAKE?.project_type))}</li>`
+        ).join("")}</ul>
       </div>
     </div>`;
 }
@@ -1092,6 +1296,9 @@ const rehearsedSourceId = projectSearchParams
 let simulating = rehearsedSourceId === "ca-gov-66321";
 let LAST_RESULTS = null;
 let LAST_UNRESOLVED = null;
+let LAST_INTAKE = null;
+let LAST_JURISDICTION = null;
+const OPEN_RULE_IDS = new Set();
 let sampleSubmissionInProgress = false;
 let projectSampleState = null;
 
@@ -1107,6 +1314,54 @@ function renderProjectSampleText() {
   document.getElementById("sampleClear").textContent =
     s[`sample${suffix}Clear`];
 }
+
+function storeSubmittedProject(intake, jurisdiction, list = []) {
+  LAST_INTAKE = {...intake};
+  LAST_JURISDICTION = {
+    county: jurisdiction.county,
+    kind: jurisdiction.kind,
+    name: jurisdiction.name,
+    slug: jurisdiction.slug,
+  };
+  OPEN_RULE_IDS.clear();
+  const initialRuleId = INITIAL_OPEN_ROUTE_BY_PROJECT[intake.project_type];
+  if (list.some(rule =>
+    rule.rule_id === initialRuleId && resultGroup(rule) === "route"
+  )) OPEN_RULE_IDS.add(initialRuleId);
+}
+
+function invalidateRenderedProjectResult(message = "") {
+  LAST_RESULTS = null;
+  LAST_UNRESOLVED = null;
+  LAST_INTAKE = null;
+  LAST_JURISDICTION = null;
+  OPEN_RULE_IDS.clear();
+  const results = document.getElementById("results");
+  if (results) results.innerHTML = "";
+  const status = document.getElementById("resultStatus");
+  if (status) status.textContent = message;
+}
+
+const resultContainerElement = document.getElementById("results");
+if (pageIs("project") && resultContainerElement) {
+  resultContainerElement.addEventListener("click", event => {
+    const editLink = event.target.closest?.("a.edit-answers");
+    if (!editLink) return;
+    const heading = document.getElementById("screenHeading");
+    if (!heading) return;
+    event.preventDefault();
+    heading.focus();
+  });
+  resultContainerElement.addEventListener("toggle", event => {
+    const disclosure = event.target;
+    if (!disclosure.matches?.("details.rule-details")) return;
+    const ruleId = disclosure.dataset.ruleId;
+    if (!ruleId) return;
+    if (disclosure.open) OPEN_RULE_IDS.add(ruleId);
+    else OPEN_RULE_IDS.delete(ruleId);
+  }, true);
+}
+
 function renderDashboard() {
   const changed = simulating ? ["ca-gov-66321"] : [];
   const statuses = RULES.map(r => ({ rule: r, st: ruleStatus(r, changed) }));
@@ -1199,23 +1454,36 @@ function removeProjectSampleFromUrl() {
 }
 
 function deactivateProjectSample() {
+  const hadRenderedProjectResult = LAST_RESULTS !== null
+    || LAST_UNRESOLVED !== null
+    || LAST_INTAKE !== null;
   if (projectSampleState === "unavailable") {
     projectSampleState = null;
     document.getElementById("sampleEntry").classList.remove("hidden");
     document.getElementById("projectSampleNotice").classList.add("hidden");
     removeProjectSampleFromUrl();
+    invalidateRenderedProjectResult(
+      hadRenderedProjectResult ? STRINGS[lang].resultCleared : ""
+    );
     return;
   }
-  if (projectSampleState !== "active") return;
-  projectSampleState = "edited";
-  document.getElementById("sampleEntry").classList.remove("hidden");
-  renderProjectSampleText();
-  LAST_RESULTS = null;
-  LAST_UNRESOLVED = null;
-  document.getElementById("results").innerHTML = "";
-  document.getElementById("resultStatus").textContent =
-    STRINGS[lang].sampleEditedNotice;
-  removeProjectSampleFromUrl();
+  if (projectSampleState === "active") {
+    projectSampleState = "edited";
+    document.getElementById("sampleEntry").classList.remove("hidden");
+    renderProjectSampleText();
+    invalidateRenderedProjectResult(
+      hadRenderedProjectResult ? STRINGS[lang].sampleEditedNotice : ""
+    );
+    removeProjectSampleFromUrl();
+    return;
+  }
+  invalidateRenderedProjectResult(
+    hadRenderedProjectResult
+      ? projectSampleState === "edited"
+        ? STRINGS[lang].sampleEditedNotice
+        : STRINGS[lang].resultCleared
+      : ""
+  );
 }
 
 function applyRequestedProjectSample() {
@@ -1263,12 +1531,11 @@ if (pageIs("project") && intakeFormElement) {
   const jurisdiction = resolveJurisdiction();
   if (!jurisdiction) {
     const s = STRINGS[lang];
-    LAST_RESULTS = null;
+    invalidateRenderedProjectResult(s.jurisRequired);
     document.getElementById("results").innerHTML =
       `<div lang="${lang}"><h2 class="result-heading" id="resultsHeading"
         tabindex="-1">${esc(s.results)}</h2>
        <div class="notice">${esc(s.jurisRequired)}</div></div>`;
-    document.getElementById("resultStatus").textContent = s.jurisRequired;
     renderJurisStatus(true);
     document.getElementById("jurisInput").focus();
     return;
@@ -1283,19 +1550,27 @@ if (pageIs("project") && intakeFormElement) {
   }
   const projectType = f.get("project_type");
   const materialFields = fieldsForProject(projectType);
+  const intake = {
+    project_type: projectType,
+    jurisdiction: jurisdiction.slug,
+  };
+  materialFields.forEach(name => {
+    intake[name] = f.get(name);
+  });
   const unresolved = materialFields.filter(name => {
-    const value = f.get(name);
+    const value = intake[name];
     return value == null || value === "unknown";
   });
   if (unresolved.length) {
+    storeSubmittedProject(intake, jurisdiction);
     renderNeedsStaffReview(unresolved);
     if (sampleSubmissionInProgress) focusProjectSampleNotice();
     else focusResults();
     return;
   }
-  const intake = Object.fromEntries(f.entries());
-  intake.jurisdiction = jurisdiction.slug;
-  renderResults(screen(intake));
+  const matchedRules = screen(intake);
+  storeSubmittedProject(intake, jurisdiction, matchedRules);
+  renderResults(matchedRules);
   if (sampleSubmissionInProgress) focusProjectSampleNotice();
   else focusResults();
   });
@@ -1334,7 +1609,7 @@ function renderJurisStatus(showError = false) {
   input.removeAttribute("aria-invalid");
   const localCount = JURIS.filter(x => x.has_local_layer).length;
   let html = j.has_local_layer
-    ? `<span class="badge info">${esc(s.localMetadata)}</span> ${esc(s.statusLocal)}`
+    ? `<strong>${esc(s.localMetadata)}.</strong> ${esc(s.statusLocal)}`
     : `${esc(s.statusBaseline)} (${esc(s.localCoverage(localCount, JURIS.length))})`;
   const scanRec = SCANS[j.slug];
   if (scanRec) {

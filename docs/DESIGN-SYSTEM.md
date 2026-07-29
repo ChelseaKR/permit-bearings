@@ -1,6 +1,6 @@
 # California Web Standards alignment
 
-Reviewed 2026-07-28.
+Reviewed 2026-07-29.
 
 Permit Bearings is not an official State of California website. It uses the
 published California Design System as an open-source foundation and follows
@@ -36,7 +36,9 @@ The implementation applies the California Web Standards principles directly:
 - **Design for people’s needs:** the landing page routes applicants, review
   staff, and assurance reviewers to separate tasks.
 - **Make complexity simple:** each tool page has one primary job, a short
-  boundary statement, and plain labels instead of a conversational shell.
+  boundary statement, and plain labels instead of a conversational shell. The
+  applicant result provides a count summary and jump links before the grouped
+  records.
 - **Prioritize accessibility:** native controls, skip links, active-page
   semantics, 44–48px targets, a dual-color focus indicator, reduced-motion
   handling, forced-colors support, and labeled scroll regions are built in.
@@ -62,6 +64,18 @@ layout use the adopted tokens.
 The review-clock utility uses a narrow, single-column service form. Its action
 follows the facts needed for the result, and its separate timing outcomes use a
 stacked definition list instead of a dashboard card or comparison table.
+
+The applicant result uses a service-record pattern rather than a dashboard.
+An answers-used cover sheet records the submitted facts in a definition list
+for the current page only. A plain sentence counts the matching groups, and a
+short in-page index links to each nonempty group. One explicitly configured
+candidate route starts open when it matches. Supporting standards and local
+information records are compact and start closed. Citations and source-status
+labels remain visible above each disclosure, so collapsing detail does not
+hide the evidence identity or currency warning. Editing an ordinary project
+answer clears the old result instead of leaving it attached to changed facts.
+These presentation choices do not represent completeness, human review,
+counsel review, jurisdiction approval, or a final route decision.
 
 ## Conformance boundary
 
