@@ -1,4 +1,5 @@
 import json
+import re
 import shutil
 import subprocess
 from io import BytesIO
@@ -26,20 +27,65 @@ def test_python_trust_rehearsal_uses_human_readable_source_label():
     assert "Gov. Code § {html.escape(changed[0])}" not in html
 
 
-def test_index_loads_offline_bundle_before_application_code():
-    html = (ROOT / "index.html").read_text(encoding="utf-8")
+def test_static_pages_load_only_the_assets_they_need():
+    landing = (ROOT / "index.html").read_text(encoding="utf-8")
     bundle_tag = '<script src="data/demo-data.js"></script>'
-    application_start = "<script>\nconst STRINGS"
+    application_tag = '<script src="assets/demo.js"></script>'
 
-    assert bundle_tag in html
-    assert application_start in html
-    assert html.index(bundle_tag) < html.index(application_start)
-    assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in html
+    assert bundle_tag not in landing
+    assert application_tag not in landing
+    for page_name, page_id in {
+        "check.html": "project",
+        "review.html": "review",
+        "evidence.html": "evidence",
+    }.items():
+        html = (ROOT / page_name).read_text(encoding="utf-8")
+        assert f'<body data-page="{page_id}">' in html
+        assert bundle_tag in html
+        assert application_tag in html
+        assert html.index(bundle_tag) < html.index(application_tag)
+
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+    assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in application
+
+
+def test_static_pages_have_consistent_navigation_and_resolvable_links():
+    pages = [
+        ROOT / "index.html",
+        ROOT / "check.html",
+        ROOT / "review.html",
+        ROOT / "evidence.html",
+    ]
+    expected_nav = [
+        "Home",
+        "Check a project",
+        "Review local rules",
+        "Evidence &amp; updates",
+    ]
+    for path in pages:
+        html = path.read_text(encoding="utf-8")
+        assert html.count("<main ") == 1
+        assert html.count("<h1") == 1
+        assert 'href="#mainContent"' in html
+        assert html.count('aria-current="page"') == 1
+        assert 'http-equiv="Content-Security-Policy"' in html
+        for label in expected_nav:
+            assert f">{label}</a>" in html
+        for target in re.findall(r'(?:href|src)="([^"]+)"', html):
+            if target.startswith(("https://", "http://", "#", "data:")):
+                continue
+            assert not target.startswith("/")
+            local_target = target.split("?", 1)[0].split("#", 1)[0]
+            assert (ROOT / local_target).is_file(), (path.name, target)
 
 
 def test_public_brand_name_and_tagline_are_consistent():
     public_files = {
         ROOT / "index.html",
+        ROOT / "check.html",
+        ROOT / "review.html",
+        ROOT / "evidence.html",
+        ROOT / "assets" / "demo.js",
         ROOT / "demo" / "app.py",
         ROOT / "README.md",
         ROOT / "docs" / "PRODUCT-CONTEXT.md",
@@ -52,23 +98,26 @@ def test_public_brand_name_and_tagline_are_consistent():
     for path in public_files:
         assert legacy_human_name not in path.read_text(encoding="utf-8")
 
-    html = (ROOT / "index.html").read_text(encoding="utf-8")
+    landing = (ROOT / "index.html").read_text(encoding="utf-8")
+    project = (ROOT / "check.html").read_text(encoding="utf-8")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     tagline = (
         "Find a candidate route. See the sources behind it. "
         "Take open questions to staff."
     )
     assert (
-        "<title>Permit Bearings — cited housing-permit guidance for "
-        "California jurisdictions</title>"
-    ) in html
-    assert '<meta property="og:title" content="Permit Bearings">' in html
-    assert '<h1 id="t-title">Permit Bearings</h1>' in html
-    assert f'<p class="tag" id="t-tagline">{tagline}</p>' in html
-    assert "Prototype source-grounded ADU, JADU, and SB 9" in html
+        "<title>Permit Bearings | California housing permit guidance</title>"
+        in landing
+    )
+    assert '<meta property="og:title" content="Permit Bearings">' in landing
+    assert "Check a California housing project" in landing
+    assert "Start a project check" in landing
+    assert 'id="t-tagline"' in project
+    assert tagline in application
 
-    assert DEMO_STRINGS["en"]["title"] == "Permit Bearings — demo"
+    assert DEMO_STRINGS["en"]["title"] == "Permit Bearings | demo"
     assert DEMO_STRINGS["en"]["tagline"] == tagline
-    assert DEMO_STRINGS["es"]["title"] == "Permit Bearings — demostración"
+    assert DEMO_STRINGS["es"]["title"] == "Permit Bearings | demostración"
     assert DEMO_STRINGS["es"]["tagline"] == (
         "Encuentre una posible ruta. Vea las fuentes que la respaldan. "
         "Consulte las preguntas pendientes con el personal de la agencia."
@@ -86,57 +135,118 @@ def test_public_brand_name_and_tagline_are_consistent():
 
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert 'name = "permit-pathways"' in pyproject
-    assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in html
+    assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in application
     assert (ROOT / "src" / "permit_pathways").is_dir()
 
 
-def test_static_result_cards_keep_explanations_separate_from_matching():
-    html = (ROOT / "index.html").read_text(encoding="utf-8")
+def test_public_interface_copy_uses_no_em_dashes():
+    public_sources = [
+        ROOT / "index.html",
+        ROOT / "check.html",
+        ROOT / "review.html",
+        ROOT / "evidence.html",
+        ROOT / "assets" / "demo.js",
+        ROOT / "demo" / "app.py",
+    ]
+    em_dash = chr(0x2014)
+    for path in public_sources:
+        assert em_dash not in path.read_text(encoding="utf-8"), path
 
-    assert "function screen(intake)" in html
-    assert "function renderResultCard(rule, explanation" in html
-    assert "async function normalizeExplanations(payload, rules)" in html
-    assert "Array.isArray(payload.entries)" in html
-    assert "async function citationFingerprint(rule)" in html
-    assert "async function ruleFingerprint(rule)" in html
-    assert "async function localizedContentFingerprint" in html
-    assert "source_dependencies: rule.source_dependencies" in html
-    assert "function validHighlights(value)" in html
-    assert "record.citation_fingerprint !== expectedFingerprint" in html
-    assert "record.rule_fingerprint !== expectedRuleFingerprint" in html
-    assert "if (!globalThis.crypto || !globalThis.crypto.subtle) return new Map()" in html
-    assert "EXPLANATIONS.get(rule.rule_id)" in html
-    assert "EXPLANATIONS = await normalizeExplanations" in html
-    assert "data-rule-id=" in html
-    assert "<details>" in html
-    assert 'source: "Source"' in html
-    assert "Draft explanation · made with AI · not reviewed by a person" in html
-    assert "no revisado para comprobar su exactitud" in html
-    assert "We are not showing next steps" in html
-    assert "Check candidate pathways" in html
-    assert "limited set of rules in this prototype" in html
-    assert 'id="resultStatus"' in html
-    assert '"primary_dwelling_status"' in html
-    assert '"adu_project_form"' in html
-    assert '["yes","Yes"],["no","No"],["unknown","I\'m not sure"]' in html
-    assert 'id="loadSample"' in html and "<button" in html
-    assert 'id="resultsHeading" tabindex="-1"' in html
-    assert 'aria-invalid' in html
-    assert 'name="has_primary_dwelling"' not in html
-    assert '"jadu")\n    return ["primary_dwelling_status", "unpermitted_existing"]' in html
-    assert "two_unit_contributing_historic_location" in html
-    assert "lot_split_alters_historic_district_resource" in html
-    assert "Supporting local information is shown below" in html
-    assert 'fieldset data-question="${esc(name)}"${describedBy}' in html
-    assert "ADU review-clock illustration" in html
+    rendered = result_page(
+        {
+            "jurisdiction": ["davis"],
+            "project_type": ["adu"],
+            "primary_dwelling_status": ["existing_single_family"],
+            "adu_project_form": ["new_detached"],
+            "unpermitted_existing": ["no"],
+        },
+        "en",
+    )
+    assert em_dash not in rendered
+
+
+def test_static_site_uses_published_california_design_tokens():
+    css = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+
+    for token, value in {
+        "--primary-900": "#003688",
+        "--cagov-primary": "#004abc",
+        "--cagov-highlight": "#fec02f",
+        "--accent2-300": "#ecb32d",
+        "--success-900": "#154425",
+        "--danger-900": "#721923",
+        "--w-lg": "73.5rem",
+        "--w-page-content": "54.75rem",
+    }.items():
+        assert f"{token}: {value}" in css
+    assert '--site-font: "Public Sans", "Noto Sans", Arial, sans-serif' in css
+    assert "--paper: var(--gray-50)" in css
+    assert "--blue: var(--primary-900)" in css
+    assert "--yellow: var(--cagov-highlight)" in css
+    assert "outline: 3px solid var(--accent2-300)" in css
+    assert "Avenir" not in css
+
+
+def test_static_result_cards_keep_explanations_separate_from_matching():
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+    project = (ROOT / "check.html").read_text(encoding="utf-8")
+    review = (ROOT / "review.html").read_text(encoding="utf-8")
+    evidence = (ROOT / "evidence.html").read_text(encoding="utf-8")
+
+    assert "function screen(intake)" in application
+    assert "function renderResultCard(rule, explanation" in application
+    assert "async function normalizeExplanations(payload, rules)" in application
+    assert "Array.isArray(payload.entries)" in application
+    assert "async function citationFingerprint(rule)" in application
+    assert "async function ruleFingerprint(rule)" in application
+    assert "async function localizedContentFingerprint" in application
+    assert "source_dependencies: rule.source_dependencies" in application
+    assert "function validHighlights(value)" in application
+    assert "record.citation_fingerprint !== expectedFingerprint" in application
+    assert "record.rule_fingerprint !== expectedRuleFingerprint" in application
+    assert (
+        "if (!globalThis.crypto || !globalThis.crypto.subtle) return new Map()"
+        in application
+    )
+    assert "EXPLANATIONS.get(rule.rule_id)" in application
+    assert "EXPLANATIONS = await normalizeExplanations" in application
+    assert "data-rule-id=" in application
+    assert "<details>" in application
+    assert 'source: "Source"' in application
+    assert "Draft explanation · made with AI · not reviewed by a person" in application
+    assert "no revisado para comprobar su exactitud" in application
+    assert "We are not showing next steps" in application
+    assert "limited set of rules in this prototype" in application
+    assert '"primary_dwelling_status"' in application
+    assert '"adu_project_form"' in application
+    assert '["yes","Yes"],["no","No"],["unknown","I\'m not sure"]' in application
+    assert 'id="resultsHeading" tabindex="-1"' in application
+    assert 'aria-invalid' in application
+    assert 'name="has_primary_dwelling"' not in application
+    assert (
+        '"jadu")\n    return ["primary_dwelling_status", "unpermitted_existing"]'
+        in application
+    )
+    assert "two_unit_contributing_historic_location" in application
+    assert "lot_split_alters_historic_district_resource" in application
+    assert "Supporting local information is shown below" in application
+    assert 'fieldset data-question="${esc(name)}"${describedBy}' in application
+
+    assert "Check candidate pathways" in project
+    assert 'id="resultStatus"' in project
+    assert 'id="clockBtn"' in project
+    assert 'id="loadSample"' in review
+    assert 'id="scanStatus"' in review
+    assert 'id="simBtn"' in evidence
+    assert 'id="sourceTable"' in evidence
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
 def test_static_explanation_normalizer_accepts_canonical_data_and_fails_closed():
-    html = (ROOT / "index.html").read_text(encoding="utf-8")
-    validation_source = html[
-        html.index("function isJsonNumber"):
-        html.index("function renderForm")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+    validation_source = application[
+        application.index("function isJsonNumber"):
+        application.index("function renderForm")
     ]
     bundle = json.loads(
         (ROOT / "data" / "explanations" / "plain-language.json").read_text(
@@ -226,10 +336,10 @@ Object.defineProperty(globalThis, "crypto",
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
 def test_static_matcher_is_type_strict_and_source_changes_use_exact_ids():
-    html = (ROOT / "index.html").read_text(encoding="utf-8")
-    matching_source = html[
-        html.index("function isJsonNumber"):
-        html.index("function esc")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+    matching_source = application[
+        application.index("function isJsonNumber"):
+        application.index("function esc")
     ]
     script = f"""
 function nonBlank(value) {{
@@ -275,13 +385,21 @@ if (ruleStatus(futureRule, []) !== "stale")
 
 def test_demo_server_exposes_only_intended_static_files():
     assert static_path("/index.html") == ROOT / "index.html"
-    assert static_path("/showcase") == ROOT / "index.html"
+    assert static_path("/check.html") == ROOT / "check.html"
+    assert static_path("/review.html") == ROOT / "review.html"
+    assert static_path("/evidence.html") == ROOT / "evidence.html"
+    assert static_path("/showcase") == ROOT / "check.html"
+    assert static_path("/assets/site.css") == ROOT / "assets" / "site.css"
+    assert static_path("/assets/demo.js") == ROOT / "assets" / "demo.js"
     assert static_path("/data/demo-data.js") == OUTPUT
     assert static_path("/data/explanations/plain-language.json") == (
         ROOT / "data" / "explanations" / "plain-language.json"
     )
 
     assert static_path("/README.md") is None
+    assert static_path("/assets/missing.css") is None
+    assert static_path("/assets/../README.md") is None
+    assert static_path("/assets/%2e%2e/README.md") is None
     assert static_path("/data/missing.json") is None
     assert static_path("/data/../README.md") is None
     assert static_path("/data/%2e%2e/README.md") is None
@@ -310,6 +428,7 @@ def test_demo_server_sets_security_headers_and_limits_post_routes():
     assert handler.status == 200
     headers = handler.response_headers
     assert "frame-ancestors 'none'" in headers["Content-Security-Policy"]
+    assert "style-src 'self' 'unsafe-inline'" in headers["Content-Security-Policy"]
     assert headers["Referrer-Policy"] == "no-referrer"
     assert headers["X-Content-Type-Options"] == "nosniff"
     assert headers["X-Frame-Options"] == "DENY"

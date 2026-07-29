@@ -12,12 +12,16 @@ source drift.
 **Live demo:** https://chelseakr.github.io/permit-pathways/
 
 **Local static demo:** open `index.html` directly, or run
-`python3 -m http.server 8765` and visit `http://localhost:8765/`. The page
-loads its generated `data/demo-data.js` bundle without network requests.
+`python3 -m http.server 8765` and visit `http://localhost:8765/`. The landing,
+applicant guide, ordinance screen, and evidence page use relative links and
+work without network requests. Only the three interactive pages load the
+generated `data/demo-data.js` bundle.
 
 See [docs/PRODUCT-CONTEXT.md](docs/PRODUCT-CONTEXT.md) for the capability
 truth, challenge fit, and prioritized opportunity map. Repository-specific
-contributor and agent guardrails live in [AGENTS.md](AGENTS.md).
+contributor and agent guardrails live in [AGENTS.md](AGENTS.md). The visual
+and interaction alignment with California Web Standards is recorded in
+[docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md).
 
 ## The conformance scanner
 
@@ -99,8 +103,9 @@ Permit Bearings treats that question as the product:
   drafts are prototyped. Spanish drafts have no human or semantic-parity
   review. Applicant-facing result titles are localized drafts; canonical
   source citations, excerpts, and generic document hints remain English.
-  Styling uses the open-source California Design System's cagov theme tokens
-  (no state branding; use implies no affiliation).
+  Styling implements the published California Design System `cagov` color,
+  type, spacing, and width tokens locally, alongside California Web Standards
+  design principles. No State branding or affiliation is claimed.
 
 ## Status
 
@@ -158,7 +163,8 @@ PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live sour
 PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
 python3 -m http.server 8765                         # full static showcase
 PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
-# The Python server also exposes the static showcase at /index.html.
+# The Python server exposes the landing at /index.html and tools at
+# /check.html, /review.html, and /evidence.html.
 python3 scripts/build_demo_bundle.py                # after canonical JSON changes
 ```
 
@@ -182,19 +188,20 @@ GitHub Action re-fetches selected statewide sources and is intended to open an
 issue if any changed or became unreachable. Local-code sources and newly
 enacted-law discovery are not yet covered.
 
-The full static showcase serves an English/Spanish structured-intake shell,
-grouped decision-record results with plain-language explanation drafts,
-always-visible citations and source-status badges, an abstention path ("needs
-staff review") when no encoded state pathway matches, the conformance scanner,
-review clocks, and a trust dashboard. Spanish explanation copy is an
-unreviewed machine draft; applicant-facing titles are localized drafts while
-canonical pathway labels, excerpts, citations, and document hints remain
-English when shown. Stale and unverified records suppress action copy,
-interpretive notes, and document hints. The dashboard includes a clearly
-labeled one-click rehearsal of an amendment to Gov. Code § 66321; matching
-result cards rerender as stale, but that rehearsal is not persisted production
-state. The smaller Python reference demo renders the same explanation sidecar
-and keeps a separate `/trust` route.
+The full static showcase has four task-focused pages: a lightweight landing
+page; an English/Spanish applicant guide with review clocks; a bounded
+ordinance screen; and an evidence-and-updates page. The applicant guide renders
+grouped decision records with plain-language explanation drafts,
+always-visible citations and source-status badges, and an abstention path
+("needs staff review") when no encoded state pathway matches. Spanish
+explanation copy is an unreviewed machine draft; applicant-facing titles are
+localized drafts while canonical pathway labels, excerpts, citations, and
+document hints remain English when shown. Stale and unverified records suppress
+action copy, interpretive notes, and document hints. The evidence page includes
+a clearly labeled one-click rehearsal of an amendment to Gov. Code § 66321;
+matching applicant records can be opened in the stale state, but the rehearsal
+is not persisted production state. The smaller Python reference demo renders
+the same explanation sidecar and keeps a separate `/trust` route.
 
 ## Layout
 
@@ -204,10 +211,14 @@ and keeps a separate `/trust` route.
 - `data/rules/` — the cited rule base; `data/golden/` — golden cases
 - `data/explanations/plain-language.json` — English/Spanish explanation drafts
 - `data/demo-data.js` — generated offline bundle for the static showcase
+- `index.html`, `check.html`, `review.html`, `evidence.html` — task-focused
+  static pages; `assets/` — shared browser application and visual system
 - `corpus/hcd/` — HCD source documents recorded by rule citations
 - `demo/app.py` — stdlib reference demo and safe static-file server
 - `scripts/build_demo_bundle.py` — rebuild/check the static data bundle
 - `docs/DESIGN.md` — architecture and demo plan
+- `docs/DESIGN-SYSTEM.md` — California Web Standards alignment and local
+  extensions
 - `docs/PRODUCT-CONTEXT.md` — capability truth and opportunity priorities
 - `AGENTS.md` — evidence, scope, privacy, and quality guardrails
 - `LICENSE` and `THIRD_PARTY_NOTICES.md` — original-project license and

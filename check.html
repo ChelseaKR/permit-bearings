@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'">
+<title>Check a project | Permit Bearings</title>
+<meta name="description" content="Use structured project facts to see candidate California ADU, JADU, and SB 9 permit routes, cited sources, and questions for local staff.">
+<meta property="og:title" content="Check a project | Permit Bearings">
+<meta property="og:description" content="See candidate housing-permit routes from a bounded prototype rule set.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="project">
+<a class="skip-link" href="#mainContent">Skip to main content</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="site-identity">
+      <a class="brand" href="index.html" aria-label="Permit Bearings home">
+        Permit Bearings
+      </a>
+      <span class="prototype-label">Prototype</span>
+    </div>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="check.html" aria-current="page">Check a project</a>
+      <a href="review.html">Review local rules</a>
+      <a href="evidence.html">Evidence &amp; updates</a>
+    </nav>
+  </div>
+</header>
+
+<main id="mainContent">
+  <header class="tool-hero">
+    <div class="page-shell tool-hero-grid">
+      <div>
+        <p class="eyebrow">Applicant project guide</p>
+        <h1>Check a housing project</h1>
+        <p class="lede" id="t-tagline">Find a candidate route. See the sources
+          behind it. Take open questions to staff.</p>
+      </div>
+      <p class="boundary-note"><strong>This checks a limited encoded rule
+        set.</strong> It does not retrieve parcel data, verify your answers,
+        reproduce a jurisdiction’s complete checklist, or decide whether the
+        project will be approved.</p>
+    </div>
+  </header>
+
+  <div class="page-shell tool-main">
+    <section class="tool-section" id="screen" aria-labelledby="screenHeading">
+      <div class="tool-shell">
+        <div class="tool-meta">
+          <p class="utility-label">Structured project guide</p>
+          <button class="nav-button ghost" id="langToggle" type="button">
+            Español: formulario y resultados
+          </button>
+        </div>
+        <h2 id="screenHeading">Find a possible permit path</h2>
+        <p class="translation-scope" id="translationScope">The language choice
+          applies to the applicant form and pathway results. The deadline tool
+          and source records remain in English.</p>
+        <div class="notice hidden" id="projectRehearsal">
+          <strong>Source-change rehearsal applied:</strong> records linked to
+          Gov. Code § 66321 will appear stale and withhold action-oriented
+          explanation copy. <a href="check.html">Return to current source
+          status</a>.
+        </div>
+
+        <form id="intake" novalidate>
+          <fieldset>
+            <legend id="t-juris">Where is the property?</legend>
+            <input id="jurisInput" name="jurisdiction_name" list="jurisList"
+              autocomplete="off" aria-labelledby="t-juris"
+              aria-describedby="jurisHelp jurisStatus" required
+              placeholder="Type any California city or county…">
+            <datalist id="jurisList"></datalist>
+            <p class="small" id="jurisHelp">Choose a suggestion, or enter the
+              exact city or county name.</p>
+            <p class="small" id="jurisStatus" role="status" aria-live="polite"
+              aria-atomic="true"></p>
+          </fieldset>
+
+          <fieldset>
+            <legend id="t-project">What are you proposing?</legend>
+            <div id="typeRadios"></div>
+          </fieldset>
+
+          <div id="projectQuestions" class="conditional-intake" hidden></div>
+          <button type="submit" id="t-submit" disabled>Check candidate pathways</button>
+        </form>
+
+        <p id="resultStatus" class="visually-hidden" role="status"
+          aria-live="polite" aria-atomic="true"></p>
+        <div id="dataLoadError" class="hidden"></div>
+        <div id="results"></div>
+      </div>
+    </section>
+
+    <section class="tool-section clock-section" id="clocks"
+      aria-labelledby="clockHeading">
+      <h2 id="clockHeading">Check ADU review dates</h2>
+      <p class="section-intro" id="clockHelp">Enter the date the agency received
+        the application. If both statements are true, this tool will show the
+        conditional 60-day date.</p>
+
+      <div class="clock-form">
+        <label class="clock-date" for="recvDate">
+          <span>Date the agency received the application</span>
+          <input type="date" id="recvDate" aria-describedby="clockHelp clockLimit">
+        </label>
+        <fieldset class="clock-conditions">
+          <legend>For the 60-day date, confirm both statements</legend>
+          <label><input type="checkbox" id="clockComplete">
+            The agency said the application was complete when it was
+            received.</label>
+          <label><input type="checkbox" id="clockExisting">
+            A single-family or multifamily home already existed on the
+            lot.</label>
+        </fieldset>
+        <p class="clock-limit" id="clockLimit"><strong>15-business-day
+          completeness date:</strong> This prototype cannot calculate it
+          without the agency’s closure calendar.</p>
+        <button id="clockBtn" type="button">Check dates</button>
+        <p id="clockStatus" class="visually-hidden" role="status"
+          aria-live="polite" aria-atomic="true"></p>
+        <div id="clockResults"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>Decision support only. This is not legal advice or a substitute for a
+      jurisdiction’s review. Applicant answers stay in this browser and are
+      not stored by the public demo.</p>
+    <div class="footer-links">
+      <a href="evidence.html">Methods and limits</a>
+      <a href="review.html">Review local rules</a>
+    </div>
+  </div>
+</footer>
+
+<script src="data/demo-data.js"></script>
+<script src="assets/demo.js"></script>
+</body>
+</html>

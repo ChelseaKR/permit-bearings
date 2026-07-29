@@ -6,10 +6,14 @@ observers. Goal: be the vendor they remember for *trust*, not features.
 Preflight: use the hosted demo, open `index.html` directly, or serve the
 repository with `python3 -m http.server 8765`. After changing canonical JSON,
 run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
+Start at `/` for the product boundary, then use `/review.html`,
+`/check.html`, and `/evidence.html` for the three live jobs.
 
 ## Arc: “Every tool will show you an answer. I’ll show you the evidence—and when it needs review.”
 
 ### 0. The opener — scan an ordinance live (4 min)
+- From the landing page, choose **Review local rules**. The separation is
+  intentional: this is a staff review aid, not an applicant chatbot.
 - Paste an ADU ordinance provision into the conformance scanner. Watch it
   flag the stale SB 477 citation, the 16-ft height cap, the subjective
   "similar styled roof design" — each with the controlling state law and
@@ -35,6 +39,7 @@ run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
   mechanism is a liability with a friendly interface.
 
 ### 2. Applicant flow — Scenario A (7 min)
+- Open **Check a project** from the primary navigation.
 - Live intake: Davis homeowner, backyard ADU. Show the grouped decision
   records: candidate routes first, relevant standards second, and the
   unverified Davis local-process record last. In one card, walk from “What
@@ -60,7 +65,8 @@ run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
   homeowner workflow often omitted by developer-oriented intake.
 
 ### 3. The verification harness — Scenario C (7 min)
-- Trust dashboard: % of rule records with dated source evidence inside the
+- Open **Evidence & updates**. Show the percentage of rule records with dated
+  source evidence inside the
   review window, plus the Davis record with no dated source check because its
   source blocks retrieval.
 - Watched sources table: content hashes of the March 2026 ADU Handbook and
@@ -68,7 +74,8 @@ run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
   Action) reports when either changes or becomes unreachable.
 - One click: rehearse an amendment to § 66321. Five dependent rules flip
   stale; matching result cards rerender and withhold their drafted actions,
-  while unrelated records remain unchanged. Label this as a simulation.
+  while unrelated records remain unchanged. Follow the link into the
+  applicant guide to show the stale state. Label this as a simulation.
   Stable dependency IDs are implemented; persisted changed state and a staffed
   review queue are not. "This is what the morning after the legislative
   session should look like."

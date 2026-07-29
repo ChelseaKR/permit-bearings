@@ -7,8 +7,14 @@ Routes:
     /screen      POST target: pathway results with citations
     /trust       jurisdiction trust dashboard; ?changed=ca-gov-66321
                  rehearses a legislative amendment to Gov. Code § 66321
-    /index.html  full static showcase (also available at /showcase)
-    /data/...    repository-local data used by the static showcase
+    /index.html  static landing page
+    /check.html  applicant project guide
+    /review.html ordinance review aid
+    /evidence.html
+                 public evidence and source-status page
+    /showcase    compatibility alias for /check.html
+    /assets/...  public static styles and browser application code
+    /data/...    repository-local data used by the static tools
 """
 
 import html
@@ -30,6 +36,7 @@ RULES_PATH = ROOT / "data" / "rules"
 EXPLANATIONS_PATH = ROOT / "data" / "explanations" / "plain-language.json"
 GOLDEN_PATH = ROOT / "data" / "golden" / "example.json"
 DATA_ROOT = (ROOT / "data").resolve()
+ASSETS_ROOT = (ROOT / "assets").resolve()
 MAX_BODY_BYTES = 64 * 1024
 SB9_BASE_FIELDS = (
     "in_urbanized_area",
@@ -90,7 +97,7 @@ FIELD_VALUES.update(
 
 STRINGS = {
     "en": {
-        "title": "Permit Bearings — demo",
+        "title": "Permit Bearings | demo",
         "tagline": "Find a candidate route. See the sources behind it. "
                    "Take open questions to staff.",
         "scope": "The language choice applies to the applicant form and results. "
@@ -103,7 +110,7 @@ STRINGS = {
             ("lot_split", "Split my lot into two parcels (SB 9)"),
         ],
         "tri": [("yes", "Yes"), ("no", "No"), ("unknown", "I'm not sure")],
-        "primary_question": "What dwelling exists on the lot now—or is proposed?",
+        "primary_question": "What dwelling exists on the lot now, or is proposed?",
         "primary_help": "Choose what exists now separately from what is only "
                         "proposed. Some review clocks depend on that difference.",
         "primary_options": [
@@ -171,8 +178,8 @@ STRINGS = {
                                  "protected-site condition named in SB 9?",
             "parcel_created_by_sb9_split": "Was this parcel already created by "
                                             "an SB 9 lot split?",
-            "adjacent_sb9_split_same_actor": "Has the same owner—or someone "
-                                              "working with that owner—used SB 9 "
+            "adjacent_sb9_split_same_actor": "Has the same owner, or someone "
+                                              "working with that owner, used SB 9 "
                                               "to split an adjacent parcel?",
             "proposed_lot_ratio_compliant": "Would each proposed parcel contain "
                                             "at least 40% of the original lot area?",
@@ -188,7 +195,7 @@ STRINGS = {
             ("example-city", "Another California city"),
         ],
         "submit": "Check candidate pathways",
-        "disclaimer": "Decision support only — not legal advice and not a "
+        "disclaimer": "Decision support only. This is not legal advice or a "
                       "substitute for your jurisdiction's review.",
         "results": "Possible permit paths and rules",
         "result_intro": "We compared your answers with the limited set of rules "
@@ -240,7 +247,7 @@ STRINGS = {
         "dashboard": "Trust dashboard",
     },
     "es": {
-        "title": "Permit Bearings — demostración",
+        "title": "Permit Bearings | demostración",
         "tagline": "Encuentre una posible ruta. Vea las fuentes que la respaldan. "
                    "Consulte las preguntas pendientes con el personal de la agencia.",
         "scope": "El idioma elegido se aplica al formulario y a los resultados "
@@ -340,7 +347,7 @@ STRINGS = {
             ("example-city", "Otra ciudad de California"),
         ],
         "submit": "Revisar posibles vías",
-        "disclaimer": "Solo apoyo a la decisión — no es asesoría legal ni "
+        "disclaimer": "Solo apoyo a la decisión. No es asesoría legal ni "
                       "sustituye la revisión de su jurisdicción.",
         "results": "Posibles vías de permiso y reglas",
         "result_intro": "Comparamos sus respuestas con el conjunto limitado de "
@@ -458,6 +465,18 @@ table{border-collapse:collapse;width:100%} td,th{border-bottom:1px solid #eee;
                  white-space:nowrap;border:0}
 @media(max-width:30rem){.choice-grid{grid-template-columns:1fr}}
 """
+
+
+def _ui_text(value):
+    """Normalize editorial dash punctuation without changing stored evidence."""
+
+    text = str(value)
+    dash = chr(0x2014)
+    return text.replace(f" {dash} ", " ").replace(dash, " ")
+
+
+def _ui_escape(value, *, quote=True):
+    return html.escape(_ui_text(value), quote=quote)
 
 
 def page(title, body, lang="en"):
@@ -580,7 +599,7 @@ def intake_form(lang):
 <form method="post" action="/screen?lang={lang}">
 <fieldset><legend>{html.escape(s['jurisdiction'])}</legend>
 <select name="jurisdiction" required>
-<option value="" selected disabled>—</option>{juris}</select></fieldset>
+<option value="" selected disabled>Seleccione</option>{juris}</select></fieldset>
 <fieldset><legend>{html.escape(s['project_type'])}</legend>
 <div class="choice-grid">{radios}</div></fieldset>
 <p class="small">{html.escape(s['question_intro'])}</p>
@@ -720,16 +739,16 @@ def render_result_card(
     source_url = _safe_external_url(citation.url)
     source_record = (
         f"<a lang='en' href='{html.escape(source_url, quote=True)}' "
-        f"rel='noopener'>{html.escape(citation.source)}</a>"
+        f"rel='noopener'>{_ui_escape(citation.source)}</a>"
         if source_url
-        else f"<span lang='en'>{html.escape(citation.source)}</span>"
+        else f"<span lang='en'>{_ui_escape(citation.source)}</span>"
     )
     source = (
         f"<p class='source-basis'><b>{html.escape(s['source'])}:</b> "
         f"{source_record}</p>"
     )
     docs = "".join(
-        f"<li>{html.escape(document)}</li>"
+        f"<li>{_ui_escape(document)}</li>"
         for document in rule.required_documents
     )
     docs_html = (
@@ -741,7 +760,7 @@ def render_result_card(
     evidence = f"""
 <details>
   <summary lang="{lang}">{s['evidence']}</summary>
-  {f'<p class="small" lang="en">{html.escape(rule.notes)}</p>' if status == "verified" and rule.notes else ''}
+  {f'<p class="small" lang="en">{_ui_escape(rule.notes)}</p>' if status == "verified" and rule.notes else ''}
   {f'<blockquote lang="en">{html.escape(citation.excerpt)}</blockquote>' if citation.excerpt else ''}
   {f'<p class="small" lang="{lang}">{s["evidence_unavailable"]}</p>' if status != "verified" and not citation.excerpt else ''}
   {docs_html if status == "verified" else ""}
@@ -770,28 +789,28 @@ def render_result_card(
         display_title = localized.title
         display_title_lang = copy_lang
         next_steps = "".join(
-            f"<li>{html.escape(step)}</li>" for step in localized.next_steps
+            f"<li>{_ui_escape(step)}</li>" for step in localized.next_steps
         )
         confirmations = "".join(
-            f"<li>{html.escape(item)}</li>"
+            f"<li>{_ui_escape(item)}</li>"
             for item in localized.confirm_with_staff
         )
         highlights = ""
         if localized.highlights is not None:
             highlight_items = "".join(
-                f"<li><strong>{html.escape(item.label)}:</strong> "
-                f"{html.escape(item.text)}</li>"
+                f"<li><strong>{_ui_escape(item.label)}:</strong> "
+                f"{_ui_escape(item.text)}</li>"
                 for item in localized.highlights.items
             )
             highlights = f"""
   <div class="key-points">
-    <h4 lang="{copy_lang}">{html.escape(localized.highlights.title)}</h4>
+    <h4 lang="{copy_lang}">{_ui_escape(localized.highlights.title)}</h4>
     <ul lang="{copy_lang}">{highlight_items}</ul>
   </div>"""
         plain_language = f"""
 <div class="plain-layer">
   <h4 lang="{lang}">{s['means']}</h4>
-  <p lang="{copy_lang}">{html.escape(localized.summary)}</p>
+  <p lang="{copy_lang}">{_ui_escape(localized.summary)}</p>
   {highlights}
   <h4 lang="{lang}">{s['next']}</h4>
   <p class="small" lang="{lang}">{s['next_scope']}</p>
@@ -816,7 +835,7 @@ def render_result_card(
             if suppress_pending_review and pending_only
             else "".join(
                 f"<p class='review-note' lang='{lang}'>"
-                f"{html.escape(label)}</p>"
+                f"{_ui_escape(label)}</p>"
                 for label in _review_labels(explanation, lang, copy_lang)
             )
         )
@@ -831,7 +850,7 @@ def render_result_card(
     return f"""<article class="card result-card{'' if status == 'verified' else ' unverified'}"
   data-rule-id="{html.escape(rule.rule_id)}" aria-labelledby="{card_id}">
 <div class="result-head">
-  <h3 id="{card_id}" lang="{display_title_lang}">{html.escape(display_title)}</h3>
+  <h3 id="{card_id}" lang="{display_title_lang}">{_ui_escape(display_title)}</h3>
 {badge}
 </div>
 {review_note}
@@ -1002,7 +1021,7 @@ def trust_page(query, lang):
         f"<tr><td>{rid}</td><td><span class='badge'>within review window</span></td></tr>"
         for rid in report.verified
     ) + "".join(
-        f"<tr><td>{rid}</td><td><span class='badge stale'>STALE — re-verify</span></td></tr>"
+        f"<tr><td>{rid}</td><td><span class='badge stale'>STALE: re-verify</span></td></tr>"
         for rid in report.stale
     ) + "".join(
         f"<tr><td>{rid}</td><td><span class='badge warn'>no dated source record</span></td></tr>"
@@ -1034,14 +1053,26 @@ def static_path(url_path):
     """Resolve a public static-demo path without allowing path traversal."""
 
     decoded = unquote(url_path)
-    if decoded in {"/index.html", "/showcase"}:
-        return ROOT / "index.html"
-    if not decoded.startswith("/data/"):
-        return None
+    page_paths = {
+        "/index.html": "index.html",
+        "/check.html": "check.html",
+        "/review.html": "review.html",
+        "/evidence.html": "evidence.html",
+        "/showcase": "check.html",
+    }
+    if decoded in page_paths:
+        return ROOT / page_paths[decoded]
 
+    allowed_root = (
+        DATA_ROOT if decoded.startswith("/data/")
+        else ASSETS_ROOT if decoded.startswith("/assets/")
+        else None
+    )
+    if allowed_root is None:
+        return None
     candidate = (ROOT / decoded.lstrip("/")).resolve()
     try:
-        candidate.relative_to(DATA_ROOT)
+        candidate.relative_to(allowed_root)
     except ValueError:
         return None
     return candidate if candidate.is_file() else None
@@ -1052,7 +1083,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header(
             "Content-Security-Policy",
             "default-src 'none'; script-src 'self' 'unsafe-inline'; "
-            "style-src 'unsafe-inline'; img-src 'self' data:; "
+            "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
             "connect-src 'self'; base-uri 'none'; form-action 'self'; "
             "frame-ancestors 'none'",
         )

@@ -1,29 +1,33 @@
-# Accessibility audit — static pass, updated 2026-07-28
+# Accessibility audit: static pass, updated 2026-07-28
 
-Scope: the public demo page (`index.html`) and shared applicant flow in
+Scope: the four-page public static site (`index.html`, `check.html`,
+`review.html`, and `evidence.html`) and the separate applicant flow in
 `demo/app.py`. **Target: WCAG 2.2 Level AAA.**
-Styling uses the open-source **California Design System** ("cagov" theme
-tokens from `@cagov/ds-base-css`, with a system UI type stack); token steps were chosen
-to meet AAA contrast on these surfaces, and the dark theme derives from the
-same hues (CDS ships light-only). No state branding, logo, or header is
-used — the design system is open source and its use does not imply
-affiliation.
+The static site implements the published California Design System `cagov`
+tokens locally: Public Sans-first typography, 18px body copy, 1.75 line
+height, state color/status tokens, spacing steps, and the 1,176px shell /
+876px reading widths. No State logo, official-site banner, branding, or
+affiliation is claimed. See `docs/DESIGN-SYSTEM.md`.
 
 This is a static (code-level) audit with computed contrast; items under
 "Remaining" require a human with assistive technology.
 
 ## Checked and passing
 
-**Semantics & structure.** Single `<main>`; one `<h1>`; sectioned `<h2>`s;
+**Semantics & structure.** Each page has a skip link, one `<main>`, one
+`<h1>`, a labeled primary navigation, and `aria-current` on the active page.
+Sections use `<h2>`s;
 grouped result headings; each decision record is an `<article>` labeled by
 its unique title; evidence uses native `<details>/<summary>`; `<th>` header
 rows. Multiple deadlines or thresholds use a semantic heading and list rather
 than visual-only layout. All interactive elements are native controls, so
 keyboard operability and focus order come from the platform.
 
-**Focus appearance (2.4.13, AAA-new).** Global `:focus-visible` indicator:
-3px solid accent outline with 2px offset — ≥2px perimeter, ≥3:1 against
-adjacent colors in both themes (10.6:1 light / 10.3:1 dark vs page).
+**Focus appearance (2.4.13, AAA-new).** Global `:focus-visible` uses a 3px
+`accent2-300` ring with a 2px offset and a 5px `primary-900` outer ring.
+The inner gold is 5.87:1 against the primary surface and the outer blue is
+10.68:1 against the page. Two colors keep the indicator visible across white,
+gold, and blue components.
 
 **Target size (2.5.5 AAA / 2.5.8 AA).** Buttons, selects, inputs, and
 textareas have `min-height: 44px`; checkbox/radio rows get ≥44px hit areas
@@ -64,31 +68,30 @@ appear operable.
 are hidden from assistive technology, and hue never carries meaning by itself.
 The current-source badge is deliberately neutral rather than approval-green.
 
-**Contrast — 1.4.6 Enhanced (7:1 normal text), computed both themes:**
+**Contrast: 1.4.6 Enhanced (7:1 normal text), computed from the adopted
+tokens:**
 
-| Pair | Light | Dark |
-|---|---|---|
-| Body ink / page | 18.7 | 19.4 |
-| Secondary ink / page | 7.5 | 10.9 |
-| Muted ink / page·surface | 7.1 / 7.3 | 8.2 / 7.3 |
-| Links & accent (CDS primary-900 / primary-300) | 10.6 | 10.3 / 9.2 |
-| Button text on accent | 11.2 | 10.3 |
-| Badge ok text/bg | 8.0 | 8.2 |
-| Badge warn text/bg (CDS accent2-900/accent2-100) | 9.6 | 8.0 |
-| Badge bad text/bg | 7.8 | 8.9 |
+| Pair | Ratio |
+|---|---:|
+| Black body ink / gray-50 page | 20.12:1 |
+| Gray-800 secondary ink / gray-50 page | 8.44:1 |
+| Primary-900 link / gray-50 page | 10.68:1 |
+| White button text / primary-900 | 11.15:1 |
+| Success-900 / success-100 badge | 9.58:1 |
+| Warning-900 / accent2-100 badge | 9.57:1 |
+| Danger-900 / danger-100 badge | 9.56:1 |
 
-Status *fill* colors (meter segments) are graphical objects (1.4.11, 3:1
-with text badges adjacent); ok/bad badge pairs are supplemental to CDS,
-which defines no status green/red in its theme tokens.
-Form-control boundaries are 4.9:1 against the light surface and 6.7:1
-against the dark surface.
+Status meter fills are graphical objects with adjacent text labels; meaning
+does not depend on color. The gray-700 form-control boundary is 6.39:1
+against its white surface.
 
-**Visual presentation (1.4.8, partial).** Line height 1.55; single column
-capped near 80 characters; no justified text; wide tables scroll in their
-own container (no page horizontal scroll at 320px). User-selectable
-colors/spacing beyond browser and OS mechanisms are not provided.
+**Visual presentation (1.4.8, partial).** Base line height is 1.75; reading
+content is capped at the published 876px width; no text is justified; wide
+tables scroll in their own labeled region (no page horizontal scroll at
+320px). User-selectable colors/spacing beyond browser and OS mechanisms are
+not provided.
 
-**Language switching.** The static showcase preserves the current intake and
+**Language switching.** The applicant page preserves the current intake and
 rendered result set when English/Spanish interface copy is toggled. Source
 material that remains English carries `lang="en"`. The Python reference demo's
 language link is labeled as starting over because that server-rendered surface
@@ -96,7 +99,7 @@ does not preserve form state. Both surfaces state that language selection
 covers the applicant form and results, while the staff-facing trust,
 ordinance, and clock tools remain English.
 
-## Remaining (human/AT pass — not done)
+## Remaining (human/AT pass not done)
 
 - Screen-reader walkthrough (VoiceOver/NVDA): reading order, datalist
   combobox behavior, live-region verbosity.
@@ -110,6 +113,6 @@ ordinance, and clock tools remain English.
   source-linked letter metadata, scanner, clocks, dashboard, and sources
   remain partly or wholly English.
 - Keyboard-only end-to-end run of all four flows.
-- AAA content-level judgments (3.1.5 reading level — the new plain-language
+- AAA content-level judgments (3.1.5 reading level): the new plain-language
   layer is structurally simpler, but no formal readability or comprehension
   assessment has been done).

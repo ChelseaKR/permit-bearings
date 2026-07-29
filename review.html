@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'">
+<title>Review local rules | Permit Bearings</title>
+<meta name="description" content="Screen pasted California ADU and SB 9 ordinance text for a bounded set of provisions that may need staff or counsel review.">
+<meta property="og:title" content="Review local rules | Permit Bearings">
+<meta property="og:description" content="A bounded, presence-based ordinance screen for staff and counsel review, not a compliance verdict.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="review">
+<a class="skip-link" href="#mainContent">Skip to main content</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="site-identity">
+      <a class="brand" href="index.html" aria-label="Permit Bearings home">
+        Permit Bearings
+      </a>
+      <span class="prototype-label">Prototype</span>
+    </div>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="check.html">Check a project</a>
+      <a href="review.html" aria-current="page">Review local rules</a>
+      <a href="evidence.html">Evidence &amp; updates</a>
+    </nav>
+  </div>
+</header>
+
+<main id="mainContent">
+  <header class="tool-hero">
+    <div class="page-shell tool-hero-grid">
+      <div>
+        <p class="eyebrow">Ordinance review aid</p>
+        <h1>Review local ordinance text</h1>
+        <p class="lede">Paste local ADU or SB 9 text. The prototype flags a
+          bounded set of patterns associated with state-law conflicts documented
+          in official sources.</p>
+      </div>
+      <p class="boundary-note"><strong>This is a presence-based text
+        screen.</strong> A flag is a review lead, not a legal conclusion.
+        No flag does not prove that an ordinance is complete or compliant.</p>
+    </div>
+  </header>
+
+  <div class="page-shell tool-main">
+    <section class="tool-section" id="conformance"
+      aria-labelledby="scannerHeading">
+      <p class="section-kicker">Text stays in your browser</p>
+      <h2 id="scannerHeading">Screen ordinance or handout text</h2>
+      <p class="section-intro">The current checks cover examples such as stale
+        SB 477 citations, some height and unit-count restrictions, subjective
+        standards, owner-occupancy language, parking provisions, and older SB 9
+        fire-exclusion language.</p>
+
+      <div class="tool-shell scanner-layout">
+        <div>
+          <label for="ordText" class="utility-label">Text to review</label>
+          <textarea id="ordText" rows="11"
+            placeholder="Paste ordinance or handout text here…"></textarea>
+          <div class="scanner-actions">
+            <button id="scanBtn" type="button" disabled>Screen this text</button>
+            <button class="link-button" type="button" id="loadSample">
+              Load two documented sample provisions
+            </button>
+          </div>
+          <p id="scanStatus" class="visually-hidden" role="status"
+            aria-live="polite" aria-atomic="true"></p>
+        </div>
+
+        <aside class="scanner-notes" aria-labelledby="scannerNotesHeading">
+          <h3 id="scannerNotesHeading">What to expect</h3>
+          <ul>
+            <li>Each flag shows the matching passage, state-law basis, and
+              documented HCD precedent.</li>
+            <li>The named six-provision fixture reproduces six expected review
+              flags; it is not a statewide accuracy evaluation.</li>
+            <li>The pasted text is processed locally and is not saved or sent
+              by this public demo.</li>
+          </ul>
+        </aside>
+      </div>
+
+      <div id="dataLoadError" class="hidden"></div>
+      <div id="scanResults" aria-labelledby="scannerHeading"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>Review aid only. This is not legal advice, a compliance certification, or a
+      substitute for staff and counsel review. Silence is not a clean bill of
+      health.</p>
+    <div class="footer-links">
+      <a href="evidence.html">Inspect checks and sources</a>
+      <a href="check.html">Check a project</a>
+    </div>
+  </div>
+</footer>
+
+<script src="data/demo-data.js"></script>
+<script src="assets/demo.js"></script>
+</body>
+</html>

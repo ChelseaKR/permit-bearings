@@ -120,15 +120,25 @@ affected nodes while proving that unrelated nodes remain current.
 The browser showcase remains dependency-free and static-host friendly.
 Canonical rules, explanations, registries, fixtures, checks, and source
 metadata stay in JSON. `scripts/build_demo_bundle.py` deterministically
-compiles those files into `data/demo-data.js`, which loads before the page
-application code. This lets `index.html` work when opened directly from disk,
-where browsers normally block JSON `fetch()` calls, while retaining
-checked-HTTP JSON loading as a fallback. The stdlib server exposes the static
-page at `/index.html` and `/showcase` and limits static-file access to
-`index.html` and `data/`.
+compiles those files into `data/demo-data.js`. The static surface is split by
+user job:
+
+- `index.html` — lightweight orientation and scope; it loads no data bundle;
+- `check.html` — applicant intake, candidate records, and the separate clock;
+- `review.html` — bounded ordinance-text screen; and
+- `evidence.html` — source status, regression summary, and change rehearsal.
+
+The three interactive pages load the generated bundle before shared,
+page-gated `assets/demo.js`. Relative URLs let all four pages work from disk
+and under a project subpath. The stdlib server exposes the same pages, keeps
+`/showcase` as an alias for `/check.html`, and limits static-file access to
+those four HTML files plus `assets/` and `data/`.
 
 The generated bundle must never become a second hand-edited source of truth;
 the test suite compares it byte-for-byte with the canonical JSON inputs.
+Visual primitives follow the published California Design System token
+vocabulary and California Web Standards principles; the exact adoption and
+product-specific extensions are documented in `docs/DESIGN-SYSTEM.md`.
 
 ## Cross-cutting requirement mapping
 
@@ -144,13 +154,15 @@ the test suite compares it byte-for-byte with the canonical JSON inputs.
 
 ## Demo plan (for the 40-minute showcase slot, if selected)
 
-1. Live structured intake for a hypothetical ADU project → candidate rules
+1. Start on the landing page to state the prototype boundary, then run the
+   structured intake for a hypothetical ADU project → candidate rules
    with citations and generic document hints (current Scenario A prototype).
 2. Select an unsupported fact combination → visible abstention + staff routing
    (current trust moment; free-text Q&A remains planned).
-3. Simulate a statute change → watch dependent answers flip to stale → staff
-   review state (Scenario C rehearsal, the differentiator).
-4. Show the trust dashboard.
+3. Use the ordinance-review page to flag a documented sample provision.
+4. On Evidence & updates, simulate a statute change → watch dependent answers
+   flip to stale → open the applicant guide in that state (Scenario C
+   rehearsal, the differentiator).
 
 The stronger next demo is one pilot jurisdiction's sourced parcel facts →
 ADU requirement manifest → missing-item remedies → exportable evidence packet

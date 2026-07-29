@@ -7,10 +7,13 @@ evidence and testing. Those items remain subject to their publishers' terms.
 
 ## California Design System
 
-The interface adapts color tokens from the `cagov` theme in
-`@cagov/ds-base-css`, part of the
-[California Design System](https://github.com/cagov/design-system). No State
-branding or endorsement is claimed.
+The interface locally implements published color, type, spacing, and width
+tokens from the `cagov` theme in `@cagov/ds-base-css`, part of the
+[California Design System](https://github.com/cagov/design-system), and follows
+the [California Web Standards design
+principles](https://webstandards.ca.gov/web-policies/design-and-ux/design-principles/).
+The repository does not redistribute the component package. No State branding,
+affiliation, or endorsement is claimed.
 
 MIT License
 

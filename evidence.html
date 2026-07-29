@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'">
+<title>Evidence &amp; updates | Permit Bearings</title>
+<meta name="description" content="Inspect the prototype’s rule-source status, regression cases, source dependencies, known gaps, and change rehearsal.">
+<meta property="og:title" content="Evidence &amp; updates | Permit Bearings">
+<meta property="og:description" content="See which sources are dated, which rules depend on them, and what the prototype still cannot verify.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="evidence">
+<a class="skip-link" href="#mainContent">Skip to main content</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="site-identity">
+      <a class="brand" href="index.html" aria-label="Permit Bearings home">
+        Permit Bearings
+      </a>
+      <span class="prototype-label">Prototype</span>
+    </div>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="check.html">Check a project</a>
+      <a href="review.html">Review local rules</a>
+      <a href="evidence.html" aria-current="page">Evidence &amp; updates</a>
+    </nav>
+  </div>
+</header>
+
+<main id="mainContent">
+  <header class="tool-hero">
+    <div class="page-shell tool-hero-grid">
+      <div>
+        <p class="eyebrow">Evidence &amp; updates</p>
+        <h1>Evidence and source status</h1>
+        <p class="lede">Inspect the dated source record behind each encoded
+          rule, replay the structured cases, and see which records would need
+          review after a source changes.</p>
+      </div>
+      <p class="boundary-note"><strong>Source status is not approval.</strong>
+        A date on file means source evidence was recorded. It does not mean a
+        jurisdiction, counsel, or named human reviewer accepted the encoded
+        interpretation.</p>
+    </div>
+  </header>
+
+  <div class="page-shell tool-main">
+    <section aria-labelledby="statusHeading">
+      <p class="section-kicker">Current prototype state</p>
+      <h2 id="statusHeading">Rule-source status</h2>
+      <p class="section-intro">The browser recomputes these figures from the
+        same generated data bundle used by the project guide.</p>
+
+      <div class="evidence-summary">
+        <article class="evidence-stat">
+          <p class="utility-label">Within review window</p>
+          <p class="hero"><span id="pct">Loading</span><span aria-hidden="true">%</span></p>
+          <p class="small">of rule records have dated source evidence inside
+            the 180-day review window.</p>
+        </article>
+        <article class="evidence-stat">
+          <p class="utility-label">Structured replay</p>
+          <p class="hero" id="goldenScore">Loading</p>
+          <p class="small" id="goldenLine">Loading structured scenarios…</p>
+        </article>
+        <article class="evidence-stat">
+          <p class="utility-label">Registry reach</p>
+          <p class="hero" id="coverageScore">Loading</p>
+          <p class="small" id="covLine">Loading jurisdiction registry…</p>
+        </article>
+      </div>
+
+      <div class="meter" id="meter" role="img"
+        aria-label="Loading rule-source status"></div>
+      <p class="small" id="meterLegend"></p>
+
+      <div class="simulation-box" aria-labelledby="simulationHeading">
+        <p class="utility-label">Dependency rehearsal</p>
+        <h3 id="simulationHeading">What happens when § 66321 changes?</h3>
+        <p>Rehearse a change to one source ID. Every linked rule turns stale;
+          unrelated records remain unchanged. This browser-only state is not a
+          persisted production review queue.</p>
+        <p>
+          <button class="ghost" id="simBtn" type="button" disabled>
+            Rehearse the source change
+          </button>
+          <button class="ghost hidden" id="resetBtn" type="button" disabled>
+            Reset the rehearsal
+          </button>
+        </p>
+        <div class="notice hidden" id="simNote">
+          Gov. Code § 66321 has been marked changed for this rehearsal. Linked
+          rules below are stale until a person checks them against the new
+          source text. To see that state on applicant records, open the
+          <a href="check.html?changed=ca-gov-66321">project guide with the
+          rehearsal applied</a>.
+        </div>
+        <p id="simulationStatus" class="visually-hidden"
+          aria-live="polite"></p>
+      </div>
+
+      <div id="dataLoadError" class="hidden"></div>
+      <div class="table-scroll" role="region"
+        aria-label="Rule source status table" tabindex="0">
+        <table id="ruleTable">
+          <thead>
+            <tr><th>Rule</th><th>Scope</th><th>Status</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="source-section" aria-labelledby="sourcesHeading">
+      <p class="section-kicker">Recorded source evidence</p>
+      <h2 id="sourcesHeading">Source monitoring</h2>
+      <p class="section-intro">Selected official state and local sources have a
+        recorded content hash and are re-fetched by the repository workflow.
+        Unwatchable sources remain visible as reference-only records. New-law
+        discovery and a durable review queue remain planned.</p>
+      <div class="table-scroll" role="region"
+        aria-label="Source monitoring table" tabindex="0">
+        <table id="sourceTable">
+          <thead>
+            <tr><th>Source</th><th>Monitoring</th><th>Recorded</th><th>SHA-256</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="source-section method-section"
+      aria-labelledby="methodHeading">
+      <p class="section-kicker">How to read this page</p>
+      <h2 id="methodHeading">Four boundaries stay visible.</h2>
+      <p>Trust comes from showing what each artifact proves and what it does
+        not prove.</p>
+      <dl class="method-list">
+        <div>
+          <dt>Matching</dt>
+          <dd><strong>Rules choose the records.</strong> Deterministic criteria
+            use the applicant’s structured answers. Explanation copy cannot
+            create or change a match.</dd>
+        </div>
+        <div>
+          <dt>Language</dt>
+          <dd><strong>Readable copy stays separate.</strong> English and Spanish
+            explanations are versioned AI-assisted prototype drafts. None is
+            represented as human-reviewed or jurisdiction-approved.</dd>
+        </div>
+        <div>
+          <dt>Currency</dt>
+          <dd><strong>A changed source affects its dependents.</strong> Stable
+            source IDs connect rules to evidence. The public change rehearsal
+            is temporary; durable changed-state persistence remains planned.</dd>
+        </div>
+        <div>
+          <dt>Coverage</dt>
+          <dd><strong>Statewide screening is not local encoding.</strong> The
+            statewide candidate-rule set can run for the registry. That does
+            not mean local codes, forms, parcel facts, or exceptions are
+            comprehensively represented.</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>This page reports prototype evidence and known gaps. It does not claim
+      legal correctness, jurisdiction acceptance, comprehensive coverage, or
+      completed human accessibility testing.</p>
+    <div class="footer-links">
+      <a href="check.html">Check a project</a>
+      <a href="review.html">Review local rules</a>
+    </div>
+  </div>
+</footer>
+
+<script src="data/demo-data.js"></script>
+<script src="assets/demo.js"></script>
+</body>
+</html>
