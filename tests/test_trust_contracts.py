@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import re
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -488,6 +489,18 @@ def test_every_canonical_rule_dependency_resolves_to_the_source_registry():
         if set(rule.source_dependencies) - source_ids
     }
     assert unresolved == {}
+
+
+def test_retained_text_corpus_excludes_embedded_google_api_keys():
+    google_api_key = re.compile(r"AIza[0-9A-Za-z_-]{35}")
+    text_suffixes = {".csv", ".html", ".json", ".md", ".txt"}
+    findings = []
+    for path in (ROOT / "corpus").rglob("*"):
+        if path.is_file() and path.suffix.lower() in text_suffixes:
+            content = path.read_text(encoding="utf-8", errors="ignore")
+            if google_api_key.search(content):
+                findings.append(path.relative_to(ROOT).as_posix())
+    assert findings == []
 
 
 def test_rule_aggregate_and_manifest_discover_every_rule_file(tmp_path):

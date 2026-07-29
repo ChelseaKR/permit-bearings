@@ -125,14 +125,6 @@
     "fetched_on": "2026-07-28",
     "normalize": "html-text"
   },
-  "https://www.cityofwoodland.gov/1408/Step-2-What-permits-will-I-need": {
-    "source_id": "woodland-adu-permit-workflow",
-    "label": "City of Woodland ADU permit workflow",
-    "local_copy": "corpus/woodland/adu-permit-workflow.html",
-    "sha256": "bd768bddbce7a72e0b6d98e5f523106951b7b755e6baf7fe78af7c86972b38b3",
-    "fetched_on": "2026-07-29",
-    "normalize": "html-text"
-  },
   "https://www.cityofwoodland.gov/DocumentCenter/View/12372": {
     "source_id": "woodland-preapproved-adu-checklist",
     "label": "City of Woodland Preapproved ADU Permit Application Checklist",
