@@ -124,7 +124,8 @@ compiles those files into `data/demo-data.js`. The static surface is split by
 user job:
 
 - `index.html` — lightweight orientation and scope; it loads no data bundle;
-- `check.html` — applicant intake, candidate records, and the separate clock;
+- `check.html` — applicant intake, candidate records, a labeled shareable
+  sample that reuses a canonical golden fixture, and the separate clock;
 - `review.html` — bounded ordinance-text screen; and
 - `evidence.html` — source status, regression summary, and change rehearsal.
 
@@ -154,9 +155,11 @@ product-specific extensions are documented in `docs/DESIGN-SYSTEM.md`.
 
 ## Demo plan (for the 40-minute showcase slot, if selected)
 
-1. Start on the landing page to state the prototype boundary, then run the
-   structured intake for a hypothetical ADU project → candidate rules
-   with citations and generic document hints (current Scenario A prototype).
+1. Start on the landing page to state the prototype boundary, then open
+   `check.html?sample=adu`. The labeled hypothetical Woodland facts are
+   submitted through the normal intake and matcher path, producing candidate
+   rules with citations and generic document hints (current Scenario A
+   prototype).
 2. Select an unsupported fact combination → visible abstention + staff routing
    (current trust moment; free-text Q&A remains planned).
 3. Use the ordinance-review page to flag a documented sample provision.

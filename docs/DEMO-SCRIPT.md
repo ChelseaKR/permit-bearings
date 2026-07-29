@@ -38,11 +38,16 @@ Start at `/` for the product boundary, then use `/review.html`,
 - Frame: correctness *decays*. An AI guidance tool without a currency
   mechanism is a liability with a friendly interface.
 
-### 2. Applicant flow — Scenario A (7 min)
-- Open **Check a project** from the primary navigation.
-- Live intake: Davis homeowner, backyard ADU. Show the grouped decision
-  records: candidate routes first, relevant standards second, and the
-  unverified Davis local-process record last. In one card, walk from “What
+### 2. Applicant flow: Scenario A (7 min)
+- Open the labeled hypothetical ADU sample at
+  `check.html?sample=adu`. Point out that it loads an existing Woodland golden
+  fixture, fills the native form controls, and submits through the same
+  validation and matching path as manual answers. It is not a real parcel,
+  applicant record, pilot, or external validation result.
+- Show the grouped decision records: candidate routes first, relevant
+  standards second, and the bounded Woodland local-process record last. State
+  that Woodland is not a comprehensive local code or checklist. In one card,
+  walk from “What
   this result means” through the separate 15-business-day and conditional
   60-day deadlines, then “What you can do next” and “Questions to ask staff.”
   Point to the always-visible citation and expand “Why we're saying this.”

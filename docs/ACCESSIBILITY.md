@@ -55,6 +55,15 @@ available reset/rehearse control. After screening, keyboard focus moves to
 the result heading; scanner and clock live regions announce a concise summary
 instead of their full result tables or cards.
 
+The shareable ADU sample is introduced by descriptive link text and followed
+by a visible disclosure that identifies the facts as hypothetical. It fills
+the same native form controls and invokes the same form submission path as
+manual answers, so the existing result-status announcement applies. For the
+automatically submitted sample, focus moves to the disclosure instead of
+skipping past it to the results. A plainly labeled link clears the sample.
+Editing a sample fact relabels the disclosure, removes the sample URL
+parameter, and clears the old results until the edited form is submitted.
+
 **Data-loading state.** Data-dependent pathway, scanner, and trust-rehearsal
 buttons use the native `disabled` state until their datasets are ready. A
 load failure places a visible explanation in the results area and a short

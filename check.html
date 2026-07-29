@@ -61,6 +61,12 @@
         <p class="translation-scope" id="translationScope">The language choice
           applies to the applicant form and pathway results. The deadline tool
           and source records remain in English.</p>
+        <p class="sample-entry" id="sampleEntry">
+          <a id="sampleLink" href="check.html?sample=adu">Open a hypothetical
+            detached ADU example</a>
+          <span id="sampleSummary">Made-up project facts run through the
+            same screening logic as any other answers.</span>
+        </p>
         <div class="notice hidden" id="projectRehearsal">
           <strong>Source-change rehearsal applied:</strong> records linked to
           Gov. Code § 66321 will appear stale and withhold action-oriented
@@ -91,6 +97,15 @@
           <button type="submit" id="t-submit" disabled>Check candidate pathways</button>
         </form>
 
+        <aside class="notice sample-notice hidden" id="projectSampleNotice"
+          aria-labelledby="sampleLabel" tabindex="-1">
+          <p><strong id="sampleLabel">Example project.</strong>
+            <span id="sampleNotice">These made-up Woodland ADU facts were
+              screened with the same rules as your answers. They do not
+              describe a real property.</span></p>
+          <p><a id="sampleClear" href="check.html">Clear the example and check
+            another project</a></p>
+        </aside>
         <p id="resultStatus" class="visually-hidden" role="status"
           aria-live="polite" aria-atomic="true"></p>
         <div id="dataLoadError" class="hidden"></div>

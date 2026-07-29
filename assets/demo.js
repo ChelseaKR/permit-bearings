@@ -21,6 +21,17 @@ const STRINGS = {
     tagline: "Find a candidate route. See the sources behind it. Take open questions to staff.",
     screenHeading: "Find a possible permit path",
     translationScope: "The language choice applies to the applicant form and pathway results. The deadline tool and source records remain in English.",
+    sampleLink: "Open a hypothetical detached ADU example",
+    sampleSummary: "Made-up project facts run through the same screening logic as any other answers.",
+    sampleLabel: "Example project.",
+    sampleNotice: "These made-up Woodland ADU facts were screened with the same rules as your answers. They do not describe a real property.",
+    sampleClear: "Clear the example and check another project",
+    sampleEditedLabel: "Example changed.",
+    sampleEditedNotice: "These answers no longer match the made-up Woodland example. The old results were cleared. Choose Check candidate pathways to calculate results from your answers.",
+    sampleEditedClear: "Start over with a blank project check",
+    sampleUnavailableLabel: "Example unavailable.",
+    sampleUnavailableNotice: "The example could not be loaded from its canonical test case. Continue with a blank form.",
+    sampleUnavailableClear: "Continue with a blank project check",
     juris: "Where is the property?",
     jurisPlaceholder: "Type any California city or county…",
     jurisHelp: "Choose a suggestion, or enter the exact city or county name.",
@@ -122,6 +133,17 @@ const STRINGS = {
     tagline: "Encuentre una posible ruta. Vea las fuentes que la respaldan. Consulte las preguntas pendientes con el personal de la agencia.",
     screenHeading: "Encuentre una posible vía de permiso",
     translationScope: "El idioma elegido se aplica al formulario y a los resultados para solicitantes. La herramienta de plazos y los registros de fuentes permanecen en inglés.",
+    sampleLink: "Abrir un ejemplo hipotético de una ADU separada",
+    sampleSummary: "Los datos inventados del proyecto pasan por la misma lógica de evaluación que cualquier otra respuesta.",
+    sampleLabel: "Proyecto de ejemplo.",
+    sampleNotice: "Estos datos inventados para una ADU en Woodland se evaluaron con las mismas reglas que sus respuestas. No describen una propiedad real.",
+    sampleClear: "Borrar el ejemplo y revisar otro proyecto",
+    sampleEditedLabel: "El ejemplo cambió.",
+    sampleEditedNotice: "Estas respuestas ya no coinciden con el ejemplo inventado de Woodland. Se borraron los resultados anteriores. Elija Revisar posibles vías para calcular resultados con sus respuestas.",
+    sampleEditedClear: "Empezar de nuevo con un formulario en blanco",
+    sampleUnavailableLabel: "El ejemplo no está disponible.",
+    sampleUnavailableNotice: "No se pudo cargar el ejemplo desde su caso de prueba canónico. Continúe con un formulario en blanco.",
+    sampleUnavailableClear: "Continuar con un formulario en blanco",
     juris: "¿Dónde está la propiedad?",
     jurisPlaceholder: "Escriba cualquier ciudad o condado de California…",
     jurisHelp: "Elija una sugerencia o escriba el nombre exacto de la ciudad o el condado.",
@@ -695,6 +717,55 @@ function fieldsForProject(projectType) {
   return [];
 }
 
+const PROJECT_SAMPLE_CASE_IDS = Object.freeze({
+  adu: "woodland-new-detached-adu-local-layer",
+});
+
+function requestedProjectSampleId(searchParams) {
+  if (!searchParams) return null;
+  const requestedSamples = searchParams.getAll("sample");
+  if (requestedSamples.length !== 1) return null;
+  return Object.prototype.hasOwnProperty.call(
+    PROJECT_SAMPLE_CASE_IDS,
+    requestedSamples[0],
+  ) ? requestedSamples[0] : null;
+}
+
+function prepareProjectSample(searchParams, golden, jurisdictions) {
+  const requestedSampleId = requestedProjectSampleId(searchParams);
+  if (!requestedSampleId) return null;
+  const caseId = PROJECT_SAMPLE_CASE_IDS[requestedSampleId];
+  if (!caseId || !Array.isArray(golden) || !Array.isArray(jurisdictions))
+    return null;
+
+  const matchingCases = golden.filter(
+    item => item && item.case_id === caseId
+  );
+  if (matchingCases.length !== 1) return null;
+  const intake = matchingCases[0].intake;
+  if (!intake || typeof intake !== "object" || Array.isArray(intake))
+    return null;
+
+  const materialFields = fieldsForProject(intake.project_type);
+  if (!materialFields.length) return null;
+  const requiredFields = ["project_type", "jurisdiction", ...materialFields];
+  if (Object.keys(intake).some(name => !requiredFields.includes(name)))
+    return null;
+  if (requiredFields.some(name =>
+    !nonBlank(intake[name]) || intake[name] === "unknown"
+  )) return null;
+
+  const matchingJurisdictions = jurisdictions.filter(
+    jurisdiction => jurisdiction && jurisdiction.slug === intake.jurisdiction
+  );
+  if (matchingJurisdictions.length !== 1) return null;
+  return {
+    caseId,
+    intake: {...intake},
+    jurisdiction: matchingJurisdictions[0],
+  };
+}
+
 function renderProjectQuestions() {
   const s = STRINGS[lang];
   const projectType = intakeDraft.project_type || null;
@@ -738,10 +809,14 @@ function renderForm() {
   const translatedIds = ["t-tagline", "translationScope", "screenHeading",
                          "t-juris", "jurisHelp", "t-project", "t-submit",
                          "typeRadios", "projectQuestions", "jurisStatus",
-                         "resultStatus"];
+                         "resultStatus", "sampleLink", "sampleSummary",
+                         "sampleLabel", "sampleNotice", "sampleClear"];
   translatedIds.forEach(id => { document.getElementById(id).lang = lang; });
   document.getElementById("t-tagline").textContent = s.tagline;
   document.getElementById("translationScope").textContent = s.translationScope;
+  document.getElementById("sampleLink").textContent = s.sampleLink;
+  document.getElementById("sampleSummary").textContent = s.sampleSummary;
+  renderProjectSampleText();
   document.getElementById("screenHeading").textContent = s.screenHeading;
   document.getElementById("t-juris").textContent = s.juris;
   document.getElementById("jurisHelp").textContent = s.jurisHelp;
@@ -1000,12 +1075,38 @@ function focusResults() {
   heading.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth"});
 }
 
-const rehearsedSourceId = pageIs("project")
-  ? new URLSearchParams(window.location.search).get("changed")
+function focusProjectSampleNotice() {
+  const notice = document.getElementById("projectSampleNotice");
+  if (!notice) return;
+  notice.focus({preventScroll: true});
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  notice.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth"});
+}
+
+const projectSearchParams = pageIs("project")
+  ? new URLSearchParams(window.location.search)
+  : null;
+const rehearsedSourceId = projectSearchParams
+  ? projectSearchParams.get("changed")
   : null;
 let simulating = rehearsedSourceId === "ca-gov-66321";
 let LAST_RESULTS = null;
 let LAST_UNRESOLVED = null;
+let sampleSubmissionInProgress = false;
+let projectSampleState = null;
+
+function renderProjectSampleText() {
+  const s = STRINGS[lang];
+  let suffix = "";
+  if (projectSampleState === "edited") suffix = "Edited";
+  if (projectSampleState === "unavailable") suffix = "Unavailable";
+  document.getElementById("sampleLabel").textContent =
+    s[`sample${suffix}Label`];
+  document.getElementById("sampleNotice").textContent =
+    s[`sample${suffix}Notice`];
+  document.getElementById("sampleClear").textContent =
+    s[`sample${suffix}Clear`];
+}
 function renderDashboard() {
   const changed = simulating ? ["ca-gov-66321"] : [];
   const statuses = RULES.map(r => ({ rule: r, st: ruleStatus(r, changed) }));
@@ -1087,6 +1188,72 @@ function renderSources() {
 }
 
 const intakeFormElement = document.getElementById("intake");
+function removeProjectSampleFromUrl() {
+  const updatedUrl = new URL(window.location.href);
+  updatedUrl.searchParams.delete("sample");
+  window.history.replaceState(
+    null,
+    "",
+    `${updatedUrl.pathname}${updatedUrl.search}${updatedUrl.hash}`,
+  );
+}
+
+function deactivateProjectSample() {
+  if (projectSampleState === "unavailable") {
+    projectSampleState = null;
+    document.getElementById("sampleEntry").classList.remove("hidden");
+    document.getElementById("projectSampleNotice").classList.add("hidden");
+    removeProjectSampleFromUrl();
+    return;
+  }
+  if (projectSampleState !== "active") return;
+  projectSampleState = "edited";
+  document.getElementById("sampleEntry").classList.remove("hidden");
+  renderProjectSampleText();
+  LAST_RESULTS = null;
+  LAST_UNRESOLVED = null;
+  document.getElementById("results").innerHTML = "";
+  document.getElementById("resultStatus").textContent =
+    STRINGS[lang].sampleEditedNotice;
+  removeProjectSampleFromUrl();
+}
+
+function applyRequestedProjectSample() {
+  const requestedSampleId = requestedProjectSampleId(projectSearchParams);
+  const sample = prepareProjectSample(
+    projectSearchParams,
+    GOLDEN,
+    JURIS,
+  );
+  if (!sample || !intakeFormElement) {
+    if (requestedSampleId) {
+      projectSampleState = "unavailable";
+      document.getElementById("sampleEntry").classList.add("hidden");
+      document.getElementById("projectSampleNotice").classList.remove("hidden");
+      renderProjectSampleText();
+      document.getElementById("resultStatus").textContent =
+        STRINGS[lang].sampleUnavailableNotice;
+      focusProjectSampleNotice();
+    }
+    return false;
+  }
+
+  projectSampleState = "active";
+  intakeDraft = {...sample.intake};
+  const jurisdictionInput = document.getElementById("jurisInput");
+  jurisdictionInput.value = jurisDisplay(sample.jurisdiction);
+  renderForm();
+  document.getElementById("sampleEntry").classList.add("hidden");
+  document.getElementById("projectSampleNotice").classList.remove("hidden");
+  sampleSubmissionInProgress = true;
+  try {
+    intakeFormElement.requestSubmit();
+  } finally {
+    sampleSubmissionInProgress = false;
+  }
+  return true;
+}
+
 if (pageIs("project") && intakeFormElement) {
   intakeFormElement.addEventListener("submit", e => {
   e.preventDefault();
@@ -1110,6 +1277,10 @@ if (pageIs("project") && intakeFormElement) {
     form.reportValidity();
     return;
   }
+  if (["edited", "unavailable"].includes(projectSampleState)) {
+    projectSampleState = null;
+    document.getElementById("projectSampleNotice").classList.add("hidden");
+  }
   const projectType = f.get("project_type");
   const materialFields = fieldsForProject(projectType);
   const unresolved = materialFields.filter(name => {
@@ -1118,18 +1289,21 @@ if (pageIs("project") && intakeFormElement) {
   });
   if (unresolved.length) {
     renderNeedsStaffReview(unresolved);
-    focusResults();
+    if (sampleSubmissionInProgress) focusProjectSampleNotice();
+    else focusResults();
     return;
   }
   const intake = Object.fromEntries(f.entries());
   intake.jurisdiction = jurisdiction.slug;
   renderResults(screen(intake));
-  focusResults();
+  if (sampleSubmissionInProgress) focusProjectSampleNotice();
+  else focusResults();
   });
 
   intakeFormElement.addEventListener("change", event => {
     const target = event.target;
     if (!target.name) return;
+    deactivateProjectSample();
     intakeDraft[target.name] = target.value;
     if (target.name === "project_type") renderProjectQuestions();
   });
@@ -1525,7 +1699,10 @@ async function initializeDemo() {
       }
       const jurisdictionInput = document.getElementById("jurisInput");
       if (jurisdictionInput) {
-        jurisdictionInput.addEventListener("input", renderJurisStatus);
+        jurisdictionInput.addEventListener("input", () => {
+          deactivateProjectSample();
+          renderJurisStatus();
+        });
       }
       const rehearsalNotice = document.getElementById("projectRehearsal");
       if (rehearsalNotice && simulating) {
@@ -1534,7 +1711,10 @@ async function initializeDemo() {
     }
 
     syncDataControls();
-    if (pageIs("project") && intakeFormElement) renderForm();
+    if (pageIs("project") && intakeFormElement) {
+      renderForm();
+      applyRequestedProjectSample();
+    }
     if (pageIs("evidence")) {
       renderDashboard();
       renderSources();
