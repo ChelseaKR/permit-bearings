@@ -66,15 +66,16 @@ Status meanings are defined in `AGENTS.md`.
 | Browser result packet | Implemented surface for prototype data | After submission, `check.html` renders a temporary answers-used cover sheet, a count summary and jump links for nonempty result groups, one explicitly configured candidate route open when it matches, and compact supporting records. Citations and source-status labels remain visible outside each disclosure. The submitted facts exist only in current page memory, and an ordinary answer edit clears the old result and disclosure state until resubmission. This is not a persisted applicant record, an exportable evidence manifest, a parcel verification, or a completeness assessment. |
 | Plain-language decision records | Prototype | `data/explanations/plain-language.json` contains a versioned English and Spanish draft for all 19 current statewide/local rule records. Results group routes, standards, and local information records and separate meaning, scannable deadline/threshold highlights where needed, suggested first steps, direct staff questions, and cited evidence. Copy is AI-assisted and review-pending; it has no legal, jurisdiction, comprehension, or semantic-parity review and cannot affect deterministic matching. Source-date, citation-fingerprint, or full-rule-fingerprint drift invalidates display copy; completed reviews must name the reviewed explanation version; and stale/unverified records withhold action copy, interpretive notes, and generic document hints. `tests/test_explanations.py` checks these contracts and selected semantic/jargon boundaries, not overall accuracy or comprehension. |
 | Local jurisdiction records | Prototype | Davis and Woodland records exist. Davis deliberately has no dated source check; neither record is comprehensive local-code coverage. |
-| Application completeness | Planned | Several rules list generic typical documents. There is no parcel-specific requirement manifest, document ingestion, cross-document validation, or detailed remedy engine. |
+| Bounded packet-presence evaluation | Prototype | `readiness.py` and `readiness_cli.py` compare explicit facts and inventory statuses with 25 source-bound requirements from one City of Woodland preapproved detached ADU checklist. The generated public sample is synthetic. It produces per-item findings, staff questions, fingerprints, source bindings, a source-status date and review deadline, and a machine-readable evidence manifest; unknown conditions and changed or stale sources fail closed. `prepare.html` renders the Python-generated result rather than reimplementing the evaluator. AI-assisted checklist mapping and action copy remain review-pending and cannot affect the deterministic evaluation. Mapping metadata binds exact input-source fingerprints and explicitly records that provider, model, and a reproducible run record are unavailable. No runtime model or applicant-data storage is used. No applicant, planner, or jurisdiction has validated the workflow or output. |
+| Application completeness | Planned | The bounded readiness slice checks reported presence in one made-up inventory. It does not inspect files, verify parcel facts, test document contents or consistency, determine legal sufficiency, certify completeness, limit staff requests, or predict approval. There is no parcel-specific document ingestion, cross-document validation, or externally reviewed remedy engine. |
 | Golden regression harness | Prototype | 29 structured intake-to-expected-rule-ID fixtures. It does not evaluate natural-language answers, citation fidelity, remedies, or supporting passages. |
-| Source currency monitoring | Prototype | Fifteen HCD, statute, and selected local-source URLs are hash-watched. The scheduled workflow preserves the watched command's exit status through `tee`. The Davis source remains explicitly unwatched and unverified; new statutes are not discovered; changed state is not persisted to the public dashboard. |
+| Source currency monitoring | Prototype | Seventeen HCD, statute, and selected local-source URLs are hash-watched. The scheduled workflow preserves the watched command's exit status through `tee`. The Davis source remains explicitly unwatched and unverified; new statutes are not discovered; changed state is not persisted to the public dashboard. |
 | Source-impact demonstration | Prototype | Rules carry stable source-dependency IDs. The CLI marks every rule linked to an assumed-changed source stale, and the browser rehearses a § 66321 change. The public demo still lacks persisted changed state and a staffed re-verification queue. |
 | Ordinance conformance scanner | Prototype | Presence-based review flags with an HCD-derived regression fixture containing six quoted Santa Clara provisions, one negative control, and one committed San Diego scan. This is not a compliance test or measured statewide accuracy. |
 | Review clocks | Prototype | The 15-business-day date is withheld unless an agency closure calendar is supplied. The separate 60-day illustration appears only when the applicant explicitly confirms both a complete-on-receipt application and an existing primary dwelling. Cure/completion events, tolling, resubmissions, and agency closures are not modeled in the public demo, so neither output is a production deadline determination. |
 | Transit proximity | Prototype | GTFS and statewide high-quality-transit data support screening in a CLI. Peak-window edge gaps and ferry-to-bus/rail connections are covered by regression tests. Service effective dates/exceptions, planned-facility filtering, multi-operator completeness, walking-network confirmation, and parcel integration still require correction before applicant-facing eligibility use. |
 | Jurisdiction/HCD-letter registry | Implemented dataset | 541 entries: 483 incorporated cities and 58 counties. The 2020 Census source is supplemented with official Mountain House incorporation evidence; an ongoing incorporation/dissolution refresh is still needed. Statewide baseline availability does not mean local codes are encoded. |
-| Static browser delivery | Implemented surface for prototype data | Four task-focused pages use relative links and can run directly from disk or over HTTP. The lightweight landing page loads no data JavaScript; the applicant, review, and evidence pages load the generated `data/demo-data.js` artifact before shared page-gated application code. Canonical JSON remains authoritative; `tests/test_static_demo.py` fails when the bundle drifts. |
+| Static browser delivery | Implemented surface for prototype data | Five task-focused pages use relative links and can run directly from disk or over HTTP. The lightweight landing page loads no data JavaScript; the applicant, packet, review, and evidence pages load the generated `data/demo-data.js` artifact before shared page-gated application code. Canonical JSON remains authoritative; `tests/test_static_demo.py` fails when the bundle or generated readiness evidence drifts. |
 | Shareable hypothetical ADU sample | Implemented surface for prototype data | `check.html?sample=adu` resolves the existing `woodland-new-detached-adu-local-layer` golden fixture, fills the normal intake, and submits through the same validation and matcher path as manual answers. The result cover sheet labels the facts as made up and the page provides a clear link. Editing a prefilled fact removes the sample URL state and clears the old result before recalculation. It is not a real parcel, applicant record, pilot, or external validation result. |
 | English/Spanish experience | Prototype | Intake, interface controls, applicant-facing result titles, and plain-language result explanations have English/Spanish variants. Spanish explanation copy is labeled as an unreviewed machine draft. Canonical pathway labels, rule notes, document hints, source excerpts, and much dashboard content remain English; no semantic-parity review has been completed. |
 | Accessibility | Prototype | Static/code audit targets WCAG 2.2 AAA. Human screen-reader, keyboard, reflow, forced-colors, and Spanish pronunciation checks remain open. |
@@ -115,10 +116,15 @@ These are implementation defects or evidence gaps, not general roadmap ideas:
    walking distance can change the result. Return `unknown` unless data
    completeness supports a narrower conclusion.
 6. **Local records are not applicant-ready layers.** Davis is intentionally
-   unverified; Woodland cites an adoption/CEQA record rather than a complete
-   operative ordinance and sourced checklist.
+   unverified. The Woodland rule record still cites an adoption/CEQA record
+   rather than a complete operative ordinance. The separate Woodland
+   readiness workflow is bound to one official preapproved-plan checklist, but
+   its mapping and action copy remain review-pending and are not comprehensive
+   local-code coverage.
 7. **Browser and Python behavior can drift.** Screening, staleness, scanning,
-   and clocks are duplicated without cross-runtime contract tests.
+   and clocks are duplicated without cross-runtime contract tests. The
+   readiness page avoids a second evaluator by rendering a result generated by
+   the Python implementation.
 8. **Explanation review is pending.** The versioned English and Spanish
    plain-language records are AI-assisted drafts. Schema and regression tests
    catch missing links, same-day citation drift, malformed review metadata,
@@ -148,10 +154,18 @@ This creates a coherent Scenario A proof while making the currency harness
 essential: a source revision can invalidate a requirement or remedy in a
 specific packet.
 
-The current browser result packet is a transient presentation of
-applicant-supplied facts and matched prototype records. It does not implement
-this planned parcel-aware, document-aware, persisted, or exportable
-permit-readiness evidence packet.
+The bounded Woodland slice is a first executable step. It provides one
+source-bound 25-item requirement manifest, one synthetic inventory, explicit
+`present`, `missing`, `not applicable`, and `needs staff review` findings,
+review-pending action drafts, and a generated evidence manifest. It has no
+real documents or parcel facts, so it cannot supply page evidence, test
+consistency, certify completeness, or support an applicant record.
+
+The current browser routing result remains a transient presentation of
+applicant-supplied facts and matched prototype records. The separate packet
+page renders a generated synthetic record. Neither surface implements the
+planned parcel-aware, document-aware, persisted permit-readiness packet for a
+real application.
 
 ### Bounded AI role
 
@@ -160,22 +174,28 @@ mostly deterministic. The credible AI contribution is bounded and
 inspectable:
 
 - extract fields and document presence with page-level evidence;
-- align local forms and code provisions to a candidate requirement schema;
-- retrieve passages for explanations and remedy drafts;
+- align local forms and code provisions to a candidate requirement schema,
+  prototyped for one Woodland checklist;
+- retrieve passages for explanations and remedy drafts, with review-pending
+  action copy prototyped for the same workflow;
 - propose rule/test updates for human approval after a source change;
 - cluster HCD letters by issue for comparable-jurisdiction research; and
 - draft staff text from locked case facts and cited standards.
 
 Objective eligibility and completeness rules remain deterministic. AI output
 must cite evidence, expose uncertainty, and abstain when evidence is absent or
-conflicting.
+conflicting. The public readiness sample makes no runtime model call. Its
+AI-assisted mapping and remedies are versioned, fingerprint-bound drafts with
+no named human, planner, counsel, applicant, or jurisdiction review. Mapping
+metadata records exact input-source fingerprints but no retained provider,
+model, or reproducible run record.
 
 ## Ranked opportunity portfolio
 
 | Priority | Opportunity | Why it matters | Cheapest credible test |
 |---|---|---|---|
 | P0 | Make every public claim traceable to a capability status and artifact | Trust is the product; overclaiming destroys the differentiation. | Review README, demo, design, and live UI against the capability table on every release. |
-| P0 | Pilot ADU permit-readiness packet | Directly proves Scenario A completeness and remedies instead of showing generic document hints. | Compare results on a small set of public, synthetic, or redacted packets with staff-authored completeness notices. |
+| P0 | Extend the bounded ADU packet-presence slice into a reviewed pilot workflow | Moves from one synthetic inventory and review-pending checklist mapping toward Scenario A completeness and remedies. | Compare results on a small set of public, synthetic, or redacted packets with staff-authored completeness notices. |
 | P0 | Evidence manifest and durable source-state propagation | Turns the strongest demo simulation into operational assurance. | Replay a historical or simulated source revision and verify the exact affected/unaffected rules, cases, and packet fields across persisted outputs. |
 | P0 | Verification levels and evaluator provenance | Makes “verified” meaningful to staff and counsel. | Add machine-linked, human-reviewed, and jurisdiction-approved states to one pilot rule set and test status transitions. |
 | P1 | Parcel fact retrieval for one jurisdiction | Replaces high-risk self-attestation for zoning, hazards, historic status, and transit with sourced facts. | Run a known parcel set and have staff review disagreements and unknowns. |
@@ -235,10 +255,11 @@ dump.
 
 ### Production posture
 
-Before a pilot, create a concrete no-storage/data-flow diagram, deployment
-and cost envelope, retention/export design, CPRA search workflow, security
-control mapping, incident path, and human accessibility test record. Describe
-these as deployment-specific controls, not blanket legal compliance.
+`docs/DATA-FLOW.md` records the current no-storage synthetic-demo boundary.
+Before a pilot, extend it with the proposed deployment flow and add a cost
+envelope, retention/export design, CPRA search workflow, security control
+mapping, incident path, and human accessibility test record. Describe these
+as deployment-specific controls, not blanket legal compliance.
 
 ## Measures
 
@@ -265,9 +286,10 @@ Trust guardrails:
 
 ## Assumptions and research questions
 
-The repository does not yet contain pilot user research, a jurisdiction-owned
-local requirements corpus, or real application packets. Before committing to
-the roadmap, resolve:
+The repository contains one generated synthetic packet and one
+machine-assisted Woodland checklist mapping. It does not yet contain pilot
+user research, a jurisdiction-owned local requirements corpus, or real
+application packets. Before committing to the roadmap, resolve:
 
 - Which jurisdiction and one permit subtype will sponsor a deep pilot?
 - Which parcel, application, and status data are available and authoritative?
@@ -280,9 +302,11 @@ the roadmap, resolve:
 
 ## Showcase-ready definition
 
-A credible showcase should demonstrate one sourced parcel journey from intake
-to a permit-readiness evidence packet, an honest unsupported/abstention path,
-and a source revision that produces an exact affected-output review queue.
-Every narrated claim should be reproducible from the repository, and every
-simulation, sample, untranslated surface, and unverified rule should be
-visible as such.
+A credible showcase can demonstrate the current synthetic routing and
+packet-presence records as bounded prototypes, including their
+unsupported/abstention paths and source bindings. A stronger pilot would add
+one sourced parcel journey, real or properly redacted file evidence, reviewed
+requirements and remedies, and an exact affected-output review queue after a
+source revision. Every narrated claim should be reproducible from the
+repository, and every simulation, sample, untranslated surface, unreviewed
+draft, and unverified rule should be visible as such.

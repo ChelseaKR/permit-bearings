@@ -47,6 +47,10 @@ SOFTWARE.
   legislative text. The canonical source is the California Legislative
   Information website.
 - `corpus/ceqa/` contains a retrieved official CEQAnet project page.
+- `corpus/woodland/` contains retrieved City of Woodland permit-workflow
+  material and a preapproved ADU permit checklist. Canonical URLs, retrieval
+  dates, and content hashes are recorded in `data/sources.json`. The City does
+  not endorse this project.
 - `corpus/ordinances/` contains text derived from official municipal material.
   Exact title, URL, and retrieval metadata are in
   `corpus/ordinances/SOURCES.json`.

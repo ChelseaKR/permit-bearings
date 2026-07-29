@@ -27,6 +27,7 @@ from scripts.build_demo_bundle import (
 )
 
 AS_OF = date(2026, 7, 28)
+SOURCE_REGISTRY_AS_OF = date(2026, 7, 29)
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -471,9 +472,15 @@ def test_source_registry_rejects_future_fetch_dates(tmp_path):
 
 
 def test_every_canonical_rule_dependency_resolves_to_the_source_registry():
-    rules = load_rules(ROOT / "data" / "rules", today=AS_OF)
+    rules = load_rules(
+        ROOT / "data" / "rules",
+        today=SOURCE_REGISTRY_AS_OF,
+    )
     source_ids = set(
-        load_sources(ROOT / "data" / "sources.json", today=AS_OF)
+        load_sources(
+            ROOT / "data" / "sources.json",
+            today=SOURCE_REGISTRY_AS_OF,
+        )
     )
     unresolved = {
         rule.rule_id: sorted(set(rule.source_dependencies) - source_ids)

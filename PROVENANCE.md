@@ -13,9 +13,10 @@
 - **External design material:** the interface adapts color tokens from the
   open-source California Design System. It does not use California branding or
   imply State endorsement.
-- **AI assistance:** rule encoding, explanation and translation drafts, code,
-  and prose have been machine-assisted. No current rule interpretation,
-  plain-language explanation, or Spanish translation is represented as
+- **AI assistance:** rule and readiness encoding, explanation, remedy and
+  translation drafts, code, and prose have been machine-assisted. No current
+  rule interpretation, checklist mapping, action draft, plain-language
+  explanation, or Spanish translation is represented as
   jurisdiction-approved, counsel-approved, or human-reviewed unless its own
   record contains that exact review metadata.
 - **Relationship to prior work:** no proprietary or non-public work product is

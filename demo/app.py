@@ -1056,6 +1056,7 @@ def static_path(url_path):
     page_paths = {
         "/index.html": "index.html",
         "/check.html": "check.html",
+        "/prepare.html": "prepare.html",
         "/review.html": "review.html",
         "/evidence.html": "evidence.html",
         "/showcase": "check.html",

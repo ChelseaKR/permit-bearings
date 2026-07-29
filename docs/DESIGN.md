@@ -29,8 +29,8 @@ with:
 Rules are JSON data with `criteria`, `citation`, `jurisdiction_scope`,
 `verified_on`, and a supporting excerpt. The current runtime covers ADU,
 JADU, and SB 9; it does not yet encode SB 35, AB 2011, authoritative parcel
-facts, comprehensive local requirements, application-file review, or detailed
-remedies.
+facts, comprehensive local requirements, application-file review, or
+human-reviewed detailed remedies.
 
 The browser result surface is implemented for prototype data as a temporary
 result packet. It starts with an answers-used cover sheet built from the last
@@ -97,7 +97,61 @@ direct questions for unresolved facts. The structured highlight group is used
 for the ADU review deadlines so the 15-business-day and conditional 60-day
 rules are not compressed into one paragraph.
 
-### 2. Citation-grounded Q&A (planned)
+### 2. Bounded packet-presence evaluation (prototype)
+
+`src/permit_pathways/readiness.py` implements a deterministic evaluator for
+one City of Woodland preapproved detached ADU workflow. Its canonical inputs
+are separate portable records:
+
+- `data/readiness/workflows/woodland-preapproved-detached-adu.json` binds 25
+  requirements and their conditions to one dated City checklist and content
+  digest;
+- `data/readiness/samples/woodland-preapproved-adu.json` provides one labeled
+  synthetic project, explicit fact provenance, and an inventory status for
+  every requirement; and
+- `data/readiness/remedies/woodland-preapproved-detached-adu.json` stores
+  display-only AI-assisted action drafts with workflow and requirement
+  fingerprints, a version, and explicit review metadata.
+
+The evaluator checks exact schema coverage, stable identifiers, parent-child
+ordering, workflow applicability, conditional requirements, source bindings,
+and source age. Runtime and CLI defaults use the current UTC date for source
+currency; historical replay requires an explicit date. The result records
+both the source-status date and the review deadline. It never treats an
+unknown condition as favorable. Findings use `present`, `missing`, `not
+applicable`, `conflicting`,
+`needs staff review`, or `not evaluated`. Even an all-present inventory uses
+`no_known_gaps_in_bounded_manifest`, never `complete`. A changed or stale
+source moves every bound item to staff review.
+
+`ReadinessResult.to_manifest()` produces a deterministic evidence record with
+source bindings, facts, inventory, per-item findings, source locators,
+fingerprints, staff questions, and the prototype boundary.
+`src/permit_pathways/readiness_cli.py` exposes the same path on the command
+line. `scripts/build_demo_bundle.py` runs the Python evaluator at build time,
+commits the generated evidence JSON, and embeds the result in the static
+bundle. `prepare.html` validates and renders that generated result. The
+browser does not contain a second packet evaluator.
+
+The checklist mapping and action wording are recorded as AI-assisted,
+`prototype_review_pending` drafts. Remedy copy cannot affect evaluation.
+Mapping metadata records its version, date, exact input-source fingerprints,
+and review scope. Provider and model are `unknown`, and no reproducible run
+record is retained, so the artifact does not support a model-performance or
+reproduction claim.
+Completed review metadata would have to name the reviewer, method, date,
+exact version, and reviewed content fingerprint. No such review is recorded.
+No model runs in the evaluator, CLI, build, or public browser, and no applicant
+data is stored or sent to a model.
+
+This slice compares reported item presence against one checklist. It does not
+open files, verify parcel facts, evaluate document contents or consistency,
+determine legal sufficiency, certify completeness, limit staff requests, or
+predict approval. The sample is made up and has not been validated by an
+applicant, planner, Woodland staff member, counsel, or another jurisdiction
+representative.
+
+### 3. Citation-grounded Q&A (planned)
 
 For free-text questions the deterministic core can't answer, a retrieval layer
 over the jurisdiction's corpus (state law, HCD guidance, local zoning/municipal
@@ -108,7 +162,7 @@ with a routing hint. Bilingual output (EN/ES) from the same grounded passage.
 No free-text Q&A or live LLM/NLP layer is currently implemented. The existing
 abstention path is a structured intake with no matching encoded rule.
 
-### 3. Currency & verification harness (prototype differentiator)
+### 4. Currency & verification harness (prototype differentiator)
 
 - **Golden set:** 29 structured intake records map to expected rule IDs.
   They are regression fixtures, not natural-language answer, citation, or
@@ -116,7 +170,7 @@ abstention path is a structured intake with no matching encoded rule.
 - **Verification runner:** replays the deterministic matcher, checks recorded
   verification dates, and can mark citation-matched sources stale.
 - **Currency watcher:** monitors the source corpus (statute text, HCD guidance,
-  and selected local-source pages) for hash changes. Fifteen sources are
+  and selected local-source pages) for hash changes. Seventeen sources are
   watched. New-law discovery and durable changed-state persistence are not
   implemented; stable source dependency IDs are.
 - **Public trust surface:** the dashboard shows date-based rule status and a
@@ -127,10 +181,14 @@ The target dependency model is:
 
 `source ID → provision → rule/check → golden case → applicant/staff output`
 
+The bounded readiness slice also records:
+
+`source ID → requirement → finding → synthetic packet evidence manifest`
+
 A changed or unreachable source should create a durable review queue for all
 affected nodes while proving that unrelated nodes remain current.
 
-### 4. Static delivery (implemented)
+### 5. Static delivery (implemented)
 
 The browser showcase remains dependency-free and static-host friendly.
 Canonical rules, explanations, registries, fixtures, checks, and source
@@ -142,26 +200,31 @@ user job:
 - `check.html`: applicant intake, a temporary grouped result packet, a labeled
   shareable sample that reuses a canonical golden fixture, and the separate
   clock;
+- `prepare.html`: the generated synthetic Woodland packet-presence result and
+  evidence-manifest link;
 - `review.html`: bounded ordinance-text screen; and
 - `evidence.html`: source status, regression summary, and change rehearsal.
 
-The three interactive pages load the generated bundle before shared,
-page-gated `assets/demo.js`. Relative URLs let all four pages work from disk
+The four data-driven pages load the generated bundle before shared,
+page-gated `assets/demo.js`. Relative URLs let all five pages work from disk
 and under a project subpath. The stdlib server exposes the same pages, keeps
 `/showcase` as an alias for `/check.html`, and limits static-file access to
-those four HTML files plus `assets/` and `data/`.
+those five HTML files plus `assets/` and `data/`.
 
 The generated bundle must never become a second hand-edited source of truth;
-the test suite compares it byte-for-byte with the canonical JSON inputs.
+the test suite compares it byte-for-byte with the canonical JSON inputs and
+checks the committed readiness evidence against a fresh Python evaluation.
 Visual primitives follow the published California Design System token
 vocabulary and California Web Standards principles; the exact adoption and
 product-specific extensions are documented in `docs/DESIGN-SYSTEM.md`.
+The current build-time and browser boundaries are documented in
+`docs/DATA-FLOW.md`.
 
 ## Cross-cutting requirement mapping
 
 | Challenge requirement | Current evidence | Next gap |
 |---|---|---|
-| Privacy (Info Practices Act, Gov C §§ 11015.5/11019.9) | Public demo persists no applicant input. | Deployment data inventory, flow, purpose, access, retention/deletion, subprocessors, and privacy review. |
+| Privacy (Info Practices Act, Gov C §§ 11015.5/11019.9) | Public demo persists no applicant input. The packet page uses one committed synthetic record and makes no runtime model call. | Deployment data inventory, flow, purpose, access, retention/deletion, subprocessors, and privacy review. |
 | Jurisdiction data ownership | Rules, corpus, fixtures, and source metadata use open repository formats. | Tested full export/offboarding once any hosted or case data exists. |
 | CPRA (Gov C § 7920.000 et seq.) | No applicant record store exists. | Deployment-specific retention, search/export, legal-hold, exemption handling, and audit design; no blanket compliance claim. |
 | Low-capacity affordability | Dependency-light Python core and static-friendly browser demo. | Pilot deployment/TCO evidence and an integration contract beside existing systems. |
@@ -180,16 +243,21 @@ product-specific extensions are documented in `docs/DESIGN-SYSTEM.md`.
    rules and generic document hints, not a complete application checklist.
    Change one answer to show that the old result is invalidated until the form
    is submitted again.
-2. Select an unsupported fact combination → visible abstention + staff routing
+2. Continue to `prepare.html`. Show the 25 source-bound requirements, three
+   known gaps, five items needing confirmation, the review-pending
+   AI-assisted action wording, and the generated evidence manifest. State that
+   the Python evaluator compared explicit synthetic inventory statuses and
+   never opened a file or verified a parcel.
+3. Select an unsupported fact combination → visible abstention + staff routing
    (current trust moment; free-text Q&A remains planned).
-3. Use the ordinance-review page to flag a documented sample provision.
-4. On Evidence & updates, simulate a statute change → watch dependent answers
+4. Use the ordinance-review page to flag a documented sample provision.
+5. On Evidence & updates, simulate a statute change → watch dependent answers
    flip to stale → open the applicant guide in that state (Scenario C
    rehearsal, the differentiator).
 
-The stronger next demo is one pilot jurisdiction's sourced parcel facts →
-ADU requirement manifest → missing-item remedies → exportable evidence packet
-→ changed-source impact queue.
+The stronger next demo extends the synthetic packet-presence slice with
+reviewed local requirements and remedies, sourced parcel facts, real or
+properly redacted file evidence, and a changed-source impact queue.
 
 ## Non-goals for v1
 
