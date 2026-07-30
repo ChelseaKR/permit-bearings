@@ -76,7 +76,13 @@ def test_static_pages_have_consistent_navigation_and_resolvable_links():
         assert html.count("<main ") == 1
         assert html.count("<h1") == 1
         assert 'href="#mainContent"' in html
-        assert html.count('aria-current="page"') == 1
+        assert html.count('aria-current="page"') == 2
+        assert html.count('class="mobile-menu"') == 1
+        assert html.count('aria-label="Mobile primary"') == 1
+        assert "<summary>Sections</summary>" in html
+        assert (
+            '<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">' in html
+        )
         assert 'http-equiv="Content-Security-Policy"' in html
         for label in expected_nav:
             assert f">{label}</a>" in html
@@ -86,6 +92,17 @@ def test_static_pages_have_consistent_navigation_and_resolvable_links():
             assert not target.startswith("/")
             local_target = target.split("?", 1)[0].split("#", 1)[0]
             assert (ROOT / local_target).is_file(), (path.name, target)
+
+
+def test_landing_scope_matches_the_current_bounded_davis_record():
+    landing = (ROOT / "index.html").read_text(encoding="utf-8")
+
+    assert "Davis source record is explicitly unverified" not in landing
+    assert (
+        "Davis record reports only the City\u2019s published processing categories"
+        in landing
+    )
+    assert "HCD\u2019s unresolved ordinance-status warning" in landing
 
 
 def test_showcase_submission_draft_preserves_portal_word_limits():
@@ -256,6 +273,25 @@ def test_static_site_uses_published_california_design_tokens():
     assert "--yellow: var(--cagov-highlight)" in css
     assert "outline: 3px solid var(--accent2-300)" in css
     assert "Avenir" not in css
+
+
+def test_mobile_navigation_and_evidence_records_have_responsive_hooks():
+    css = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+
+    assert ".mobile-menu" in css
+    assert '.mobile-nav a[aria-current="page"]' in css
+    assert ".table-scroll td::before" in css
+    for label in (
+        "Rule",
+        "Scope",
+        "Status",
+        "Source",
+        "Monitoring",
+        "Recorded",
+        "SHA-256",
+    ):
+        assert f'data-label="{label}"' in application
 
 
 def test_section_headings_use_interface_type_instead_of_utility_mono():

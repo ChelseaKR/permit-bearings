@@ -45,6 +45,8 @@ partial workflow, an automated result, or an informal spot check.
 | SR-PREPARE | `prepare.html` | Verify loading status, packet summary, finding counts, missing and unresolved items, source evidence, disclosure names, and manifest-link purpose with a screen reader. | `not_run` |
 | SR-TOOLS | `review.html` and `evidence.html` | Verify live-region timing and verbosity for scan results and the source-change rehearsal; confirm that changed status is not conveyed by color alone. | `not_run` |
 | REFLOW-ALL | All five pages | Test browser zoom at 200% and 400%, then a 320 CSS-pixel viewport; verify no loss of content or function and no document-level horizontal scrolling. | `not_run` |
+| TOUCH-IOS | `index.html`, `check.html?sample=adu`, and `evidence.html` | On a physical iPhone using Safari, open and close the section menu, complete and edit the sample with the virtual keyboard, operate disclosures, and scan the labeled evidence records at 320px-equivalent and 390px-equivalent widths. | `not_run` |
+| TOUCH-ANDROID | `index.html`, `check.html?sample=adu`, and `evidence.html` | On a physical Android phone using Chrome, open and close the section menu, complete and edit the sample with the virtual keyboard, operate disclosures, and scan the labeled evidence records at a narrow and a common phone width. | `not_run` |
 | TEXT-SPACING | All five pages | Apply WCAG text-spacing overrides and verify that text is not clipped, overlapped, or made inoperable. | `not_run` |
 | CONTRAST-MODE | All five pages | Test forced-colors or a comparable high-contrast mode; verify focus, controls, links, disclosures, and status distinctions. | `not_run` |
 | MOTION | `check.html` and `evidence.html` | Enable reduced motion and verify that navigation and result updates remain understandable without smooth scrolling. | `not_run` |
@@ -122,4 +124,3 @@ Human validation is complete only when:
    bound to exact versions and fingerprints; and
 5. `docs/ACCESSIBILITY.md`, `docs/I18N.md`, the capability matrix, README, and
    public labels accurately reflect the completed and still-open work.
-

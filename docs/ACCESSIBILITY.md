@@ -10,10 +10,11 @@ height, state color/status tokens, spacing steps, and the 1,176px shell /
 affiliation is claimed. See `docs/DESIGN-SYSTEM.md`.
 
 This audit combines static and code-level checks, computed contrast, automated
-axe scans of all five public pages, Lighthouse category budgets, and one
-limited local browser inspection of the packet sample. Automation found and
-remediated invalid ARIA labeling on packet status text and the ordinance
-results region. It is not a completed manual or assistive-technology review.
+axe scans of all five public pages, Lighthouse category budgets, automated
+320px/390px reflow checks, populated-state checks, and limited local browser
+inspection. Automation found and remediated invalid ARIA labeling on packet
+status text and the ordinance results region. It is not a completed manual,
+physical-device, or assistive-technology review.
 Items under "Remaining" require a person using the named browsers, input
 methods, or assistive technology. The executable task matrix and signed-result
 requirements are defined in `docs/MANUAL-VALIDATION.md`; every row is
@@ -22,7 +23,9 @@ currently `not_run`.
 ## Static and code checks recorded
 
 **Semantics & structure.** Each page has a skip link, one `<main>`, one
-`<h1>`, a labeled primary navigation, and `aria-current` on the active page.
+`<h1>`, a labeled viewport-appropriate primary navigation, and `aria-current`
+on the active page. The phone navigation is a native disclosure with a 48px
+summary target; the full navigation remains the desktop/tablet surface.
 Sections use `<h2>`s. The applicant result cover sheet uses a `<dl>`, its
 group index is a labeled `<nav>`, and each nonempty group has a focusable
 heading that serves as a jump-link target. Each decision record is an
@@ -56,15 +59,18 @@ behavior, or conformance for the other four static pages.
 
 ## Automated browser checks recorded
 
-On 2026-07-29, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
+On 2026-07-30, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
 AAA violations on `index.html`, `check.html`, `prepare.html`, `review.html`,
-or `evidence.html` in a Playwright-managed Chromium build. Lighthouse 13.4.1
-reported accessibility 1.00, performance 1.00, SEO 1.00, and best-practices
-0.96 for each page against a gzip-enabled local server that mirrors the
-production static delivery behavior. CI repeats both checks on pull requests,
-default-branch pushes, and weekly. A first performance sample below the 0.90
-budget triggers two confirmation samples and evaluates their median; the
-budget itself is unchanged.
+or `evidence.html` in a Playwright-managed Chromium build. Seventeen browser
+checks also exercised each page at 320px and 390px, opened the compact
+navigation, checked document-level overflow, scanned a populated applicant
+result, and verified that mobile evidence tables render as labeled records.
+Lighthouse 13.4.1 audits all five initial pages plus the populated applicant
+sample using its mobile profile. On 2026-07-30, all six states scored 1.00 for
+accessibility, best practices, performance, and SEO. CI repeats both suites on
+pull requests, default-branch pushes, and weekly. A first performance sample
+below the 0.90 budget triggers two confirmation samples and evaluates their
+median; the budget itself is unchanged.
 
 These automated results cover only rules the tools can evaluate. They do not
 establish WCAG conformance, substitute for the remaining keyboard and
@@ -154,10 +160,10 @@ does not depend on color. The gray-700 form-control boundary is 6.39:1
 against its white surface.
 
 **Visual presentation (1.4.8, partial).** Base line height is 1.75; reading
-content is capped at the published 876px width; no text is justified; wide
-tables scroll in their own labeled region (no page horizontal scroll at
-320px). User-selectable colors/spacing beyond browser and OS mechanisms are
-not provided.
+content is capped at the published 876px width; no text is justified. At phone
+widths, wide evidence tables become labeled records and the automated 320px
+and 390px checks find no document-level horizontal scroll. User-selectable
+colors/spacing beyond browser and OS mechanisms are not provided.
 
 **Language switching.** The applicant page preserves the current intake and
 rendered result set, temporary cover sheet, and disclosure state when
@@ -174,9 +180,12 @@ staff-facing trust, ordinance, and clock tools remain English.
   record did not complete any human or assistive-technology test.
 - Screen-reader walkthrough (VoiceOver/NVDA): reading order, datalist
   combobox behavior, packet-result reading order, and live-region verbosity.
-- 200% zoom and 320px reflow visual check on real devices. The packet page
-  passed a local 320 CSS-pixel viewport check, which is not a real-device or
-  browser-zoom test.
+- 200% and 400% zoom checks on real devices. Automated Chromium reflow passes
+  at 320px and 390px, but that is not a physical-device, browser-zoom, or
+  virtual-keyboard test.
+- Physical iPhone/Safari and Android/Chrome task runs, including the compact
+  section menu, form editing with the virtual keyboard, disclosures, and
+  labeled evidence records.
 - `forced-colors` / high-contrast mode spot check.
 - Spanish screen-reader pronunciation check.
 - Mixed-language audit: translated intake/result labels and Spanish
