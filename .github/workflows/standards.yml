@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           repository: ChelseaKR/portfolio-standards
-          ref: 8db506dc1c0b7f945e1860961ca1c2f59f163a0b
+          ref: 225bfbb6fe011539616309395deb78259f2571fc
           ssh-key: ${{ secrets.STANDARDS_DEPLOY_KEY }}
           path: .standards
           persist-credentials: false

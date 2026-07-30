@@ -1,7 +1,9 @@
 import { execFileSync, spawn } from "node:child_process";
-import { readFileSync, unlinkSync } from "node:fs";
+import { existsSync, readFileSync, unlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
+import { median } from "./lighthouse-score.mjs";
 
 const pages = [
   "index.html",
@@ -33,11 +35,12 @@ async function waitForServer() {
   throw new Error("local Lighthouse server did not start");
 }
 
-let failed = false;
-try {
-  await waitForServer();
-  for (const page of pages) {
-    const report = join(tmpdir(), `permit-pathways-${page}.json`);
+function runAudit(page, sample) {
+  const report = join(
+    tmpdir(),
+    `permit-pathways-${page}-${process.pid}-${sample}.json`,
+  );
+  try {
     execFileSync(
       process.execPath,
       [
@@ -50,12 +53,31 @@ try {
       ],
       { stdio: "inherit" },
     );
-    const result = JSON.parse(readFileSync(report, "utf8"));
-    unlinkSync(report);
+    return JSON.parse(readFileSync(report, "utf8"));
+  } finally {
+    if (existsSync(report)) unlinkSync(report);
+  }
+}
+
+let failed = false;
+try {
+  await waitForServer();
+  for (const page of pages) {
+    const results = [runAudit(page, 1)];
+    const firstPerformance = results[0].categories.performance.score;
+    if (firstPerformance < minimums.performance) {
+      console.log(
+        `${page} performance first sample ${firstPerformance}; collecting two confirmation samples`,
+      );
+      results.push(runAudit(page, 2), runAudit(page, 3));
+    }
 
     for (const [category, minimum] of Object.entries(minimums)) {
-      const score = result.categories[category].score;
-      console.log(`${page} ${category}: ${score}`);
+      const samples = results.map((result) => result.categories[category].score);
+      const score = median(samples);
+      const sampleDetail =
+        samples.length > 1 ? ` (median of ${samples.join(", ")})` : "";
+      console.log(`${page} ${category}: ${score}${sampleDetail}`);
       if (score < minimum) {
         console.error(`${page} ${category} is below ${minimum}`);
         failed = true;

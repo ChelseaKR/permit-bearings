@@ -20,3 +20,7 @@ published a versioned release.
   expiring waiver for 12 existing fail-closed loaders and evaluators.
 - Added a pinned, read-only private standards consumer gate and a reviewable
   protected-main ruleset profile.
+- Pinned the consumer to the standards fix that enforces live hosted policy
+  and publication checks in single-repository network mode.
+- Stabilized the unchanged Lighthouse 0.90 performance budget by confirming a
+  low first sample twice and evaluating the three-sample median.
