@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, timedelta
-from typing import Literal
+from typing import Literal, cast
 
 COMPLETENESS_BUSINESS_DAYS = 15
 DECISION_CALENDAR_DAYS = 60
@@ -73,8 +73,7 @@ def completeness_deadline(
             status="unknown",
             date=None,
             reason=(
-                "Exact date requires the permitting agency's full-day "
-                "closure calendar."
+                "Exact date requires the permitting agency's full-day closure calendar."
             ),
         )
     return CalendarDeadline(
@@ -113,7 +112,7 @@ class ClockStatus:
     def summary(self) -> str:
         def line(label: str, deadline: CalendarDeadline) -> str:
             value = (
-                deadline.date.isoformat()
+                cast(date, deadline.date).isoformat()
                 if deadline.status == "exact"
                 else "unknown"
             )
@@ -152,9 +151,10 @@ def adu_clocks(
 
     completeness = completeness_deadline(received, agency_closures)
     if completeness.status == "exact":
+        completeness_date = cast(date, completeness.date)
         deemed = CalendarDeadline(
             status="exact",
-            date=completeness.date + timedelta(days=1),
+            date=completeness_date + timedelta(days=1),
             reason=(
                 "The application is deemed complete after the timely-notice "
                 "deadline passes without a notice."

@@ -38,7 +38,9 @@ and interaction alignment with California Web Standards is recorded in
 ## Run it
 
 ```sh
-python3 -m pytest                                   # test suite
+uv sync --frozen --python 3.12 --group dev         # locked development tools
+make verify                                         # local CI-equivalent gate
+python3 -m pytest                                   # focused test-suite run
 PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip --lat 38.5449 --lon -121.7442
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
@@ -280,6 +282,31 @@ one-click rehearsal of an amendment to Gov. Code § 66321; matching applicant
 records can be opened in the stale state, but the rehearsal is not persisted
 production state. The smaller Python reference demo renders the same
 explanation sidecar and keeps a separate `/trust` route.
+
+## Standards conformance
+
+This repository references the shared rigor in `~/portfolio/STANDARDS` and
+records only project-specific status here. The dated audit and remaining gaps
+are in [docs/CONFORMANCE-AUDIT-2026-07-29.md](docs/CONFORMANCE-AUDIT-2026-07-29.md);
+metrics and remediation order are in [docs/ROADMAP.md](docs/ROADMAP.md).
+
+| Standard | State |
+|---|---|
+| Responsible-Tech Framework | Applies — dated ethics, bias, privacy, transparency, accessibility, and security findings are committed; human review gates remain visibly open |
+| Code Quality | Applies — Python 3.12, canonical ruff/mypy floors, strict core typing, locked tools, and an interim 80% branch gate; the 85% portfolio floor and complexity exceptions remain gaps |
+| Security & Supply-Chain | Applies — SHA-pinned Actions, scoped tokens, Bandit, pip-audit, Gitleaks, and a threat model; CodeQL/Scorecard and live ruleset evidence remain open |
+| CI/CD | Applies — `make verify` is the core local/CI command; standards-consumer CI and live branch-protection verification remain open |
+| Release & Versioning | N/A — no versioned artifact is published; accepted ADR 0001 makes this temporary boundary explicit |
+| Observability | Applies — Tier B static surface plus Tier C local reference server; hosted-service telemetry/SLO controls do not apply until a production service exists |
+| Performance | Applies — dependency-light static delivery is implemented; a committed Lighthouse baseline and regression gate remain open |
+| Accessibility | Applies — WCAG 2.2 AAA target and static evidence are documented; axe/pa11y/Lighthouse and human AT review remain open |
+| Internationalization | Applies — bounded English/Spanish copy ships; catalog parity and named Spanish semantic review are deferred to pre-pilot acceptance |
+| AI Evaluation | Applies narrowly — AI-assisted drafts are versioned, labeled, fingerprint-bound, and isolated from matching; human/legal/translation evaluation remains open and no runtime model ships |
+| Documentation | Applies — product truth, design, provenance, data flow, ADR, security, contributing, and dated audit artifacts are present |
+| Quality & Metrics | Applies — the metrics ledger distinguishes enforced gates, review gates, and open gaps without treating aspirational controls as passes |
+| Incident Response | Applies — private reporting is documented; a committed postmortem is required after a qualifying incident |
+| Data Governance | Applies — public L1 sources and synthetic fixtures have provenance and a data card; per-source card enumeration remains open |
+| AI Development Measurement | Applies — AI assistance is disclosed; portfolio delivery/tool-usage measurement has not yet been wired for this new repository |
 
 ## Layout
 

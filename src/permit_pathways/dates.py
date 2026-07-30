@@ -7,13 +7,13 @@ in the host machine's local timezone.
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 
 def utc_today() -> date:
     """Return the current UTC calendar date."""
 
-    return datetime.now(timezone.utc).date()
+    return datetime.now(UTC).date()
 
 
 def resolve_today(value: date | None) -> date:

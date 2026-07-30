@@ -25,8 +25,7 @@ def test_changed_source_flips_dependent_rules_to_stale():
     # Rehearse a legislative amendment touching Gov. Code § 66321
     # (ADU size/setback/height standards): both dependent rules must go
     # stale; unrelated rules stay verified.
-    report = verify_rules(RULES, GOLDEN, today=AS_OF,
-                          changed_sources=["ca-gov-66321"])
+    report = verify_rules(RULES, GOLDEN, today=AS_OF, changed_sources=["ca-gov-66321"])
     assert set(report.stale) == {
         "adu-protected-minimum",
         "adu-height-standards",
@@ -49,6 +48,4 @@ def test_jurisdiction_layers_ride_on_the_statewide_base():
     assert {
         "davis-new-detached-adu-local-layer",
         "woodland-new-detached-adu-local-layer",
-    } <= set(
-        report.golden_passed
-    )
+    } <= set(report.golden_passed)

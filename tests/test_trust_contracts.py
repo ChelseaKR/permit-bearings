@@ -9,6 +9,11 @@ from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
+from scripts.build_demo_bundle import (
+    aggregate_rule_records,
+    discover_rule_files,
+    rule_manifest,
+)
 
 from permit_pathways.explanations import (
     LocalizedExplanation,
@@ -21,11 +26,6 @@ from permit_pathways.harness.__main__ import main as harness_main
 from permit_pathways.harness.runner import verify_rules
 from permit_pathways.harness.watch import check_sources, load_sources
 from permit_pathways.screening import load_rules, screen
-from scripts.build_demo_bundle import (
-    aggregate_rule_records,
-    discover_rule_files,
-    rule_manifest,
-)
 
 AS_OF = date(2026, 7, 28)
 SOURCE_REGISTRY_AS_OF = date(2026, 7, 29)
@@ -46,8 +46,7 @@ def _rule_record(
         "route_class": "ministerial",
         "jurisdiction_scope": "statewide",
         "criteria": [
-            criterion
-            or {"field": "project_type", "op": "eq", "value": "adu"}
+            criterion or {"field": "project_type", "op": "eq", "value": "adu"}
         ],
         "citation": {
             "source": "Official test source",
@@ -79,9 +78,7 @@ def _source_meta(
         "label": source_id,
         "local_copy": None,
         "sha256": (
-            hashlib.sha256(content).hexdigest()
-            if content is not None
-            else None
+            hashlib.sha256(content).hexdigest() if content is not None else None
         ),
         "fetched_on": "2026-07-28" if content is not None else None,
         "watch": watch,
@@ -128,9 +125,7 @@ def test_rule_loader_rejects_float_criteria_for_cross_runtime_parity(
     "value",
     [2**53, -(2**53)],
 )
-def test_rule_loader_rejects_integers_outside_javascript_safe_range(
-    tmp_path, value
-):
+def test_rule_loader_rejects_integers_outside_javascript_safe_range(tmp_path, value):
     criterion = {"field": "height", "op": "lte", "value": value}
     with pytest.raises(ValueError, match="safe-integer"):
         load_rules(
@@ -160,9 +155,7 @@ def test_rule_loader_requires_document_field_and_nonblank_notes(tmp_path):
     missing_documents = _rule_record()
     del missing_documents["required_documents"]
     with pytest.raises(ValueError, match="required_documents"):
-        load_rules(
-            _write_rules(tmp_path, [missing_documents]), today=AS_OF
-        )
+        load_rules(_write_rules(tmp_path, [missing_documents]), today=AS_OF)
 
     blank_notes = _rule_record()
     blank_notes["notes"] = " "
@@ -170,12 +163,8 @@ def test_rule_loader_requires_document_field_and_nonblank_notes(tmp_path):
         load_rules(_write_rules(tmp_path, [blank_notes]), today=AS_OF)
 
 
-def test_omitted_calendar_dates_use_injectable_utc_default(
-    tmp_path, monkeypatch
-):
-    monkeypatch.setattr(
-        "permit_pathways.dates.utc_today", lambda: AS_OF
-    )
+def test_omitted_calendar_dates_use_injectable_utc_default(tmp_path, monkeypatch):
+    monkeypatch.setattr("permit_pathways.dates.utc_today", lambda: AS_OF)
     future = _rule_record(verified_on="2026-07-29")
     with pytest.raises(ValueError, match="future dates"):
         load_rules(_write_rules(tmp_path, [future]))
@@ -236,18 +225,10 @@ def test_watcher_reports_stable_ids_and_skips_non_watched_sources(
     monkeypatch,
 ):
     payload = {
-        "https://example.gov/unchanged": _source_meta(
-            "source-unchanged", b"same"
-        ),
-        "https://example.gov/changed": _source_meta(
-            "source-changed", b"before"
-        ),
-        "https://example.gov/error": _source_meta(
-            "source-error", b"before"
-        ),
-        "https://example.gov/manual": _source_meta(
-            "source-manual", None, watch=False
-        ),
+        "https://example.gov/unchanged": _source_meta("source-unchanged", b"same"),
+        "https://example.gov/changed": _source_meta("source-changed", b"before"),
+        "https://example.gov/error": _source_meta("source-error", b"before"),
+        "https://example.gov/manual": _source_meta("source-manual", None, watch=False),
     }
     sources_path = tmp_path / "sources.json"
     sources_path.write_text(json.dumps(payload), encoding="utf-8")
@@ -302,12 +283,8 @@ def test_fetch_error_exits_nonzero_even_without_a_dependent_rule(
     golden_path = tmp_path / "golden.json"
     golden_path.write_text("[]", encoding="utf-8")
     sources_payload = {
-        "https://example.gov/current": _source_meta(
-            "source-current", b"current"
-        ),
-        "https://example.gov/unrelated": _source_meta(
-            "source-unrelated", b"current"
-        ),
+        "https://example.gov/current": _source_meta("source-current", b"current"),
+        "https://example.gov/unrelated": _source_meta("source-unrelated", b"current"),
     }
     sources_path = tmp_path / "sources.json"
     sources_path.write_text(json.dumps(sources_payload), encoding="utf-8")
@@ -416,9 +393,7 @@ def test_completed_review_digest_is_bound_to_exact_copy(tmp_path):
         title=reviewed_translation["es"]["title"],
         summary=reviewed_translation["es"]["summary"],
         next_steps=tuple(reviewed_translation["es"]["next_steps"]),
-        confirm_with_staff=tuple(
-            reviewed_translation["es"]["confirm_with_staff"]
-        ),
+        confirm_with_staff=tuple(reviewed_translation["es"]["confirm_with_staff"]),
     )
     reviewed_translation["es"].update(
         {
@@ -433,17 +408,13 @@ def test_completed_review_digest_is_bound_to_exact_copy(tmp_path):
         }
     )
     path.write_text(
-        json.dumps(
-            {"schema_version": 1, "entries": [reviewed_translation]}
-        ),
+        json.dumps({"schema_version": 1, "entries": [reviewed_translation]}),
         encoding="utf-8",
     )
     assert load_explanations(path, [rule], today=AS_OF)[rule.rule_id].es
     reviewed_translation["es"]["summary"] += " Cambió después de la revisión."
     path.write_text(
-        json.dumps(
-            {"schema_version": 1, "entries": [reviewed_translation]}
-        ),
+        json.dumps({"schema_version": 1, "entries": [reviewed_translation]}),
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="does not match translated copy"):

@@ -14,7 +14,7 @@ import re
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from .dates import resolve_today
 from .screening import DISPLAY_GROUPS, Rule
@@ -217,8 +217,7 @@ def _text_list(value: Any, field: str) -> tuple[str, ...]:
     if not isinstance(value, list) or not value:
         raise ValueError(f"{field}: expected a non-empty list")
     return tuple(
-        _required_text(item, f"{field}[{index}]")
-        for index, item in enumerate(value)
+        _required_text(item, f"{field}[{index}]") for index, item in enumerate(value)
     )
 
 
@@ -238,16 +237,14 @@ def _highlights(value: Any, field: str) -> HighlightGroup | None:
             raise ValueError(f"{item_field}: expected an object")
         parsed.append(
             Highlight(
-                label=_required_text(
-                    item.get("label"), f"{item_field}.label"
-                ),
+                label=_required_text(item.get("label"), f"{item_field}.label"),
                 text=_required_text(item.get("text"), f"{item_field}.text"),
             )
         )
     return HighlightGroup(title=title, items=tuple(parsed))
 
 
-def _review(
+def _review(  # noqa: C901 - review metadata validation stays fail-closed
     record: Any,
     rule_id: str,
     version: str,
@@ -291,18 +288,17 @@ def _review(
             f"and reviewed_version"
         )
     if status != "prototype_review_pending":
+        reviewed_on_value = cast(str, reviewed_on)
         if reviewed_version != version:
             raise ValueError(
                 f"{field}: reviewed_version must match explanation version"
             )
-        if reviewed_on < updated_on:
+        if reviewed_on_value < updated_on:
             raise ValueError(
                 f"{field}: review date predates the explanation update date"
             )
         if content_fingerprint is None:
-            raise ValueError(
-                f"{field}: completed review requires content_fingerprint"
-            )
+            raise ValueError(f"{field}: completed review requires content_fingerprint")
         if not _FINGERPRINT.fullmatch(content_fingerprint):
             raise ValueError(f"{field}.content_fingerprint: invalid SHA-256")
         if content_fingerprint != expected_content_fingerprint:
@@ -319,7 +315,7 @@ def _review(
     )
 
 
-def _localized(
+def _localized(  # noqa: C901 - locale metadata validation stays fail-closed
     record: Any,
     rule_id: str,
     language: str,
@@ -358,8 +354,7 @@ def _localized(
         )
         if translation_status not in TRANSLATION_STATUSES:
             raise ValueError(
-                f"{field}.translation_status: unknown value "
-                f"{translation_status!r}"
+                f"{field}.translation_status: unknown value {translation_status!r}"
             )
         reviewer = _optional_text(record.get("reviewer"), f"{field}.reviewer")
         reviewed_on = _iso_date(
@@ -394,30 +389,25 @@ def _localized(
                 f"and reviewed_version"
             )
         if translation_status != "machine_draft":
+            reviewed_on_value = cast(str, reviewed_on)
             if reviewed_version != version:
                 raise ValueError(
                     f"{field}: reviewed_version must match explanation version"
                 )
-            if reviewed_on < updated_on:
+            if reviewed_on_value < updated_on:
                 raise ValueError(
                     f"{field}: review date predates the explanation update date"
                 )
             if content_fingerprint is None:
                 raise ValueError(
-                    f"{field}: reviewed translation requires "
-                    "content_fingerprint"
+                    f"{field}: reviewed translation requires content_fingerprint"
                 )
             if not _FINGERPRINT.fullmatch(content_fingerprint):
-                raise ValueError(
-                    f"{field}.content_fingerprint: invalid SHA-256"
-                )
-            expected = localized_content_fingerprint(
-                version, language, localized
-            )
+                raise ValueError(f"{field}.content_fingerprint: invalid SHA-256")
+            expected = localized_content_fingerprint(version, language, localized)
             if content_fingerprint != expected:
                 raise ValueError(
-                    f"{field}: content_fingerprint does not match "
-                    "translated copy"
+                    f"{field}: content_fingerprint does not match translated copy"
                 )
     return LocalizedExplanation(
         title=title,
@@ -434,7 +424,7 @@ def _localized(
     )
 
 
-def load_explanations(
+def load_explanations(  # noqa: C901 - whole-record validation is intentionally atomic
     path: Path,
     rules: list[Rule],
     *,
@@ -461,11 +451,11 @@ def load_explanations(
         return {}
     if not isinstance(payload, dict) or payload.get("schema_version") != SCHEMA_VERSION:
         got = payload.get("schema_version") if isinstance(payload, dict) else None
-        error = ValueError(
+        schema_error = ValueError(
             f"plain-language schema_version must be {SCHEMA_VERSION}; got {got!r}"
         )
         if strict:
-            raise error
+            raise schema_error
         return {}
     records = payload.get("entries")
     if not isinstance(records, list):
@@ -497,9 +487,7 @@ def load_explanations(
 
         if rule_id in seen:
             if strict:
-                raise ValueError(
-                    f"{rule_id}: duplicate plain-language explanation"
-                )
+                raise ValueError(f"{rule_id}: duplicate plain-language explanation")
             explanations.pop(rule_id, None)
             blocked.add(rule_id)
             continue
@@ -510,9 +498,7 @@ def load_explanations(
         try:
             rule = rules_by_id.get(rule_id)
             if rule is None:
-                raise ValueError(
-                    f"{rule_id}: explanation references an unknown rule"
-                )
+                raise ValueError(f"{rule_id}: explanation references an unknown rule")
 
             version = _required_text(record.get("version"), f"{rule_id}.version")
             if not _SEMVER.fullmatch(version):
@@ -555,16 +541,13 @@ def load_explanations(
                     f"{rule_id}.display_group: unknown value {display_group!r}"
                 )
             if display_group != rule.display_group:
-                raise ValueError(
-                    f"{rule_id}.display_group: does not match linked rule"
-                )
+                raise ValueError(f"{rule_id}.display_group: does not match linked rule")
             drafted_by = _required_text(
                 record.get("drafted_by"), f"{rule_id}.drafted_by"
             )
             if drafted_by != "ai_assisted":
                 raise ValueError(
-                    f"{rule_id}.drafted_by: expected 'ai_assisted', "
-                    f"got {drafted_by!r}"
+                    f"{rule_id}.drafted_by: expected 'ai_assisted', got {drafted_by!r}"
                 )
 
             updated_on = _iso_date(
@@ -572,7 +555,8 @@ def load_explanations(
                 f"{rule_id}.updated_on",
                 today=as_of,
             )
-            if source_verified_on and updated_on < source_verified_on:
+            updated_on_value = cast(str, updated_on)
+            if source_verified_on and updated_on_value < source_verified_on:
                 raise ValueError(
                     f"{rule_id}: explanation update date {updated_on!r} "
                     f"predates linked source date {source_verified_on!r}"
@@ -582,17 +566,15 @@ def load_explanations(
                 rule_id,
                 "en",
                 version,
-                updated_on,
+                updated_on_value,
                 as_of,
             )
-            english_fingerprint = localized_content_fingerprint(
-                version, "en", english
-            )
+            english_fingerprint = localized_content_fingerprint(version, "en", english)
             review = _review(
                 record.get("review"),
                 rule_id,
                 version,
-                updated_on,
+                updated_on_value,
                 english_fingerprint,
                 as_of,
             )
@@ -602,7 +584,7 @@ def load_explanations(
                     rule_id,
                     "es",
                     version,
-                    updated_on,
+                    updated_on_value,
                     as_of,
                 )
             except ValueError:
@@ -618,7 +600,7 @@ def load_explanations(
                 rule_fingerprint=full_rule_fingerprint,
                 display_group=display_group,
                 drafted_by=drafted_by,
-                updated_on=updated_on,
+                updated_on=updated_on_value,
                 review=review,
                 en=english,
                 es=spanish,
@@ -633,7 +615,6 @@ def load_explanations(
         missing = sorted(set(rules_by_id) - set(explanations))
         if missing:
             raise ValueError(
-                "plain-language explanations missing rule IDs: "
-                + ", ".join(missing)
+                "plain-language explanations missing rule IDs: " + ", ".join(missing)
             )
     return explanations

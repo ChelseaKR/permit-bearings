@@ -11,18 +11,10 @@ from .readiness import load_and_evaluate_readiness
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_WORKFLOW = (
-    ROOT
-    / "data"
-    / "readiness"
-    / "workflows"
-    / "woodland-preapproved-detached-adu.json"
+    ROOT / "data" / "readiness" / "workflows" / "woodland-preapproved-detached-adu.json"
 )
 DEFAULT_PACKET = (
-    ROOT
-    / "data"
-    / "readiness"
-    / "samples"
-    / "woodland-preapproved-adu.json"
+    ROOT / "data" / "readiness" / "samples" / "woodland-preapproved-adu.json"
 )
 DEFAULT_SOURCES = ROOT / "data" / "sources.json"
 

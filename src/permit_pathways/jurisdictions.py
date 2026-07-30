@@ -15,16 +15,17 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 
 @dataclass(frozen=True)
 class Jurisdiction:
     slug: str
     name: str
-    kind: str                 # "city" | "county"
+    kind: str  # "city" | "county"
     county: str
     has_local_layer: bool
-    hcd_letters: tuple
+    hcd_letters: tuple[dict[str, Any], ...]
 
 
 @dataclass(frozen=True)
@@ -36,16 +37,18 @@ class Coverage:
     with_hcd_letters: int
 
     def summary(self) -> str:
-        return (f"{self.total} California jurisdictions in registry "
-                f"({self.cities} cities, {self.counties} counties); "
-                f"same statewide candidate-rule set is screenable for each; "
-                f"jurisdiction-scoped records: "
-                f"{self.local_layers}; known HCD letter history: "
-                f"{self.with_hcd_letters}.")
+        return (
+            f"{self.total} California jurisdictions in registry "
+            f"({self.cities} cities, {self.counties} counties); "
+            f"same statewide candidate-rule set is screenable for each; "
+            f"jurisdiction-scoped records: "
+            f"{self.local_layers}; known HCD letter history: "
+            f"{self.with_hcd_letters}."
+        )
 
 
-def _local_layer_slugs(rules_dir: Path) -> set:
-    slugs = set()
+def _local_layer_slugs(rules_dir: Path) -> set[str]:
+    slugs: set[str] = set()
     for path in sorted(rules_dir.glob("*.json")):
         if path.name == "index.json":
             continue
@@ -61,8 +64,9 @@ def _local_layer_slugs(rules_dir: Path) -> set:
     return slugs
 
 
-def load_registry(registry_path: Path, rules_dir: Path,
-                  letters_path: Path | None = None) -> list[Jurisdiction]:
+def load_registry(
+    registry_path: Path, rules_dir: Path, letters_path: Path | None = None
+) -> list[Jurisdiction]:
     data = json.loads(registry_path.read_text())
     letters = {}
     if letters_path and letters_path.exists():
@@ -70,11 +74,16 @@ def load_registry(registry_path: Path, rules_dir: Path,
     local = _local_layer_slugs(rules_dir)
     out = []
     for rec in data["jurisdictions"]:
-        out.append(Jurisdiction(
-            slug=rec["slug"], name=rec["name"], kind=rec["kind"],
-            county=rec["county"],
-            has_local_layer=rec["slug"] in local,
-            hcd_letters=tuple(letters.get(rec["slug"], []))))
+        out.append(
+            Jurisdiction(
+                slug=rec["slug"],
+                name=rec["name"],
+                kind=rec["kind"],
+                county=rec["county"],
+                has_local_layer=rec["slug"] in local,
+                hcd_letters=tuple(letters.get(rec["slug"], [])),
+            )
+        )
     return out
 
 
@@ -84,4 +93,5 @@ def coverage(registry: list[Jurisdiction]) -> Coverage:
         cities=sum(1 for j in registry if j.kind == "city"),
         counties=sum(1 for j in registry if j.kind == "county"),
         local_layers=sum(1 for j in registry if j.has_local_layer),
-        with_hcd_letters=sum(1 for j in registry if j.hcd_letters))
+        with_hcd_letters=sum(1 for j in registry if j.hcd_letters),
+    )

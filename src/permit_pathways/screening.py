@@ -59,10 +59,7 @@ def _is_number(value: Any) -> bool:
 
 
 def _is_scalar(value: Any) -> bool:
-    return (
-        isinstance(value, (str, bool))
-        or _is_safe_integer(value)
-    )
+    return isinstance(value, (str, bool)) or _is_safe_integer(value)
 
 
 def _is_safe_integer(value: Any) -> bool:
@@ -89,7 +86,7 @@ def _same_scalar(left: Any, right: Any) -> bool:
     """JSON-scalar equality without Python's ``True == 1`` coercion."""
 
     if _is_number(left) and _is_number(right):
-        return left == right
+        return bool(left == right)
     return type(left) is type(right) and left == right
 
 
@@ -149,7 +146,7 @@ def _parse_iso_date(
     return value
 
 
-def _validate_criterion(
+def _validate_criterion(  # noqa: C901 - criterion schema validation is atomic
     record: Any,
     *,
     rule_id: str,
@@ -187,10 +184,7 @@ def _validate_criterion(
             raise ValueError(f"{field}.value: in values cannot be blank")
         first = value[0]
         if any(
-            not (
-                (_is_number(first) and _is_number(item))
-                or type(first) is type(item)
-            )
+            not ((_is_number(first) and _is_number(item)) or type(first) is type(item))
             for item in value[1:]
         ):
             raise ValueError(f"{field}.value: in values must have one type")
@@ -214,9 +208,9 @@ class Citation:
     its source evidence; it does not identify a reviewer or jurisdiction
     approval. The harness reports records without a date separately."""
 
-    source: str          # e.g. "Gov. Code § 66321(b)(3)" or an HCD document title
+    source: str  # e.g. "Gov. Code § 66321(b)(3)" or an HCD document title
     url: str
-    excerpt: str | None = None      # supporting source text recorded for the rule
+    excerpt: str | None = None  # supporting source text recorded for the rule
     excerpt_sha256: str | None = None
     verified_on: str | None = None  # ISO date of last verification against source
 
@@ -227,7 +221,7 @@ class Citation:
     def is_stale(self, max_age_days: int, today: date) -> bool:
         if max_age_days < 0:
             raise ValueError("max_age_days must be non-negative")
-        if not self.is_verified:
+        if self.verified_on is None:
             return True
         verified = date.fromisoformat(self.verified_on)
         age_days = (today - verified).days
@@ -239,10 +233,10 @@ class Citation:
 @dataclass(frozen=True)
 class Rule:
     rule_id: str
-    pathway: str              # e.g. "ADU ministerial approval"
-    route_class: str          # ministerial | discretionary | mixed
-    jurisdiction_scope: str   # "statewide" or a jurisdiction slug
-    criteria: list[dict[str, Any]]   # [{"field", "op", "value"}, ...]
+    pathway: str  # e.g. "ADU ministerial approval"
+    route_class: str  # ministerial | discretionary | mixed
+    jurisdiction_scope: str  # "statewide" or a jurisdiction slug
+    criteria: list[dict[str, Any]]  # [{"field", "op", "value"}, ...]
     citation: Citation
     source_dependencies: list[str]
     display_group: str
@@ -266,15 +260,16 @@ class PathwayResult:
     verified: bool
 
     def summary(self) -> str:
-        badge = ("dated source record" if self.verified
-                 else "NO DATED SOURCE RECORD")
+        badge = "dated source record" if self.verified else "NO DATED SOURCE RECORD"
         return (
             f"{self.rule.pathway} ({self.rule.route_class}) — "
             f"{self.rule.citation.source} [{badge}]"
         )
 
 
-def load_rules(path: Path, *, today: date | None = None) -> list[Rule]:
+def load_rules(  # noqa: C901 - whole-rule validation remains fail-closed
+    path: Path, *, today: date | None = None
+) -> list[Rule]:
     """Load rules from a JSON file, or from every *.json file in a
     directory (sorted by filename: statewide plus per-jurisdiction files)."""
     as_of = resolve_today(today)
@@ -318,17 +313,13 @@ def load_rules(path: Path, *, today: date | None = None) -> list[Rule]:
                 record["route_class"], f"{rule_id}.route_class"
             )
             if route_class not in ROUTE_CLASSES:
-                raise ValueError(
-                    f"{rule_id}: unknown route_class {route_class!r}"
-                )
+                raise ValueError(f"{rule_id}: unknown route_class {route_class!r}")
             jurisdiction_scope = _required_text(
                 record["jurisdiction_scope"],
                 f"{rule_id}.jurisdiction_scope",
             )
             if not _IDENTIFIER.fullmatch(jurisdiction_scope):
-                raise ValueError(
-                    f"{rule_id}.jurisdiction_scope: invalid stable ID"
-                )
+                raise ValueError(f"{rule_id}.jurisdiction_scope: invalid stable ID")
             display_group = _required_text(
                 record["display_group"], f"{rule_id}.display_group"
             )
@@ -343,9 +334,7 @@ def load_rules(path: Path, *, today: date | None = None) -> list[Rule]:
                     f"{rule_id}.source_dependencies: expected a non-empty list"
                 )
             source_dependencies = [
-                _required_text(
-                    source_id, f"{rule_id}.source_dependencies[{position}]"
-                )
+                _required_text(source_id, f"{rule_id}.source_dependencies[{position}]")
                 for position, source_id in enumerate(dependencies)
             ]
             if any(
@@ -356,9 +345,7 @@ def load_rules(path: Path, *, today: date | None = None) -> list[Rule]:
                     f"{rule_id}.source_dependencies: invalid stable source ID"
                 )
             if len(source_dependencies) != len(set(source_dependencies)):
-                raise ValueError(
-                    f"{rule_id}.source_dependencies: duplicate source ID"
-                )
+                raise ValueError(f"{rule_id}.source_dependencies: duplicate source ID")
 
             criteria_payload = record["criteria"]
             if not isinstance(criteria_payload, list) or not criteria_payload:
@@ -372,9 +359,9 @@ def load_rules(path: Path, *, today: date | None = None) -> list[Rule]:
             if not isinstance(citation_payload, dict):
                 raise ValueError(f"{rule_id}.citation: expected an object")
             _exact_keys(citation_payload, _CITATION_KEYS, f"{rule_id}.citation")
-            citation_missing = {
-                "source", "url", "excerpt", "verified_on"
-            } - set(citation_payload)
+            citation_missing = {"source", "url", "excerpt", "verified_on"} - set(
+                citation_payload
+            )
             if citation_missing:
                 raise ValueError(
                     f"{rule_id}.citation: missing fields: "
@@ -383,9 +370,7 @@ def load_rules(path: Path, *, today: date | None = None) -> list[Rule]:
             source = _required_text(
                 citation_payload["source"], f"{rule_id}.citation.source"
             )
-            url = _required_text(
-                citation_payload["url"], f"{rule_id}.citation.url"
-            )
+            url = _required_text(citation_payload["url"], f"{rule_id}.citation.url")
             parsed_url = urlsplit(url)
             if (
                 parsed_url.scheme != "https"
@@ -425,19 +410,13 @@ def load_rules(path: Path, *, today: date | None = None) -> list[Rule]:
 
             documents_payload = record["required_documents"]
             if not isinstance(documents_payload, list):
-                raise ValueError(
-                    f"{rule_id}.required_documents: expected a list"
-                )
+                raise ValueError(f"{rule_id}.required_documents: expected a list")
             required_documents = [
-                _required_text(
-                    document, f"{rule_id}.required_documents[{position}]"
-                )
+                _required_text(document, f"{rule_id}.required_documents[{position}]")
                 for position, document in enumerate(documents_payload)
             ]
             if len(required_documents) != len(set(required_documents)):
-                raise ValueError(
-                    f"{rule_id}.required_documents: duplicate item"
-                )
+                raise ValueError(f"{rule_id}.required_documents: duplicate item")
             notes = _required_text(record["notes"], f"{rule_id}.notes")
 
             rules.append(
@@ -463,8 +442,7 @@ def screen(intake: dict[str, Any], rules: list[Rule]) -> list[PathwayResult]:
     hidden — because hiding them would misrepresent coverage."""
     jurisdiction = intake.get("jurisdiction")
     applicable = [
-        r for r in rules
-        if r.jurisdiction_scope in ("statewide", jurisdiction)
+        r for r in rules if r.jurisdiction_scope in ("statewide", jurisdiction)
     ]
     return [
         PathwayResult(rule=r, verified=r.citation.is_verified)
