@@ -16,8 +16,14 @@ published a versioned release.
   automation with least-privilege tokens and immutable action pins.
 - Added automated axe WCAG checks across every public page and Lighthouse
   accessibility, performance, best-practices, and SEO budgets.
-- Enforced Ruff's complexity ceiling for new code and registered a dated,
-  expiring waiver for 12 existing fail-closed loaders and evaluators.
+- Decomposed the fail-closed rule, explanation, source, transit, and readiness
+  loaders/evaluators into bounded validators and retired the `WVR-007`
+  complexity waiver; Ruff now enforces complexity 10 across the Python
+  codebase.
+- Rechecked the unverified Davis local record against currently discoverable
+  City and code-host material, recorded the local/state currency conflict, and
+  preserved the fail-closed unverified status pending a stable official
+  artifact and review.
 - Added a pinned, read-only private standards consumer gate and a reviewable
   protected-main ruleset profile.
 - Pinned the consumer to the standards fix that enforces live hosted policy

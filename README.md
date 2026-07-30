@@ -64,7 +64,7 @@ still needs a person.
 | Standard | Current declaration and evidence |
 |---|---|
 | Responsible-Tech Framework | Applies. Product, privacy, source, AI-use, accessibility, and unresolved-review boundaries are recorded in `docs/PRODUCT-CONTEXT.md`, `docs/DESIGN.md`, `PROVENANCE.md`, and `docs/ACCESSIBILITY.md`. |
-| Code Quality | Python 3.12 and development dependencies are locked; Ruff, strict mypy, 85% branch coverage, generated-data parity, and 29 golden cases run through `make verify`. Ruff blocks new functions above complexity 10. Twelve existing fail-closed loaders/evaluators have the named, expiring `WVR-007` waiver through 2026-09-30; they are not represented as remediated. |
+| Code Quality | Python 3.12 and development dependencies are locked; Ruff, strict mypy, 85% branch coverage, generated-data parity, and 29 golden cases run through `make verify`. Ruff enforces complexity 10 across the Python codebase; the former `WVR-007` loader/evaluator waiver has been retired. |
 | Security & Supply-Chain | Event-armed CodeQL, Bandit, pip-audit, gitleaks, zizmor, Dependabot, and Scorecard; all workflow actions are pinned to full commit SHAs and use scoped token permissions. |
 | CI/CD | Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. |
 | Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. Storage, telemetry, uploads, or external model calls would trigger a new operational design review. |

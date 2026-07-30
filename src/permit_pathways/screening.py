@@ -146,7 +146,48 @@ def _parse_iso_date(
     return value
 
 
-def _validate_criterion(  # noqa: C901 — WVR-007
+def _validate_eq_value(value: Any, field: str) -> None:
+    _reject_noncanonical_number(value, field)
+    if not _is_scalar(value):
+        raise ValueError(f"{field}: eq requires a JSON scalar")
+    if isinstance(value, str) and not value.strip():
+        raise ValueError(f"{field}: expected non-blank text")
+
+
+def _validate_in_value(value: Any, field: str) -> None:
+    if not isinstance(value, list) or not value:
+        raise ValueError(f"{field}: in requires a non-empty list")
+    for item in value:
+        _reject_noncanonical_number(item, field)
+    if any(not _is_scalar(item) for item in value):
+        raise ValueError(f"{field}: in values must be JSON scalars")
+    if any(isinstance(item, str) and not item.strip() for item in value):
+        raise ValueError(f"{field}: in values cannot be blank")
+    first = value[0]
+    same_type = all(
+        (_is_number(first) and _is_number(item)) or type(first) is type(item)
+        for item in value[1:]
+    )
+    if not same_type:
+        raise ValueError(f"{field}: in values must have one type")
+    unique = all(
+        not _same_scalar(item, prior)
+        for position, item in enumerate(value)
+        for prior in value[:position]
+    )
+    if not unique:
+        raise ValueError(f"{field}: in values must be unique")
+
+
+def _validate_comparison_value(value: Any, field: str, operator: str) -> None:
+    if not _is_safe_integer(value):
+        raise ValueError(
+            f"{field}: {operator} requires an integer within the "
+            "JavaScript safe-integer range"
+        )
+
+
+def _validate_criterion(
     record: Any,
     *,
     rule_id: str,
@@ -167,38 +208,13 @@ def _validate_criterion(  # noqa: C901 — WVR-007
     if operator not in SUPPORTED_OPERATORS:
         raise ValueError(f"{field}.op: unsupported operator {operator!r}")
     value = record["value"]
-    if operator == "eq":
-        _reject_noncanonical_number(value, f"{field}.value")
-        if not _is_scalar(value):
-            raise ValueError(f"{field}.value: eq requires a JSON scalar")
-        if isinstance(value, str) and not value.strip():
-            raise ValueError(f"{field}.value: expected non-blank text")
-    elif operator == "in":
-        if not isinstance(value, list) or not value:
-            raise ValueError(f"{field}.value: in requires a non-empty list")
-        for item in value:
-            _reject_noncanonical_number(item, f"{field}.value")
-        if any(not _is_scalar(item) for item in value):
-            raise ValueError(f"{field}.value: in values must be JSON scalars")
-        if any(isinstance(item, str) and not item.strip() for item in value):
-            raise ValueError(f"{field}.value: in values cannot be blank")
-        first = value[0]
-        if any(
-            not ((_is_number(first) and _is_number(item)) or type(first) is type(item))
-            for item in value[1:]
-        ):
-            raise ValueError(f"{field}.value: in values must have one type")
-        if any(
-            _same_scalar(item, prior)
-            for position, item in enumerate(value)
-            for prior in value[:position]
-        ):
-            raise ValueError(f"{field}.value: in values must be unique")
-    elif not _is_safe_integer(value):
-        raise ValueError(
-            f"{field}.value: {operator} requires an integer within the "
-            "JavaScript safe-integer range"
-        )
+    validators = {
+        "eq": lambda: _validate_eq_value(value, f"{field}.value"),
+        "in": lambda: _validate_in_value(value, f"{field}.value"),
+        "lte": lambda: _validate_comparison_value(value, f"{field}.value", operator),
+        "gte": lambda: _validate_comparison_value(value, f"{field}.value", operator),
+    }
+    validators[operator]()
     return {"field": intake_field, "op": operator, "value": value}
 
 
@@ -267,12 +283,7 @@ class PathwayResult:
         )
 
 
-def load_rules(  # noqa: C901 — WVR-007
-    path: Path, *, today: date | None = None
-) -> list[Rule]:
-    """Load rules from a JSON file, or from every *.json file in a
-    directory (sorted by filename: statewide plus per-jurisdiction files)."""
-    as_of = resolve_today(today)
+def _rule_files(path: Path) -> list[Path]:
     files = (
         sorted(p for p in path.glob("*.json") if p.name != "index.json")
         if path.is_dir()
@@ -280,159 +291,138 @@ def load_rules(  # noqa: C901 — WVR-007
     )
     if not files:
         raise ValueError(f"{path}: no rule files found")
+    return files
 
+
+def _rule_payload(path: Path) -> list[Any]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"{path}: rule data could not be loaded") from error
+    if not isinstance(payload, list):
+        raise ValueError(f"{path}: expected a list of rules")
+    return payload
+
+
+def _source_dependencies(value: Any, rule_id: str) -> list[str]:
+    field = f"{rule_id}.source_dependencies"
+    if not isinstance(value, list) or not value:
+        raise ValueError(f"{field}: expected a non-empty list")
+    dependencies = [
+        _required_text(source_id, f"{field}[{position}]")
+        for position, source_id in enumerate(value)
+    ]
+    if any(not _IDENTIFIER.fullmatch(source_id) for source_id in dependencies):
+        raise ValueError(f"{field}: invalid stable source ID")
+    if len(dependencies) != len(set(dependencies)):
+        raise ValueError(f"{field}: duplicate source ID")
+    return dependencies
+
+
+def _criteria(value: Any, rule_id: str) -> list[dict[str, Any]]:
+    if not isinstance(value, list) or not value:
+        raise ValueError(f"{rule_id}.criteria: expected a non-empty list")
+    return [
+        _validate_criterion(item, rule_id=rule_id, index=position)
+        for position, item in enumerate(value)
+    ]
+
+
+def _citation(value: Any, rule_id: str, as_of: date) -> Citation:
+    field = f"{rule_id}.citation"
+    if not isinstance(value, dict):
+        raise ValueError(f"{field}: expected an object")
+    _exact_keys(value, _CITATION_KEYS, field)
+    missing = {"source", "url", "excerpt", "verified_on"} - set(value)
+    if missing:
+        raise ValueError(f"{field}: missing fields: " + ", ".join(sorted(missing)))
+    source = _required_text(value["source"], f"{field}.source")
+    url = _required_text(value["url"], f"{field}.url")
+    parsed_url = urlsplit(url)
+    if (
+        parsed_url.scheme != "https"
+        or not parsed_url.hostname
+        or parsed_url.username is not None
+        or parsed_url.password is not None
+    ):
+        raise ValueError(f"{field}.url: expected HTTPS URL")
+    excerpt = _optional_text(value.get("excerpt"), f"{field}.excerpt")
+    excerpt_sha256 = _optional_text(
+        value.get("excerpt_sha256"), f"{field}.excerpt_sha256"
+    )
+    if excerpt_sha256 and not _SHA256.fullmatch(excerpt_sha256):
+        raise ValueError(f"{field}.excerpt_sha256: invalid SHA-256 digest")
+    verified_on = _parse_iso_date(
+        value["verified_on"], f"{field}.verified_on", today=as_of, optional=True
+    )
+    if verified_on is not None and excerpt is None:
+        raise ValueError(f"{field}: dated evidence requires an excerpt")
+    return Citation(source, url, excerpt, excerpt_sha256, verified_on)
+
+
+def _documents(value: Any, rule_id: str) -> list[str]:
+    field = f"{rule_id}.required_documents"
+    if not isinstance(value, list):
+        raise ValueError(f"{field}: expected a list")
+    documents = [
+        _required_text(document, f"{field}[{position}]")
+        for position, document in enumerate(value)
+    ]
+    if len(documents) != len(set(documents)):
+        raise ValueError(f"{field}: duplicate item")
+    return documents
+
+
+def _rule(record: Any, record_field: str, as_of: date) -> Rule:
+    if not isinstance(record, dict):
+        raise ValueError(f"{record_field}: expected an object")
+    _exact_keys(record, _RULE_KEYS, record_field)
+    missing = sorted(_RULE_KEYS - set(record))
+    if missing:
+        raise ValueError(f"{record_field}: missing fields: {', '.join(missing)}")
+    rule_id = _required_text(record["rule_id"], f"{record_field}.rule_id")
+    if not _IDENTIFIER.fullmatch(rule_id):
+        raise ValueError(f"{record_field}.rule_id: invalid stable ID")
+    route_class = _required_text(record["route_class"], f"{rule_id}.route_class")
+    if route_class not in ROUTE_CLASSES:
+        raise ValueError(f"{rule_id}: unknown route_class {route_class!r}")
+    jurisdiction = _required_text(
+        record["jurisdiction_scope"], f"{rule_id}.jurisdiction_scope"
+    )
+    if not _IDENTIFIER.fullmatch(jurisdiction):
+        raise ValueError(f"{rule_id}.jurisdiction_scope: invalid stable ID")
+    display_group = _required_text(record["display_group"], f"{rule_id}.display_group")
+    if display_group not in DISPLAY_GROUPS:
+        raise ValueError(f"{rule_id}.display_group: unknown value {display_group!r}")
+    return Rule(
+        rule_id=rule_id,
+        pathway=_required_text(record["pathway"], f"{rule_id}.pathway"),
+        route_class=route_class,
+        jurisdiction_scope=jurisdiction,
+        criteria=_criteria(record["criteria"], rule_id),
+        citation=_citation(record["citation"], rule_id, as_of),
+        source_dependencies=_source_dependencies(
+            record["source_dependencies"], rule_id
+        ),
+        display_group=display_group,
+        required_documents=_documents(record["required_documents"], rule_id),
+        notes=_required_text(record["notes"], f"{rule_id}.notes"),
+    )
+
+
+def load_rules(path: Path, *, today: date | None = None) -> list[Rule]:
+    """Load rules from one JSON file or every rule JSON file in a directory."""
+
+    as_of = resolve_today(today)
     rules: list[Rule] = []
     seen: set[str] = set()
-    for file_path in files:
-        try:
-            payload = json.loads(file_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as error:
-            raise ValueError(f"{file_path}: rule data could not be loaded") from error
-        if not isinstance(payload, list):
-            raise ValueError(f"{file_path}: expected a list of rules")
-        for index, record in enumerate(payload):
-            record_field = f"{file_path.name}[{index}]"
-            if not isinstance(record, dict):
-                raise ValueError(f"{record_field}: expected an object")
-            _exact_keys(record, _RULE_KEYS, record_field)
-            missing = sorted(_RULE_KEYS - set(record))
-            if missing:
-                raise ValueError(
-                    f"{record_field}: missing fields: {', '.join(missing)}"
-                )
-
-            rule_id = _required_text(record["rule_id"], f"{record_field}.rule_id")
-            if not _IDENTIFIER.fullmatch(rule_id):
-                raise ValueError(f"{record_field}.rule_id: invalid stable ID")
-            if rule_id in seen:
-                raise ValueError(f"{rule_id}: duplicate rule ID")
-            seen.add(rule_id)
-
-            pathway = _required_text(record["pathway"], f"{rule_id}.pathway")
-            route_class = _required_text(
-                record["route_class"], f"{rule_id}.route_class"
-            )
-            if route_class not in ROUTE_CLASSES:
-                raise ValueError(f"{rule_id}: unknown route_class {route_class!r}")
-            jurisdiction_scope = _required_text(
-                record["jurisdiction_scope"],
-                f"{rule_id}.jurisdiction_scope",
-            )
-            if not _IDENTIFIER.fullmatch(jurisdiction_scope):
-                raise ValueError(f"{rule_id}.jurisdiction_scope: invalid stable ID")
-            display_group = _required_text(
-                record["display_group"], f"{rule_id}.display_group"
-            )
-            if display_group not in DISPLAY_GROUPS:
-                raise ValueError(
-                    f"{rule_id}.display_group: unknown value {display_group!r}"
-                )
-
-            dependencies = record["source_dependencies"]
-            if not isinstance(dependencies, list) or not dependencies:
-                raise ValueError(
-                    f"{rule_id}.source_dependencies: expected a non-empty list"
-                )
-            source_dependencies = [
-                _required_text(source_id, f"{rule_id}.source_dependencies[{position}]")
-                for position, source_id in enumerate(dependencies)
-            ]
-            if any(
-                not _IDENTIFIER.fullmatch(source_id)
-                for source_id in source_dependencies
-            ):
-                raise ValueError(
-                    f"{rule_id}.source_dependencies: invalid stable source ID"
-                )
-            if len(source_dependencies) != len(set(source_dependencies)):
-                raise ValueError(f"{rule_id}.source_dependencies: duplicate source ID")
-
-            criteria_payload = record["criteria"]
-            if not isinstance(criteria_payload, list) or not criteria_payload:
-                raise ValueError(f"{rule_id}.criteria: expected a non-empty list")
-            criteria = [
-                _validate_criterion(item, rule_id=rule_id, index=position)
-                for position, item in enumerate(criteria_payload)
-            ]
-
-            citation_payload = record["citation"]
-            if not isinstance(citation_payload, dict):
-                raise ValueError(f"{rule_id}.citation: expected an object")
-            _exact_keys(citation_payload, _CITATION_KEYS, f"{rule_id}.citation")
-            citation_missing = {"source", "url", "excerpt", "verified_on"} - set(
-                citation_payload
-            )
-            if citation_missing:
-                raise ValueError(
-                    f"{rule_id}.citation: missing fields: "
-                    + ", ".join(sorted(citation_missing))
-                )
-            source = _required_text(
-                citation_payload["source"], f"{rule_id}.citation.source"
-            )
-            url = _required_text(citation_payload["url"], f"{rule_id}.citation.url")
-            parsed_url = urlsplit(url)
-            if (
-                parsed_url.scheme != "https"
-                or not parsed_url.hostname
-                or parsed_url.username is not None
-                or parsed_url.password is not None
-            ):
-                raise ValueError(f"{rule_id}.citation.url: expected HTTPS URL")
-            excerpt = _optional_text(
-                citation_payload.get("excerpt"), f"{rule_id}.citation.excerpt"
-            )
-            excerpt_sha256 = _optional_text(
-                citation_payload.get("excerpt_sha256"),
-                f"{rule_id}.citation.excerpt_sha256",
-            )
-            if excerpt_sha256 and not _SHA256.fullmatch(excerpt_sha256):
-                raise ValueError(
-                    f"{rule_id}.citation.excerpt_sha256: invalid SHA-256 digest"
-                )
-            verified_on = _parse_iso_date(
-                citation_payload["verified_on"],
-                f"{rule_id}.citation.verified_on",
-                today=as_of,
-                optional=True,
-            )
-            if verified_on is not None and excerpt is None:
-                raise ValueError(
-                    f"{rule_id}.citation: dated evidence requires an excerpt"
-                )
-            citation = Citation(
-                source=source,
-                url=url,
-                excerpt=excerpt,
-                excerpt_sha256=excerpt_sha256,
-                verified_on=verified_on,
-            )
-
-            documents_payload = record["required_documents"]
-            if not isinstance(documents_payload, list):
-                raise ValueError(f"{rule_id}.required_documents: expected a list")
-            required_documents = [
-                _required_text(document, f"{rule_id}.required_documents[{position}]")
-                for position, document in enumerate(documents_payload)
-            ]
-            if len(required_documents) != len(set(required_documents)):
-                raise ValueError(f"{rule_id}.required_documents: duplicate item")
-            notes = _required_text(record["notes"], f"{rule_id}.notes")
-
-            rules.append(
-                Rule(
-                    rule_id=rule_id,
-                    pathway=pathway,
-                    route_class=route_class,
-                    jurisdiction_scope=jurisdiction_scope,
-                    criteria=criteria,
-                    citation=citation,
-                    source_dependencies=source_dependencies,
-                    display_group=display_group,
-                    required_documents=required_documents,
-                    notes=notes,
-                )
-            )
+    for file_path in _rule_files(path):
+        for index, record in enumerate(_rule_payload(file_path)):
+            parsed = _rule(record, f"{file_path.name}[{index}]", as_of)
+            if parsed.rule_id in seen:
+                raise ValueError(f"{parsed.rule_id}: duplicate rule ID")
+            seen.add(parsed.rule_id)
+            rules.append(parsed)
     return rules
 
 

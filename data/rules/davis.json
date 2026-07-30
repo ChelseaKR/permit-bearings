@@ -21,6 +21,6 @@
       "City of Davis ADU permit application (or building-permit-only where state law allows)",
       "site plan and floor plan"
     ],
-    "notes": "PENDING VERIFICATION: the code host (ecode360) and city site block automated retrieval, and no Wayback Machine snapshot of this section exists (checked 2026-07-27), so this rule has not been verified against source text and displays as unverified by design. Provenance of the open question: a search-engine result snippet of ecode360's copy of § 40.26.450 (observed 2026-07-27) showed the phrase 'Government Code Section 65852.2(e)(1)' — numbering relocated by SB 477 (2024) to §§ 66310-66342. That is a snippet observation, not a reviewed source; it is recorded here only as a reason for staff to check the current official text. No conclusion about the City of Davis's code is asserted."
+    "notes": "PENDING VERIFICATION: a manual retrieval on 2026-07-30 exposed eCode360's current § 40.26.450 text, but the host still rejects the repository's direct currency fetch and the City of Davis ADU page warns that portions of its 2021 zoning regulations may differ from later State law. The displayed code text still cites former Government Code §§ 65852.2 and 65852.22, which were relocated by SB 477 (2024). Without a stable official artifact and a review of the local/state interaction, this record remains unverified and its action copy stays suppressed. This records a source-currency conflict for staff review; it does not conclude that the City's operative process is invalid."
   }
 ]
