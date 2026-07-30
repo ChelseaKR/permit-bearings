@@ -37,9 +37,11 @@ def normalized_digest(content: bytes, mode: str | None) -> str:
     statute actually says."""
     if mode == "html-text":
         import re
+
         text = content.decode("utf-8", "replace")
-        text = re.sub(r"<(script|style)\b.*?</\1>", " ", text,
-                      flags=re.IGNORECASE | re.DOTALL)
+        text = re.sub(
+            r"<(script|style)\b.*?</\1>", " ", text, flags=re.IGNORECASE | re.DOTALL
+        )
         text = re.sub(r"<[^>]+>", " ", text)
         text = " ".join(text.split())
         content = text.encode("utf-8")
@@ -48,7 +50,7 @@ def normalized_digest(content: bytes, mode: str | None) -> str:
 
 @dataclass
 class WatchResult:
-    unchanged: list[str] = field(default_factory=list)   # stable source IDs
+    unchanged: list[str] = field(default_factory=list)  # stable source IDs
     changed: list[str] = field(default_factory=list)
     errors: dict[str, str] = field(default_factory=dict)  # source ID -> reason
 
@@ -56,8 +58,7 @@ class WatchResult:
         lines = ["Source currency check"]
         for source_id in self.unchanged:
             lines.append(
-                f"  unchanged: {labels.get(source_id, source_id)} "
-                f"[{source_id}]"
+                f"  unchanged: {labels.get(source_id, source_id)} [{source_id}]"
             )
         for source_id in self.changed:
             lines.append(
@@ -104,7 +105,7 @@ def _source_date(value: Any, field: str, today: date) -> str | None:
         raise ValueError(f"{field}: invalid date {value!r}") from error
     if parsed > today:
         raise ValueError(f"{field}: future dates are not allowed")
-    return value
+    return str(value)
 
 
 def load_sources(
@@ -152,14 +153,10 @@ def load_sources(
         fetched_on = _source_date(
             meta.get("fetched_on"), f"{source_id}.fetched_on", as_of
         )
-        normalize = _optional_text(
-            meta.get("normalize"), f"{source_id}.normalize"
-        )
+        normalize = _optional_text(meta.get("normalize"), f"{source_id}.normalize")
         if normalize not in (None, "html-text"):
             raise ValueError(f"{source_id}.normalize: unsupported mode")
-        local_copy = _optional_text(
-            meta.get("local_copy"), f"{source_id}.local_copy"
-        )
+        local_copy = _optional_text(meta.get("local_copy"), f"{source_id}.local_copy")
         if watch and (digest is None or fetched_on is None):
             raise ValueError(
                 f"{source_id}: watched source requires sha256 and fetched_on"
@@ -192,9 +189,13 @@ def check_sources(
                 source.url,
                 headers={"User-Agent": USER_AGENT},
             )
-            with urllib.request.urlopen(request, timeout=FETCH_TIMEOUT_SECONDS) as resp:
+            # The registry loader above rejects non-HTTPS URLs, credentials,
+            # and missing hostnames before a SourceRecord can reach this call.
+            with urllib.request.urlopen(  # nosec B310
+                request, timeout=FETCH_TIMEOUT_SECONDS
+            ) as resp:
                 digest = normalized_digest(resp.read(), source.normalize)
-        except Exception as exc:  # noqa: BLE001 — any fetch failure is reportable
+        except Exception as exc:
             result.errors[source_id] = str(exc)
             continue
         if digest == source.sha256:

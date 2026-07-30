@@ -6,14 +6,15 @@ from datetime import date
 from io import BytesIO
 
 import pytest
-
 from demo.app import (
-    Handler,
     MAX_BODY_BYTES,
     ROOT,
-    STRINGS as DEMO_STRINGS,
+    Handler,
     result_page,
     static_path,
+)
+from demo.app import (
+    STRINGS as DEMO_STRINGS,
 )
 from scripts.build_demo_bundle import (
     OUTPUT,
@@ -88,9 +89,7 @@ def test_static_pages_have_consistent_navigation_and_resolvable_links():
 
 
 def test_showcase_submission_draft_preserves_portal_word_limits():
-    draft = (
-        ROOT / "docs" / "SHOWCASE-SUBMISSION-DRAFT.md"
-    ).read_text(encoding="utf-8")
+    draft = (ROOT / "docs" / "SHOWCASE-SUBMISSION-DRAFT.md").read_text(encoding="utf-8")
     bounded_responses = [
         ("### Company description", "## Section 2", 43, 50),
         ("### Solution description", "### AI technical workflow", 189, 200),
@@ -124,9 +123,7 @@ def test_showcase_submission_draft_preserves_portal_word_limits():
         )
         assert len(answer.split()) == expected_words, start
         assert expected_words <= word_limit - 5, start
-        assert (
-            f"Draft count: {expected_words} words by whitespace." in section
-        ), start
+        assert f"Draft count: {expected_words} words by whitespace." in section, start
 
     assert "Status: working draft, not submitted." in draft
     assert "[LEGAL ENTITY OR INDIVIDUAL APPLICANT NAME]" in draft
@@ -313,8 +310,8 @@ def test_static_result_cards_keep_explanations_separate_from_matching():
     assert 'id="resultsHeading" tabindex="-1"' in application
     assert 'class="edit-answers" href="#screenHeading"' in application
     assert 'id="screenHeading" tabindex="-1"' in project
-    assert 'heading.focus()' in application
-    assert 'aria-invalid' in application
+    assert "heading.focus()" in application
+    assert "aria-invalid" in application
     assert 'name="has_primary_dwelling"' not in application
     assert (
         '"jadu")\n    return ["primary_dwelling_status", "unpermitted_existing"]'
@@ -351,9 +348,7 @@ def test_packet_sample_renders_only_the_generated_python_result():
         "needs_staff_review": 5,
         "not_evaluated": 0,
     }
-    assert readiness["remedies"]["review"]["status"] == (
-        "prototype_review_pending"
-    )
+    assert readiness["remedies"]["review"]["status"] == ("prototype_review_pending")
     assert readiness["ai_trace"]["runtime_model_call"] is False
     assert readiness["ai_trace"]["applicant_data_sent_to_model"] is False
     assert readiness["ai_trace"]["mapping_version"] == "1.0.0"
@@ -362,12 +357,8 @@ def test_packet_sample_renders_only_the_generated_python_result():
     )
     assert readiness["ai_trace"]["mapping_provider"] == "unknown"
     assert readiness["ai_trace"]["mapping_model"] == "unknown"
-    assert readiness["ai_trace"]["mapping_run_record_status"] == (
-        "not_recorded"
-    )
-    assert readiness["ai_trace"]["remedy_review_status"] == (
-        "prototype_review_pending"
-    )
+    assert readiness["ai_trace"]["mapping_run_record_status"] == ("not_recorded")
+    assert readiness["ai_trace"]["remedy_review_status"] == ("prototype_review_pending")
     assert readiness["ai_trace"]["remedy_reviewer"] is None
     assert readiness["source_review_due_on"] == "2027-01-25"
 
@@ -400,12 +391,8 @@ def test_packet_build_explicitly_replays_canonical_evaluation_date(
     assert readiness["result"]["source_status"] == "current"
     assert readiness["result"]["source_status_as_of"] == "2026-07-29"
     assert readiness["result"]["source_review_due_on"] == "2027-01-25"
-    assert readiness["evidence_manifest"]["source_status_as_of"] == (
-        "2026-07-29"
-    )
-    assert readiness["evidence_manifest"]["source_review_due_on"] == (
-        "2027-01-25"
-    )
+    assert readiness["evidence_manifest"]["source_status_as_of"] == ("2026-07-29")
+    assert readiness["evidence_manifest"]["source_review_due_on"] == ("2027-01-25")
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
@@ -413,8 +400,9 @@ def test_packet_renderer_honors_trust_states_and_conflicts():
     readiness, _ = build_readiness_payload()
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     renderer_source = application[
-        application.index("const READINESS_FINDING_STATUSES"):
-        application.index("function fetchJson")
+        application.index("const READINESS_FINDING_STATUSES") : application.index(
+            "function fetchJson"
+        )
     ]
     script = f"""
 function nonBlank(value) {{
@@ -618,20 +606,20 @@ check(
 def test_static_sample_uses_canonical_golden_case_and_normal_submission_path():
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     helper_source = application[
-        application.index("const SB9_BASE_FIELDS"):
-        application.index("function renderProjectQuestions")
+        application.index("const SB9_BASE_FIELDS") : application.index(
+            "function renderProjectQuestions"
+        )
     ]
     apply_source = application[
-        application.index("function applyRequestedProjectSample"):
-        application.index('if (pageIs("project") && intakeFormElement)')
+        application.index("function applyRequestedProjectSample") : application.index(
+            'if (pageIs("project") && intakeFormElement)'
+        )
     ]
     golden = json.loads(
         (ROOT / "data" / "golden" / "example.json").read_text(encoding="utf-8")
     )
     registry = json.loads(
-        (ROOT / "data" / "jurisdictions" / "registry.json").read_text(
-            encoding="utf-8"
-        )
+        (ROOT / "data" / "jurisdictions" / "registry.json").read_text(encoding="utf-8")
     )["jurisdictions"]
     script = f"""
 function nonBlank(value) {{
@@ -987,8 +975,9 @@ vm.runInNewContext(application + "\\n" + assertions, context);
 def test_static_explanation_normalizer_accepts_canonical_data_and_fails_closed():
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     validation_source = application[
-        application.index("function isJsonNumber"):
-        application.index("function renderForm")
+        application.index("function isJsonNumber") : application.index(
+            "function renderForm"
+        )
     ]
     bundle = json.loads(
         (ROOT / "data" / "explanations" / "plain-language.json").read_text(
@@ -1080,8 +1069,7 @@ Object.defineProperty(globalThis, "crypto",
 def test_static_matcher_is_type_strict_and_source_changes_use_exact_ids():
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     matching_source = application[
-        application.index("function isJsonNumber"):
-        application.index("function esc")
+        application.index("function isJsonNumber") : application.index("function esc")
     ]
     script = f"""
 function nonBlank(value) {{
@@ -1158,8 +1146,8 @@ def _capturing_handler(path="/", *, body=b"", headers=None):
     handler.status = None
     handler.response_headers = {}
     handler.send_response = lambda status: setattr(handler, "status", status)
-    handler.send_header = (
-        lambda name, value: handler.response_headers.__setitem__(name, value)
+    handler.send_header = lambda name, value: handler.response_headers.__setitem__(
+        name, value
     )
     handler.end_headers = lambda: None
     return handler

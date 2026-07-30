@@ -80,9 +80,7 @@ def test_conversion_rule_requires_an_explicit_qualifying_project_form(
     }
 
 
-@pytest.mark.parametrize(
-    "project_form", ["new_detached", "new_attached", "unknown"]
-)
+@pytest.mark.parametrize("project_form", ["new_detached", "new_attached", "unknown"])
 def test_nonconversion_and_unknown_forms_do_not_receive_conversion_exemptions(
     rules, project_form
 ):
@@ -122,9 +120,7 @@ def test_existing_and_proposed_multifamily_branches_do_not_conflate(rules):
         "primary_dwelling_status": "proposed_multifamily",
     }
     assert "adu-multifamily-66323" in ids(screen(existing, rules))
-    assert "adu-multifamily-proposed-66323" not in ids(
-        screen(existing, rules)
-    )
+    assert "adu-multifamily-proposed-66323" not in ids(screen(existing, rules))
     assert "adu-multifamily-proposed-66323" in ids(screen(proposed, rules))
     assert "adu-multifamily-66323" not in ids(screen(proposed, rules))
 
@@ -133,9 +129,7 @@ def test_existing_and_proposed_multifamily_branches_do_not_conflate(rules):
     "primary_status",
     ["unknown", "none", None],
 )
-def test_missing_or_unknown_primary_dwelling_status_fails_closed(
-    rules, primary_status
-):
+def test_missing_or_unknown_primary_dwelling_status_fails_closed(rules, primary_status):
     intake = {**ADU_INTAKE}
     if primary_status is None:
         intake.pop("primary_dwelling_status")
@@ -180,9 +174,7 @@ def test_jadu_requires_an_existing_or_proposed_single_family_home(rules):
         ("on_protected_site", "yes"),
     ],
 )
-def test_two_unit_route_fails_closed_on_each_exclusion_or_unknown(
-    rules, field, value
-):
+def test_two_unit_route_fails_closed_on_each_exclusion_or_unknown(rules, field, value):
     assert screen(sb9_intake("two_unit", **{field: value}), rules) == []
 
 
@@ -210,9 +202,7 @@ def test_two_unit_route_matches_only_after_all_material_facts_are_explicit(rules
         ("proposed_lot_size_compliant", "unknown"),
     ],
 )
-def test_lot_split_route_fails_closed_on_each_lot_specific_fact(
-    rules, field, value
-):
+def test_lot_split_route_fails_closed_on_each_lot_specific_fact(rules, field, value):
     assert screen(sb9_intake("lot_split", **{field: value}), rules) == []
 
 
@@ -254,4 +244,6 @@ def test_davis_record_is_flagged_without_dated_source_evidence(rules):
 
 
 def test_nonmatching_intake_returns_nothing(rules):
-    assert screen({"project_type": "hotel", "jurisdiction": "example-city"}, rules) == []
+    assert (
+        screen({"project_type": "hotel", "jurisdiction": "example-city"}, rules) == []
+    )

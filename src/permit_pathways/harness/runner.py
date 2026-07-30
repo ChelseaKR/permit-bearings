@@ -11,9 +11,10 @@ import json
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 from ..dates import resolve_today
-from ..screening import Rule, load_rules, screen
+from ..screening import load_rules, screen
 
 DEFAULT_MAX_AGE_DAYS = 180  # roughly one legislative cycle between re-checks
 
@@ -22,7 +23,7 @@ DEFAULT_MAX_AGE_DAYS = 180  # roughly one legislative cycle between re-checks
 class GoldenCase:
     case_id: str
     question: str
-    intake: dict
+    intake: dict[str, Any]
     expected_rule_ids: list[str]
 
 
@@ -72,9 +73,7 @@ def verify_rules(
     values are stable source IDs, never citation substrings.
     """
     if changed_source_ids is not None and changed_sources is not None:
-        raise ValueError(
-            "pass changed_source_ids or changed_sources, not both"
-        )
+        raise ValueError("pass changed_source_ids or changed_sources, not both")
     as_of = resolve_today(today)
     rules = load_rules(rules_path, today=as_of)
     golden = load_golden(golden_path)

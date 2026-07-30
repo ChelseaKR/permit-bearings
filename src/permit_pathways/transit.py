@@ -21,8 +21,8 @@ the threshold can be eliminated. That does not prove every relevant operator,
 stop, planned/current facility, or service record is present. A stop within
 the threshold is a CANDIDATE "yes" pending a walking-network check
 (production deployments should confirm with a router). Headways are measured
-from the busiest weekday service in the feed within the peak windows 6–9 AM
-and 4–7 PM, using the maximum gap between consecutive trips — a screening
+from the busiest weekday service in the feed within the peak windows 6-9 AM
+and 4-7 PM, using the maximum gap between consecutive trips - a screening
 approximation of the statutes' "service interval" language, and only as
 current and complete as the supplied feed.
 """
@@ -31,6 +31,8 @@ from __future__ import annotations
 
 import csv
 import io
+import itertools
+import json
 import math
 import zipfile
 from collections import defaultdict
@@ -38,10 +40,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 HALF_MILE = 0.5
-HQTC_MAX_GAP_MIN = 15         # PRC § 21155(b)
-MAJOR_STOP_MAX_GAP_MIN = 20   # PRC § 21064.3(c)
+HQTC_MAX_GAP_MIN = 15  # PRC § 21155(b)
+MAJOR_STOP_MAX_GAP_MIN = 20  # PRC § 21064.3(c)
 PEAKS = ((6 * 60, 9 * 60), (16 * 60, 19 * 60))
-STOP_CLUSTER_MILES = 0.1      # stops this close count as one "intersection"
+STOP_CLUSTER_MILES = 0.1  # stops this close count as one "intersection"
 RAIL_ROUTE_TYPES = {"0", "1", "2"}  # tram, metro, rail
 FERRY_ROUTE_TYPES = {"4"}
 BUS_ROUTE_TYPES = {"3", "11"}  # bus and trolleybus
@@ -61,19 +63,21 @@ class StopService:
     name: str
     lat: float
     lon: float
-    route_max_gaps: dict = field(default_factory=dict)  # route_id -> worst peak max-gap (min)
+    route_max_gaps: dict[str, float] = field(default_factory=dict)
     bus_routes: set[str] = field(default_factory=set)
     rail: bool = False
     ferry: bool = False
 
-    def hqtc_routes(self) -> list:
+    def hqtc_routes(self) -> list[str]:
         return [r for r, g in self.route_max_gaps.items() if g <= HQTC_MAX_GAP_MIN]
 
-    def major_candidate_routes(self) -> list:
-        return [r for r, g in self.route_max_gaps.items() if g <= MAJOR_STOP_MAX_GAP_MIN]
+    def major_candidate_routes(self) -> list[str]:
+        return [
+            r for r, g in self.route_max_gaps.items() if g <= MAJOR_STOP_MAX_GAP_MIN
+        ]
 
 
-def _read(z: zipfile.ZipFile, name: str) -> list[dict]:
+def _read(z: zipfile.ZipFile, name: str) -> list[dict[str, str]]:
     with z.open(name) as f:
         return list(csv.DictReader(io.TextIOWrapper(f, "utf-8-sig")))
 
@@ -91,7 +95,7 @@ def _worst_peak_gap(times: list[int]) -> float | None:
 
     Window-edge gaps count. Otherwise service at 6:15 and every 15 minutes
     through 8:45 would be mislabeled as continuous 15-minute service across
-    the full 6–9 AM window.
+    the full 6-9 AM window.
     """
     worst = 0.0
     for start, end in PEAKS:
@@ -100,7 +104,7 @@ def _worst_peak_gap(times: list[int]) -> float | None:
             return None
         gaps = [
             window[0] - start,
-            *(b - a for a, b in zip(window, window[1:])),
+            *(b - a for a, b in itertools.pairwise(window)),
             end - window[-1],
         ]
         worst = max(worst, max(gaps))
@@ -114,7 +118,7 @@ def _route_mode(route_type: str) -> str:
         return "ferry"
     if route_type in BUS_ROUTE_TYPES:
         return "bus"
-    # GTFS extended route types 700–799 are bus services.
+    # GTFS extended route types 700-799 are bus services.
     try:
         numeric = int(route_type)
     except (TypeError, ValueError):
@@ -124,17 +128,28 @@ def _route_mode(route_type: str) -> str:
 
 def load_feed(gtfs_zip: Path) -> list[StopService]:
     z = zipfile.ZipFile(gtfs_zip)
-    stops = {s["stop_id"]: StopService(
-        stop_id=s["stop_id"], name=s["stop_name"],
-        lat=float(s["stop_lat"]), lon=float(s["stop_lon"]))
-        for s in _read(z, "stops.txt") if s.get("stop_lat")}
-    route_types = {r["route_id"]: r.get("route_type", "3")
-                   for r in _read(z, "routes.txt")}
+    stops = {
+        s["stop_id"]: StopService(
+            stop_id=s["stop_id"],
+            name=s["stop_name"],
+            lat=float(s["stop_lat"]),
+            lon=float(s["stop_lon"]),
+        )
+        for s in _read(z, "stops.txt")
+        if s.get("stop_lat")
+    }
+    route_types = {
+        r["route_id"]: r.get("route_type", "3") for r in _read(z, "routes.txt")
+    }
 
-    weekday_services = {c["service_id"] for c in _read(z, "calendar.txt")
-                        if c.get("monday") == "1"}
-    trips = {t["trip_id"]: t for t in _read(z, "trips.txt")
-             if t["service_id"] in weekday_services}
+    weekday_services = {
+        c["service_id"] for c in _read(z, "calendar.txt") if c.get("monday") == "1"
+    }
+    trips = {
+        t["trip_id"]: t
+        for t in _read(z, "trips.txt")
+        if t["service_id"] in weekday_services
+    }
     # Busiest weekday service = the service_id with the most trips.
     by_service: dict[str, int] = defaultdict(int)
     for t in trips.values():
@@ -144,7 +159,7 @@ def load_feed(gtfs_zip: Path) -> list[StopService]:
         trips = {tid: t for tid, t in trips.items() if t["service_id"] == busiest}
 
     # arrivals[(stop_id, route_id, direction)] = [minutes, ...]
-    arrivals: dict[tuple, list[int]] = defaultdict(list)
+    arrivals: dict[tuple[str, str, str], list[int]] = defaultdict(list)
     for st in _read(z, "stop_times.txt"):
         trip = trips.get(st["trip_id"])
         if not trip:
@@ -197,11 +212,10 @@ def _is_major_stop(stop: StopService, all_stops: list[StopService]) -> bool:
             stop.lon,
             other.lat,
             other.lon,
-        ) <= STOP_CLUSTER_MILES
+        )
+        <= STOP_CLUSTER_MILES
     )
-    if stop.ferry and any(
-        member.rail or member.bus_routes for member in cluster
-    ):
+    if stop.ferry and any(member.rail or member.bus_routes for member in cluster):
         return True
     routes = set(stop.major_candidate_routes())
     for other in cluster[1:]:
@@ -216,10 +230,11 @@ class HQStop:
     covering every agency (including rail and ferry the local feed may
     lack). Used alongside, not instead of, live-feed headway analysis:
     the two sources cross-check each other."""
+
     lat: float
     lon: float
-    hqta_type: str    # major_stop_rail | major_stop_brt | major_stop_ferry
-                      # | major_stop_bus | hq_corridor_bus
+    hqta_type: str  # major_stop_rail | major_stop_brt | major_stop_ferry
+    # | major_stop_bus | hq_corridor_bus
     details: str
     agency: str
 
@@ -229,16 +244,29 @@ class HQStop:
 
 
 def load_hq_stops(path: Path) -> list[HQStop]:
-    import json
-    data = json.loads(Path(path).read_text())
-    seen, out = set(), []
+    data: dict[str, list[list[object]]] = json.loads(Path(path).read_text())
+    seen: set[tuple[float, float, str]] = set()
+    out: list[HQStop] = []
     for lat, lon, hqta_type, details, agency, _peak in data["stops"]:
+        if not (
+            isinstance(lat, (int, float))
+            and isinstance(lon, (int, float))
+            and isinstance(hqta_type, str)
+        ):
+            raise ValueError("invalid high-quality transit stop record")
         key = (lat, lon, hqta_type)
         if key in seen:
             continue
         seen.add(key)
-        out.append(HQStop(lat=lat, lon=lon, hqta_type=hqta_type,
-                          details=details or "", agency=agency or ""))
+        out.append(
+            HQStop(
+                lat=float(lat),
+                lon=float(lon),
+                hqta_type=hqta_type,
+                details=details if isinstance(details, str) else "",
+                agency=agency if isinstance(agency, str) else "",
+            )
+        )
     return out
 
 
@@ -246,61 +274,78 @@ def load_hq_stops(path: Path) -> list[HQStop]:
 class Determination:
     nearest_stop: StopService | None
     nearest_miles: float | None
-    parking_exemption: str          # "candidate" | "no"
-    height_18ft: str                # "candidate" | "no"
-    qualifying_stops: list          # (StopService, miles, reason) within half mile
+    parking_exemption: str  # "candidate" | "no"
+    height_18ft: str  # "candidate" | "no"
+    qualifying_stops: list[tuple[StopService, float, str]]
 
     def summary(self) -> str:
         lines = []
         if self.nearest_stop:
-            lines.append(f"Nearest transit stop: {self.nearest_stop.name} "
-                         f"({self.nearest_miles:.2f} mi straight-line)")
+            lines.append(
+                f"Nearest transit stop: {self.nearest_stop.name} "
+                f"({self.nearest_miles:.2f} mi straight-line)"
+            )
         if self.parking_exemption == "candidate":
             lines.append(
                 "Parking exemption (Gov. Code § 66322(a)(1)): CANDIDATE — public "
-                "transit within a half mile straight-line; confirm walking distance.")
+                "transit within a half mile straight-line; confirm walking distance."
+            )
         else:
             lines.append(
                 "Parking exemption (Gov. Code § 66322(a)(1)): NO CANDIDATE FOUND "
                 "IN SUPPLIED DATA — confirm operator/feed coverage before relying "
-                "on this result.")
+                "on this result."
+            )
         if self.height_18ft == "candidate":
             stop, miles, reason = self.qualifying_stops[0]
             lines.append(
                 f"18-ft height allowance (Gov. Code § 66321(b)(4)(B)): CANDIDATE — "
-                f"{stop.name} ({miles:.2f} mi) is a {reason}; confirm walking distance.")
+                f"{stop.name} ({miles:.2f} mi) is a {reason}; confirm walking distance."
+            )
         else:
             lines.append(
                 "18-ft height allowance (Gov. Code § 66321(b)(4)(B)): NO CANDIDATE "
                 "FOUND IN SUPPLIED DATA — no encoded qualifying stop was found "
-                "within a half mile; confirm source coverage.")
+                "within a half mile; confirm source coverage."
+            )
         lines.append(
             "Screening result from GTFS peak headways (busiest weekday service "
             "in the feed); straight-line distance can eliminate a supplied stop "
-            "but cannot prove dataset completeness. Not a legal determination.")
+            "but cannot prove dataset completeness. Not a legal determination."
+        )
         return "\n".join(lines)
 
 
-def determine(lat: float, lon: float, stops: list[StopService],
-              hq_stops: list[HQStop] | None = None) -> Determination:
+def determine(
+    lat: float,
+    lon: float,
+    stops: list[StopService],
+    hq_stops: list[HQStop] | None = None,
+) -> Determination:
     if not stops and not hq_stops:
         return Determination(None, None, "no", "no", [])
     with_dist = sorted(
         ((s, haversine_miles(lat, lon, s.lat, s.lon)) for s in stops),
-        key=lambda x: x[1])
+        key=lambda x: x[1],
+    )
     nearest, nearest_miles = with_dist[0] if with_dist else (None, None)
 
-    qualifying = []
+    qualifying: list[tuple[StopService, float, str]] = []
     for stop, miles in with_dist:
         if miles > HALF_MILE:
             break
         if _is_major_stop(stop, stops):
             qualifying.append(
-                (stop, miles, "major transit stop (PRC § 21064.3, from feed headways)"))
+                (stop, miles, "major transit stop (PRC § 21064.3, from feed headways)")
+            )
         elif stop.hqtc_routes():
             qualifying.append(
-                (stop, miles,
-                 "high-quality transit corridor stop (PRC § 21155(b), from feed headways)"))
+                (
+                    stop,
+                    miles,
+                    "high-quality transit corridor stop (PRC § 21155(b), from feed headways)",
+                )
+            )
 
     hq_within = []
     for hq in hq_stops or []:
@@ -308,24 +353,38 @@ def determine(lat: float, lon: float, stops: list[StopService],
         if miles > HALF_MILE:
             continue
         hq_within.append((hq, miles))
-        label = ("major transit stop" if hq.is_major
-                 else "high-quality transit corridor stop")
-        stop_view = StopService(stop_id=f"hq:{hq.hqta_type}",
-                                name=f"{hq.agency} ({hq.hqta_type})",
-                                lat=hq.lat, lon=hq.lon)
+        label = (
+            "major transit stop"
+            if hq.is_major
+            else "high-quality transit corridor stop"
+        )
+        stop_view = StopService(
+            stop_id=f"hq:{hq.hqta_type}",
+            name=f"{hq.agency} ({hq.hqta_type})",
+            lat=hq.lat,
+            lon=hq.lon,
+        )
         qualifying.append(
-            (stop_view, miles,
-             f"{label} (Caltrans HQ Transit Stops dataset: {hq.hqta_type})"))
+            (
+                stop_view,
+                miles,
+                f"{label} (Caltrans HQ Transit Stops dataset: {hq.hqta_type})",
+            )
+        )
 
     qualifying.sort(key=lambda x: x[1])
-    parking = "candidate" if (
-        (nearest_miles is not None and nearest_miles <= HALF_MILE) or hq_within
-    ) else "no"
+    parking = (
+        "candidate"
+        if ((nearest_miles is not None and nearest_miles <= HALF_MILE) or hq_within)
+        else "no"
+    )
     return Determination(
-        nearest_stop=nearest, nearest_miles=nearest_miles,
+        nearest_stop=nearest,
+        nearest_miles=nearest_miles,
         parking_exemption=parking,
         height_18ft="candidate" if qualifying else "no",
-        qualifying_stops=qualifying)
+        qualifying_stops=qualifying,
+    )
 
 
 def main() -> int:
@@ -333,22 +392,30 @@ def main() -> int:
 
     parser = argparse.ArgumentParser(
         prog="permit_pathways.transit",
-        description="Transit-proximity screening for ADU parking/height standards.")
+        description="Transit-proximity screening for ADU parking/height standards.",
+    )
     parser.add_argument("--gtfs", type=Path, required=True)
     parser.add_argument("--lat", type=float, required=True)
     parser.add_argument("--lon", type=float, required=True)
-    default_hq = (Path(__file__).resolve().parents[2]
-                  / "corpus" / "transit" / "ca-hq-transit-stops.json")
-    parser.add_argument("--hq-stops", type=Path,
-                        default=default_hq if default_hq.exists() else None)
+    default_hq = (
+        Path(__file__).resolve().parents[2]
+        / "corpus"
+        / "transit"
+        / "ca-hq-transit-stops.json"
+    )
+    parser.add_argument(
+        "--hq-stops", type=Path, default=default_hq if default_hq.exists() else None
+    )
     args = parser.parse_args()
 
     stops = load_feed(args.gtfs)
     hq = load_hq_stops(args.hq_stops) if args.hq_stops else []
-    print(f"Loaded {len(stops)} feed stops; "
-          f"{sum(1 for s in stops if s.hqtc_routes())} with ≤15-min peak routes, "
-          f"{sum(1 for s in stops if len(s.major_candidate_routes()) >= 1)} with "
-          f"≤20-min peak routes; {len(hq)} Caltrans HQ dataset stops.\n")
+    print(
+        f"Loaded {len(stops)} feed stops; "
+        f"{sum(1 for s in stops if s.hqtc_routes())} with ≤15-min peak routes, "
+        f"{sum(1 for s in stops if len(s.major_candidate_routes()) >= 1)} with "
+        f"≤20-min peak routes; {len(hq)} Caltrans HQ dataset stops.\n"
+    )
     print(determine(args.lat, args.lon, stops, hq_stops=hq).summary())
     return 0
 

@@ -22,36 +22,17 @@ from permit_pathways.readiness import (
 )
 from permit_pathways.readiness_cli import main as readiness_cli_main
 
-
 ROOT = Path(__file__).resolve().parents[1]
 AS_OF = date(2026, 7, 29)
 WORKFLOW_PATH = (
-    ROOT
-    / "data"
-    / "readiness"
-    / "workflows"
-    / "woodland-preapproved-detached-adu.json"
+    ROOT / "data" / "readiness" / "workflows" / "woodland-preapproved-detached-adu.json"
 )
-PACKET_PATH = (
-    ROOT
-    / "data"
-    / "readiness"
-    / "samples"
-    / "woodland-preapproved-adu.json"
-)
+PACKET_PATH = ROOT / "data" / "readiness" / "samples" / "woodland-preapproved-adu.json"
 REMEDIES_PATH = (
-    ROOT
-    / "data"
-    / "readiness"
-    / "remedies"
-    / "woodland-preapproved-detached-adu.json"
+    ROOT / "data" / "readiness" / "remedies" / "woodland-preapproved-detached-adu.json"
 )
 GENERATED_MANIFEST_PATH = (
-    ROOT
-    / "data"
-    / "readiness"
-    / "generated"
-    / "woodland-preapproved-adu-evidence.json"
+    ROOT / "data" / "readiness" / "generated" / "woodland-preapproved-adu-evidence.json"
 )
 SOURCES_PATH = ROOT / "data" / "sources.json"
 CHECKLIST_SOURCE_ID = "woodland-preapproved-adu-checklist"
@@ -107,22 +88,16 @@ def _all_present_packet(
 ) -> ReadinessPacket:
     fact_values = {
         fact.fact_id: (
-            "yes"
-            if fact.fact_id == "uses_city_preapproved_plan"
-            else conditional_value
+            "yes" if fact.fact_id == "uses_city_preapproved_plan" else conditional_value
         )
         for fact in packet.facts
     }
-    inventory = {
-        item.requirement_id: "present" for item in packet.inventory
-    }
+    inventory = {item.requirement_id: "present" for item in packet.inventory}
     return _packet_variant(packet, facts=fact_values, inventory=inventory)
 
 
 def _finding_map(result) -> dict[str, object]:
-    return {
-        finding.requirement_id: finding for finding in result.findings
-    }
+    return {finding.requirement_id: finding for finding in result.findings}
 
 
 def _write_json(
@@ -212,10 +187,7 @@ def test_mapping_provenance_is_source_bound_and_explicitly_review_pending(
     assert [
         (source.source_id, source.sha256)
         for source in provenance.input_source_fingerprints
-    ] == [
-        (binding.source_id, binding.sha256)
-        for binding in workflow.source_bindings
-    ]
+    ] == [(binding.source_id, binding.sha256) for binding in workflow.source_bindings]
 
 
 def test_all_reported_items_present_uses_only_the_bounded_outcome(
@@ -309,8 +281,7 @@ def test_missing_parent_suppresses_all_child_content_findings(
         for requirement_id in child_ids
     )
     assert all(
-        "parent document was not reported present"
-        in findings[requirement_id].reason
+        "parent document was not reported present" in findings[requirement_id].reason
         for requirement_id in child_ids
     )
     assert result.overall_status == "known_gaps"
@@ -346,9 +317,7 @@ def test_wrong_packet_scope_is_not_evaluated(
     assert result.overall_status == "outside_bounded_workflow"
     assert result.source_status == "current"
     assert result.counts()["not_evaluated"] == len(workflow.requirements)
-    assert {
-        finding.status for finding in result.findings
-    } == {"not_evaluated"}
+    assert {finding.status for finding in result.findings} == {"not_evaluated"}
     assert result.staff_questions == (
         "Ask Woodland staff which current checklist applies to this project.",
     )
@@ -392,10 +361,7 @@ def test_changed_or_stale_source_fails_closed_for_every_requirement(
         "needs_staff_review": 25,
         "not_evaluated": 0,
     }
-    assert all(
-        finding.status == "needs_staff_review"
-        for finding in changed.findings
-    )
+    assert all(finding.status == "needs_staff_review" for finding in changed.findings)
     assert changed.staff_questions == (
         "Ask the City to confirm the current checklist before using this "
         "packet-presence result.",
@@ -460,9 +426,7 @@ def test_workflow_loader_rejects_duplicate_orphan_and_schema_errors(
 
     duplicate_requirement = copy.deepcopy(canonical)
     duplicate_requirement["workflow"]["requirements"].append(
-        copy.deepcopy(
-            duplicate_requirement["workflow"]["requirements"][0]
-        )
+        copy.deepcopy(duplicate_requirement["workflow"]["requirements"][0])
     )
     with pytest.raises(ValueError, match="duplicate requirement"):
         load_readiness_workflow(
@@ -476,9 +440,9 @@ def test_workflow_loader_rejects_duplicate_orphan_and_schema_errors(
         )
 
     orphan_parent = copy.deepcopy(canonical)
-    orphan_parent["workflow"]["requirements"][3][
-        "parent_requirement_id"
-    ] = "missing-parent"
+    orphan_parent["workflow"]["requirements"][3]["parent_requirement_id"] = (
+        "missing-parent"
+    )
     with pytest.raises(ValueError, match="parent must appear first"):
         load_readiness_workflow(
             _write_json(
@@ -504,9 +468,9 @@ def test_workflow_loader_rejects_duplicate_orphan_and_schema_errors(
         )
 
     wrong_mapping_digest = copy.deepcopy(canonical)
-    wrong_mapping_digest["workflow"]["mapping_provenance"][
-        "input_source_fingerprints"
-    ][0]["sha256"] = "0" * 64
+    wrong_mapping_digest["workflow"]["mapping_provenance"]["input_source_fingerprints"][
+        0
+    ]["sha256"] = "0" * 64
     with pytest.raises(ValueError, match="does not match bound source"):
         load_readiness_workflow(
             _write_json(
@@ -519,9 +483,9 @@ def test_workflow_loader_rejects_duplicate_orphan_and_schema_errors(
         )
 
     unsupported_mapping_review = copy.deepcopy(canonical)
-    unsupported_mapping_review["workflow"]["mapping_provenance"][
-        "review_status"
-    ] = "human_reviewed"
+    unsupported_mapping_review["workflow"]["mapping_provenance"]["review_status"] = (
+        "human_reviewed"
+    )
     with pytest.raises(ValueError, match="remain review-pending"):
         load_readiness_workflow(
             _write_json(
@@ -534,9 +498,7 @@ def test_workflow_loader_rejects_duplicate_orphan_and_schema_errors(
         )
 
     unrecorded_provider_claim = copy.deepcopy(canonical)
-    unrecorded_provider_claim["workflow"]["mapping_provenance"][
-        "provider"
-    ] = "OpenAI"
+    unrecorded_provider_claim["workflow"]["mapping_provenance"]["provider"] = "OpenAI"
     with pytest.raises(ValueError, match="no provider was recorded"):
         load_readiness_workflow(
             _write_json(
@@ -595,9 +557,7 @@ def test_packet_loader_rejects_duplicate_orphan_coverage_and_schema_errors(
         )
 
     orphan_inventory = copy.deepcopy(canonical)
-    orphan_inventory["packet"]["inventory"][0][
-        "requirement_id"
-    ] = "orphan-requirement"
+    orphan_inventory["packet"]["inventory"][0]["requirement_id"] = "orphan-requirement"
     with pytest.raises(ValueError, match="unknown workflow requirement"):
         load_readiness_packet(
             _write_json(
@@ -636,9 +596,9 @@ def test_packet_loader_rejects_duplicate_orphan_coverage_and_schema_errors(
         )
 
     unsupported_provenance = copy.deepcopy(canonical)
-    unsupported_provenance["packet"]["facts"][0][
-        "provenance"
-    ] = "official_public_record"
+    unsupported_provenance["packet"]["facts"][0]["provenance"] = (
+        "official_public_record"
+    )
     with pytest.raises(ValueError, match="unsupported value"):
         load_readiness_packet(
             _write_json(
@@ -715,9 +675,7 @@ def test_remedy_loader_rejects_duplicate_orphan_missing_and_drifted_entries(
         )
 
     drifted_requirement = copy.deepcopy(canonical)
-    drifted_requirement["entries"][0][
-        "requirement_fingerprint"
-    ] = "sha256:" + "0" * 64
+    drifted_requirement["entries"][0]["requirement_fingerprint"] = "sha256:" + "0" * 64
     with pytest.raises(ValueError, match="requirement drifted"):
         load_readiness_remedies(
             _write_json(
@@ -834,19 +792,11 @@ def test_manifest_is_deterministic_and_matches_committed_evidence(
         sort_keys=True,
     )
     assert first_manifest == _canonical_payload(GENERATED_MANIFEST_PATH)
-    assert [
-        finding["requirement_id"]
-        for finding in first_manifest["findings"]
-    ] == [
-        requirement.requirement_id
-        for requirement in workflow.requirements
+    assert [finding["requirement_id"] for finding in first_manifest["findings"]] == [
+        requirement.requirement_id for requirement in workflow.requirements
     ]
-    assert first_manifest["facts"] == [
-        asdict(fact) for fact in packet.facts
-    ]
-    assert first_manifest["inventory"] == [
-        asdict(item) for item in packet.inventory
-    ]
+    assert first_manifest["facts"] == [asdict(fact) for fact in packet.facts]
+    assert first_manifest["inventory"] == [asdict(item) for item in packet.inventory]
     assert set(first_manifest["counts"]) == set(FINDING_STATUSES)
     assert first_manifest["workflow_fingerprint"].startswith("sha256:")
     assert first_manifest["packet_fingerprint"].startswith("sha256:")
@@ -865,7 +815,7 @@ def test_default_loader_and_cli_use_current_date_for_source_currency(
         lambda: runtime_as_of,
     )
 
-    workflow, packet, result = load_and_evaluate_readiness(
+    _workflow, packet, result = load_and_evaluate_readiness(
         WORKFLOW_PATH,
         PACKET_PATH,
         SOURCES_PATH,
