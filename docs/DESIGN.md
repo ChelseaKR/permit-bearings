@@ -175,9 +175,11 @@ abstention path is a structured intake with no matching encoded rule.
 - **Verification runner:** replays the deterministic matcher, checks recorded
   verification dates, and can mark citation-matched sources stale.
 - **Currency watcher:** monitors the source corpus (statute text, HCD guidance,
-  and selected local-source pages) for hash changes. Seventeen sources are
-  watched. New-law discovery and durable changed-state persistence are not
-  implemented; stable source dependency IDs are.
+  and selected local-source artifacts) for hash changes. Nineteen sources are
+  watched, including the current Davis handout and the HCD letter that records
+  its unresolved ordinance-status issue; the blocked Davis municipal-code host
+  remains an unwatched reference. New-law discovery and durable changed-state
+  persistence are not implemented; stable source dependency IDs are.
 - **Public trust surface:** the dashboard shows date-based rule status and a
   labeled amendment rehearsal. It does not currently ingest persisted output
   from the scheduled watcher.

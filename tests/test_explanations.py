@@ -415,7 +415,9 @@ def test_python_demo_groups_decision_records_and_keeps_source_visible():
     assert "About these explanations" in page
     assert "Deadlines in this rule" in page
     assert "<strong>15 business days:</strong>" in page
-    assert "source has no date on file" in page
+    assert "Review Davis&#x27;s published ADU processing categories" in page
+    assert "Davis&#x27;s 2019 ordinance may be outdated or null" in page
+    assert "Has Davis adopted and submitted an updated ADU ordinance" in page
     assert "<b>Source:</b>" in page
     assert "<details>" in page
 
@@ -484,12 +486,18 @@ def test_python_demo_withholds_actions_for_unverified_and_stale_rules(
         )
         if result.rule.rule_id == "davis-local-adu-process"
     )
-    unverified = render_result_card(davis, explanations[davis.rule.rule_id], "en")
+    unverified_rule = replace(
+        davis.rule,
+        citation=replace(davis.rule.citation, verified_on=None),
+    )
+    unverified = render_result_card(
+        replace(davis, rule=unverified_rule, verified=False),
+        explanations[davis.rule.rule_id],
+        "en",
+    )
     assert "We are not showing next steps" in unverified
     assert 'class="plain-layer"' not in unverified
     assert "<b>Source:</b>" in unverified
-    assert "No supporting excerpt is recorded" in unverified
-    assert "site plan and floor plan" not in unverified
     assert davis.rule.notes not in unverified
 
     current = screen(
