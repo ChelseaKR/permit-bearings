@@ -6,19 +6,19 @@ from permit_pathways.harness import verify_rules
 DATA = Path(__file__).parent.parent / "data"
 RULES = DATA / "rules"
 GOLDEN = DATA / "golden" / "example.json"
-AS_OF = date(2026, 7, 28)
+AS_OF = date(2026, 7, 30)
 
 
-def test_report_is_honest_about_the_unverified_davis_rule():
+def test_report_accepts_the_bounded_davis_record_with_dated_evidence():
     report = verify_rules(RULES, GOLDEN, today=AS_OF)
-    # Davis's code host blocks automated retrieval, so its local rule ships
-    # unverified by design — and the harness must therefore refuse to call
-    # the rule base trustworthy, even though every golden case passes.
-    assert report.unverified == ["davis-local-adu-process"]
+    # The Davis record verifies only the City's published processing
+    # categories. Its notes preserve HCD's unresolved ordinance-status warning
+    # instead of treating the handout as operative law or an eligibility test.
+    assert report.unverified == []
     assert report.stale == []
-    assert len(report.verified) == 18
+    assert len(report.verified) == 19
     assert report.golden_failed == []
-    assert not report.trustworthy
+    assert report.trustworthy
 
 
 def test_changed_source_flips_dependent_rules_to_stale():
@@ -40,7 +40,7 @@ def test_changed_source_flips_dependent_rules_to_stale():
 def test_verification_goes_stale_after_max_age():
     report = verify_rules(RULES, GOLDEN, today=date(2027, 7, 27))
     assert report.verified == []
-    assert len(report.stale) == 18
+    assert len(report.stale) == 19
 
 
 def test_jurisdiction_layers_ride_on_the_statewide_base():

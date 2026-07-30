@@ -32,11 +32,11 @@ Start at `/` for the product boundary, then use `/review.html`,
   again. Every handout, chatbot, and ordinance citing the old sections became
   wrong without anyone touching it.
 - Live evidence: HCD's Santa Clara findings letter documents the obsolete
-  numbering in an operative ordinance. The current Davis code text is
-  discoverable, but direct currency retrieval remains blocked and the City
-  warns its 2021 regulations may differ from later State law. The prototype
-  therefore keeps that local record unverified and does not treat the
-  discrepancy as proof of a local defect.
+  numbering in an operative ordinance. For Davis, the prototype binds a
+  January 2026 City handout to HCD's October 2025 warning that the latest
+  ordinance on file may be outdated or null. It reports only the City's three
+  published processing categories; it does not treat the handout as operative
+  law, resolve the source conflict, or decide which category applies.
 - Frame: correctness *decays*. An AI guidance tool without a currency
   mechanism is a liability with a friendly interface.
 
@@ -68,10 +68,10 @@ Start at `/` for the product boundary, then use `/review.html`,
 - Name the integrity boundary: deterministic rules selected the record; the
   plain-language explanation is a versioned AI-assisted draft and cannot
   change the match. A source date does not mean a person, counsel, or
-  jurisdiction reviewed the explanation. The unverified Davis card keeps the
-  visible source and no-dated-source warning but withholds drafted actions,
-  interpretive notes, and generic document hints rather than turning weak
-  evidence into a confident answer.
+  jurisdiction reviewed the explanation. The dated Davis card keeps both the
+  City's published categories and HCD's unresolved ordinance-status warning
+  visible. Its review-pending draft asks staff which current path applies; it
+  does not make an eligibility or ordinance-compliance finding.
 - Switch the intake/results to Spanish. Be explicit that Spanish
   plain-language copy is an unreviewed machine draft with no semantic-parity
   review. Applicant-facing result titles are localized drafts; canonical
@@ -123,10 +123,11 @@ Start at `/` for the product boundary, then use `/review.html`,
   Its JSON is the same evidence-manifest shape committed for the sample.
 
 ### 3. The verification harness: Scenario C (5 min)
-- Open **Evidence & updates**. Show the percentage of rule records with dated
-  source evidence inside the review window, plus the Davis record with no
-  dated source check because its host blocks the automated currency fetch and
-  its local/state interaction still needs review.
+- Open **Evidence & updates**. Show that every current rule record has dated
+  source evidence inside the review window. For Davis, distinguish the watched
+  City handout and HCD letter from the blocked, unwatched municipal-code
+  reference, and point out that the local/state interaction still needs human
+  resolution.
 - Watched sources table: content hashes of the March 2026 ADU Handbook and
   April 2026 SB 9 fact sheet; weekly automated re-fetch (show the GitHub
   Action) reports when either changes or becomes unreachable.
@@ -183,11 +184,12 @@ Start at `/` for the product boundary, then use `/review.html`,
   based on portable, exportable artifacts. That reduces lock-in but does not
   remove key-person risk. Open to teaming.
 - "Accuracy of the rule base?" → Each rule with dated evidence links a source
-  and supporting excerpt; the Davis local record remains explicitly
-  unverified because no stable fetchable artifact has been retained and its
-  local/state interaction still needs review. The current
-  `verified_on` field records dated source evidence, not jurisdiction or
-  counsel approval. Encoding was machine-assisted; a named human review level
-  and held-out evaluation are next. The separate Woodland checklist mapping
-  has automated source, schema, and fingerprint checks, but no applicant,
-  planner, counsel, or jurisdiction validation.
+  and supporting excerpt. The Davis local record verifies only three
+  City-published processing categories while preserving HCD's unresolved
+  ordinance-status warning; it does not establish the operative ordinance or
+  decide which category applies. The current `verified_on` field records dated
+  source evidence, not jurisdiction or counsel approval. Encoding was
+  machine-assisted; a named human review level and held-out evaluation are
+  next. The separate Woodland checklist mapping has automated source, schema,
+  and fingerprint checks, but no applicant, planner, counsel, or jurisdiction
+  validation.

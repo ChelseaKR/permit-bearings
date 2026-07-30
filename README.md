@@ -286,8 +286,12 @@ SB 9 urban lot splits, and the SB 9 × ADU unit-count interaction, plus
 bounded local metadata records for the Cities of Davis and Woodland. A weekly
 GitHub Action re-fetches selected statewide sources and is intended to open an
 issue if any changed or became unreachable. Two selected Woodland workflow
-sources are now recorded and watched; comprehensive local-source and newly
-enacted-law discovery are not implemented.
+sources, the January 2026 Davis ADU handout, and HCD's October 2025 Davis
+technical-assistance letter are recorded and watched. The Davis record reports
+only the City's published processing categories; it preserves HCD's unresolved
+ordinance-status warning and does not determine which category lawfully
+applies. Comprehensive local-source and newly enacted-law discovery are not
+implemented.
 
 The full static showcase has five task-focused pages: a lightweight landing
 page; an English/Spanish applicant guide with review clocks; the generated

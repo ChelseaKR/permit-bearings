@@ -109,6 +109,20 @@
     "fetched_on": "2026-07-28",
     "normalize": "html-text"
   },
+  "https://documents.cityofdavis.org/Media/Default/Documents/PDF/CDD/Planning/Forms/ADUs/Accessory%20Dwellings%20Units%20Handout_2026.pdf": {
+    "source_id": "davis-adu-handout-2026",
+    "label": "City of Davis Accessory Dwelling Units Guidelines (updated January 2026)",
+    "local_copy": "corpus/davis/adu-handout-2026.pdf",
+    "sha256": "f8b63d11646edc778e710bc1431f37919c64b1945d52c496d48aa985f41f9a5b",
+    "fetched_on": "2026-07-30"
+  },
+  "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/davis-adu-ta-100825.pdf": {
+    "source_id": "hcd-davis-adu-ta-2025",
+    "label": "HCD City of Davis ADU ordinance updates technical-assistance letter (October 8, 2025)",
+    "local_copy": "corpus/davis/hcd-adu-ta-2025.pdf",
+    "sha256": "e1a9fe73c60605c3d332b4ef4810557daa388c67972ac312099999cc38193dbb",
+    "fetched_on": "2026-07-30"
+  },
   "https://ecode360.com/44652967": {
     "source_id": "davis-code-40-26-450",
     "label": "Davis Municipal Code \u00a7 40.26.450",
