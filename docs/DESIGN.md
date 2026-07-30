@@ -218,6 +218,15 @@ and under a project subpath. The stdlib server exposes the same pages, keeps
 `/showcase` as an alias for `/check.html`, and limits static-file access to
 those five HTML files plus `assets/` and `data/`.
 
+At phone widths, the full primary link row is replaced by a native
+`details`/`summary` section menu while preserving current-page semantics and
+44–48px targets without adding navigation JavaScript. Multi-column content
+collapses to one column, primary task actions span the available width, and
+the evidence tables render as labeled source/rule records instead of requiring
+horizontal page scrolling. Browser checks exercise every page at 320px and
+390px plus populated applicant and evidence states; physical-device and
+assistive-technology validation remain separate manual work.
+
 The generated bundle must never become a second hand-edited source of truth;
 the test suite compares it byte-for-byte with the canonical JSON inputs and
 checks the committed readiness evidence against a fresh Python evaluation.

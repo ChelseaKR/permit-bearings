@@ -7,6 +7,14 @@ published a versioned release.
 
 ### Changed
 
+- Reworked phone-width navigation into a native section disclosure, tightened
+  narrow-screen spacing, expanded primary task actions, and restyled evidence
+  tables as labeled records without changing their table semantics. Automated
+  browser coverage now includes 320px and 390px reflow, a populated applicant
+  result, and the mobile evidence state.
+- Added a local SVG favicon and expanded the Lighthouse mobile budget gate to
+  the populated applicant sample; all six audited states currently score 1.00
+  for accessibility, best practices, performance, and SEO.
 - Added a source-shaped Woodland parcel-evidence fixture: two fabricated
   values bind to exact fields in dated Yolo County public parcel-layer
   metadata, flow into the evidence manifest and packet UI, and fail closed
@@ -25,10 +33,10 @@ published a versioned release.
   loaders/evaluators into bounded validators and retired the `WVR-007`
   complexity waiver; Ruff now enforces complexity 10 across the Python
   codebase.
-- Rechecked the unverified Davis local record against currently discoverable
-  City and code-host material, recorded the local/state currency conflict, and
-  preserved the fail-closed unverified status pending a stable official
-  artifact and review.
+- Bound the Davis local record to current official City guidance, preserved
+  HCD's unresolved ordinance-status warning as separate evidence, and limited
+  public copy to the City's published processing categories rather than
+  implying locally encoded eligibility rules.
 - Added a versioned human accessibility and Spanish semantic-parity test
   matrix with explicit evidence fields and `not_run` defaults; creating the
   record does not promote any manual-review or conformance claim.

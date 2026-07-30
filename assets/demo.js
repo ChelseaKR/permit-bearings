@@ -1428,7 +1428,9 @@ function renderDashboard() {
       : st === "stale"
       ? `<span class="badge bad"><span class="status-ico" aria-hidden="true">✕</span>STALE: re-verify</span>`
       : `<span class="badge warn"><span class="status-ico" aria-hidden="true">⚠</span>no dated source record</span>`;
-    return `<tr><td>${esc(rule.pathway)}</td><td class="mutedtxt">${esc(rule.jurisdiction_scope)}</td><td>${b}</td></tr>`;
+    return `<tr><td data-label="Rule">${esc(rule.pathway)}</td>
+      <td data-label="Scope" class="mutedtxt">${esc(rule.jurisdiction_scope)}</td>
+      <td data-label="Status">${b}</td></tr>`;
   }).join("");
   document.getElementById("simNote").classList.toggle("hidden", !simulating);
   document.getElementById("simBtn").classList.toggle("hidden", simulating);
@@ -1452,9 +1454,10 @@ function renderSources() {
       const recorded = metadata.fetched_on ? esc(metadata.fetched_on) : "Not recorded";
       const digest = nonBlank(metadata.sha256)
         ? `${esc(metadata.sha256.slice(0, 16))}…` : "not recorded";
-      return `<tr><td>${source}</td><td>${monitoring}</td>
-        <td class="mutedtxt">${recorded}</td>
-        <td class="mutedtxt" style="font-family:ui-monospace,monospace;font-size:.75rem">${digest}</td></tr>`;
+      return `<tr><td data-label="Source">${source}</td>
+        <td data-label="Monitoring">${monitoring}</td>
+        <td data-label="Recorded" class="mutedtxt">${recorded}</td>
+        <td data-label="SHA-256" class="mutedtxt source-digest">${digest}</td></tr>`;
     }).join("");
 }
 

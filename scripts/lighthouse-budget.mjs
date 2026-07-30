@@ -6,11 +6,12 @@ import { join } from "node:path";
 import { median } from "./lighthouse-score.mjs";
 
 const pages = [
-  "index.html",
-  "prepare.html",
-  "review.html",
-  "evidence.html",
-  "check.html",
+  { label: "index.html", url: "index.html" },
+  { label: "prepare.html", url: "prepare.html" },
+  { label: "review.html", url: "review.html" },
+  { label: "evidence.html", url: "evidence.html" },
+  { label: "check.html", url: "check.html" },
+  { label: "check-sample", url: "check.html?sample=adu" },
 ];
 const minimums = {
   accessibility: 1,
@@ -38,14 +39,14 @@ async function waitForServer() {
 function runAudit(page, sample) {
   const report = join(
     tmpdir(),
-    `permit-pathways-${page}-${process.pid}-${sample}.json`,
+    `permit-pathways-${page.label}-${process.pid}-${sample}.json`,
   );
   try {
     execFileSync(
       process.execPath,
       [
         "node_modules/lighthouse/cli/index.js",
-        `http://127.0.0.1:4174/${page}`,
+        `http://127.0.0.1:4174/${page.url}`,
         "--quiet",
         "--output=json",
         `--output-path=${report}`,
@@ -67,7 +68,7 @@ try {
     const firstPerformance = results[0].categories.performance.score;
     if (firstPerformance < minimums.performance) {
       console.log(
-        `${page} performance first sample ${firstPerformance}; collecting two confirmation samples`,
+        `${page.label} performance first sample ${firstPerformance}; collecting two confirmation samples`,
       );
       results.push(runAudit(page, 2), runAudit(page, 3));
     }
@@ -77,9 +78,9 @@ try {
       const score = median(samples);
       const sampleDetail =
         samples.length > 1 ? ` (median of ${samples.join(", ")})` : "";
-      console.log(`${page} ${category}: ${score}${sampleDetail}`);
+      console.log(`${page.label} ${category}: ${score}${sampleDetail}`);
       if (score < minimum) {
-        console.error(`${page} ${category} is below ${minimum}`);
+        console.error(`${page.label} ${category} is below ${minimum}`);
         failed = true;
       }
     }
