@@ -108,7 +108,7 @@ def _source_date(value: Any, field: str, today: date) -> str | None:
     return str(value)
 
 
-def load_sources(
+def load_sources(  # noqa: C901 — WVR-007
     path: Path,
     *,
     today: date | None = None,

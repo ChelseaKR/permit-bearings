@@ -16,3 +16,5 @@ published a versioned release.
   automation with least-privilege tokens and immutable action pins.
 - Added automated axe WCAG checks across every public page and Lighthouse
   accessibility, performance, best-practices, and SEO budgets.
+- Enforced Ruff's complexity ceiling for new code and registered a dated,
+  expiring waiver for 12 existing fail-closed loaders and evaluators.

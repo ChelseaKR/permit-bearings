@@ -146,7 +146,7 @@ def _parse_iso_date(
     return value
 
 
-def _validate_criterion(
+def _validate_criterion(  # noqa: C901 — WVR-007
     record: Any,
     *,
     rule_id: str,
@@ -267,7 +267,9 @@ class PathwayResult:
         )
 
 
-def load_rules(path: Path, *, today: date | None = None) -> list[Rule]:
+def load_rules(  # noqa: C901 — WVR-007
+    path: Path, *, today: date | None = None
+) -> list[Rule]:
     """Load rules from a JSON file, or from every *.json file in a
     directory (sorted by filename: statewide plus per-jurisdiction files)."""
     as_of = resolve_today(today)

@@ -345,7 +345,7 @@ def _load_condition(
     return Condition(fact_id=fact_id, equals=expected)
 
 
-def _load_mapping_provenance(
+def _load_mapping_provenance(  # noqa: C901 — WVR-007
     value: Any,
     bindings: tuple[SourceBinding, ...],
     *,
@@ -459,7 +459,7 @@ def _load_mapping_provenance(
     )
 
 
-def load_readiness_workflow(
+def load_readiness_workflow(  # noqa: C901 — WVR-007
     path: Path,
     sources_path: Path,
     *,
@@ -678,7 +678,7 @@ def load_readiness_workflow(
     )
 
 
-def load_readiness_packet(
+def load_readiness_packet(  # noqa: C901 — WVR-007
     path: Path,
     workflow: ReadinessWorkflow,
     *,
@@ -794,7 +794,7 @@ def load_readiness_packet(
     )
 
 
-def load_readiness_remedies(
+def load_readiness_remedies(  # noqa: C901 — WVR-007
     path: Path,
     workflow: ReadinessWorkflow,
     *,
@@ -1026,7 +1026,7 @@ def _source_review_due_on(
     ).isoformat()
 
 
-def evaluate_readiness(
+def evaluate_readiness(  # noqa: C901 — WVR-007
     workflow: ReadinessWorkflow,
     packet: ReadinessPacket,
     *,

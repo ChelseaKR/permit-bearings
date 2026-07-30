@@ -126,7 +126,9 @@ def _route_mode(route_type: str) -> str:
     return "bus" if 700 <= numeric <= 799 else "other"
 
 
-def load_feed(gtfs_zip: Path) -> list[StopService]:
+def load_feed(  # noqa: C901 — WVR-007
+    gtfs_zip: Path,
+) -> list[StopService]:
     z = zipfile.ZipFile(gtfs_zip)
     stops = {
         s["stop_id"]: StopService(
