@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from pathlib import Path
 from typing import Any, cast
@@ -244,20 +244,11 @@ def _highlights(value: Any, field: str) -> HighlightGroup | None:
     return HighlightGroup(title=title, items=tuple(parsed))
 
 
-def _review(  # noqa: C901 — WVR-007
-    record: Any,
-    rule_id: str,
-    version: str,
-    updated_on: str,
-    expected_content_fingerprint: str,
+def _review_metadata(
+    record: dict[str, Any],
+    field: str,
     today: date,
-) -> Review:
-    field = f"{rule_id}.review"
-    if not isinstance(record, dict):
-        raise ValueError(f"{field}: expected an object")
-    status = _required_text(record.get("status"), f"{field}.status")
-    if status not in REVIEW_STATUSES:
-        raise ValueError(f"{field}.status: unknown value {status!r}")
+) -> tuple[str | None, str | None, str | None, str | None, str | None]:
     reviewer = _optional_text(record.get("reviewer"), f"{field}.reviewer")
     reviewed_on = _iso_date(
         record.get("reviewed_on"),
@@ -272,50 +263,132 @@ def _review(  # noqa: C901 — WVR-007
     content_fingerprint = _optional_text(
         record.get("content_fingerprint"), f"{field}.content_fingerprint"
     )
-    metadata = (
-        reviewer,
-        reviewed_on,
-        method,
-        reviewed_version,
-        content_fingerprint,
-    )
-    if status == "prototype_review_pending" and any(metadata):
-        raise ValueError(f"{field}: pending review cannot claim reviewer metadata")
-    core_metadata = (reviewer, reviewed_on, method, reviewed_version)
-    if status != "prototype_review_pending" and not all(core_metadata):
+    return reviewer, reviewed_on, method, reviewed_version, content_fingerprint
+
+
+def _validate_completed_review(
+    metadata: tuple[str | None, str | None, str | None, str | None, str | None],
+    field: str,
+    version: str,
+    updated_on: str,
+    expected_content_fingerprint: str,
+) -> None:
+    reviewer, reviewed_on, method, reviewed_version, content_fingerprint = metadata
+    if not all((reviewer, reviewed_on, method, reviewed_version)):
         raise ValueError(
             f"{field}: completed review requires reviewer, date, method, "
             f"and reviewed_version"
         )
+    reviewed_on_value = cast(str, reviewed_on)
+    if reviewed_version != version:
+        raise ValueError(f"{field}: reviewed_version must match explanation version")
+    if reviewed_on_value < updated_on:
+        raise ValueError(f"{field}: review date predates the explanation update date")
+    if content_fingerprint is None:
+        raise ValueError(f"{field}: completed review requires content_fingerprint")
+    if not _FINGERPRINT.fullmatch(content_fingerprint):
+        raise ValueError(f"{field}.content_fingerprint: invalid SHA-256")
+    if content_fingerprint != expected_content_fingerprint:
+        raise ValueError(f"{field}: content_fingerprint does not match English copy")
+
+
+def _review(
+    record: Any,
+    rule_id: str,
+    version: str,
+    updated_on: str,
+    expected_content_fingerprint: str,
+    today: date,
+) -> Review:
+    field = f"{rule_id}.review"
+    if not isinstance(record, dict):
+        raise ValueError(f"{field}: expected an object")
+    status = _required_text(record.get("status"), f"{field}.status")
+    if status not in REVIEW_STATUSES:
+        raise ValueError(f"{field}.status: unknown value {status!r}")
+    metadata = _review_metadata(record, field, today)
+    if status == "prototype_review_pending" and any(metadata):
+        raise ValueError(f"{field}: pending review cannot claim reviewer metadata")
     if status != "prototype_review_pending":
-        reviewed_on_value = cast(str, reviewed_on)
-        if reviewed_version != version:
-            raise ValueError(
-                f"{field}: reviewed_version must match explanation version"
-            )
-        if reviewed_on_value < updated_on:
-            raise ValueError(
-                f"{field}: review date predates the explanation update date"
-            )
-        if content_fingerprint is None:
-            raise ValueError(f"{field}: completed review requires content_fingerprint")
-        if not _FINGERPRINT.fullmatch(content_fingerprint):
-            raise ValueError(f"{field}.content_fingerprint: invalid SHA-256")
-        if content_fingerprint != expected_content_fingerprint:
-            raise ValueError(
-                f"{field}: content_fingerprint does not match English copy"
-            )
-    return Review(
-        status,
-        reviewer,
-        reviewed_on,
-        method,
-        reviewed_version,
-        content_fingerprint,
+        _validate_completed_review(
+            metadata,
+            field,
+            version,
+            updated_on,
+            expected_content_fingerprint,
+        )
+    return Review(status, *metadata)
+
+
+def _localized_copy(record: dict[str, Any], field: str) -> LocalizedExplanation:
+    return LocalizedExplanation(
+        title=_required_text(record.get("title"), f"{field}.title"),
+        summary=_required_text(record.get("summary"), f"{field}.summary"),
+        next_steps=_text_list(record.get("next_steps"), f"{field}.next_steps"),
+        confirm_with_staff=_text_list(
+            record.get("confirm_with_staff"), f"{field}.confirm_with_staff"
+        ),
+        highlights=_highlights(record.get("highlights"), f"{field}.highlights"),
     )
 
 
-def _localized(  # noqa: C901 — WVR-007
+def _validate_translation_review(
+    metadata: tuple[str | None, str | None, str | None, str | None, str | None],
+    field: str,
+    version: str,
+    updated_on: str,
+    localized: LocalizedExplanation,
+) -> None:
+    reviewer, reviewed_on, method, reviewed_version, content_fingerprint = metadata
+    if not all((reviewer, reviewed_on, method, reviewed_version)):
+        raise ValueError(
+            f"{field}: reviewed translation requires reviewer, date, method, "
+            f"and reviewed_version"
+        )
+    reviewed_on_value = cast(str, reviewed_on)
+    if reviewed_version != version:
+        raise ValueError(f"{field}: reviewed_version must match explanation version")
+    if reviewed_on_value < updated_on:
+        raise ValueError(f"{field}: review date predates the explanation update date")
+    if content_fingerprint is None:
+        raise ValueError(f"{field}: reviewed translation requires content_fingerprint")
+    if not _FINGERPRINT.fullmatch(content_fingerprint):
+        raise ValueError(f"{field}.content_fingerprint: invalid SHA-256")
+    expected = localized_content_fingerprint(version, "es", localized)
+    if content_fingerprint != expected:
+        raise ValueError(f"{field}: content_fingerprint does not match translated copy")
+
+
+def _translation_metadata(
+    record: dict[str, Any],
+    field: str,
+    version: str,
+    updated_on: str,
+    today: date,
+    localized: LocalizedExplanation,
+) -> tuple[str, tuple[str | None, str | None, str | None, str | None, str | None]]:
+    status = _required_text(
+        record.get("translation_status"), f"{field}.translation_status"
+    )
+    if status not in TRANSLATION_STATUSES:
+        raise ValueError(f"{field}.translation_status: unknown value {status!r}")
+    metadata = _review_metadata(record, field, today)
+    if status == "machine_draft" and any(metadata):
+        raise ValueError(
+            f"{field}: machine draft cannot claim translation review metadata"
+        )
+    if status != "machine_draft":
+        _validate_translation_review(
+            metadata,
+            field,
+            version,
+            updated_on,
+            localized,
+        )
+    return status, metadata
+
+
+def _localized(
     record: Any,
     rule_id: str,
     language: str,
@@ -326,95 +399,20 @@ def _localized(  # noqa: C901 — WVR-007
     field = f"{rule_id}.{language}"
     if not isinstance(record, dict):
         raise ValueError(f"{field}: expected an object")
-    translation_status = None
-    reviewer = None
-    reviewed_on = None
-    method = None
-    reviewed_version = None
-    content_fingerprint = None
-
-    title = _required_text(record.get("title"), f"{field}.title")
-    summary = _required_text(record.get("summary"), f"{field}.summary")
-    next_steps = _text_list(record.get("next_steps"), f"{field}.next_steps")
-    confirm_with_staff = _text_list(
-        record.get("confirm_with_staff"), f"{field}.confirm_with_staff"
+    localized = _localized_copy(record, field)
+    if language != "es":
+        return localized
+    translation_status, metadata = _translation_metadata(
+        record,
+        field,
+        version,
+        updated_on,
+        today,
+        localized,
     )
-    highlights = _highlights(record.get("highlights"), f"{field}.highlights")
-    localized = LocalizedExplanation(
-        title=title,
-        summary=summary,
-        next_steps=next_steps,
-        confirm_with_staff=confirm_with_staff,
-        highlights=highlights,
-    )
-
-    if language == "es":
-        translation_status = _required_text(
-            record.get("translation_status"), f"{field}.translation_status"
-        )
-        if translation_status not in TRANSLATION_STATUSES:
-            raise ValueError(
-                f"{field}.translation_status: unknown value {translation_status!r}"
-            )
-        reviewer = _optional_text(record.get("reviewer"), f"{field}.reviewer")
-        reviewed_on = _iso_date(
-            record.get("reviewed_on"),
-            f"{field}.reviewed_on",
-            today=today,
-            optional=True,
-        )
-        method = _optional_text(record.get("method"), f"{field}.method")
-        reviewed_version = _optional_text(
-            record.get("reviewed_version"), f"{field}.reviewed_version"
-        )
-        content_fingerprint = _optional_text(
-            record.get("content_fingerprint"),
-            f"{field}.content_fingerprint",
-        )
-        metadata = (
-            reviewer,
-            reviewed_on,
-            method,
-            reviewed_version,
-            content_fingerprint,
-        )
-        if translation_status == "machine_draft" and any(metadata):
-            raise ValueError(
-                f"{field}: machine draft cannot claim translation review metadata"
-            )
-        core_metadata = (reviewer, reviewed_on, method, reviewed_version)
-        if translation_status != "machine_draft" and not all(core_metadata):
-            raise ValueError(
-                f"{field}: reviewed translation requires reviewer, date, method, "
-                f"and reviewed_version"
-            )
-        if translation_status != "machine_draft":
-            reviewed_on_value = cast(str, reviewed_on)
-            if reviewed_version != version:
-                raise ValueError(
-                    f"{field}: reviewed_version must match explanation version"
-                )
-            if reviewed_on_value < updated_on:
-                raise ValueError(
-                    f"{field}: review date predates the explanation update date"
-                )
-            if content_fingerprint is None:
-                raise ValueError(
-                    f"{field}: reviewed translation requires content_fingerprint"
-                )
-            if not _FINGERPRINT.fullmatch(content_fingerprint):
-                raise ValueError(f"{field}.content_fingerprint: invalid SHA-256")
-            expected = localized_content_fingerprint(version, language, localized)
-            if content_fingerprint != expected:
-                raise ValueError(
-                    f"{field}: content_fingerprint does not match translated copy"
-                )
-    return LocalizedExplanation(
-        title=title,
-        summary=summary,
-        next_steps=next_steps,
-        confirm_with_staff=confirm_with_staff,
-        highlights=highlights,
+    reviewer, reviewed_on, method, reviewed_version, content_fingerprint = metadata
+    return replace(
+        localized,
         translation_status=translation_status,
         reviewer=reviewer,
         reviewed_on=reviewed_on,
@@ -424,7 +422,223 @@ def _localized(  # noqa: C901 — WVR-007
     )
 
 
-def load_explanations(  # noqa: C901 — WVR-007
+def _explanation_records(path: Path, strict: bool) -> list[Any] | None:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        if strict:
+            raise ValueError(
+                f"plain-language data could not be loaded: {error}"
+            ) from error
+        return None
+    if not isinstance(payload, dict) or payload.get("schema_version") != SCHEMA_VERSION:
+        got = payload.get("schema_version") if isinstance(payload, dict) else None
+        schema_error = ValueError(
+            f"plain-language schema_version must be {SCHEMA_VERSION}; got {got!r}"
+        )
+        if strict:
+            raise schema_error
+        return None
+    records = payload.get("entries")
+    if not isinstance(records, list):
+        if strict:
+            raise ValueError("plain-language entries: expected a list")
+        return None
+    return records
+
+
+def _rule_index(rules: list[Rule], strict: bool) -> dict[str, Rule] | None:
+    rules_by_id = {rule.rule_id: rule for rule in rules}
+    if len(rules_by_id) != len(rules):
+        if strict:
+            raise ValueError("canonical rule set contains duplicate rule IDs")
+        return None
+    return rules_by_id
+
+
+def _record_rule_id(record: Any, index: int) -> str:
+    if not isinstance(record, dict):
+        raise ValueError(f"entries[{index}]: expected an object")
+    return _required_text(
+        record.get("source_rule_id"),
+        f"entries[{index}].source_rule_id",
+    )
+
+
+def _explanation_version(record: dict[str, Any], rule_id: str) -> str:
+    version = _required_text(record.get("version"), f"{rule_id}.version")
+    if not _SEMVER.fullmatch(version):
+        raise ValueError(f"{rule_id}.version: expected semantic version")
+    return version
+
+
+def _explanation_binding(
+    record: dict[str, Any],
+    rule: Rule,
+    as_of: date,
+) -> tuple[str | None, str, str]:
+    rule_id = rule.rule_id
+    source_verified_on = _iso_date(
+        record.get("source_verified_on"),
+        f"{rule_id}.source_verified_on",
+        today=as_of,
+        optional=True,
+    )
+    if source_verified_on != rule.citation.verified_on:
+        raise ValueError(
+            f"{rule_id}: explanation source date {source_verified_on!r} "
+            f"does not match rule source date {rule.citation.verified_on!r}"
+        )
+    fingerprint = _required_text(
+        record.get("citation_fingerprint"),
+        f"{rule_id}.citation_fingerprint",
+    )
+    if fingerprint != citation_fingerprint(rule):
+        raise ValueError(f"{rule_id}: citation fingerprint does not match linked rule")
+    full_rule_fingerprint = _required_text(
+        record.get("rule_fingerprint"),
+        f"{rule_id}.rule_fingerprint",
+    )
+    if full_rule_fingerprint != rule_fingerprint(rule):
+        raise ValueError(f"{rule_id}: rule fingerprint does not match linked rule")
+    return source_verified_on, fingerprint, full_rule_fingerprint
+
+
+def _explanation_display_metadata(
+    record: dict[str, Any],
+    rule: Rule,
+    source_verified_on: str | None,
+    as_of: date,
+) -> tuple[str, str, str]:
+    rule_id = rule.rule_id
+    display_group = _required_text(
+        record.get("display_group"), f"{rule_id}.display_group"
+    )
+    if display_group not in DISPLAY_GROUPS:
+        raise ValueError(f"{rule_id}.display_group: unknown value {display_group!r}")
+    if display_group != rule.display_group:
+        raise ValueError(f"{rule_id}.display_group: does not match linked rule")
+    drafted_by = _required_text(record.get("drafted_by"), f"{rule_id}.drafted_by")
+    if drafted_by != "ai_assisted":
+        raise ValueError(
+            f"{rule_id}.drafted_by: expected 'ai_assisted', got {drafted_by!r}"
+        )
+    updated_on = cast(
+        str,
+        _iso_date(
+            record.get("updated_on"),
+            f"{rule_id}.updated_on",
+            today=as_of,
+        ),
+    )
+    if source_verified_on and updated_on < source_verified_on:
+        raise ValueError(
+            f"{rule_id}: explanation update date {updated_on!r} "
+            f"predates linked source date {source_verified_on!r}"
+        )
+    return display_group, drafted_by, updated_on
+
+
+def _spanish_copy(
+    record: dict[str, Any],
+    rule_id: str,
+    version: str,
+    updated_on: str,
+    as_of: date,
+    strict: bool,
+) -> LocalizedExplanation | None:
+    try:
+        return _localized(
+            record.get("es"),
+            rule_id,
+            "es",
+            version,
+            updated_on,
+            as_of,
+        )
+    except ValueError:
+        if strict:
+            raise
+        return None
+
+
+def _explanation(
+    record: dict[str, Any],
+    rule: Rule,
+    as_of: date,
+    strict: bool,
+) -> PlainLanguageExplanation:
+    rule_id = rule.rule_id
+    version = _explanation_version(record, rule_id)
+    source_verified_on, fingerprint, full_rule_fingerprint = _explanation_binding(
+        record, rule, as_of
+    )
+    display_group, drafted_by, updated_on = _explanation_display_metadata(
+        record, rule, source_verified_on, as_of
+    )
+    english = _localized(record.get("en"), rule_id, "en", version, updated_on, as_of)
+    review = _review(
+        record.get("review"),
+        rule_id,
+        version,
+        updated_on,
+        localized_content_fingerprint(version, "en", english),
+        as_of,
+    )
+    return PlainLanguageExplanation(
+        version=version,
+        source_rule_id=rule_id,
+        source_verified_on=source_verified_on,
+        citation_fingerprint=fingerprint,
+        rule_fingerprint=full_rule_fingerprint,
+        display_group=display_group,
+        drafted_by=drafted_by,
+        updated_on=updated_on,
+        review=review,
+        en=english,
+        es=_spanish_copy(record, rule_id, version, updated_on, as_of, strict),
+    )
+
+
+def _collect_explanations(
+    records: list[Any],
+    rules_by_id: dict[str, Rule],
+    as_of: date,
+    strict: bool,
+) -> dict[str, PlainLanguageExplanation]:
+    explanations: dict[str, PlainLanguageExplanation] = {}
+    seen: set[str] = set()
+    blocked: set[str] = set()
+    for index, record in enumerate(records):
+        try:
+            rule_id = _record_rule_id(record, index)
+        except ValueError:
+            if strict:
+                raise
+            continue
+        if rule_id in seen:
+            if strict:
+                raise ValueError(f"{rule_id}: duplicate plain-language explanation")
+            explanations.pop(rule_id, None)
+            blocked.add(rule_id)
+            continue
+        seen.add(rule_id)
+        if rule_id in blocked:
+            continue
+        try:
+            rule = rules_by_id.get(rule_id)
+            if rule is None:
+                raise ValueError(f"{rule_id}: explanation references an unknown rule")
+            explanation = _explanation(record, rule, as_of, strict)
+        except ValueError:
+            if strict:
+                raise
+            continue
+        explanations[rule_id] = explanation
+    return explanations
+
+
+def load_explanations(
     path: Path,
     rules: list[Rule],
     *,
@@ -440,177 +654,13 @@ def load_explanations(  # noqa: C901 — WVR-007
     copy to English. Neither mode participates in matching.
     """
 
-    as_of = resolve_today(today)
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
-        if strict:
-            raise ValueError(
-                f"plain-language data could not be loaded: {error}"
-            ) from error
+    records = _explanation_records(path, strict)
+    rules_by_id = _rule_index(rules, strict)
+    if records is None or rules_by_id is None:
         return {}
-    if not isinstance(payload, dict) or payload.get("schema_version") != SCHEMA_VERSION:
-        got = payload.get("schema_version") if isinstance(payload, dict) else None
-        schema_error = ValueError(
-            f"plain-language schema_version must be {SCHEMA_VERSION}; got {got!r}"
-        )
-        if strict:
-            raise schema_error
-        return {}
-    records = payload.get("entries")
-    if not isinstance(records, list):
-        if strict:
-            raise ValueError("plain-language entries: expected a list")
-        return {}
-
-    rules_by_id = {rule.rule_id: rule for rule in rules}
-    if len(rules_by_id) != len(rules):
-        if strict:
-            raise ValueError("canonical rule set contains duplicate rule IDs")
-        return {}
-
-    explanations: dict[str, PlainLanguageExplanation] = {}
-    seen: set[str] = set()
-    blocked: set[str] = set()
-    for index, record in enumerate(records):
-        try:
-            if not isinstance(record, dict):
-                raise ValueError(f"entries[{index}]: expected an object")
-            rule_id = _required_text(
-                record.get("source_rule_id"),
-                f"entries[{index}].source_rule_id",
-            )
-        except ValueError:
-            if strict:
-                raise
-            continue
-
-        if rule_id in seen:
-            if strict:
-                raise ValueError(f"{rule_id}: duplicate plain-language explanation")
-            explanations.pop(rule_id, None)
-            blocked.add(rule_id)
-            continue
-        seen.add(rule_id)
-        if rule_id in blocked:
-            continue
-
-        try:
-            rule = rules_by_id.get(rule_id)
-            if rule is None:
-                raise ValueError(f"{rule_id}: explanation references an unknown rule")
-
-            version = _required_text(record.get("version"), f"{rule_id}.version")
-            if not _SEMVER.fullmatch(version):
-                raise ValueError(f"{rule_id}.version: expected semantic version")
-            source_verified_on = _iso_date(
-                record.get("source_verified_on"),
-                f"{rule_id}.source_verified_on",
-                today=as_of,
-                optional=True,
-            )
-            if source_verified_on != rule.citation.verified_on:
-                raise ValueError(
-                    f"{rule_id}: explanation source date {source_verified_on!r} "
-                    f"does not match rule source date "
-                    f"{rule.citation.verified_on!r}"
-                )
-            fingerprint = _required_text(
-                record.get("citation_fingerprint"),
-                f"{rule_id}.citation_fingerprint",
-            )
-            expected_fingerprint = citation_fingerprint(rule)
-            if fingerprint != expected_fingerprint:
-                raise ValueError(
-                    f"{rule_id}: citation fingerprint does not match linked rule"
-                )
-            full_rule_fingerprint = _required_text(
-                record.get("rule_fingerprint"),
-                f"{rule_id}.rule_fingerprint",
-            )
-            expected_rule_fingerprint = rule_fingerprint(rule)
-            if full_rule_fingerprint != expected_rule_fingerprint:
-                raise ValueError(
-                    f"{rule_id}: rule fingerprint does not match linked rule"
-                )
-            display_group = _required_text(
-                record.get("display_group"), f"{rule_id}.display_group"
-            )
-            if display_group not in DISPLAY_GROUPS:
-                raise ValueError(
-                    f"{rule_id}.display_group: unknown value {display_group!r}"
-                )
-            if display_group != rule.display_group:
-                raise ValueError(f"{rule_id}.display_group: does not match linked rule")
-            drafted_by = _required_text(
-                record.get("drafted_by"), f"{rule_id}.drafted_by"
-            )
-            if drafted_by != "ai_assisted":
-                raise ValueError(
-                    f"{rule_id}.drafted_by: expected 'ai_assisted', got {drafted_by!r}"
-                )
-
-            updated_on = _iso_date(
-                record.get("updated_on"),
-                f"{rule_id}.updated_on",
-                today=as_of,
-            )
-            updated_on_value = cast(str, updated_on)
-            if source_verified_on and updated_on_value < source_verified_on:
-                raise ValueError(
-                    f"{rule_id}: explanation update date {updated_on!r} "
-                    f"predates linked source date {source_verified_on!r}"
-                )
-            english = _localized(
-                record.get("en"),
-                rule_id,
-                "en",
-                version,
-                updated_on_value,
-                as_of,
-            )
-            english_fingerprint = localized_content_fingerprint(version, "en", english)
-            review = _review(
-                record.get("review"),
-                rule_id,
-                version,
-                updated_on_value,
-                english_fingerprint,
-                as_of,
-            )
-            try:
-                spanish = _localized(
-                    record.get("es"),
-                    rule_id,
-                    "es",
-                    version,
-                    updated_on_value,
-                    as_of,
-                )
-            except ValueError:
-                if strict:
-                    raise
-                spanish = None
-
-            explanation = PlainLanguageExplanation(
-                version=version,
-                source_rule_id=rule_id,
-                source_verified_on=source_verified_on,
-                citation_fingerprint=fingerprint,
-                rule_fingerprint=full_rule_fingerprint,
-                display_group=display_group,
-                drafted_by=drafted_by,
-                updated_on=updated_on_value,
-                review=review,
-                en=english,
-                es=spanish,
-            )
-        except ValueError:
-            if strict:
-                raise
-            continue
-        explanations[rule_id] = explanation
-
+    explanations = _collect_explanations(
+        records, rules_by_id, resolve_today(today), strict
+    )
     if require_complete and strict:
         missing = sorted(set(rules_by_id) - set(explanations))
         if missing:

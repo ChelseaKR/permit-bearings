@@ -126,10 +126,86 @@ def _route_mode(route_type: str) -> str:
     return "bus" if 700 <= numeric <= 799 else "other"
 
 
-def load_feed(  # noqa: C901 — WVR-007
-    gtfs_zip: Path,
-) -> list[StopService]:
-    z = zipfile.ZipFile(gtfs_zip)
+def _weekday_trips(z: zipfile.ZipFile) -> dict[str, dict[str, str]]:
+    weekday_services = {
+        row["service_id"]
+        for row in _read(z, "calendar.txt")
+        if row.get("monday") == "1"
+    }
+    trips = {
+        row["trip_id"]: row
+        for row in _read(z, "trips.txt")
+        if row["service_id"] in weekday_services
+    }
+    by_service: dict[str, int] = defaultdict(int)
+    for trip in trips.values():
+        by_service[trip["service_id"]] += 1
+    if not by_service:
+        return trips
+    busiest = max(by_service, key=by_service.__getitem__)
+    return {
+        trip_id: trip
+        for trip_id, trip in trips.items()
+        if trip["service_id"] == busiest
+    }
+
+
+def _arrivals(
+    z: zipfile.ZipFile,
+    trips: dict[str, dict[str, str]],
+) -> dict[tuple[str, str, str], list[int]]:
+    arrivals: dict[tuple[str, str, str], list[int]] = defaultdict(list)
+    for stop_time in _read(z, "stop_times.txt"):
+        trip = trips.get(stop_time["trip_id"])
+        if not trip:
+            continue
+        time = stop_time.get("arrival_time") or stop_time.get("departure_time") or ""
+        minutes = _minutes(time)
+        if minutes is None:
+            continue
+        key = (
+            stop_time["stop_id"],
+            trip["route_id"],
+            trip.get("direction_id", ""),
+        )
+        arrivals[key].append(minutes)
+    return arrivals
+
+
+def _apply_arrivals(
+    stops: dict[str, StopService],
+    route_types: dict[str, str],
+    arrivals: dict[tuple[str, str, str], list[int]],
+) -> None:
+    for (stop_id, route_id, _direction), times in arrivals.items():
+        stop = stops.get(stop_id)
+        if stop is None:
+            continue
+        mode = _route_mode(route_types.get(route_id, "3"))
+        if mode in {"rail", "ferry"}:
+            setattr(stop, mode, True)
+            continue
+        if mode != "bus":
+            continue
+        stop.bus_routes.add(route_id)
+        gap = _worst_peak_gap(times)
+        best = stop.route_max_gaps.get(route_id)
+        if gap is not None and (best is None or gap < best):
+            stop.route_max_gaps[route_id] = gap
+
+
+def load_feed(gtfs_zip: Path) -> list[StopService]:
+    with zipfile.ZipFile(gtfs_zip) as z:
+        stops = _load_stops(z)
+        route_types = {
+            row["route_id"]: row.get("route_type", "3")
+            for row in _read(z, "routes.txt")
+        }
+        _apply_arrivals(stops, route_types, _arrivals(z, _weekday_trips(z)))
+    return list(stops.values())
+
+
+def _load_stops(z: zipfile.ZipFile) -> dict[str, StopService]:
     stops = {
         s["stop_id"]: StopService(
             stop_id=s["stop_id"],
@@ -140,59 +216,7 @@ def load_feed(  # noqa: C901 — WVR-007
         for s in _read(z, "stops.txt")
         if s.get("stop_lat")
     }
-    route_types = {
-        r["route_id"]: r.get("route_type", "3") for r in _read(z, "routes.txt")
-    }
-
-    weekday_services = {
-        c["service_id"] for c in _read(z, "calendar.txt") if c.get("monday") == "1"
-    }
-    trips = {
-        t["trip_id"]: t
-        for t in _read(z, "trips.txt")
-        if t["service_id"] in weekday_services
-    }
-    # Busiest weekday service = the service_id with the most trips.
-    by_service: dict[str, int] = defaultdict(int)
-    for t in trips.values():
-        by_service[t["service_id"]] += 1
-    if by_service:
-        busiest = max(by_service, key=lambda s: by_service[s])
-        trips = {tid: t for tid, t in trips.items() if t["service_id"] == busiest}
-
-    # arrivals[(stop_id, route_id, direction)] = [minutes, ...]
-    arrivals: dict[tuple[str, str, str], list[int]] = defaultdict(list)
-    for st in _read(z, "stop_times.txt"):
-        trip = trips.get(st["trip_id"])
-        if not trip:
-            continue
-        minutes = _minutes(st.get("arrival_time") or st.get("departure_time") or "")
-        if minutes is None:
-            continue
-        key = (st["stop_id"], trip["route_id"], trip.get("direction_id", ""))
-        arrivals[key].append(minutes)
-
-    for (stop_id, route_id, _direction), times in arrivals.items():
-        stop = stops.get(stop_id)
-        if not stop:
-            continue
-        mode = _route_mode(route_types.get(route_id, "3"))
-        if mode == "rail":
-            stop.rail = True
-            continue
-        if mode == "ferry":
-            stop.ferry = True
-            continue
-        if mode != "bus":
-            continue
-        stop.bus_routes.add(route_id)
-        gap = _worst_peak_gap(times)
-        if gap is None:
-            continue
-        best = stop.route_max_gaps.get(route_id)
-        if best is None or gap < best:
-            stop.route_max_gaps[route_id] = gap
-    return list(stops.values())
+    return stops
 
 
 def _is_major_stop(stop: StopService, all_stops: list[StopService]) -> bool:

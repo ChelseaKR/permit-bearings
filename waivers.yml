@@ -1,13 +1,2 @@
 version: 1
-waivers:
-  - id: WVR-007
-    control: CQ-05
-    repo: permit-pathways
-    kind: other
-    reason: >-
-      Twelve fail-closed schema loaders and evaluators predate the complexity
-      gate. Ruff now blocks every new unsuppressed function above 10 while
-      these named functions are decomposed with behavior-parity tests.
-    owner: chelseakr
-    granted: 2026-07-29
-    expires: 2026-09-30
+waivers: []

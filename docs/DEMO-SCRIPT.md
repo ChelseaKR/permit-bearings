@@ -32,9 +32,11 @@ Start at `/` for the product boundary, then use `/review.html`,
   again. Every handout, chatbot, and ordinance citing the old sections became
   wrong without anyone touching it.
 - Live evidence: HCD's Santa Clara findings letter documents the obsolete
-  numbering in an operative ordinance. The local Davis source in this
-  prototype is unavailable and therefore labeled unverified, not treated as
-  proof of a local defect.
+  numbering in an operative ordinance. The current Davis code text is
+  discoverable, but direct currency retrieval remains blocked and the City
+  warns its 2021 regulations may differ from later State law. The prototype
+  therefore keeps that local record unverified and does not treat the
+  discrepancy as proof of a local defect.
 - Frame: correctness *decays*. An AI guidance tool without a currency
   mechanism is a liability with a friendly interface.
 
@@ -118,9 +120,9 @@ Start at `/` for the product boundary, then use `/review.html`,
 
 ### 3. The verification harness: Scenario C (5 min)
 - Open **Evidence & updates**. Show the percentage of rule records with dated
-  source evidence inside the
-  review window, plus the Davis record with no dated source check because its
-  source blocks retrieval.
+  source evidence inside the review window, plus the Davis record with no
+  dated source check because its host blocks the automated currency fetch and
+  its local/state interaction still needs review.
 - Watched sources table: content hashes of the March 2026 ADU Handbook and
   April 2026 SB 9 fact sheet; weekly automated re-fetch (show the GitHub
   Action) reports when either changes or becomes unreachable.
@@ -178,7 +180,8 @@ Start at `/` for the product boundary, then use `/review.html`,
   remove key-person risk. Open to teaming.
 - "Accuracy of the rule base?" → Each rule with dated evidence links a source
   and supporting excerpt; the Davis local record remains explicitly
-  unverified because its source could not be retrieved. The current
+  unverified because no stable fetchable artifact has been retained and its
+  local/state interaction still needs review. The current
   `verified_on` field records dated source evidence, not jurisdiction or
   counsel approval. Encoding was machine-assisted; a named human review level
   and held-out evaluation are next. The separate Woodland checklist mapping

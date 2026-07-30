@@ -1182,14 +1182,14 @@
       }
     },
     {
-      "version": "1.1.0",
+      "version": "1.1.1",
       "source_rule_id": "davis-local-adu-process",
       "source_verified_on": null,
       "citation_fingerprint": "sha256:cb7885f4129e93ba659d16468532a6eaaba8751b7885aaa9ab05d43e9238201c",
-      "rule_fingerprint": "sha256:b03cae234376ccf7bc33a4e9c9920e2d98847e45eb99c73bf77b141e3c5474e4",
+      "rule_fingerprint": "sha256:d698e7dc809f27c1d623c94fbc246bbd282b70d300bdc974010e3b639d653204",
       "display_group": "local_process",
       "drafted_by": "ai_assisted",
-      "updated_on": "2026-07-28",
+      "updated_on": "2026-07-30",
       "review": {
         "status": "prototype_review_pending",
         "reviewer": null,
@@ -1202,11 +1202,11 @@
         "title": "Check Davis's current local ADU process",
         "summary": "The cited Davis code record is unverified. Do not use it as a statement of current local requirements.",
         "next_steps": [
-          "Obtain the current official text of Davis Municipal Code § 40.26.450.",
+          "Ask Davis staff for a stable current copy of Municipal Code § 40.26.450 and any superseding ADU direction.",
           "Obtain the city's current ADU or junior ADU application materials."
         ],
         "confirm_with_staff": [
-          "Is the cited Davis code section current?",
+          "How does Davis currently apply § 40.26.450 alongside the renumbered State ADU statutes?",
           "Which local form, plans, and other materials are required now?",
           "Which state-law cross-references in the local materials are current?"
         ]
@@ -1215,11 +1215,11 @@
         "title": "Compruebe el proceso local vigente de Davis para una ADU",
         "summary": "El registro citado del código de Davis no está verificado. No lo use como declaración de requisitos locales vigentes.",
         "next_steps": [
-          "Obtenga el texto oficial vigente del Código Municipal de Davis § 40.26.450.",
+          "Solicite al personal de Davis una copia estable y vigente del Código Municipal § 40.26.450 y cualquier instrucción posterior sobre ADU.",
           "Obtenga los materiales vigentes de la ciudad para una ADU o ADU júnior."
         ],
         "confirm_with_staff": [
-          "¿La sección citada del código de Davis está vigente?",
+          "¿Cómo aplica actualmente Davis el § 40.26.450 junto con los estatutos estatales de ADU renumerados?",
           "¿Qué formulario, planos y otros materiales locales se exigen ahora?",
           "¿Qué referencias a la ley estatal en los materiales locales están vigentes?"
         ],
