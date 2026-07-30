@@ -68,7 +68,7 @@ still needs a person.
 | Security & Supply-Chain | Event-armed CodeQL, Bandit, pip-audit, gitleaks, zizmor, Dependabot, and Scorecard; all workflow actions are pinned to full commit SHAs and use scoped token permissions. |
 | CI/CD | Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. |
 | Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. Storage, telemetry, uploads, or external model calls would trigger a new operational design review. |
-| Accessibility | Axe and Lighthouse run on all five public pages. Manual keyboard, screen-reader, zoom, forced-colors, and Spanish semantic review remain open in `docs/ACCESSIBILITY.md`. |
+| Accessibility | Axe and Lighthouse run on all five public pages. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps keyboard, screen-reader, zoom, forced-colors, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |

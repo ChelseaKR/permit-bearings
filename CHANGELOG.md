@@ -24,6 +24,9 @@ published a versioned release.
   City and code-host material, recorded the local/state currency conflict, and
   preserved the fail-closed unverified status pending a stable official
   artifact and review.
+- Added a versioned human accessibility and Spanish semantic-parity test
+  matrix with explicit evidence fields and `not_run` defaults; creating the
+  record does not promote any manual-review or conformance claim.
 - Added a pinned, read-only private standards consumer gate and a reviewable
   protected-main ruleset profile.
 - Pinned the consumer to the standards fix that enforces live hosted policy
