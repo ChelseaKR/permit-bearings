@@ -131,5 +131,12 @@
     "local_copy": "corpus/woodland/preapproved-adu-permit-checklist.pdf",
     "sha256": "59ebf082a59ff257f104a13f75d63faa869565bfdecc33a6e1eba306b4796d62",
     "fetched_on": "2026-07-29"
+  },
+  "https://gis.yolocounty.gov/ext/rest/services/Public/Parcels_Public/FeatureServer/0?f=pjson": {
+    "source_id": "yolo-public-parcels-layer",
+    "label": "Yolo County Public Parcels feature-layer metadata",
+    "local_copy": "corpus/yolo/public-parcels-layer.json",
+    "sha256": "5f99beaf208dc10d8794df0ce1cd3d66f7414ac062d81cbdc018403ef01badb5",
+    "fetched_on": "2026-07-30"
   }
 }

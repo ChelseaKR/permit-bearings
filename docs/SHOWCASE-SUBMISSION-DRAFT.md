@@ -100,13 +100,13 @@ Limit: 200 words. Draft count: 189 words by whitespace.
 > matched rule and available evidence remain visible, but action copy and
 > document hints are withheld.
 >
-> A separate deterministic sample compares one made-up Woodland preapproved ADU
-> inventory with 25 requirements mapped from one official City checklist. It
-> labels items present, missing, needing staff review, not applicable, or not
-> evaluated and emits a source-bound evidence manifest. "Present" means only
-> that the synthetic inventory reports the item present. The prototype does not
+> A separate deterministic sample compares a made-up Woodland ADU inventory
+> with 25 requirements from one official City checklist and emits item findings
+> plus a source-bound manifest. Two fabricated values bind to Yolo County
+> parcel-layer fields; no address, APN, or live parcel is queried. "Present"
+> only means the inventory reports the item present. The prototype does not
 > inspect files, verify parcel facts, determine legal sufficiency, certify
-> completeness, or limit what staff may request.
+> completeness, or limit staff requests.
 >
 > This bounded flow is a testable example, not a real applicant record, pilot,
 > or external validation result. No effect on time, rework, submission quality,
@@ -217,28 +217,29 @@ Limit: 100 words. Draft count: 89 words by whitespace.
 
 ### Source data and integrations
 
-Limit: 100 words. Draft count: 86 words by whitespace.
+Limit: 100 words. Draft count: 95 words by whitespace.
 
 > The prototype uses HCD guidance, selected municipal sources, structured JSON,
 > transit datasets, and applicant facts. One synthetic packet-presence sample
-> uses a City checklist,
-> an explicit made-up inventory, and a generated evidence manifest. The public
-> applicant flow has no live parcel, permitting, document-management, identity,
-> upload, or model integration. A parcel, zoning, GIS, or permitting connection
-> would be assessed separately and is excluded from the estimate. Portable
-> source, rule, workflow, inventory, remedy, and evidence files can be inspected
-> without vendor-only tooling; operational ownership and export terms require
-> agreement.
+> uses a City checklist, Yolo County parcel-layer metadata, two fabricated
+> source-shaped parcel values, an explicit made-up inventory, and a generated
+> evidence manifest. The applicant flow has no live parcel, permitting,
+> document-management, identity, upload, or model integration. A live parcel,
+> zoning, GIS, or permitting connection would be assessed separately and is
+> excluded from the estimate. Portable source, rule, workflow, inventory,
+> remedy, and evidence files can be inspected without vendor-only tooling;
+> operational ownership and export terms require agreement.
 
 ### Known exceptions
 
-Limit: 100 words. Draft count: 88 words by whitespace.
+Limit: 100 words. Draft count: 95 words by whitespace.
 
 > The readiness sample checks reported presence against one City checklist. It
-> does not inspect files, verify parcel facts, assess document
-> contents, determine legal sufficiency, validate cross-document consistency,
-> certify completeness, or provide reviewed remedies. Its mapping and
-> AI-assisted remedy draft await named review. The prototype does not
+> demonstrates fabricated parcel-field bindings but does not query or verify a
+> parcel, inspect files, assess document contents, determine
+> legal sufficiency, validate cross-document consistency, certify completeness,
+> or provide reviewed remedies. Its mapping and AI-assisted remedy draft await
+> named review. The prototype does not
 > encode comprehensive local codes, SB 35, or AB 2011. Monitoring covers
 > URLs and does not discover new laws or persist production change
 > state. No participant or jurisdiction has validated outputs.

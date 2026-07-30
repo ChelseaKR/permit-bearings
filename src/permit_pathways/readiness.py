@@ -44,12 +44,14 @@ ITEM_TYPES = ("document", "document_content", "action")
 PROVENANCE_VALUES = (
     "synthetic_applicant_assertion",
     "applicant_assertion",
+    "synthetic_public_record_fixture",
 )
 
 _IDENTIFIER = re.compile(r"^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
+_SOURCE_FIELD = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
 
 
 def _required_text(value: Any, field: str) -> str:
@@ -135,6 +137,8 @@ class FactDefinition:
     label: str
     question: str
     allowed_values: tuple[str, ...]
+    source_id: str | None
+    source_field: str | None
 
 
 @dataclass(frozen=True)
@@ -203,6 +207,9 @@ class PacketFact:
     fact_id: str
     value: str
     provenance: str
+    source_id: str | None
+    source_field: str | None
+    source_checked_on: str | None
 
 
 @dataclass(frozen=True)
@@ -445,8 +452,8 @@ def _load_mapping_provenance(
     review_scope = _required_literal(
         value["review_scope"],
         f"{field}.review_scope",
-        "requirements_and_source_excerpts",
-        "expected requirements_and_source_excerpts",
+        "requirements_excerpts_and_fact_bindings",
+        "expected requirements_excerpts_and_fact_bindings",
     )
     provider = _required_literal(
         value["provider"],
@@ -571,32 +578,58 @@ def _source_bindings(
     return tuple(bindings)
 
 
-def _fact_definition(value: Any, field: str) -> FactDefinition:
+def _fact_definition(
+    value: Any,
+    field: str,
+    bound_source_ids: set[str],
+) -> FactDefinition:
     if not isinstance(value, dict):
         raise ValueError(f"{field}: expected an object")
-    keys = {"fact_id", "label", "question", "allowed_values"}
+    keys = {
+        "fact_id",
+        "label",
+        "question",
+        "allowed_values",
+        "source_id",
+        "source_field",
+    }
     _exact_keys(value, keys, keys, field)
     allowed = value["allowed_values"]
     if not isinstance(allowed, list) or tuple(allowed) != TRI_VALUES:
         raise ValueError(f"{field}.allowed_values: expected yes, no, unknown")
+    source_id = _optional_text(value["source_id"], f"{field}.source_id")
+    source_field = _optional_text(value["source_field"], f"{field}.source_field")
+    if (source_id is None) != (source_field is None):
+        raise ValueError(f"{field}: source_id and source_field must appear together")
+    if source_id is not None:
+        if not _IDENTIFIER.fullmatch(source_id):
+            raise ValueError(f"{field}.source_id: invalid stable identifier")
+        if source_id not in bound_source_ids:
+            raise ValueError(f"{field}.source_id: source is not bound to the workflow")
+        if source_field is None or not _SOURCE_FIELD.fullmatch(source_field):
+            raise ValueError(f"{field}.source_field: invalid source field")
     return FactDefinition(
         fact_id=_identifier(value["fact_id"], f"{field}.fact_id"),
         label=_required_text(value["label"], f"{field}.label"),
         question=_required_text(value["question"], f"{field}.question"),
         allowed_values=tuple(allowed),
+        source_id=source_id,
+        source_field=source_field,
     )
 
 
 def _fact_definitions(
     value: Any,
+    bindings: tuple[SourceBinding, ...],
 ) -> tuple[tuple[FactDefinition, ...], dict[str, FactDefinition]]:
     if not isinstance(value, list) or not value:
         raise ValueError("workflow.facts: expected a non-empty list")
     facts: list[FactDefinition] = []
     by_id: dict[str, FactDefinition] = {}
+    bound_source_ids = {binding.source_id for binding in bindings}
     for index, raw_fact in enumerate(value):
         field = f"workflow.facts[{index}]"
-        fact = _fact_definition(raw_fact, field)
+        fact = _fact_definition(raw_fact, field, bound_source_ids)
         if fact.fact_id in by_id:
             raise ValueError(f"{field}.fact_id: duplicate fact")
         facts.append(fact)
@@ -712,7 +745,7 @@ def load_readiness_workflow(
         load_sources(sources_path, today=as_of),
         as_of,
     )
-    facts, facts_by_id = _fact_definitions(raw["facts"])
+    facts, facts_by_id = _fact_definitions(raw["facts"], bindings)
     return ReadinessWorkflow(
         workflow_id=_identifier(raw["workflow_id"], "workflow.workflow_id"),
         jurisdiction=_identifier(raw["jurisdiction"], "workflow.jurisdiction"),
@@ -752,14 +785,66 @@ def _packet_record(path: Path) -> dict[str, Any]:
     return raw
 
 
+def _packet_fact_evidence(
+    value: dict[str, Any],
+    field: str,
+    definition: FactDefinition,
+    bindings: dict[str, SourceBinding],
+    provenance: str,
+    fact_value: str,
+) -> tuple[str | None, str | None, str | None]:
+    source_id = _optional_text(value["source_id"], f"{field}.source_id")
+    source_field = _optional_text(value["source_field"], f"{field}.source_field")
+    checked_value = value["source_checked_on"]
+    source_checked_on = (
+        None
+        if checked_value is None
+        else _required_text(checked_value, f"{field}.source_checked_on")
+    )
+    evidence = (source_id, source_field, source_checked_on)
+    if definition.source_id is None:
+        if any(item is not None for item in evidence):
+            raise ValueError(
+                f"{field}: applicant assertion cannot claim source evidence"
+            )
+        if provenance == "synthetic_public_record_fixture":
+            raise ValueError(f"{field}.provenance: workflow fact has no source binding")
+    else:
+        if provenance != "synthetic_public_record_fixture":
+            raise ValueError(
+                f"{field}.provenance: source-bound fixture fact requires "
+                "synthetic_public_record_fixture"
+            )
+        binding = bindings[definition.source_id]
+        if source_id != definition.source_id:
+            raise ValueError(f"{field}.source_id: does not match workflow fact binding")
+        if source_field != definition.source_field:
+            raise ValueError(
+                f"{field}.source_field: does not match workflow fact binding"
+            )
+        if source_checked_on != binding.source_checked_on:
+            raise ValueError(f"{field}.source_checked_on: does not match bound source")
+        if fact_value == "unknown":
+            raise ValueError(f"{field}.value: source fixture must be concrete")
+    return source_id, source_field, source_checked_on
+
+
 def _packet_fact(
     value: Any,
     field: str,
     definitions: dict[str, FactDefinition],
+    bindings: dict[str, SourceBinding],
 ) -> PacketFact:
     if not isinstance(value, dict):
         raise ValueError(f"{field}: expected an object")
-    keys = {"fact_id", "value", "provenance"}
+    keys = {
+        "fact_id",
+        "value",
+        "provenance",
+        "source_id",
+        "source_field",
+        "source_checked_on",
+    }
     _exact_keys(value, keys, keys, field)
     fact_id = _identifier(value["fact_id"], f"{field}.fact_id")
     definition = definitions.get(fact_id)
@@ -771,7 +856,22 @@ def _packet_fact(
     provenance = _required_text(value["provenance"], f"{field}.provenance")
     if provenance not in PROVENANCE_VALUES:
         raise ValueError(f"{field}.provenance: unsupported value")
-    return PacketFact(fact_id=fact_id, value=fact_value, provenance=provenance)
+    source_id, source_field, source_checked_on = _packet_fact_evidence(
+        value,
+        field,
+        definition,
+        bindings,
+        provenance,
+        fact_value,
+    )
+    return PacketFact(
+        fact_id=fact_id,
+        value=fact_value,
+        provenance=provenance,
+        source_id=source_id,
+        source_field=source_field,
+        source_checked_on=source_checked_on,
+    )
 
 
 def _packet_facts(
@@ -781,11 +881,12 @@ def _packet_facts(
     if not isinstance(value, list):
         raise ValueError("packet.facts: expected a list")
     definitions = workflow.fact_map()
+    bindings = {binding.source_id: binding for binding in workflow.source_bindings}
     facts: list[PacketFact] = []
     seen: set[str] = set()
     for index, raw_fact in enumerate(value):
         field = f"packet.facts[{index}]"
-        fact = _packet_fact(raw_fact, field, definitions)
+        fact = _packet_fact(raw_fact, field, definitions, bindings)
         if fact.fact_id in seen:
             raise ValueError(f"{field}.fact_id: duplicate fact")
         facts.append(fact)
@@ -850,6 +951,11 @@ def load_readiness_packet(
     synthetic = raw["synthetic"]
     if not isinstance(synthetic, bool):
         raise ValueError("packet.synthetic: expected boolean")
+    facts = _packet_facts(raw["facts"], workflow)
+    if not synthetic and any(
+        fact.provenance.startswith("synthetic_") for fact in facts
+    ):
+        raise ValueError("packet.facts: non-synthetic packet cannot use fixtures")
     return ReadinessPacket(
         packet_id=_identifier(raw["packet_id"], "packet.packet_id"),
         workflow_id=_identifier(raw["workflow_id"], "packet.workflow_id"),
@@ -862,7 +968,7 @@ def load_readiness_packet(
         ),
         jurisdiction=_identifier(raw["jurisdiction"], "packet.jurisdiction"),
         project_type=_identifier(raw["project_type"], "packet.project_type"),
-        facts=_packet_facts(raw["facts"], workflow),
+        facts=facts,
         inventory=_packet_inventory(raw["inventory"], workflow),
     )
 
@@ -1251,12 +1357,12 @@ def _evaluation_outcome(
         findings = _uniform_findings(
             workflow,
             "needs_staff_review",
-            "The linked checklist needs source review before this requirement "
+            "A linked workflow source needs review before this requirement "
             "can support a packet finding.",
         )
         question = (
-            "Ask the City to confirm the current checklist before using this "
-            "packet-presence result."
+            "Confirm the current checklist and parcel-source fields before "
+            "using this packet-presence result."
         )
         return "source_review_required", "source_review_required", findings, [question]
     applicability = _applicability_state(workflow, packet, fact_values)
@@ -1310,9 +1416,10 @@ def evaluate_readiness(
     as_of = resolve_today(today)
     boundary = (
         "This prototype checks reported item presence against one City "
-        "checklist. It does not inspect files, verify parcel facts, determine "
-        "legal sufficiency, certify completeness, or limit what staff may "
-        "request."
+        "checklist. Its parcel values are invented fixtures shaped like fields "
+        "in a linked public dataset; it does not query or verify a live parcel, "
+        "inspect files, determine legal sufficiency, certify completeness, or "
+        "limit what staff may request."
     )
 
     overall, source_status, findings, questions = _evaluation_outcome(

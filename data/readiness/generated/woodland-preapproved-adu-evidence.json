@@ -1,5 +1,5 @@
 {
-  "boundary": "This prototype checks reported item presence against one City checklist. It does not inspect files, verify parcel facts, determine legal sufficiency, certify completeness, or limit what staff may request.",
+  "boundary": "This prototype checks reported item presence against one City checklist. Its parcel values are invented fixtures shaped like fields in a linked public dataset; it does not query or verify a live parcel, inspect files, determine legal sufficiency, certify completeness, or limit what staff may request.",
   "counts": {
     "conflicting": 0,
     "missing": 3,
@@ -8,41 +8,78 @@
     "not_evaluated": 0,
     "present": 14
   },
-  "evaluated_on": "2026-07-29",
+  "evaluated_on": "2026-07-30",
   "facts": [
+    {
+      "fact_id": "parcel_city_matches_woodland",
+      "provenance": "synthetic_public_record_fixture",
+      "source_checked_on": "2026-07-30",
+      "source_field": "CITY",
+      "source_id": "yolo-public-parcels-layer",
+      "value": "yes"
+    },
+    {
+      "fact_id": "parcel_land_use_is_residential",
+      "provenance": "synthetic_public_record_fixture",
+      "source_checked_on": "2026-07-30",
+      "source_field": "LU_Descr",
+      "source_id": "yolo-public-parcels-layer",
+      "value": "yes"
+    },
     {
       "fact_id": "uses_city_preapproved_plan",
       "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
       "value": "yes"
     },
     {
       "fact_id": "connects_to_primary_home_electrical",
       "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
       "value": "yes"
     },
     {
       "fact_id": "solar_plans_applicable",
       "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
       "value": "unknown"
     },
     {
       "fact_id": "fire_sprinkler_plans_applicable",
       "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
       "value": "unknown"
     },
     {
       "fact_id": "uses_septic_or_well",
       "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
       "value": "no"
     },
     {
       "fact_id": "in_spring_lake",
       "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
       "value": "no"
     },
     {
       "fact_id": "in_flood_zone",
       "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
       "value": "unknown"
     }
   ],
@@ -427,7 +464,7 @@
   ],
   "manifest_type": "prototype_packet_presence",
   "overall_status": "known_gaps",
-  "packet_fingerprint": "sha256:fa6064ee406d1ee8f63e42f43927aae205de204cbd37dfcd04210fb445483a74",
+  "packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e",
   "packet_id": "woodland-preapproved-adu-hypothetical-001",
   "schema_version": 1,
   "source_bindings": [
@@ -436,17 +473,23 @@
       "source_checked_on": "2026-07-29",
       "source_id": "woodland-preapproved-adu-checklist",
       "url": "https://www.cityofwoodland.gov/DocumentCenter/View/12372"
+    },
+    {
+      "sha256": "5f99beaf208dc10d8794df0ce1cd3d66f7414ac062d81cbdc018403ef01badb5",
+      "source_checked_on": "2026-07-30",
+      "source_id": "yolo-public-parcels-layer",
+      "url": "https://gis.yolocounty.gov/ext/rest/services/Public/Parcels_Public/FeatureServer/0?f=pjson"
     }
   ],
   "source_review_due_on": "2027-01-25",
   "source_status": "current",
-  "source_status_as_of": "2026-07-29",
+  "source_status_as_of": "2026-07-30",
   "staff_questions": [
     "Do solar plans apply to this project?",
     "Do fire sprinkler plans apply to this project?",
     "Is the property in a flood zone?"
   ],
   "synthetic": true,
-  "workflow_fingerprint": "sha256:ff9e8d9a1c94ae19e74fa648913cb66e8052ea8a43ad68b78d5af37d6bca6569",
+  "workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
   "workflow_id": "woodland-preapproved-detached-adu"
 }

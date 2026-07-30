@@ -105,21 +105,24 @@ are separate portable records:
 
 - `data/readiness/workflows/woodland-preapproved-detached-adu.json` binds 25
   requirements and their conditions to one dated City checklist and content
-  digest;
+  digest, and binds two synthetic parcel-fact definitions to exact fields in
+  dated Yolo County public parcel-layer metadata;
 - `data/readiness/samples/woodland-preapproved-adu.json` provides one labeled
-  synthetic project, explicit fact provenance, and an inventory status for
-  every requirement; and
+  synthetic project, explicit applicant-assertion or
+  `synthetic_public_record_fixture` provenance, source metadata for the two
+  fabricated parcel values, and an inventory status for every requirement;
 - `data/readiness/remedies/woodland-preapproved-detached-adu.json` stores
   display-only AI-assisted action drafts with workflow and requirement
   fingerprints, a version, and explicit review metadata.
 
 The evaluator checks exact schema coverage, stable identifiers, parent-child
-ordering, workflow applicability, conditional requirements, source bindings,
-and source age. Runtime and CLI defaults use the current UTC date for source
-currency; historical replay requires an explicit date. The result records
-both the source-status date and the review deadline. It never treats an
-unknown condition as favorable. Findings use `present`, `missing`, `not
-applicable`, `conflicting`,
+ordering, workflow applicability, conditional requirements, fact-to-source
+field/date bindings, synthetic-record boundaries, source bindings, and source
+age. Runtime and CLI defaults use the current UTC date for source currency;
+historical replay requires an explicit date. The result records both the
+source-status date and the review deadline. It never treats an unknown
+condition as favorable. Findings use `present`, `missing`, `not applicable`,
+`conflicting`,
 `needs staff review`, or `not evaluated`. Even an all-present inventory uses
 `no_known_gaps_in_bounded_manifest`, never `complete`. A changed or stale
 source moves every bound item to staff review.
@@ -144,11 +147,13 @@ exact version, and reviewed content fingerprint. No such review is recorded.
 No model runs in the evaluator, CLI, build, or public browser, and no applicant
 data is stored or sent to a model.
 
-This slice compares reported item presence against one checklist. It does not
-open files, verify parcel facts, evaluate document contents or consistency,
-determine legal sufficiency, certify completeness, limit staff requests, or
-predict approval. The sample is made up and has not been validated by an
-applicant, planner, Woodland staff member, counsel, or another jurisdiction
+This slice compares reported item presence against one checklist. Two
+fabricated parcel values demonstrate how exact public dataset fields and
+source dates travel into an evidence manifest. It does not query or verify a
+live parcel, open files, evaluate document contents or consistency, determine
+legal sufficiency, certify completeness, limit staff requests, or predict
+approval. The sample is made up and has not been validated by an applicant,
+planner, Woodland staff member, counsel, or another jurisdiction
 representative.
 
 ### 3. Citation-grounded Q&A (planned)

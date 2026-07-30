@@ -93,15 +93,19 @@ Start at `/` for the product boundary, then use `/review.html`,
   inventory statuses with 25 requirements from one dated City of Woodland
   preapproved ADU checklist. The public browser validates and renders the
   generated result; it does not run a second evaluator.
+- Show the parcel-aware fixture panel. Two fabricated values are bound to the
+  real `CITY` and `LU_Descr` fields in the dated Yolo County public
+  parcel-layer metadata. No address, APN, or live parcel was queried; this
+  demonstrates evidence shape, not verified parcel facts.
 - Read the result: three known gaps, five items needing confirmation, 14
   reported present, and three not applicable from the made-up facts. Open one
   missing item, one staff question, and one reported-present item. Emphasize
   that reported presence is not file inspection or a finding that contents
   are correct.
-- Open the generated evidence manifest. Point to the source binding,
-  requirement and packet fingerprints, per-item source locators, inventory,
-  source-status date and review deadline, findings, staff questions, and
-  explicit boundary.
+- Open the generated evidence manifest. Point to both source bindings, the
+  per-fact provenance/source-field/date records, requirement and packet
+  fingerprints, per-item source locators, inventory, source-status date and
+  review deadline, findings, staff questions, and explicit boundary.
 - Show the action-copy status. AI proposed the checklist mapping and
   plain-language actions before runtime. The mapping and actions are
   fingerprint-bound, versioned, and `prototype_review_pending`; no named
@@ -111,11 +115,11 @@ Start at `/` for the product boundary, then use `/review.html`,
   retained.
 - Name the runtime and privacy boundary: no model runs in the Python evaluator,
   CLI, build, or public browser; the bundled sample stores no applicant data.
-  The evaluator does not open files, retrieve parcel records, determine legal
-  sufficiency, certify completeness, limit staff requests, or predict
+  The evaluator does not open files, query or verify a live parcel, determine
+  legal sufficiency, certify completeness, limit staff requests, or predict
   approval.
 - If demonstrating the CLI, run
-  `PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-29`.
+  `PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-30`.
   Its JSON is the same evidence-manifest shape committed for the sample.
 
 ### 3. The verification harness: Scenario C (5 min)
