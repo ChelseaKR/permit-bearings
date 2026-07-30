@@ -60,7 +60,9 @@ or `evidence.html` in a Playwright-managed Chromium build. Lighthouse 13.4.1
 reported accessibility 1.00, performance 1.00, SEO 1.00, and best-practices
 0.96 for each page against a gzip-enabled local server that mirrors the
 production static delivery behavior. CI repeats both checks on pull requests,
-default-branch pushes, and weekly.
+default-branch pushes, and weekly. A first performance sample below the 0.90
+budget triggers two confirmation samples and evaluates their median; the
+budget itself is unchanged.
 
 These automated results cover only rules the tools can evaluate. They do not
 establish WCAG conformance, substitute for the remaining keyboard and
