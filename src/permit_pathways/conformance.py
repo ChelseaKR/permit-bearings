@@ -29,7 +29,7 @@ CONTEXT_WINDOW = 300  # chars around a match searched for context patterns
 class Check:
     check_id: str
     title: str
-    severity: str            # "definite" | "review"
+    severity: str  # "definite" | "review"
     patterns: list[str]
     state_law: str
     explanation: str
@@ -46,17 +46,19 @@ class Finding:
 
     def summary(self) -> str:
         flag = "FINDING" if self.check.severity == "definite" else "review"
-        return (f"[{flag}] {self.check.title}\n"
-                f"  matched: …{self.excerpt}…\n"
-                f"  state law: {self.check.state_law}\n"
-                f"  precedent: {self.check.hcd_precedent}")
+        return (
+            f"[{flag}] {self.check.title}\n"
+            f"  matched: …{self.excerpt}…\n"
+            f"  state law: {self.check.state_law}\n"
+            f"  precedent: {self.check.hcd_precedent}"
+        )
 
 
 def load_checks(path: Path) -> list[Check]:
     return [Check(**record) for record in json.loads(path.read_text())]
 
 
-def _excluded(match: re.Match, text: str, check: Check) -> bool:
+def _excluded(match: re.Match[str], text: str, check: Check) -> bool:
     """A match is suppressed when an exclude pattern overlaps it — e.g. the
     SB 477 stale-citation screen must not fire on § 65852.21, which is
     current SB 9 law."""
@@ -67,7 +69,7 @@ def _excluded(match: re.Match, text: str, check: Check) -> bool:
     return False
 
 
-def _in_context(match: re.Match, text: str, check: Check) -> bool:
+def _in_context(match: re.Match[str], text: str, check: Check) -> bool:
     """When a check declares context patterns (e.g. the size-cap screen only
     applies near ADU language), at least one must appear within the window —
     otherwise a multi-topic code chapter produces noise from unrelated uses."""
@@ -76,8 +78,7 @@ def _in_context(match: re.Match, text: str, check: Check) -> bool:
     start = max(0, match.start() - CONTEXT_WINDOW)
     end = min(len(text), match.end() + CONTEXT_WINDOW)
     window = text[start:end]
-    return any(re.search(p, window, re.IGNORECASE)
-               for p in check.context_patterns)
+    return any(re.search(p, window, re.IGNORECASE) for p in check.context_patterns)
 
 
 def scan(text: str, checks: list[Check]) -> list[Finding]:
@@ -96,8 +97,9 @@ def scan(text: str, checks: list[Check]) -> list[Finding]:
                 start = max(0, match.start() - EXCERPT_WINDOW)
                 end = min(len(text), match.end() + EXCERPT_WINDOW)
                 excerpt = " ".join(text[start:end].split())
-                findings.append(Finding(check=check, excerpt=excerpt,
-                                        offset=match.start()))
+                findings.append(
+                    Finding(check=check, excerpt=excerpt, offset=match.start())
+                )
     return sorted(findings, key=lambda f: f.offset)
 
 
@@ -110,17 +112,25 @@ def main() -> int:
 
     parser = argparse.ArgumentParser(
         prog="permit_pathways.conformance",
-        description="Screen ordinance text against State ADU/SB 9 Law invariants.")
+        description="Screen ordinance text against State ADU/SB 9 Law invariants.",
+    )
     parser.add_argument("ordinance", type=Path, help="text file to scan")
-    parser.add_argument("--checks", type=Path,
-                        default=Path(__file__).resolve().parents[2]
-                        / "data" / "conformance" / "checks.json")
+    parser.add_argument(
+        "--checks",
+        type=Path,
+        default=Path(__file__).resolve().parents[2]
+        / "data"
+        / "conformance"
+        / "checks.json",
+    )
     args = parser.parse_args()
 
     findings = scan_file(args.ordinance, args.checks)
     if not findings:
-        print("No candidate provisions flagged. (Presence-based screen only — "
-              "this is not a certification of compliance.)")
+        print(
+            "No candidate provisions flagged. (Presence-based screen only — "
+            "this is not a certification of compliance.)"
+        )
         return 0
     print(f"{len(findings)} provision(s) flagged for review:\n")
     for f in findings:

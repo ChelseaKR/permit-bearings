@@ -10,9 +10,11 @@ DATA = Path(__file__).parent.parent / "data"
 
 @pytest.fixture()
 def registry():
-    return load_registry(DATA / "jurisdictions" / "registry.json",
-                         DATA / "rules",
-                         DATA / "jurisdictions" / "hcd-letters.json")
+    return load_registry(
+        DATA / "jurisdictions" / "registry.json",
+        DATA / "rules",
+        DATA / "jurisdictions" / "hcd-letters.json",
+    )
 
 
 def test_full_statewide_coverage(registry):
@@ -20,15 +22,15 @@ def test_full_statewide_coverage(registry):
     assert cov.cities == 483
     assert cov.counties == 58
     assert cov.total == 541
-    assert cov.local_layers == 2       # davis, woodland
+    assert cov.local_layers == 2  # davis, woodland
     # Full HAU letter dataset: 469 jurisdictions have letter history.
     assert cov.with_hcd_letters >= 400
 
 
 def test_full_hau_dataset_is_complete_and_matched(registry):
     import json
-    data = json.loads(
-        (DATA / "jurisdictions" / "hcd-letters.json").read_text())
+
+    data = json.loads((DATA / "jurisdictions" / "hcd-letters.json").read_text())
     assert data["letter_count"] == 1309
     assert data["_unmatched"] == {}
     # The Santa Clara County findings letter used to validate the
@@ -55,11 +57,13 @@ def test_statewide_rules_apply_to_any_registry_jurisdiction(registry):
     # Any jurisdiction in the registry — even with no local layer — gets
     # the full statewide baseline from the screening engine.
     rules = load_rules(DATA / "rules")
-    intake = {"project_type": "adu",
-              "primary_dwelling_status": "existing_single_family",
-              "adu_project_form": "new_detached",
-              "unpermitted_existing": "no",
-              "jurisdiction": "eureka"}
+    intake = {
+        "project_type": "adu",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no",
+        "jurisdiction": "eureka",
+    }
     results = screen(intake, rules)
     assert {result.rule.rule_id for result in results} == {
         "adu-ministerial-review",

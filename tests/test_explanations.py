@@ -5,8 +5,8 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
-
 from demo.app import render_result_card, result_page
+
 from permit_pathways.explanations import load_explanations, rule_fingerprint
 from permit_pathways.screening import load_rules, screen
 
@@ -43,9 +43,7 @@ def test_every_rule_has_one_versioned_explanation_with_source_date(rules, explan
         assert explanation.source_verified_on == (
             rules_by_id[rule_id].citation.verified_on
         )
-        assert explanation.rule_fingerprint == rule_fingerprint(
-            rules_by_id[rule_id]
-        )
+        assert explanation.rule_fingerprint == rule_fingerprint(rules_by_id[rule_id])
         assert explanation.review.status == "prototype_review_pending"
         assert explanation.review.reviewer is None
 
@@ -69,10 +67,7 @@ def test_three_pilot_explanations_preserve_important_boundaries(explanations):
         [
             ministerial.en.summary,
             ministerial.en.highlights.title,
-            *(
-                f"{item.label} {item.text}"
-                for item in ministerial.en.highlights.items
-            ),
+            *(f"{item.label} {item.text}" for item in ministerial.en.highlights.items),
         ]
     )
     assert "15 business days" in ministerial_text
@@ -83,26 +78,17 @@ def test_three_pilot_explanations_preserve_important_boundaries(explanations):
     )
     assert "ministerial" not in ministerial.en.summary.lower()
     assert "discretionary" not in ministerial.en.summary.lower()
-    assert all(
-        "?" in question for question in ministerial.en.confirm_with_staff
-    )
+    assert all("?" in question for question in ministerial.en.confirm_with_staff)
 
     protected = explanations["adu-protected-minimum"]
-    assert "do not have to build an 800-square-foot ADU" in (
-        protected.en.summary
-    )
-    assert "every other applicable local development rule" in (
-        protected.en.summary
-    )
+    assert "do not have to build an 800-square-foot ADU" in (protected.en.summary)
+    assert "every other applicable local development rule" in (protected.en.summary)
 
     height = explanations["adu-height-standards"]
     height_text = " ".join(
         [
             height.en.summary,
-            *(
-                f"{item.label} {item.text}"
-                for item in height.en.highlights.items
-            ),
+            *(f"{item.label} {item.text}" for item in height.en.highlights.items),
             *height.en.next_steps,
             *height.en.confirm_with_staff,
         ]
@@ -121,21 +107,14 @@ def test_three_pilot_explanations_preserve_important_boundaries(explanations):
     multifamily_text = " ".join(
         [
             multifamily.en.summary,
-            *(
-                f"{item.label} {item.text}"
-                for item in multifamily.en.highlights.items
-            ),
+            *(f"{item.label} {item.text}" for item in multifamily.en.highlights.items),
         ]
     )
     assert "At least one conversion ADU" in multifamily_text
     assert "blanket 16-foot cap" in multifamily_text
 
-    proposed_multifamily = explanations[
-        "adu-multifamily-proposed-66323"
-    ]
-    assert "no more than two detached ADUs" in (
-        proposed_multifamily.en.summary
-    )
+    proposed_multifamily = explanations["adu-multifamily-proposed-66323"]
+    assert "no more than two detached ADUs" in (proposed_multifamily.en.summary)
     assert "conversion allowance does not apply yet" in (
         proposed_multifamily.en.summary
     )
@@ -144,10 +123,7 @@ def test_three_pilot_explanations_preserve_important_boundaries(explanations):
     lot_split_text = " ".join(
         [
             lot_split.en.summary,
-            *(
-                f"{item.label} {item.text}"
-                for item in lot_split.en.highlights.items
-            ),
+            *(f"{item.label} {item.text}" for item in lot_split.en.highlights.items),
             *lot_split.en.next_steps,
             *lot_split.en.confirm_with_staff,
         ]
@@ -202,13 +178,9 @@ def test_high_priority_plain_language_records_avoid_policy_memo_phrasing(
     for rule_id in high_priority:
         explanation = explanations[rule_id]
         assert not any(
-            phrase in explanation.en.summary.lower()
-            for phrase in policy_phrases
+            phrase in explanation.en.summary.lower() for phrase in policy_phrases
         )
-        assert all(
-            "?" in question
-            for question in explanation.en.confirm_with_staff
-        )
+        assert all("?" in question for question in explanation.en.confirm_with_staff)
 
 
 def test_every_staff_prompt_is_a_direct_question_in_each_language(explanations):
@@ -219,8 +191,7 @@ def test_every_staff_prompt_is_a_direct_question_in_each_language(explanations):
         ), rule_id
         assert explanation.es is not None
         assert all(
-            question.lstrip().startswith("¿")
-            and question.rstrip().endswith("?")
+            question.lstrip().startswith("¿") and question.rstrip().endswith("?")
             for question in explanation.es.confirm_with_staff
         ), rule_id
 
@@ -332,12 +303,8 @@ def test_same_day_citation_drift_is_rejected(rules):
         ("pathway", "Changed pathway title"),
     ],
 )
-def test_non_citation_rule_drift_is_rejected(
-    changed_field, new_value, rules
-):
-    target = next(
-        rule for rule in rules if rule.rule_id == "adu-ministerial-review"
-    )
+def test_non_citation_rule_drift_is_rejected(changed_field, new_value, rules):
+    target = next(rule for rule in rules if rule.rule_id == "adu-ministerial-review")
     changed_rules = [
         replace(rule, **{changed_field: new_value})
         if rule.rule_id == target.rule_id
@@ -374,9 +341,7 @@ def test_review_claims_require_reviewer_date_and_method(tmp_path, rules):
         load_explanations(_write_payload(tmp_path, wrong_version), rules)
 
 
-def test_tolerant_display_load_is_per_record_and_falls_back_to_english(
-    tmp_path, rules
-):
+def test_tolerant_display_load_is_per_record_and_falls_back_to_english(tmp_path, rules):
     payload = _payload()
     missing_spanish_id = payload["entries"][0]["source_rule_id"]
     payload["entries"][0].pop("es")
@@ -396,9 +361,7 @@ def test_tolerant_display_load_is_per_record_and_falls_back_to_english(
     assert len(display) == len(rules) - 1
 
 
-def test_malformed_highlights_are_rejected_or_dropped_with_the_record(
-    tmp_path, rules
-):
+def test_malformed_highlights_are_rejected_or_dropped_with_the_record(tmp_path, rules):
     payload = _payload()
     rule_id = payload["entries"][0]["source_rule_id"]
     payload["entries"][0]["en"]["highlights"]["items"][0]["text"] = ""
@@ -418,9 +381,7 @@ def test_tolerant_display_load_degrades_missing_or_malformed_data_to_empty(
     with pytest.raises(ValueError, match="could not be loaded"):
         load_explanations(malformed, rules)
     assert load_explanations(malformed, rules, strict=False) == {}
-    assert load_explanations(
-        tmp_path / "missing.json", rules, strict=False
-    ) == {}
+    assert load_explanations(tmp_path / "missing.json", rules, strict=False) == {}
 
 
 def test_loading_explanations_cannot_change_deterministic_matches(rules):
@@ -470,9 +431,7 @@ def test_python_demo_labels_spanish_draft_and_has_evidence_fallback(
         "jurisdiction": "example-city",
     }
     result = screen(intake, rules)[0]
-    spanish = render_result_card(
-        result, explanations[result.rule.rule_id], "es"
-    )
+    spanish = render_result_card(result, explanations[result.rule.rule_id], "es")
     assert "Borrador en español · creado con IA" in spanish
     assert "Borrador de explicación · creado con IA" in spanish
     assert '<p lang="es">' in spanish
@@ -482,9 +441,7 @@ def test_python_demo_labels_spanish_draft_and_has_evidence_fallback(
     assert "This explanation is not available" in fallback
     assert result.rule.citation.source in fallback
 
-    english_fallback = replace(
-        explanations[result.rule.rule_id], es=None
-    )
+    english_fallback = replace(explanations[result.rule.rule_id], es=None)
     spanish_fallback = render_result_card(result, english_fallback, "es")
     assert "Se muestra la explicación en inglés" in spanish_fallback
     assert "Borrador de explicación · creado con IA" in spanish_fallback
@@ -516,20 +473,18 @@ def test_python_demo_withholds_actions_for_unverified_and_stale_rules(
     davis = next(
         result
         for result in screen(
-                {
-                    "project_type": "adu",
-                    "primary_dwelling_status": "existing_single_family",
-                    "adu_project_form": "new_detached",
-                    "unpermitted_existing": "no",
-                    "jurisdiction": "davis",
+            {
+                "project_type": "adu",
+                "primary_dwelling_status": "existing_single_family",
+                "adu_project_form": "new_detached",
+                "unpermitted_existing": "no",
+                "jurisdiction": "davis",
             },
             rules,
         )
         if result.rule.rule_id == "davis-local-adu-process"
     )
-    unverified = render_result_card(
-        davis, explanations[davis.rule.rule_id], "en"
-    )
+    unverified = render_result_card(davis, explanations[davis.rule.rule_id], "en")
     assert "We are not showing next steps" in unverified
     assert 'class="plain-layer"' not in unverified
     assert "<b>Source:</b>" in unverified
@@ -538,12 +493,12 @@ def test_python_demo_withholds_actions_for_unverified_and_stale_rules(
     assert davis.rule.notes not in unverified
 
     current = screen(
-            {
-                "project_type": "adu",
-                "primary_dwelling_status": "existing_single_family",
-                "adu_project_form": "new_detached",
-                "unpermitted_existing": "no",
-                "jurisdiction": "example-city",
+        {
+            "project_type": "adu",
+            "primary_dwelling_status": "existing_single_family",
+            "adu_project_form": "new_detached",
+            "unpermitted_existing": "no",
+            "jurisdiction": "example-city",
         },
         rules,
     )[0]
@@ -564,12 +519,12 @@ def test_python_demo_withholds_actions_for_unverified_and_stale_rules(
 
 def test_python_demo_escapes_explanation_copy(rules, explanations):
     result = screen(
-            {
-                "project_type": "adu",
-                "primary_dwelling_status": "existing_single_family",
-                "adu_project_form": "new_detached",
-                "unpermitted_existing": "no",
-                "jurisdiction": "example-city",
+        {
+            "project_type": "adu",
+            "primary_dwelling_status": "existing_single_family",
+            "adu_project_form": "new_detached",
+            "unpermitted_existing": "no",
+            "jurisdiction": "example-city",
         },
         rules,
     )[0]
