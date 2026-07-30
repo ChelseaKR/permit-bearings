@@ -18,3 +18,5 @@ published a versioned release.
   accessibility, performance, best-practices, and SEO budgets.
 - Enforced Ruff's complexity ceiling for new code and registered a dated,
   expiring waiver for 12 existing fail-closed loaders and evaluators.
+- Added a pinned, read-only private standards consumer gate and a reviewable
+  protected-main ruleset profile.
