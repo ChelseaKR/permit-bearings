@@ -7,6 +7,11 @@ published a versioned release.
 
 ### Changed
 
+- Added a source-shaped Woodland parcel-evidence fixture: two fabricated
+  values bind to exact fields in dated Yolo County public parcel-layer
+  metadata, flow into the evidence manifest and packet UI, and fail closed
+  when the checklist or parcel-schema source changes or ages out. No live
+  parcel is queried or represented as verified.
 - Hardened GitHub Actions with least-privilege permissions, concurrency
   controls, immutable action pins, and full-history secret scanning.
 - Added a locked Python 3.12 development environment and matching local/CI

@@ -104,13 +104,13 @@ def test_showcase_submission_draft_preserves_portal_word_limits():
         (
             "### Source data and integrations",
             "### Known exceptions",
-            86,
+            95,
             100,
         ),
         (
             "### Known exceptions",
             "### Large jurisdiction experience",
-            88,
+            95,
             100,
         ),
     ]
@@ -351,7 +351,7 @@ def test_packet_sample_renders_only_the_generated_python_result():
     assert readiness["remedies"]["review"]["status"] == ("prototype_review_pending")
     assert readiness["ai_trace"]["runtime_model_call"] is False
     assert readiness["ai_trace"]["applicant_data_sent_to_model"] is False
-    assert readiness["ai_trace"]["mapping_version"] == "1.0.0"
+    assert readiness["ai_trace"]["mapping_version"] == "1.1.0"
     assert readiness["ai_trace"]["mapping_review_status"] == (
         "prototype_review_pending"
     )
@@ -361,6 +361,16 @@ def test_packet_sample_renders_only_the_generated_python_result():
     assert readiness["ai_trace"]["remedy_review_status"] == ("prototype_review_pending")
     assert readiness["ai_trace"]["remedy_reviewer"] is None
     assert readiness["source_review_due_on"] == "2027-01-25"
+    parcel_facts = [
+        fact
+        for fact in readiness["packet"]["facts"]
+        if fact["provenance"] == "synthetic_public_record_fixture"
+    ]
+    assert [fact["source_field"] for fact in parcel_facts] == [
+        "CITY",
+        "LU_Descr",
+    ]
+    assert {fact["source_id"] for fact in parcel_facts} == {"yolo-public-parcels-layer"}
 
     assert '<body data-page="readiness">' in page
     assert "This is a synthetic packet." in page
@@ -371,6 +381,8 @@ def test_packet_sample_renders_only_the_generated_python_result():
     assert "data.result.findings.filter" in application
     assert "function evaluateReadiness" not in application
     assert "function readinessSourceIsCurrent(data)" in application
+    assert "function readinessParcelEvidenceMarkup(data, current)" in application
+    assert "no address, APN, or live parcel was" in application
     assert "Action copy is" in application
     assert "withheld." in application
     assert "data.readiness" in application
@@ -386,12 +398,12 @@ def test_packet_build_explicitly_replays_canonical_evaluation_date(
 
     readiness, _ = build_readiness_payload()
 
-    assert readiness["packet"]["evaluated_on"] == "2026-07-29"
-    assert readiness["result"]["evaluated_on"] == "2026-07-29"
+    assert readiness["packet"]["evaluated_on"] == "2026-07-30"
+    assert readiness["result"]["evaluated_on"] == "2026-07-30"
     assert readiness["result"]["source_status"] == "current"
-    assert readiness["result"]["source_status_as_of"] == "2026-07-29"
+    assert readiness["result"]["source_status_as_of"] == "2026-07-30"
     assert readiness["result"]["source_review_due_on"] == "2027-01-25"
-    assert readiness["evidence_manifest"]["source_status_as_of"] == ("2026-07-29")
+    assert readiness["evidence_manifest"]["source_status_as_of"] == ("2026-07-30")
     assert readiness["evidence_manifest"]["source_review_due_on"] == ("2027-01-25")
 
 
@@ -483,12 +495,33 @@ check(
   canonicalHtml.includes("3 direct questions for staff are included"),
   "staff questions were omitted from the summary"
 );
+check(
+  canonicalHtml.includes("Which parcel fields shaped this sample")
+    && canonicalHtml.includes("<code>CITY</code>")
+    && canonicalHtml.includes("<code>LU_Descr</code>"),
+  "source-shaped parcel fixture evidence was omitted"
+);
 
 const invalidOverall = structuredClone(canonical);
 invalidOverall.result.overall_status = "complete";
 check(
   !validReadinessData(invalidOverall),
   "unknown overall readiness status accepted"
+);
+
+const mismatchedParcelField = structuredClone(canonical);
+mismatchedParcelField.packet.facts[0].source_field = "LU_Descr";
+check(
+  !validReadinessData(mismatchedParcelField),
+  "mismatched parcel source field accepted"
+);
+
+const assertionWithSourceClaim = structuredClone(canonical);
+assertionWithSourceClaim.packet.facts[2].source_id =
+  "yolo-public-parcels-layer";
+check(
+  !validReadinessData(assertionWithSourceClaim),
+  "applicant assertion with source claim accepted"
 );
 
 const conflict = structuredClone(canonical);
