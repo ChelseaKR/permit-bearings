@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this prototype, cite the repository."
+title: "Permit Bearings"
+authors:
+  - family-names: "Kelly-Reif"
+    given-names: "Chelsea"
+license: MIT
+repository-code: "https://github.com/ChelseaKR/permit-pathways"
+type: software
