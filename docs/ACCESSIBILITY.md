@@ -1,4 +1,4 @@
-# Accessibility audit: static and automated browser pass, updated 2026-07-29
+# Accessibility audit: static and automated browser pass, updated 2026-07-30
 
 Scope: the five-page public static site (`index.html`, `check.html`,
 `prepare.html`, `review.html`, and `evidence.html`) and the separate applicant
@@ -15,7 +15,9 @@ limited local browser inspection of the packet sample. Automation found and
 remediated invalid ARIA labeling on packet status text and the ordinance
 results region. It is not a completed manual or assistive-technology review.
 Items under "Remaining" require a person using the named browsers, input
-methods, or assistive technology.
+methods, or assistive technology. The executable task matrix and signed-result
+requirements are defined in `docs/MANUAL-VALIDATION.md`; every row is
+currently `not_run`.
 
 ## Static and code checks recorded
 
@@ -168,6 +170,8 @@ staff-facing trust, ordinance, and clock tools remain English.
 
 ## Remaining (human/AT pass not done)
 
+- Execute and sign every row in `docs/MANUAL-VALIDATION.md`. Preparing that
+  record did not complete any human or assistive-technology test.
 - Screen-reader walkthrough (VoiceOver/NVDA): reading order, datalist
   combobox behavior, packet-result reading order, and live-region verbosity.
 - 200% zoom and 320px reflow visual check on real devices. The packet page

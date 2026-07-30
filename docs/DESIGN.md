@@ -230,7 +230,7 @@ The current build-time and browser boundaries are documented in
 | Low-capacity affordability | Dependency-light Python core and static-friendly browser demo. | Pilot deployment/TCO evidence and an integration contract beside existing systems. |
 | Keep pace with legislative change | Selected-source hash watcher, stable source IDs with explicit rule dependencies, date aging, and staleness rehearsal. | Source discovery, persisted source state and review queue, broader local-source coverage, and human approval history. |
 | Decision support, not legal agent | Candidate labels, source links, disclaimers, visible unverified state, and abstention. | Ensure stale and unverified rules cannot appear as actionable green results. |
-| SAM 5300 / SIMM / accessibility | Static WCAG 2.2 AAA-target audit; no-storage demo reduces the current data boundary. | Human/AT audit, threat model, control mapping, incident path, and deployment security review. |
+| SAM 5300 / SIMM / accessibility | Static WCAG 2.2 AAA-target audit and a versioned `not_run` human-validation matrix; no-storage demo reduces the current data boundary. | Execute the human/AT matrix, then complete the threat model, control mapping, incident path, and deployment security review. |
 
 ## Demo plan (for the 40-minute showcase slot, if selected)
 
