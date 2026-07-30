@@ -38,7 +38,10 @@ and interaction alignment with California Web Standards is recorded in
 ## Run it
 
 ```sh
-python3 -m pytest                                   # test suite
+make verify                                        # locked Python quality/security/data gates
+npm ci && npx playwright install chromium          # one-time browser test setup
+npm run test:a11y                                  # axe across all five public pages
+npm run test:perf                                  # Lighthouse category budgets
 PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip --lat 38.5449 --lon -121.7442
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
@@ -51,6 +54,26 @@ PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
 # /check.html, /prepare.html, /review.html, and /evidence.html.
 python3 scripts/build_demo_bundle.py                # after canonical JSON changes
 ```
+
+## Standards Conformance
+
+The repository follows the portfolio controls in `~/portfolio/STANDARDS`.
+This table reports implemented automation separately from review work that
+still needs a person.
+
+| Standard | Current declaration and evidence |
+|---|---|
+| Responsible-Tech Framework | Applies. Product, privacy, source, AI-use, accessibility, and unresolved-review boundaries are recorded in `docs/PRODUCT-CONTEXT.md`, `docs/DESIGN.md`, `PROVENANCE.md`, and `docs/ACCESSIBILITY.md`. |
+| Code Quality | Python 3.12 and development dependencies are locked; Ruff, strict mypy, 85% branch coverage, generated-data parity, and 29 golden cases run through `make verify`. Ruff blocks new functions above complexity 10. Twelve existing fail-closed loaders/evaluators have the named, expiring `WVR-007` waiver through 2026-09-30; they are not represented as remediated. |
+| Security & Supply-Chain | Event-armed CodeQL, Bandit, pip-audit, gitleaks, zizmor, Dependabot, and Scorecard; all workflow actions are pinned to full commit SHAs and use scoped token permissions. |
+| CI/CD | Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. |
+| Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. Storage, telemetry, uploads, or external model calls would trigger a new operational design review. |
+| Accessibility | Axe and Lighthouse run on all five public pages. Manual keyboard, screen-reader, zoom, forced-colors, and Spanish semantic review remain open in `docs/ACCESSIBILITY.md`. |
+| Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
+| AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
+| Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
+| Quality & Metrics | Automated evidence includes 199 tests, 85.03% branch coverage, 29/29 golden cases, browser category budgets, dependency audits, and source-currency output. One rule lacks dated source evidence, so the verification report remains `trustworthy: NO`. |
+| Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
 

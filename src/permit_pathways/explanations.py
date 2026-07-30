@@ -244,7 +244,7 @@ def _highlights(value: Any, field: str) -> HighlightGroup | None:
     return HighlightGroup(title=title, items=tuple(parsed))
 
 
-def _review(
+def _review(  # noqa: C901 — WVR-007
     record: Any,
     rule_id: str,
     version: str,
@@ -315,7 +315,7 @@ def _review(
     )
 
 
-def _localized(
+def _localized(  # noqa: C901 — WVR-007
     record: Any,
     rule_id: str,
     language: str,
@@ -424,7 +424,7 @@ def _localized(
     )
 
 
-def load_explanations(
+def load_explanations(  # noqa: C901 — WVR-007
     path: Path,
     rules: list[Rule],
     *,
