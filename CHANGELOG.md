@@ -12,3 +12,5 @@ published a versioned release.
 - Added a locked Python 3.12 development environment and matching local/CI
   lint, strict type, branch-coverage, dependency, SAST, and data-integrity
   verification.
+- Added event-armed CodeQL, workflow-security, Scorecard, and dependency-update
+  automation with least-privilege tokens and immutable action pins.
