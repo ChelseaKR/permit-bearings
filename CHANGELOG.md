@@ -24,3 +24,5 @@ published a versioned release.
   and publication checks in single-repository network mode.
 - Stabilized the unchanged Lighthouse 0.90 performance budget by confirming a
   low first sample twice and evaluating the three-sample median.
+- Updated pinned checkout, Python, uv, and CodeQL actions; CodeQL initialization
+  and analysis now use the same action version.
