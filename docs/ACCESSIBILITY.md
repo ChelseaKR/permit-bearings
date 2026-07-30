@@ -1,4 +1,4 @@
-# Accessibility audit: static pass, updated 2026-07-29
+# Accessibility audit: static and automated browser pass, updated 2026-07-29
 
 Scope: the five-page public static site (`index.html`, `check.html`,
 `prepare.html`, `review.html`, and `evidence.html`) and the separate applicant
@@ -9,11 +9,13 @@ height, state color/status tokens, spacing steps, and the 1,176px shell /
 876px reading widths. No State logo, official-site banner, branding, or
 affiliation is claimed. See `docs/DESIGN-SYSTEM.md`.
 
-This audit combines static and code-level checks, computed contrast, and one
-limited local browser inspection of the packet sample. It is not a browser
-conformance test or a completed manual or assistive-technology review. Items
-under "Remaining" require a person using the named browsers, input methods, or
-assistive technology.
+This audit combines static and code-level checks, computed contrast, automated
+axe scans of all five public pages, Lighthouse category budgets, and one
+limited local browser inspection of the packet sample. Automation found and
+remediated invalid ARIA labeling on packet status text and the ordinance
+results region. It is not a completed manual or assistive-technology review.
+Items under "Remaining" require a person using the named browsers, input
+methods, or assistive technology.
 
 ## Static and code checks recorded
 
@@ -49,6 +51,20 @@ visible trust labels rendered. Computed token contrast checks and spot checks
 of link and disclosure target heights were also recorded. This inspection did
 not establish keyboard operation, screen reader output, real-device zoom
 behavior, or conformance for the other four static pages.
+
+## Automated browser checks recorded
+
+On 2026-07-29, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
+AAA violations on `index.html`, `check.html`, `prepare.html`, `review.html`,
+or `evidence.html` in a Playwright-managed Chromium build. Lighthouse 13.4.1
+reported accessibility 1.00, performance 1.00, SEO 1.00, and best-practices
+0.96 for each page against a gzip-enabled local server that mirrors the
+production static delivery behavior. CI repeats both checks on pull requests,
+default-branch pushes, and weekly.
+
+These automated results cover only rules the tools can evaluate. They do not
+establish WCAG conformance, substitute for the remaining keyboard and
+screen-reader work, or promote the Spanish machine drafts to reviewed copy.
 
 **Focus appearance (2.4.13, AAA-new).** Global `:focus-visible` uses a 3px
 `accent2-300` ring with a 2px offset and a 5px `primary-900` outer ring.

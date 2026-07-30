@@ -35,7 +35,7 @@ def test_python_trust_rehearsal_uses_human_readable_source_label():
 
 def test_static_pages_load_only_the_assets_they_need():
     landing = (ROOT / "index.html").read_text(encoding="utf-8")
-    bundle_tag = '<script src="data/demo-data.js"></script>'
+    bundle_tag = '<script src="data/demo-data.js" defer></script>'
     application_src = 'src="assets/demo.js'
 
     assert bundle_tag not in landing
@@ -503,7 +503,7 @@ const missingAction = conflict.remedies.entries.find(
 ).action;
 const conflictHtml = render(conflict);
 check(
-  conflictHtml.includes('aria-label="Reported conflict"')
+      conflictHtml.includes('<span>Reported conflict</span>')
     && conflictHtml.includes('id="conflictHeading">Reported conflicts'),
   "conflicting finding was not rendered distinctly"
 );

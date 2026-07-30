@@ -2059,8 +2059,8 @@ function readinessFindingRow(
       </div>`
     : "";
   return `<article class="packet-finding packet-finding-${tone}">
-    <div class="finding-state" aria-label="${esc(stateLabel)}">
-      <span aria-hidden="true">${esc(stateLabel)}</span>
+    <div class="finding-state">
+      <span>${esc(stateLabel)}</span>
     </div>
     <div class="finding-copy">
       <p class="finding-category">${esc(finding.category)}</p>
