@@ -1,0 +1,9 @@
+* @ChelseaKR
+/.github/workflows/ @ChelseaKR
+/SECURITY.md @ChelseaKR
+/data/rules/ @ChelseaKR
+/data/sources.json @ChelseaKR
+/data/explanations/ @ChelseaKR
+/data/readiness/ @ChelseaKR
+/src/permit_pathways/ @ChelseaKR
+/docs/adr/ @ChelseaKR
