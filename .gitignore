@@ -11,3 +11,6 @@ test-results/
 dist/
 *.egg-info/
 .venv/
+
+# Runtime-fetched private portfolio standards; never commit their contents.
+.standards/

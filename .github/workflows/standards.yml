@@ -1,0 +1,53 @@
+name: Standards
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: standards-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  standards:
+    name: standards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+
+      - name: Fetch pinned private standards
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ChelseaKR/portfolio-standards
+          ref: 8db506dc1c0b7f945e1860961ca1c2f59f163a0b
+          ssh-key: ${{ secrets.STANDARDS_DEPLOY_KEY }}
+          path: .standards
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Check standards freshness
+        run: python3 .standards/automation/check_staleness.py --standards-dir .standards
+
+      - name: Check standards version pins
+        run: python3 .standards/automation/check_versions.py --standards-dir .standards
+
+      - name: Check repository conformance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python3 .standards/automation/conformance_check.py
+          --repo .
+          --strict
+          --network
