@@ -10,10 +10,12 @@ matcher is deterministic. Separate English and Spanish explanations are
 AI-assisted, review-pending drafts.
 
 A separate bounded sample compares a made-up Woodland packet inventory with
-25 source-bound items from one City preapproved ADU checklist. It does not
-open files, verify parcel facts, reproduce a complete local checklist,
-determine final eligibility, certify submission completeness, or approve
-permits.
+25 source-bound items from one City preapproved ADU checklist. Two fabricated
+parcel values are bound to the `CITY` and `LU_Descr` fields exposed by Yolo
+County's public parcel-layer metadata; no address, APN, or live parcel is
+queried. The sample does not open files, verify parcel facts, reproduce a
+complete local checklist, determine final eligibility, certify submission
+completeness, or approve permits.
 
 **Live demo:** https://chelseakr.github.io/permit-pathways/
 
@@ -38,19 +40,42 @@ and interaction alignment with California Web Standards is recorded in
 ## Run it
 
 ```sh
-python3 -m pytest                                   # test suite
+make verify                                        # locked Python quality/security/data gates
+npm ci && npx playwright install chromium          # one-time browser test setup
+npm run test:a11y                                  # axe across all five public pages
+npm run test:perf                                  # Lighthouse category budgets
 PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip --lat 38.5449 --lon -121.7442
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
 PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff
 PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
-PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-29
+PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-30
 python3 -m http.server 8765                         # full static showcase
 PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
 # The Python server exposes the landing at /index.html and tools at
 # /check.html, /prepare.html, /review.html, and /evidence.html.
 python3 scripts/build_demo_bundle.py                # after canonical JSON changes
 ```
+
+## Standards Conformance
+
+The repository follows the portfolio controls in `~/portfolio/STANDARDS`.
+This table reports implemented automation separately from review work that
+still needs a person.
+
+| Standard | Current declaration and evidence |
+|---|---|
+| Responsible-Tech Framework | Applies. Product, privacy, source, AI-use, accessibility, and unresolved-review boundaries are recorded in `docs/PRODUCT-CONTEXT.md`, `docs/DESIGN.md`, `PROVENANCE.md`, and `docs/ACCESSIBILITY.md`. |
+| Code Quality | Python 3.12 and development dependencies are locked; Ruff, strict mypy, 85% branch coverage, generated-data parity, and 29 golden cases run through `make verify`. Ruff enforces complexity 10 across the Python codebase; the former `WVR-007` loader/evaluator waiver has been retired. |
+| Security & Supply-Chain | Event-armed CodeQL, Bandit, pip-audit, gitleaks, zizmor, Dependabot, and Scorecard; all workflow actions are pinned to full commit SHAs and use scoped token permissions. |
+| CI/CD | Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. |
+| Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. Storage, telemetry, uploads, or external model calls would trigger a new operational design review. |
+| Accessibility | Axe and Lighthouse run on all five public pages. Browser tests also check 320px and 390px reflow, compact mobile navigation, a populated applicant result, labeled mobile evidence records, and document-level overflow. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps physical-device, virtual-keyboard, keyboard, screen-reader, zoom, forced-colors, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
+| Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
+| AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
+| Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
+| Quality & Metrics | Automated evidence includes 203 tests, 85.98% branch coverage, 29/29 golden cases, and six mobile Lighthouse states at 1.00 for accessibility, best practices, performance, and SEO, plus dependency audits and source-currency output. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
+| Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
 
@@ -91,12 +116,14 @@ implemented. The temporary result packet does not change those boundaries.
    25 requirements from one dated City of Woodland checklist for projects
    using a City preapproved detached ADU plan.
 2. `data/readiness/samples/woodland-preapproved-adu.json` supplies one made-up
-   project and an explicit inventory status for every requirement. The
-   evaluator does not open or inspect a plan, form, or other file.
+   project and an explicit inventory status for every requirement. Two
+   concrete parcel-fact fixtures are tied to exact fields in the recorded Yolo
+   County parcel-layer metadata; the values themselves are fabricated and the
+   evaluator does not query a live parcel or inspect a plan, form, or file.
 3. `src/permit_pathways/readiness.py` deterministically applies the workflow
    conditions. Missing items remain gaps, unknown facts become staff
-   questions, and a changed or stale bound source prevents a favorable packet
-   summary.
+   questions, and a changed or stale checklist or parcel-schema source
+   prevents a favorable packet summary.
 4. `python3 -m permit_pathways.readiness_cli` prints the machine-readable
    evidence manifest. By default, source age is checked against the current
    UTC date; historical replay requires an explicit `--as-of` date. The build
@@ -108,16 +135,17 @@ implemented. The temporary result packet does not change those boundaries.
 6. The checklist mapping and plain-language action copy are AI-assisted
    drafts. They are versioned, fingerprint-bound, and marked
    `prototype_review_pending`; no named human, planner, or Woodland reviewer
-   has approved them. Mapping metadata binds the exact input-source digest and
-   records that provider, model, and a reproducible run record are unknown or
-   were not retained.
+   has approved them. Mapping metadata binds the exact checklist and
+   parcel-schema source digests and records that provider, model, and a
+   reproducible run record are unknown or were not retained.
 7. No model runs in the CLI, build evaluator, or public browser. The public
    sample is bundled synthetic data, and the page stores no applicant record.
 
-The sample reports item presence against one checklist. It does not inspect
-file contents, verify parcel facts, determine legal sufficiency, certify
-completeness, limit what staff may request, or predict approval. It has not
-been validated with applicants, planners, or a jurisdiction.
+The sample reports item presence against one checklist and demonstrates
+source-shaped parcel evidence with fabricated values. It does not query or
+verify a live parcel, inspect file contents, determine legal sufficiency,
+certify completeness, limit what staff may request, or predict approval. It
+has not been validated with applicants, planners, or a jurisdiction.
 
 ## Trust and source currency
 
@@ -159,7 +187,7 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 
 | Scenario | Coverage |
 |---|---|
-| Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, a temporary grouped result packet, citations, uncertainty routing, and one generated synthetic Woodland packet-presence sample are implemented. The sample uses 25 source-bound checklist requirements and review-pending AI-assisted action drafts. File inspection, parcel-specific packet completeness, reviewed remedies, and reviewed translation are planned. |
+| Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, a temporary grouped result packet, citations, uncertainty routing, and one generated synthetic Woodland packet-presence sample are implemented. The sample uses 25 source-bound checklist requirements, two fabricated values tied to official parcel-layer fields, and review-pending AI-assisted action drafts. Live parcel retrieval, file inspection, parcel-specific packet completeness, reviewed remedies, and reviewed translation are planned. |
 | Scenario 2 (B): supporting internal review | Not targeted in v1. |
 | Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, dependency invalidation, and an HCD-letter dataset are implemented in bounded form. Search, change discovery, comparable-jurisdiction research, and a durable review queue are planned. |
 
@@ -204,12 +232,13 @@ current rule records have English and Spanish drafts; none is represented as
 human-reviewed or jurisdiction-approved.
 
 The separate Woodland readiness workflow is also machine-assisted. Its 25
-checklist mappings and action drafts have automated schema, coverage, source,
-and fingerprint checks, but remain review-pending. Mapping metadata explicitly
-records the absence of retained provider, model, and run details. The
-generated synthetic packet result has not been reviewed or validated by an
-applicant, planner, Woodland staff member, counsel, or another jurisdiction
-representative.
+checklist mappings, two parcel-field bindings, and action drafts have
+automated schema, coverage, source, and fingerprint checks, but remain
+review-pending. The parcel values are fabricated and do not represent a query
+or verified parcel. Mapping metadata explicitly records the absence of
+retained provider, model, and run details. The generated synthetic packet
+result has not been reviewed or validated by an applicant, planner, Woodland
+staff member, counsel, or another jurisdiction representative.
 
 A period detail that demonstrates the currency problem: state ADU law was
 renumbered from
@@ -257,8 +286,12 @@ SB 9 urban lot splits, and the SB 9 × ADU unit-count interaction, plus
 bounded local metadata records for the Cities of Davis and Woodland. A weekly
 GitHub Action re-fetches selected statewide sources and is intended to open an
 issue if any changed or became unreachable. Two selected Woodland workflow
-sources are now recorded and watched; comprehensive local-source and newly
-enacted-law discovery are not implemented.
+sources, the January 2026 Davis ADU handout, and HCD's October 2025 Davis
+technical-assistance letter are recorded and watched. The Davis record reports
+only the City's published processing categories; it preserves HCD's unresolved
+ordinance-status warning and does not determine which category lawfully
+applies. Comprehensive local-source and newly enacted-law discovery are not
+implemented.
 
 The full static showcase has five task-focused pages: a lightweight landing
 page; an English/Spanish applicant guide with review clocks; the generated

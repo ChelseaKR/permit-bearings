@@ -1,26 +1,24 @@
 [
   {
     "rule_id": "davis-local-adu-process",
-    "pathway": "City of Davis — local ADU permit process (Municipal Code § 40.26.450)",
+    "pathway": "City of Davis — published ADU processing categories (January 2026 handout)",
     "display_group": "local_process",
-    "route_class": "ministerial",
+    "route_class": "mixed",
     "jurisdiction_scope": "davis",
     "source_dependencies": [
-      "davis-code-40-26-450"
+      "davis-adu-handout-2026",
+      "hcd-davis-adu-ta-2025"
     ],
     "criteria": [
       {"field": "project_type", "op": "in", "value": ["adu", "jadu"]}
     ],
     "citation": {
-      "source": "Davis Municipal Code § 40.26.450 — Ministerial accessory dwelling units and junior accessory dwelling units",
-      "url": "https://ecode360.com/44652967",
-      "excerpt": null,
-      "verified_on": null
+      "source": "City of Davis, Accessory Dwelling Units Guidelines (updated January 2026)",
+      "url": "https://documents.cityofdavis.org/Media/Default/Documents/PDF/CDD/Planning/Forms/ADUs/Accessory%20Dwellings%20Units%20Handout_2026.pdf",
+      "excerpt": "These Guidelines summarize each level of review as follows: (1) State Exempt ADUs, (2) Ministerial ADUs, and (3) Non-Ministerial ADUs.",
+      "verified_on": "2026-07-30"
     },
-    "required_documents": [
-      "City of Davis ADU permit application (or building-permit-only where state law allows)",
-      "site plan and floor plan"
-    ],
-    "notes": "PENDING VERIFICATION: the code host (ecode360) and city site block automated retrieval, and no Wayback Machine snapshot of this section exists (checked 2026-07-27), so this rule has not been verified against source text and displays as unverified by design. Provenance of the open question: a search-engine result snippet of ecode360's copy of § 40.26.450 (observed 2026-07-27) showed the phrase 'Government Code Section 65852.2(e)(1)' — numbering relocated by SB 477 (2024) to §§ 66310-66342. That is a snippet observation, not a reviewed source; it is recorded here only as a reason for staff to check the current official text. No conclusion about the City of Davis's code is asserted."
+    "required_documents": [],
+    "notes": "The January 2026 City handout publishes three processing categories: State Exempt (building permit only), Ministerial, and Non-Ministerial. This record does not determine which category applies to an applicant. HCD's October 8, 2025 technical-assistance letter predates the handout and says the most recent Davis ADU ordinance on file with HCD was from 2019 and may be outdated, noncompliant, or null and void under Government Code § 66316. The handout is a current City-published process guide, not the operative law, an HCD compliance finding, or evidence that HCD accepted a later ordinance. Ask City staff which current category, forms, and standards apply and whether a post-letter ordinance supersedes either source."
   }
 ]

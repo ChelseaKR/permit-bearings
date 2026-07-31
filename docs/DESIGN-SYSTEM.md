@@ -41,7 +41,8 @@ The implementation applies the California Web Standards principles directly:
   records.
 - **Prioritize accessibility:** native controls, skip links, active-page
   semantics, 44–48px targets, a dual-color focus indicator, reduced-motion
-  handling, forced-colors support, and labeled scroll regions are built in.
+  handling, forced-colors support, a native mobile section menu, and labeled
+  responsive evidence records are built in.
 - **Be concise:** the landing page explains scope before detail and limits the
   main task index to three links.
 - **Design with data:** rule-source status and dependency effects come from the
@@ -76,6 +77,13 @@ hide the evidence identity or currency warning. Editing an ordinary project
 answer clears the old result instead of leaving it attached to changed facts.
 These presentation choices do not represent completeness, human review,
 counsel review, jurisdiction approval, or a final route decision.
+
+At phone widths, the service header exposes one compact native “Sections”
+disclosure instead of wrapping five navigation links across multiple rows.
+Evidence tables retain table semantics in the document and restyle their cells
+as labeled records for narrow screens. Primary task actions use the available
+width, while trust boundaries and source labels remain visible rather than
+being hidden to shorten the page.
 
 ## Conformance boundary
 

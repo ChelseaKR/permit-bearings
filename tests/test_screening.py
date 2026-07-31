@@ -236,11 +236,20 @@ def test_statewide_rules_have_canonical_metadata_and_dated_evidence(rules):
             assert rule.citation.excerpt, rule.rule_id
 
 
-def test_davis_record_is_flagged_without_dated_source_evidence(rules):
+def test_davis_record_is_bounded_to_published_categories_and_dated_evidence(rules):
     results = screen({**ADU_INTAKE, "jurisdiction": "davis"}, rules)
     by_id = {result.rule.rule_id: result for result in results}
     assert "davis-local-adu-process" in by_id
-    assert not by_id["davis-local-adu-process"].verified
+    davis = by_id["davis-local-adu-process"]
+    assert davis.verified
+    assert davis.rule.route_class == "mixed"
+    assert davis.rule.source_dependencies == [
+        "davis-adu-handout-2026",
+        "hcd-davis-adu-ta-2025",
+    ]
+    assert davis.rule.required_documents == []
+    assert "does not determine which category applies" in davis.rule.notes
+    assert "may be outdated, noncompliant, or null and void" in davis.rule.notes
 
 
 def test_nonmatching_intake_returns_nothing(rules):

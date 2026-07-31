@@ -65,11 +65,11 @@ Status meanings are defined in `AGENTS.md`.
 | ADU/JADU/SB 9 structured pathway screening | Prototype | Seventeen statewide rules in `data/rules/statewide.json`; deterministic matching in `screening.py`. SB 35 and AB 2011 are not encoded. |
 | Browser result packet | Implemented surface for prototype data | After submission, `check.html` renders a temporary answers-used cover sheet, a count summary and jump links for nonempty result groups, one explicitly configured candidate route open when it matches, and compact supporting records. Citations and source-status labels remain visible outside each disclosure. The submitted facts exist only in current page memory, and an ordinary answer edit clears the old result and disclosure state until resubmission. This is not a persisted applicant record, an exportable evidence manifest, a parcel verification, or a completeness assessment. |
 | Plain-language decision records | Prototype | `data/explanations/plain-language.json` contains a versioned English and Spanish draft for all 19 current statewide/local rule records. Results group routes, standards, and local information records and separate meaning, scannable deadline/threshold highlights where needed, suggested first steps, direct staff questions, and cited evidence. Copy is AI-assisted and review-pending; it has no legal, jurisdiction, comprehension, or semantic-parity review and cannot affect deterministic matching. Source-date, citation-fingerprint, or full-rule-fingerprint drift invalidates display copy; completed reviews must name the reviewed explanation version; and stale/unverified records withhold action copy, interpretive notes, and generic document hints. `tests/test_explanations.py` checks these contracts and selected semantic/jargon boundaries, not overall accuracy or comprehension. |
-| Local jurisdiction records | Prototype | Davis and Woodland records exist. Davis deliberately has no dated source check; neither record is comprehensive local-code coverage. |
-| Bounded packet-presence evaluation | Prototype | `readiness.py` and `readiness_cli.py` compare explicit facts and inventory statuses with 25 source-bound requirements from one City of Woodland preapproved detached ADU checklist. The generated public sample is synthetic. It produces per-item findings, staff questions, fingerprints, source bindings, a source-status date and review deadline, and a machine-readable evidence manifest; unknown conditions and changed or stale sources fail closed. `prepare.html` renders the Python-generated result rather than reimplementing the evaluator. AI-assisted checklist mapping and action copy remain review-pending and cannot affect the deterministic evaluation. Mapping metadata binds exact input-source fingerprints and explicitly records that provider, model, and a reproducible run record are unavailable. No runtime model or applicant-data storage is used. No applicant, planner, or jurisdiction has validated the workflow or output. |
-| Application completeness | Planned | The bounded readiness slice checks reported presence in one made-up inventory. It does not inspect files, verify parcel facts, test document contents or consistency, determine legal sufficiency, certify completeness, limit staff requests, or predict approval. There is no parcel-specific document ingestion, cross-document validation, or externally reviewed remedy engine. |
+| Local jurisdiction records | Prototype | Davis and Woodland records exist. The Davis record is bound to a January 2026 City handout and an October 2025 HCD technical-assistance letter; it verifies only the City's published processing categories, preserves HCD's unresolved ordinance-status warning, and does not determine which category lawfully applies. Neither record is comprehensive local-code coverage. |
+| Bounded packet-presence evaluation | Prototype | `readiness.py` and `readiness_cli.py` compare explicit facts and inventory statuses with 25 source-bound requirements from one City of Woodland preapproved detached ADU checklist. The generated public sample is synthetic. Two fabricated fact values are bound to the `CITY` and `LU_Descr` fields in dated Yolo County public parcel-layer metadata; the evaluator performs no address/APN or live parcel query. It produces per-item findings, staff questions, fingerprints, source bindings, a source-status date and review deadline, and a machine-readable evidence manifest; unknown conditions and changed or stale checklist or parcel-schema sources fail closed. `prepare.html` renders the Python-generated result rather than reimplementing the evaluator. AI-assisted checklist mapping and action copy remain review-pending and cannot affect the deterministic evaluation. Mapping metadata binds exact input-source fingerprints and explicitly records that provider, model, and a reproducible run record are unavailable. No runtime model or applicant-data storage is used. No applicant, planner, or jurisdiction has validated the workflow or output. |
+| Application completeness | Planned | The bounded readiness slice checks reported presence in one made-up inventory. It does not query or verify a live parcel, inspect files, test document contents or consistency, determine legal sufficiency, certify completeness, limit staff requests, or predict approval. There is no parcel-specific document ingestion, cross-document validation, or externally reviewed remedy engine. |
 | Golden regression harness | Prototype | 29 structured intake-to-expected-rule-ID fixtures. It does not evaluate natural-language answers, citation fidelity, remedies, or supporting passages. |
-| Source currency monitoring | Prototype | Seventeen HCD, statute, and selected local-source URLs are hash-watched. The scheduled workflow preserves the watched command's exit status through `tee`. The Davis source remains explicitly unwatched and unverified; new statutes are not discovered; changed state is not persisted to the public dashboard. |
+| Source currency monitoring | Prototype | Nineteen HCD, statute, and selected local-source URLs are hash-watched. The scheduled workflow preserves the watched command's exit status through `tee`. The current Davis handout and HCD letter are watched; the blocked municipal-code host remains an unwatched reference, new statutes are not discovered, and changed state is not persisted to the public dashboard. |
 | Source-impact demonstration | Prototype | Rules carry stable source-dependency IDs. The CLI marks every rule linked to an assumed-changed source stale, and the browser rehearses a § 66321 change. The public demo still lacks persisted changed state and a staffed re-verification queue. |
 | Ordinance conformance scanner | Prototype | Presence-based review flags with an HCD-derived regression fixture containing six quoted Santa Clara provisions, one negative control, and one committed San Diego scan. This is not a compliance test or measured statewide accuracy. |
 | Review clocks | Prototype | The 15-business-day date is withheld unless an agency closure calendar is supplied. The separate 60-day illustration appears only when the applicant explicitly confirms both a complete-on-receipt application and an existing primary dwelling. Cure/completion events, tolling, resubmissions, and agency closures are not modeled in the public demo, so neither output is a production deadline determination. |
@@ -78,7 +78,7 @@ Status meanings are defined in `AGENTS.md`.
 | Static browser delivery | Implemented surface for prototype data | Five task-focused pages use relative links and can run directly from disk or over HTTP. The lightweight landing page loads no data JavaScript; the applicant, packet, review, and evidence pages load the generated `data/demo-data.js` artifact before shared page-gated application code. Canonical JSON remains authoritative; `tests/test_static_demo.py` fails when the bundle or generated readiness evidence drifts. |
 | Shareable hypothetical ADU sample | Implemented surface for prototype data | `check.html?sample=adu` resolves the existing `woodland-new-detached-adu-local-layer` golden fixture, fills the normal intake, and submits through the same validation and matcher path as manual answers. The result cover sheet labels the facts as made up and the page provides a clear link. Editing a prefilled fact removes the sample URL state and clears the old result before recalculation. It is not a real parcel, applicant record, pilot, or external validation result. |
 | English/Spanish experience | Prototype | Intake, interface controls, applicant-facing result titles, and plain-language result explanations have English/Spanish variants. Spanish explanation copy is labeled as an unreviewed machine draft. Canonical pathway labels, rule notes, document hints, source excerpts, and much dashboard content remain English; no semantic-parity review has been completed. |
-| Accessibility | Prototype | Static/code audit targets WCAG 2.2 AAA. Human screen-reader, keyboard, reflow, forced-colors, and Spanish pronunciation checks remain open. |
+| Accessibility | Prototype | Static/code audit targets WCAG 2.2 AAA. Automated browser checks cover all five initial pages, 320px and 390px reflow without document overflow, compact mobile navigation, one populated applicant result, and labeled mobile evidence records. `docs/MANUAL-VALIDATION.md` defines the signed human test matrix, but physical-device, virtual-keyboard, screen-reader, keyboard, zoom, forced-colors, and Spanish-pronunciation rows remain `not_run`. |
 | Free-text grounded Q&A | Planned | Described as an architectural direction; no executable question-answering surface exists. |
 | Scenario B staff workflows | Not targeted in v1 | No live status integration, report/letter drafting, plan check, or comment-resolution workflow exists. |
 | Applicant-data privacy | Implemented for the no-storage demo; production planned | The current browser/server demo does not persist submissions. Production retention, CPRA export, security controls, and deployment documentation are not implemented. |
@@ -115,12 +115,14 @@ These are implementation defects or evidence gaps, not general roadmap ideas:
    or single-operator feeds, service-calendar exceptions, and unverified
    walking distance can change the result. Return `unknown` unless data
    completeness supports a narrower conclusion.
-6. **Local records are not applicant-ready layers.** Davis is intentionally
-   unverified. The Woodland rule record still cites an adoption/CEQA record
-   rather than a complete operative ordinance. The separate Woodland
-   readiness workflow is bound to one official preapproved-plan checklist, but
-   its mapping and action copy remain review-pending and are not comprehensive
-   local-code coverage.
+6. **Local records are not applicant-ready layers.** The bounded Davis record
+   has dated evidence for three City-published processing categories, but it
+   does not establish the operative ordinance, resolve HCD's October 2025
+   warning, or determine which category lawfully applies. The Woodland rule
+   record still cites an adoption/CEQA record rather than a complete operative
+   ordinance. The separate Woodland readiness workflow is bound to one
+   official preapproved-plan checklist, but its mapping and action copy remain
+   review-pending and are not comprehensive local-code coverage.
 7. **Browser and Python behavior can drift.** Screening, staleness, scanning,
    and clocks are duplicated without cross-runtime contract tests. The
    readiness page avoids a second evaluator by rendering a result generated by
@@ -157,15 +159,18 @@ specific packet.
 The bounded Woodland slice is a first executable step. It provides one
 source-bound 25-item requirement manifest, one synthetic inventory, explicit
 `present`, `missing`, `not applicable`, and `needs staff review` findings,
-review-pending action drafts, and a generated evidence manifest. It has no
-real documents or parcel facts, so it cannot supply page evidence, test
-consistency, certify completeness, or support an applicant record.
+review-pending action drafts, two fabricated values bound to exact public
+parcel-layer fields, and a generated evidence manifest. It has no real
+documents or queried parcel record, so it cannot supply page evidence, verify
+parcel facts, test consistency, certify completeness, or support an applicant
+record.
 
 The current browser routing result remains a transient presentation of
 applicant-supplied facts and matched prototype records. The separate packet
-page renders a generated synthetic record. Neither surface implements the
-planned parcel-aware, document-aware, persisted permit-readiness packet for a
-real application.
+page renders a generated synthetic record and demonstrates parcel-field
+provenance with fabricated values. Neither surface implements live parcel
+retrieval or the planned document-aware, persisted permit-readiness packet for
+a real application.
 
 ### Bounded AI role
 

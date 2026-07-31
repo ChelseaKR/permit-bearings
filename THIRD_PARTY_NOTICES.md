@@ -52,6 +52,10 @@ SOFTWARE.
   recorded in `data/sources.json`. The broader City workflow webpage is not
   redistributed because its published HTML embeds third-party browser
   credentials. The City does not endorse this project.
+- `corpus/yolo/` contains metadata for Yolo County's public parcel feature
+  layer, not a parcel query or parcel record. Its canonical URL, retrieval
+  date, and content hash are recorded in `data/sources.json`. Yolo County does
+  not endorse this project.
 - `corpus/ordinances/` contains text derived from official municipal material.
   Exact title, URL, and retrieval metadata are in
   `corpus/ordinances/SOURCES.json`.

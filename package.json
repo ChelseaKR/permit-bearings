@@ -1,0 +1,13 @@
+{
+  "name": "permit-pathways-quality",
+  "private": true,
+  "scripts": {
+    "test:a11y": "playwright test tests/accessibility.spec.js",
+    "test:perf": "node --test tests/lighthouse-score.test.mjs && node scripts/lighthouse-budget.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.12.1",
+    "@playwright/test": "1.62.0",
+    "lighthouse": "13.4.1"
+  }
+}

@@ -1182,14 +1182,14 @@
       }
     },
     {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "source_rule_id": "davis-local-adu-process",
-      "source_verified_on": null,
-      "citation_fingerprint": "sha256:cb7885f4129e93ba659d16468532a6eaaba8751b7885aaa9ab05d43e9238201c",
-      "rule_fingerprint": "sha256:b03cae234376ccf7bc33a4e9c9920e2d98847e45eb99c73bf77b141e3c5474e4",
+      "source_verified_on": "2026-07-30",
+      "citation_fingerprint": "sha256:43199afe4a9cf0fea0fd0cf6a9ef1ed91368278d6d70efdcba64c44fdf1bc010",
+      "rule_fingerprint": "sha256:7909a85979ea3fa489105cfd4920e6665b56944ece333f6cefa9b19c9e65f700",
       "display_group": "local_process",
       "drafted_by": "ai_assisted",
-      "updated_on": "2026-07-28",
+      "updated_on": "2026-07-30",
       "review": {
         "status": "prototype_review_pending",
         "reviewer": null,
@@ -1199,29 +1199,29 @@
         "content_fingerprint": null
       },
       "en": {
-        "title": "Check Davis's current local ADU process",
-        "summary": "The cited Davis code record is unverified. Do not use it as a statement of current local requirements.",
+        "title": "Review Davis's published ADU processing categories",
+        "summary": "The City's January 2026 handout describes building-permit-only, ministerial, and non-ministerial paths. HCD's October 2025 letter says Davis's 2019 ordinance may be outdated or null, so this record does not decide which local path lawfully applies.",
         "next_steps": [
-          "Obtain the current official text of Davis Municipal Code § 40.26.450.",
-          "Obtain the city's current ADU or junior ADU application materials."
+          "Ask Davis Planning staff which published category applies to the project and whether later ordinance amendments supersede the January 2026 handout.",
+          "Request the current application and supporting-material checklist for that category."
         ],
         "confirm_with_staff": [
-          "Is the cited Davis code section current?",
-          "Which local form, plans, and other materials are required now?",
-          "Which state-law cross-references in the local materials are current?"
+          "Does this project qualify for building-permit-only review under Government Code § 66323?",
+          "If not, which current City process and objective standards apply?",
+          "Has Davis adopted and submitted an updated ADU ordinance to HCD since the October 2025 letter?"
         ]
       },
       "es": {
-        "title": "Compruebe el proceso local vigente de Davis para una ADU",
-        "summary": "El registro citado del código de Davis no está verificado. No lo use como declaración de requisitos locales vigentes.",
+        "title": "Revise las categorías publicadas de Davis para tramitar una ADU",
+        "summary": "La guía municipal de enero de 2026 describe vías que requieren solo un permiso de construcción, vías ministeriales y vías no ministeriales. La carta de HCD de octubre de 2025 indica que la ordenanza de Davis de 2019 podría estar desactualizada o ser nula, por lo que este registro no decide qué vía local se aplica legalmente.",
         "next_steps": [
-          "Obtenga el texto oficial vigente del Código Municipal de Davis § 40.26.450.",
-          "Obtenga los materiales vigentes de la ciudad para una ADU o ADU júnior."
+          "Pregunte al personal de Planificación de Davis qué categoría publicada corresponde al proyecto y si enmiendas posteriores reemplazan la guía de enero de 2026.",
+          "Solicite la solicitud vigente y la lista de materiales de apoyo para esa categoría."
         ],
         "confirm_with_staff": [
-          "¿La sección citada del código de Davis está vigente?",
-          "¿Qué formulario, planos y otros materiales locales se exigen ahora?",
-          "¿Qué referencias a la ley estatal en los materiales locales están vigentes?"
+          "¿Este proyecto cumple los requisitos para una revisión que solo requiere permiso de construcción conforme al Código de Gobierno § 66323?",
+          "¿Qué proceso y qué normas objetivas vigentes de la Ciudad se aplican si no corresponde la revisión que solo requiere permiso de construcción?",
+          "¿Davis adoptó y presentó a HCD una ordenanza de ADU actualizada después de la carta de octubre de 2025?"
         ],
         "translation_status": "machine_draft",
         "reviewer": null,

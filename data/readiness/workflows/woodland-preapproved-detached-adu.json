@@ -6,27 +6,37 @@
     "project_type": "adu",
     "status": "prototype",
     "title": "Woodland preapproved detached ADU packet-presence check",
-    "scope": "One made-up Woodland project using a City preapproved detached ADU plan. This manifest checks reported item presence against one City checklist. It does not inspect files, verify parcel facts, determine legal sufficiency, or reproduce every item staff may request.",
+    "scope": "One made-up Woodland project using a City preapproved detached ADU plan. This manifest checks reported item presence against one City checklist and models two invented parcel values using fields exposed by a linked public parcel dataset. It does not query a live parcel, inspect files, verify parcel facts, determine legal sufficiency, or reproduce every item staff may request.",
     "source_bindings": [
       {
         "source_id": "woodland-preapproved-adu-checklist",
         "url": "https://www.cityofwoodland.gov/DocumentCenter/View/12372",
         "sha256": "59ebf082a59ff257f104a13f75d63faa869565bfdecc33a6e1eba306b4796d62",
         "source_checked_on": "2026-07-29"
+      },
+      {
+        "source_id": "yolo-public-parcels-layer",
+        "url": "https://gis.yolocounty.gov/ext/rest/services/Public/Parcels_Public/FeatureServer/0?f=pjson",
+        "sha256": "5f99beaf208dc10d8794df0ce1cd3d66f7414ac062d81cbdc018403ef01badb5",
+        "source_checked_on": "2026-07-30"
       }
     ],
     "mapping_provenance": {
-      "version": "1.0.0",
-      "updated_on": "2026-07-29",
+      "version": "1.1.0",
+      "updated_on": "2026-07-30",
       "drafted_by": "ai_assisted",
       "input_source_fingerprints": [
         {
           "source_id": "woodland-preapproved-adu-checklist",
           "sha256": "59ebf082a59ff257f104a13f75d63faa869565bfdecc33a6e1eba306b4796d62"
+        },
+        {
+          "source_id": "yolo-public-parcels-layer",
+          "sha256": "5f99beaf208dc10d8794df0ce1cd3d66f7414ac062d81cbdc018403ef01badb5"
         }
       ],
       "review_status": "prototype_review_pending",
-      "review_scope": "requirements_and_source_excerpts",
+      "review_scope": "requirements_excerpts_and_fact_bindings",
       "provider": "unknown",
       "model": "unknown",
       "run_record_status": "not_recorded"
@@ -35,9 +45,41 @@
       {
         "fact_id": "uses_city_preapproved_plan",
         "equals": "yes"
+      },
+      {
+        "fact_id": "parcel_city_matches_woodland",
+        "equals": "yes"
+      },
+      {
+        "fact_id": "parcel_land_use_is_residential",
+        "equals": "yes"
       }
     ],
     "facts": [
+      {
+        "fact_id": "parcel_city_matches_woodland",
+        "label": "Parcel dataset city field matches Woodland",
+        "question": "Does the parcel dataset identify the parcel city as Woodland?",
+        "allowed_values": [
+          "yes",
+          "no",
+          "unknown"
+        ],
+        "source_id": "yolo-public-parcels-layer",
+        "source_field": "CITY"
+      },
+      {
+        "fact_id": "parcel_land_use_is_residential",
+        "label": "Parcel dataset land-use description is residential",
+        "question": "Does the parcel dataset describe the parcel land use as residential?",
+        "allowed_values": [
+          "yes",
+          "no",
+          "unknown"
+        ],
+        "source_id": "yolo-public-parcels-layer",
+        "source_field": "LU_Descr"
+      },
       {
         "fact_id": "uses_city_preapproved_plan",
         "label": "Uses a City preapproved ADU plan",
@@ -46,7 +88,9 @@
           "yes",
           "no",
           "unknown"
-        ]
+        ],
+        "source_id": null,
+        "source_field": null
       },
       {
         "fact_id": "connects_to_primary_home_electrical",
@@ -56,7 +100,9 @@
           "yes",
           "no",
           "unknown"
-        ]
+        ],
+        "source_id": null,
+        "source_field": null
       },
       {
         "fact_id": "solar_plans_applicable",
@@ -66,7 +112,9 @@
           "yes",
           "no",
           "unknown"
-        ]
+        ],
+        "source_id": null,
+        "source_field": null
       },
       {
         "fact_id": "fire_sprinkler_plans_applicable",
@@ -76,7 +124,9 @@
           "yes",
           "no",
           "unknown"
-        ]
+        ],
+        "source_id": null,
+        "source_field": null
       },
       {
         "fact_id": "uses_septic_or_well",
@@ -86,7 +136,9 @@
           "yes",
           "no",
           "unknown"
-        ]
+        ],
+        "source_id": null,
+        "source_field": null
       },
       {
         "fact_id": "in_spring_lake",
@@ -96,7 +148,9 @@
           "yes",
           "no",
           "unknown"
-        ]
+        ],
+        "source_id": null,
+        "source_field": null
       },
       {
         "fact_id": "in_flood_zone",
@@ -106,7 +160,9 @@
           "yes",
           "no",
           "unknown"
-        ]
+        ],
+        "source_id": null,
+        "source_field": null
       }
     ],
     "requirements": [
