@@ -28,7 +28,7 @@ from permit_pathways.harness.watch import check_sources, load_sources
 from permit_pathways.screening import load_rules, screen
 
 AS_OF = date(2026, 7, 28)
-SOURCE_REGISTRY_AS_OF = date(2026, 7, 29)
+SOURCE_REGISTRY_AS_OF = date(2026, 7, 30)
 ROOT = Path(__file__).resolve().parents[1]
 
 

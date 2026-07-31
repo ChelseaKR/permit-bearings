@@ -23,7 +23,7 @@ from permit_pathways.readiness import (
 from permit_pathways.readiness_cli import main as readiness_cli_main
 
 ROOT = Path(__file__).resolve().parents[1]
-AS_OF = date(2026, 7, 29)
+AS_OF = date(2026, 7, 30)
 WORKFLOW_PATH = (
     ROOT / "data" / "readiness" / "workflows" / "woodland-preapproved-detached-adu.json"
 )
@@ -36,6 +36,7 @@ GENERATED_MANIFEST_PATH = (
 )
 SOURCES_PATH = ROOT / "data" / "sources.json"
 CHECKLIST_SOURCE_ID = "woodland-preapproved-adu-checklist"
+PARCEL_SOURCE_ID = "yolo-public-parcels-layer"
 
 
 @pytest.fixture(scope="module")
@@ -88,7 +89,14 @@ def _all_present_packet(
 ) -> ReadinessPacket:
     fact_values = {
         fact.fact_id: (
-            "yes" if fact.fact_id == "uses_city_preapproved_plan" else conditional_value
+            "yes"
+            if fact.fact_id
+            in {
+                "uses_city_preapproved_plan",
+                "parcel_city_matches_woodland",
+                "parcel_land_use_is_residential",
+            }
+            else conditional_value
         )
         for fact in packet.facts
     }
@@ -167,8 +175,37 @@ def test_canonical_woodland_sample_reports_bounded_known_gaps(
         "Do fire sprinkler plans apply to this project?",
         "Is the property in a flood zone?",
     )
-    assert "does not inspect files" in result.boundary
+    assert "inspect files" in result.boundary
+    assert "does not query or verify a live parcel" in result.boundary
     assert "certify completeness" in result.boundary
+
+
+def test_canonical_parcel_facts_are_source_shaped_but_explicitly_fabricated(
+    workflow: ReadinessWorkflow,
+    packet: ReadinessPacket,
+):
+    definitions = workflow.fact_map()
+    parcel_facts = {
+        fact.fact_id: fact
+        for fact in packet.facts
+        if fact.provenance == "synthetic_public_record_fixture"
+    }
+
+    assert set(parcel_facts) == {
+        "parcel_city_matches_woodland",
+        "parcel_land_use_is_residential",
+    }
+    assert {fact.source_id for fact in parcel_facts.values()} == {PARCEL_SOURCE_ID}
+    assert {fact.source_field for fact in parcel_facts.values()} == {"CITY", "LU_Descr"}
+    assert all(
+        fact.source_checked_on == AS_OF.isoformat() for fact in parcel_facts.values()
+    )
+    assert all(fact.value == "yes" for fact in parcel_facts.values())
+    assert all(
+        definitions[fact.fact_id].source_id == fact.source_id
+        and definitions[fact.fact_id].source_field == fact.source_field
+        for fact in parcel_facts.values()
+    )
 
 
 def test_mapping_provenance_is_source_bound_and_explicitly_review_pending(
@@ -176,11 +213,11 @@ def test_mapping_provenance_is_source_bound_and_explicitly_review_pending(
 ):
     provenance = workflow.mapping_provenance
 
-    assert provenance.version == "1.0.0"
+    assert provenance.version == "1.1.0"
     assert provenance.updated_on == AS_OF.isoformat()
     assert provenance.drafted_by == "ai_assisted"
     assert provenance.review_status == "prototype_review_pending"
-    assert provenance.review_scope == "requirements_and_source_excerpts"
+    assert provenance.review_scope == "requirements_excerpts_and_fact_bindings"
     assert provenance.provider == "unknown"
     assert provenance.model == "unknown"
     assert provenance.run_record_status == "not_recorded"
@@ -338,15 +375,17 @@ def test_negative_workflow_applicability_is_outside_bounded_scope(
     assert result.counts()["not_evaluated"] == 25
 
 
+@pytest.mark.parametrize("changed_source_id", [CHECKLIST_SOURCE_ID, PARCEL_SOURCE_ID])
 def test_changed_or_stale_source_fails_closed_for_every_requirement(
     workflow: ReadinessWorkflow,
     packet: ReadinessPacket,
+    changed_source_id: str,
 ):
     changed = evaluate_readiness(
         workflow,
         packet,
         today=AS_OF,
-        changed_source_ids={CHECKLIST_SOURCE_ID},
+        changed_source_ids={changed_source_id},
     )
 
     assert changed.overall_status == "source_review_required"
@@ -363,8 +402,8 @@ def test_changed_or_stale_source_fails_closed_for_every_requirement(
     }
     assert all(finding.status == "needs_staff_review" for finding in changed.findings)
     assert changed.staff_questions == (
-        "Ask the City to confirm the current checklist before using this "
-        "packet-presence result.",
+        "Confirm the current checklist and parcel-source fields before using "
+        "this packet-presence result.",
     )
 
     exact_ids_only = evaluate_readiness(
@@ -378,7 +417,7 @@ def test_changed_or_stale_source_fails_closed_for_every_requirement(
     due_date = evaluate_readiness(
         workflow,
         packet,
-        today=AS_OF + timedelta(days=180),
+        today=AS_OF + timedelta(days=179),
     )
     assert due_date.source_status == "current"
     assert due_date.source_status_as_of == "2027-01-25"
@@ -387,7 +426,7 @@ def test_changed_or_stale_source_fails_closed_for_every_requirement(
     stale = evaluate_readiness(
         workflow,
         packet,
-        today=AS_OF + timedelta(days=181),
+        today=AS_OF + timedelta(days=180),
     )
     assert stale.overall_status == "source_review_required"
     assert stale.source_status_as_of == "2027-01-26"
@@ -605,6 +644,58 @@ def test_packet_loader_rejects_duplicate_orphan_coverage_and_schema_errors(
                 tmp_path,
                 "packet-unsupported-official-provenance.json",
                 unsupported_provenance,
+            ),
+            workflow,
+            today=AS_OF,
+        )
+
+    mismatched_field = copy.deepcopy(canonical)
+    mismatched_field["packet"]["facts"][0]["source_field"] = "LU_Descr"
+    with pytest.raises(ValueError, match="does not match workflow fact binding"):
+        load_readiness_packet(
+            _write_json(
+                tmp_path,
+                "packet-mismatched-source-field.json",
+                mismatched_field,
+            ),
+            workflow,
+            today=AS_OF,
+        )
+
+    unsupported_unknown_fixture = copy.deepcopy(canonical)
+    unsupported_unknown_fixture["packet"]["facts"][0]["value"] = "unknown"
+    with pytest.raises(ValueError, match="source fixture must be concrete"):
+        load_readiness_packet(
+            _write_json(
+                tmp_path,
+                "packet-unknown-source-fixture.json",
+                unsupported_unknown_fixture,
+            ),
+            workflow,
+            today=AS_OF,
+        )
+
+    assertion_with_source_claim = copy.deepcopy(canonical)
+    assertion_with_source_claim["packet"]["facts"][2]["source_id"] = PARCEL_SOURCE_ID
+    with pytest.raises(ValueError, match="cannot claim source evidence"):
+        load_readiness_packet(
+            _write_json(
+                tmp_path,
+                "packet-assertion-source-claim.json",
+                assertion_with_source_claim,
+            ),
+            workflow,
+            today=AS_OF,
+        )
+
+    non_synthetic_fixture = copy.deepcopy(canonical)
+    non_synthetic_fixture["packet"]["synthetic"] = False
+    with pytest.raises(ValueError, match="non-synthetic packet cannot use fixtures"):
+        load_readiness_packet(
+            _write_json(
+                tmp_path,
+                "packet-non-synthetic-fixture.json",
+                non_synthetic_fixture,
             ),
             workflow,
             today=AS_OF,

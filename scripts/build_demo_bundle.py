@@ -153,9 +153,9 @@ def build_readiness_payload(
         "evidence_manifest": manifest,
         "ai_trace": {
             "role": (
-                "AI proposed the checklist-to-requirement mapping and "
-                "plain-language missing-item actions from the linked official "
-                "source."
+                "AI proposed the checklist-to-requirement mapping, parcel-field "
+                "bindings, and plain-language missing-item actions from the "
+                "linked official sources."
             ),
             "runtime_model_call": False,
             "applicant_data_sent_to_model": False,

@@ -1428,7 +1428,9 @@ function renderDashboard() {
       : st === "stale"
       ? `<span class="badge bad"><span class="status-ico" aria-hidden="true">✕</span>STALE: re-verify</span>`
       : `<span class="badge warn"><span class="status-ico" aria-hidden="true">⚠</span>no dated source record</span>`;
-    return `<tr><td>${esc(rule.pathway)}</td><td class="mutedtxt">${esc(rule.jurisdiction_scope)}</td><td>${b}</td></tr>`;
+    return `<tr><td data-label="Rule">${esc(rule.pathway)}</td>
+      <td data-label="Scope" class="mutedtxt">${esc(rule.jurisdiction_scope)}</td>
+      <td data-label="Status">${b}</td></tr>`;
   }).join("");
   document.getElementById("simNote").classList.toggle("hidden", !simulating);
   document.getElementById("simBtn").classList.toggle("hidden", simulating);
@@ -1452,9 +1454,10 @@ function renderSources() {
       const recorded = metadata.fetched_on ? esc(metadata.fetched_on) : "Not recorded";
       const digest = nonBlank(metadata.sha256)
         ? `${esc(metadata.sha256.slice(0, 16))}…` : "not recorded";
-      return `<tr><td>${source}</td><td>${monitoring}</td>
-        <td class="mutedtxt">${recorded}</td>
-        <td class="mutedtxt" style="font-family:ui-monospace,monospace;font-size:.75rem">${digest}</td></tr>`;
+      return `<tr><td data-label="Source">${source}</td>
+        <td data-label="Monitoring">${monitoring}</td>
+        <td data-label="Recorded" class="mutedtxt">${recorded}</td>
+        <td data-label="SHA-256" class="mutedtxt source-digest">${digest}</td></tr>`;
     }).join("");
 }
 
@@ -1918,6 +1921,9 @@ function validReadinessData(data) {
       )
       || !Array.isArray(data.workflow.source_bindings)
       || data.workflow.source_bindings.length < 1
+      || !Array.isArray(data.workflow.facts)
+      || !Array.isArray(data.packet.facts)
+      || data.workflow.facts.length !== data.packet.facts.length
       || !Array.isArray(data.workflow.requirements)
       || !Array.isArray(data.result.findings)
       || data.workflow.requirements.length !== data.result.findings.length
@@ -1928,6 +1934,14 @@ function validReadinessData(data) {
       || !nonBlank(data.result.boundary)) return false;
   const requirementIds = data.workflow.requirements.map(
     requirement => requirement.requirement_id
+  );
+  const factIds = data.workflow.facts.map(fact => fact.fact_id);
+  const packetFactIds = data.packet.facts.map(fact => fact.fact_id);
+  const sourceBindings = new Map(
+    data.workflow.source_bindings.map(binding => [binding.source_id, binding])
+  );
+  const factDefinitions = new Map(
+    data.workflow.facts.map(fact => [fact.fact_id, fact])
   );
   const findingIds = data.result.findings.map(
     finding => finding.requirement_id
@@ -1981,6 +1995,35 @@ function validReadinessData(data) {
       data.counts.needs_staff_review === data.result.findings.length,
   }[data.result.overall_status] === true;
   return requirementIds.every(validStableId)
+    && factIds.every(validStableId)
+    && new Set(factIds).size === factIds.length
+    && packetFactIds.every((id, index) => id === factIds[index])
+    && data.workflow.facts.every(fact => {
+      const hasSource = fact.source_id != null || fact.source_field != null;
+      return hasSource
+        ? validStableId(fact.source_id)
+          && /^[A-Za-z][A-Za-z0-9_]*$/.test(fact.source_field || "")
+          && sourceBindings.has(fact.source_id)
+        : fact.source_id == null && fact.source_field == null;
+    })
+    && data.packet.facts.every(fact => {
+      const definition = factDefinitions.get(fact.fact_id);
+      if (!definition || !["yes", "no", "unknown"].includes(fact.value))
+        return false;
+      if (definition.source_id == null)
+        return ["synthetic_applicant_assertion", "applicant_assertion"].includes(
+          fact.provenance
+        )
+          && fact.source_id == null
+          && fact.source_field == null
+          && fact.source_checked_on == null;
+      const binding = sourceBindings.get(definition.source_id);
+      return fact.provenance === "synthetic_public_record_fixture"
+        && fact.value !== "unknown"
+        && fact.source_id === definition.source_id
+        && fact.source_field === definition.source_field
+        && fact.source_checked_on === binding?.source_checked_on;
+    })
     && new Set(requirementIds).size === requirementIds.length
     && findingIds.every((id, index) => id === requirementIds[index])
     && new Set(remedyIds).size === remedyIds.length
@@ -2006,6 +2049,48 @@ function validReadinessData(data) {
     && reviewValid
     && countsMatch
     && overallMatchesFindings;
+}
+
+function readinessParcelEvidenceMarkup(data, current) {
+  if (!current) return "";
+  const definitions = new Map(
+    data.workflow.facts.map(fact => [fact.fact_id, fact])
+  );
+  const bindings = new Map(
+    data.workflow.source_bindings.map(binding => [binding.source_id, binding])
+  );
+  const parcelFacts = data.packet.facts.filter(
+    fact => fact.provenance === "synthetic_public_record_fixture"
+  );
+  if (!parcelFacts.length) return "";
+  const rows = parcelFacts.map(fact => {
+    const definition = definitions.get(fact.fact_id);
+    const binding = bindings.get(fact.source_id);
+    const sourceUrl = safeExternalUrl(binding?.url);
+    const sourceLabel = sourceUrl
+      ? `<a href="${esc(sourceUrl)}">${esc(binding.label
+        || "Public parcel dataset")}</a>`
+      : esc(binding?.label || "Public parcel dataset");
+    return `<div>
+      <dt>${esc(definition.label)}</dt>
+      <dd><strong>${fact.value === "yes" ? "Yes" : "No"}</strong>.
+        Invented fixture value shaped like
+        <code>${esc(fact.source_field)}</code> in ${sourceLabel};
+        source metadata recorded
+        ${esc(formatSourceDate(fact.source_checked_on))}.</dd>
+    </div>`;
+  }).join("");
+  return `<section class="packet-evidence"
+    aria-labelledby="parcelEvidenceHeading">
+    <div>
+      <p class="section-kicker">Parcel-aware fixture</p>
+      <h2 id="parcelEvidenceHeading">Which parcel fields shaped this sample</h2>
+      <p>These values are fabricated for testing. The links and field names
+        are real source bindings; no address, APN, or live parcel was
+        queried.</p>
+    </div>
+    <dl>${rows}</dl>
+  </section>`;
 }
 
 function readinessSourceIsCurrent(data) {
@@ -2059,8 +2144,8 @@ function readinessFindingRow(
       </div>`
     : "";
   return `<article class="packet-finding packet-finding-${tone}">
-    <div class="finding-state" aria-label="${esc(stateLabel)}">
-      <span aria-hidden="true">${esc(stateLabel)}</span>
+    <div class="finding-state">
+      <span>${esc(stateLabel)}</span>
     </div>
     <div class="finding-copy">
       <p class="finding-category">${esc(finding.category)}</p>
@@ -2336,6 +2421,8 @@ function renderReadiness(data) {
       </div>
       ${countsMarkup}
     </section>
+
+    ${readinessParcelEvidenceMarkup(data, current)}
 
     ${current && missing.length ? `<section class="packet-ledger"
       aria-labelledby="missingHeading">

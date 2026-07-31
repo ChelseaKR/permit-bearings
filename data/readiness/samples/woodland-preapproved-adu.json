@@ -5,44 +5,81 @@
     "workflow_id": "woodland-preapproved-detached-adu",
     "label": "Made-up Woodland preapproved ADU packet",
     "synthetic": true,
-    "evaluated_on": "2026-07-29",
+    "evaluated_on": "2026-07-30",
     "jurisdiction": "woodland",
     "project_type": "adu",
     "facts": [
       {
+        "fact_id": "parcel_city_matches_woodland",
+        "value": "yes",
+        "provenance": "synthetic_public_record_fixture",
+        "source_id": "yolo-public-parcels-layer",
+        "source_field": "CITY",
+        "source_checked_on": "2026-07-30"
+      },
+      {
+        "fact_id": "parcel_land_use_is_residential",
+        "value": "yes",
+        "provenance": "synthetic_public_record_fixture",
+        "source_id": "yolo-public-parcels-layer",
+        "source_field": "LU_Descr",
+        "source_checked_on": "2026-07-30"
+      },
+      {
         "fact_id": "uses_city_preapproved_plan",
         "value": "yes",
-        "provenance": "synthetic_applicant_assertion"
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
       },
       {
         "fact_id": "connects_to_primary_home_electrical",
         "value": "yes",
-        "provenance": "synthetic_applicant_assertion"
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
       },
       {
         "fact_id": "solar_plans_applicable",
         "value": "unknown",
-        "provenance": "synthetic_applicant_assertion"
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
       },
       {
         "fact_id": "fire_sprinkler_plans_applicable",
         "value": "unknown",
-        "provenance": "synthetic_applicant_assertion"
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
       },
       {
         "fact_id": "uses_septic_or_well",
         "value": "no",
-        "provenance": "synthetic_applicant_assertion"
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
       },
       {
         "fact_id": "in_spring_lake",
         "value": "no",
-        "provenance": "synthetic_applicant_assertion"
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
       },
       {
         "fact_id": "in_flood_zone",
         "value": "unknown",
-        "provenance": "synthetic_applicant_assertion"
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
       }
     ],
     "inventory": [

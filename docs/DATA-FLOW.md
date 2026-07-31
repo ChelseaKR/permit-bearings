@@ -1,6 +1,6 @@
 # Current prototype data flow
 
-Status: 2026-07-29. This describes the executable repository and public demo,
+Status: 2026-07-30. This describes the executable repository and public demo,
 not a production deployment or a compliance assessment.
 
 ## Boundary summary
@@ -20,7 +20,7 @@ security review, and jurisdiction approval.
 ## Bounded readiness path
 
 ```text
-Official City checklist retained in the repository
+Official City checklist + public parcel-layer metadata retained
     |
     v
 Source registry entry with URL, check date, and digest
@@ -30,6 +30,8 @@ Source registry entry with URL, check date, and digest
     +--> Plain-language action sidecar, AI-assisted and review-pending
     |
     +--> Made-up project facts and explicit packet inventory
+          |
+          +--> Two fabricated parcel values bound to exact metadata fields
              |
              v
 Deterministic Python evaluator
@@ -51,19 +53,24 @@ Browser validates and renders the generated result
 
 The City of Woodland checklist is a public source retained at
 `corpus/woodland/preapproved-adu-permit-checklist.pdf`. Its official URL,
-retrieval date, and digest are recorded in `data/sources.json`. Source
-retrieval and source-watcher execution are repository maintenance operations,
-not browser requests made on behalf of an applicant.
+retrieval date, and digest are recorded in `data/sources.json`.
+The Yolo County public parcel feature-layer metadata is retained at
+`corpus/yolo/public-parcels-layer.json` with the same URL/date/digest controls.
+The latter describes available fields; it is not a downloaded parcel record.
+Source retrieval and source-watcher execution are repository maintenance
+operations, not browser requests made on behalf of an applicant.
 
 ### Canonical readiness inputs
 
 - `data/readiness/workflows/woodland-preapproved-detached-adu.json` contains
-  the bounded workflow, seven tri-state facts, 25 requirements, source
-  locators, excerpts, conditions, and a binding to the recorded checklist.
+  the bounded workflow, nine tri-state facts, 25 requirements, source
+  locators, excerpts, conditions, and bindings to the recorded checklist and
+  parcel-layer metadata. Two fact definitions name exact parcel-layer fields.
 - `data/readiness/samples/woodland-preapproved-adu.json` contains one labeled
-  synthetic packet. Every fact is marked
-  `synthetic_applicant_assertion`, and every requirement has an explicit
-  inventory status.
+  synthetic packet. Seven facts are marked
+  `synthetic_applicant_assertion`; two concrete fabricated values use
+  `synthetic_public_record_fixture` and carry the exact source ID, field, and
+  recorded date. Every requirement has an explicit inventory status.
 - `data/readiness/remedies/woodland-preapproved-detached-adu.json` contains
   versioned AI-assisted action drafts. The current status is
   `prototype_review_pending`, with no reviewer or completed-review claim.
@@ -75,8 +82,11 @@ permit number, contact information, plan, or application file.
 
 `src/permit_pathways/readiness.py` loads and strictly validates the workflow,
 packet, source binding, and remedy metadata. The evaluator compares explicit
-facts and inventory statuses. It does not import the remedy sidecar, call a
-model, inspect files, retrieve a parcel, or infer missing facts.
+facts and inventory statuses. Source-shaped parcel fixtures must match the
+workflow's source ID, field name, and recorded date and cannot be used in a
+packet labeled non-synthetic. The evaluator does not import the remedy
+sidecar, call a model, inspect files, retrieve a parcel, or infer missing
+facts.
 
 Unknown conditions remain staff questions. A changed or stale source prevents
 the evaluator from publishing a favorable packet summary. The result uses
@@ -103,8 +113,7 @@ does not recalculate packet findings in JavaScript.
 
 The browser does not send the synthetic facts to a server or model. It does
 not use local storage, session storage, cookies, or an upload control. A user
-may choose to follow the official checklist link, which navigates to the
-public City source.
+may choose to follow the official checklist or parcel-metadata link.
 
 ## AI boundary
 
@@ -138,7 +147,8 @@ that:
 
 - the checklist is a complete statement of Woodland requirements;
 - any reported-present file contains the required information;
-- parcel or zoning facts are correct;
+- the fabricated parcel values describe any real parcel or that parcel or
+  zoning facts are correct;
 - documents are internally consistent or legally sufficient;
 - an application is complete;
 - staff may not request other material;

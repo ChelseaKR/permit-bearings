@@ -44,12 +44,14 @@ ITEM_TYPES = ("document", "document_content", "action")
 PROVENANCE_VALUES = (
     "synthetic_applicant_assertion",
     "applicant_assertion",
+    "synthetic_public_record_fixture",
 )
 
 _IDENTIFIER = re.compile(r"^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
+_SOURCE_FIELD = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
 
 
 def _required_text(value: Any, field: str) -> str:
@@ -135,6 +137,8 @@ class FactDefinition:
     label: str
     question: str
     allowed_values: tuple[str, ...]
+    source_id: str | None
+    source_field: str | None
 
 
 @dataclass(frozen=True)
@@ -203,6 +207,9 @@ class PacketFact:
     fact_id: str
     value: str
     provenance: str
+    source_id: str | None
+    source_field: str | None
+    source_checked_on: str | None
 
 
 @dataclass(frozen=True)
@@ -345,6 +352,56 @@ def _load_condition(
     return Condition(fact_id=fact_id, equals=expected)
 
 
+def _required_literal(value: Any, field: str, expected: str, message: str) -> str:
+    text = _required_text(value, field)
+    if text != expected:
+        raise ValueError(f"{field}: {message}")
+    return text
+
+
+def _mapping_input(
+    value: Any,
+    field: str,
+    bindings_by_id: dict[str, SourceBinding],
+) -> MappingInputSource:
+    if not isinstance(value, dict):
+        raise ValueError(f"{field}: expected an object")
+    keys = {"source_id", "sha256"}
+    _exact_keys(value, keys, keys, field)
+    source_id = _identifier(value["source_id"], f"{field}.source_id")
+    binding = bindings_by_id.get(source_id)
+    if binding is None:
+        raise ValueError(f"{field}.source_id: source is not bound")
+    digest = _required_text(value["sha256"], f"{field}.sha256")
+    if not _SHA256.fullmatch(digest):
+        raise ValueError(f"{field}.sha256: expected a SHA-256 digest")
+    if digest != binding.sha256:
+        raise ValueError(f"{field}.sha256: does not match bound source")
+    return MappingInputSource(source_id=source_id, sha256=digest)
+
+
+def _mapping_inputs(
+    value: Any,
+    bindings: tuple[SourceBinding, ...],
+    field: str,
+) -> tuple[MappingInputSource, ...]:
+    if not isinstance(value, list) or not value:
+        raise ValueError(f"{field}: expected a non-empty list")
+    bindings_by_id = {binding.source_id: binding for binding in bindings}
+    inputs: list[MappingInputSource] = []
+    seen: set[str] = set()
+    for index, raw_input in enumerate(value):
+        parsed = _mapping_input(raw_input, f"{field}[{index}]", bindings_by_id)
+        if parsed.source_id in seen:
+            raise ValueError(f"{field}[{index}].source_id: duplicate source")
+        inputs.append(parsed)
+        seen.add(parsed.source_id)
+    missing = sorted(set(bindings_by_id) - seen)
+    if missing:
+        raise ValueError(f"{field}: missing sources: " + ", ".join(missing))
+    return tuple(inputs)
+
+
 def _load_mapping_provenance(
     value: Any,
     bindings: tuple[SourceBinding, ...],
@@ -372,11 +429,7 @@ def _load_mapping_provenance(
     version = _required_text(value["version"], f"{field}.version")
     if not _SEMVER.fullmatch(version):
         raise ValueError(f"{field}.version: expected semantic version")
-    updated_on = _iso_date(
-        value["updated_on"],
-        f"{field}.updated_on",
-        today=today,
-    )
+    updated_on = _iso_date(value["updated_on"], f"{field}.updated_on", today=today)
     if date.fromisoformat(updated_on) < max(
         date.fromisoformat(binding.source_checked_on) for binding in bindings
     ):
@@ -384,73 +437,53 @@ def _load_mapping_provenance(
             f"{field}.updated_on: cannot predate an input source fingerprint"
         )
 
-    drafted_by = _required_text(value["drafted_by"], f"{field}.drafted_by")
-    if drafted_by != "ai_assisted":
-        raise ValueError(f"{field}.drafted_by: current prototype requires ai_assisted")
-    review_status = _required_text(value["review_status"], f"{field}.review_status")
-    if review_status != "prototype_review_pending":
-        raise ValueError(
-            f"{field}.review_status: mapping and excerpts remain review-pending"
-        )
-    review_scope = _required_text(value["review_scope"], f"{field}.review_scope")
-    if review_scope != "requirements_and_source_excerpts":
-        raise ValueError(
-            f"{field}.review_scope: expected requirements_and_source_excerpts"
-        )
-    provider = _required_text(value["provider"], f"{field}.provider")
-    if provider != "unknown":
-        raise ValueError(f"{field}.provider: no provider was recorded for this draft")
-    model = _required_text(value["model"], f"{field}.model")
-    if model != "unknown":
-        raise ValueError(f"{field}.model: no model was recorded for this draft")
-    run_record_status = _required_text(
-        value["run_record_status"], f"{field}.run_record_status"
+    drafted_by = _required_literal(
+        value["drafted_by"],
+        f"{field}.drafted_by",
+        "ai_assisted",
+        "current prototype requires ai_assisted",
     )
-    if run_record_status != "not_recorded":
-        raise ValueError(f"{field}.run_record_status: current draft has no run record")
-
-    raw_inputs = value["input_source_fingerprints"]
-    if not isinstance(raw_inputs, list) or not raw_inputs:
-        raise ValueError(
-            f"{field}.input_source_fingerprints: expected a non-empty list"
-        )
-    bindings_by_id = {binding.source_id: binding for binding in bindings}
-    inputs: list[MappingInputSource] = []
-    seen: set[str] = set()
-    for index, raw_input in enumerate(raw_inputs):
-        input_field = f"{field}.input_source_fingerprints[{index}]"
-        if not isinstance(raw_input, dict):
-            raise ValueError(f"{input_field}: expected an object")
-        _exact_keys(
-            raw_input,
-            {"source_id", "sha256"},
-            {"source_id", "sha256"},
-            input_field,
-        )
-        source_id = _identifier(raw_input["source_id"], f"{input_field}.source_id")
-        if source_id in seen:
-            raise ValueError(f"{input_field}.source_id: duplicate source")
-        binding = bindings_by_id.get(source_id)
-        if binding is None:
-            raise ValueError(f"{input_field}.source_id: source is not bound")
-        digest = _required_text(raw_input["sha256"], f"{input_field}.sha256")
-        if not _SHA256.fullmatch(digest):
-            raise ValueError(f"{input_field}.sha256: expected a SHA-256 digest")
-        if digest != binding.sha256:
-            raise ValueError(f"{input_field}.sha256: does not match bound source")
-        inputs.append(MappingInputSource(source_id=source_id, sha256=digest))
-        seen.add(source_id)
-    missing = sorted(set(bindings_by_id) - seen)
-    if missing:
-        raise ValueError(
-            f"{field}.input_source_fingerprints: missing sources: " + ", ".join(missing)
-        )
+    review_status = _required_literal(
+        value["review_status"],
+        f"{field}.review_status",
+        "prototype_review_pending",
+        "mapping and excerpts remain review-pending",
+    )
+    review_scope = _required_literal(
+        value["review_scope"],
+        f"{field}.review_scope",
+        "requirements_excerpts_and_fact_bindings",
+        "expected requirements_excerpts_and_fact_bindings",
+    )
+    provider = _required_literal(
+        value["provider"],
+        f"{field}.provider",
+        "unknown",
+        "no provider was recorded for this draft",
+    )
+    model = _required_literal(
+        value["model"],
+        f"{field}.model",
+        "unknown",
+        "no model was recorded for this draft",
+    )
+    run_record_status = _required_literal(
+        value["run_record_status"],
+        f"{field}.run_record_status",
+        "not_recorded",
+        "current draft has no run record",
+    )
+    inputs = _mapping_inputs(
+        value["input_source_fingerprints"],
+        bindings,
+        f"{field}.input_source_fingerprints",
+    )
 
     return MappingProvenance(
         version=version,
         updated_on=updated_on,
         drafted_by=drafted_by,
-        input_source_fingerprints=tuple(inputs),
+        input_source_fingerprints=inputs,
         review_status=review_status,
         review_scope=review_scope,
         provider=provider,
@@ -459,30 +492,23 @@ def _load_mapping_provenance(
     )
 
 
-def load_readiness_workflow(
-    path: Path,
-    sources_path: Path,
-    *,
-    today: date | None = None,
-) -> ReadinessWorkflow:
-    """Load and strictly validate one source-bound readiness workflow."""
-
-    as_of = resolve_today(today)
+def _versioned_record(path: Path, record_name: str) -> dict[str, Any]:
     payload = _read_json(path, str(path))
     if not isinstance(payload, dict):
         raise ValueError(f"{path}: expected an object")
-    _exact_keys(
-        payload,
-        {"schema_version", "workflow"},
-        {"schema_version", "workflow"},
-        str(path),
-    )
+    keys = {"schema_version", record_name}
+    _exact_keys(payload, keys, keys, str(path))
     if payload["schema_version"] != SCHEMA_VERSION:
         raise ValueError(f"{path}: unsupported schema version")
-    raw = payload["workflow"]
+    raw = payload[record_name]
     if not isinstance(raw, dict):
-        raise ValueError(f"{path}.workflow: expected an object")
-    workflow_keys = {
+        raise ValueError(f"{path}.{record_name}: expected an object")
+    return raw
+
+
+def _workflow_record(path: Path) -> dict[str, Any]:
+    raw = _versioned_record(path, "workflow")
+    keys = {
         "workflow_id",
         "jurisdiction",
         "project_type",
@@ -495,110 +521,148 @@ def load_readiness_workflow(
         "facts",
         "requirements",
     }
-    _exact_keys(raw, workflow_keys, workflow_keys, f"{path}.workflow")
+    _exact_keys(raw, keys, keys, f"{path}.workflow")
+    return raw
 
-    workflow_id = _identifier(raw["workflow_id"], "workflow.workflow_id")
-    jurisdiction = _identifier(raw["jurisdiction"], "workflow.jurisdiction")
-    project_type = _identifier(raw["project_type"], "workflow.project_type")
-    status = _required_text(raw["status"], "workflow.status")
-    if status != "prototype":
-        raise ValueError("workflow.status: current schema requires 'prototype'")
-    title = _required_text(raw["title"], "workflow.title")
-    scope = _required_text(raw["scope"], "workflow.scope")
 
-    sources = load_sources(sources_path, today=as_of)
-    raw_bindings = raw["source_bindings"]
-    if not isinstance(raw_bindings, list) or not raw_bindings:
+def _source_binding(
+    value: Any,
+    field: str,
+    sources: dict[str, Any],
+    as_of: date,
+) -> SourceBinding:
+    if not isinstance(value, dict):
+        raise ValueError(f"{field}: expected an object")
+    keys = {"source_id", "url", "sha256", "source_checked_on"}
+    _exact_keys(value, keys, keys, field)
+    source_id = _identifier(value["source_id"], f"{field}.source_id")
+    source = sources.get(source_id)
+    if source is None:
+        raise ValueError(f"{field}.source_id: unknown source")
+    url = _required_text(value["url"], f"{field}.url")
+    parsed = urlsplit(url)
+    if (
+        parsed.scheme != "https"
+        or not parsed.hostname
+        or parsed.username is not None
+        or parsed.password is not None
+    ):
+        raise ValueError(f"{field}.url: expected a public HTTPS URL")
+    digest = _required_text(value["sha256"], f"{field}.sha256")
+    if not _SHA256.fullmatch(digest):
+        raise ValueError(f"{field}.sha256: expected a SHA-256 digest")
+    checked = _iso_date(
+        value["source_checked_on"], f"{field}.source_checked_on", today=as_of
+    )
+    if source.url != url or source.sha256 != digest or source.fetched_on != checked:
+        raise ValueError(f"{field}: binding does not match the source registry")
+    return SourceBinding(source_id, url, digest, checked)
+
+
+def _source_bindings(
+    value: Any,
+    sources: dict[str, Any],
+    as_of: date,
+) -> tuple[SourceBinding, ...]:
+    if not isinstance(value, list) or not value:
         raise ValueError("workflow.source_bindings: expected a non-empty list")
     bindings: list[SourceBinding] = []
-    bound_source_ids: set[str] = set()
-    for index, value in enumerate(raw_bindings):
+    seen: set[str] = set()
+    for index, raw_binding in enumerate(value):
         field = f"workflow.source_bindings[{index}]"
-        if not isinstance(value, dict):
-            raise ValueError(f"{field}: expected an object")
-        keys = {"source_id", "url", "sha256", "source_checked_on"}
-        _exact_keys(value, keys, keys, field)
-        source_id = _identifier(value["source_id"], f"{field}.source_id")
-        if source_id in bound_source_ids:
+        binding = _source_binding(raw_binding, field, sources, as_of)
+        if binding.source_id in seen:
             raise ValueError(f"{field}.source_id: duplicate source binding")
-        source = sources.get(source_id)
-        if source is None:
-            raise ValueError(f"{field}.source_id: unknown source")
-        url = _required_text(value["url"], f"{field}.url")
-        parsed = urlsplit(url)
-        if (
-            parsed.scheme != "https"
-            or not parsed.hostname
-            or parsed.username is not None
-            or parsed.password is not None
-        ):
-            raise ValueError(f"{field}.url: expected a public HTTPS URL")
-        digest = _required_text(value["sha256"], f"{field}.sha256")
-        if not _SHA256.fullmatch(digest):
-            raise ValueError(f"{field}.sha256: expected a SHA-256 digest")
-        checked = _iso_date(
-            value["source_checked_on"],
-            f"{field}.source_checked_on",
-            today=as_of,
-        )
-        if source.url != url or source.sha256 != digest or source.fetched_on != checked:
-            raise ValueError(f"{field}: binding does not match the source registry")
-        bound_source_ids.add(source_id)
-        bindings.append(
-            SourceBinding(
-                source_id=source_id,
-                url=url,
-                sha256=digest,
-                source_checked_on=checked,
-            )
-        )
+        bindings.append(binding)
+        seen.add(binding.source_id)
+    return tuple(bindings)
 
-    mapping_provenance = _load_mapping_provenance(
-        raw["mapping_provenance"],
-        tuple(bindings),
-        today=as_of,
+
+def _fact_definition(
+    value: Any,
+    field: str,
+    bound_source_ids: set[str],
+) -> FactDefinition:
+    if not isinstance(value, dict):
+        raise ValueError(f"{field}: expected an object")
+    keys = {
+        "fact_id",
+        "label",
+        "question",
+        "allowed_values",
+        "source_id",
+        "source_field",
+    }
+    _exact_keys(value, keys, keys, field)
+    allowed = value["allowed_values"]
+    if not isinstance(allowed, list) or tuple(allowed) != TRI_VALUES:
+        raise ValueError(f"{field}.allowed_values: expected yes, no, unknown")
+    source_id = _optional_text(value["source_id"], f"{field}.source_id")
+    source_field = _optional_text(value["source_field"], f"{field}.source_field")
+    if (source_id is None) != (source_field is None):
+        raise ValueError(f"{field}: source_id and source_field must appear together")
+    if source_id is not None:
+        if not _IDENTIFIER.fullmatch(source_id):
+            raise ValueError(f"{field}.source_id: invalid stable identifier")
+        if source_id not in bound_source_ids:
+            raise ValueError(f"{field}.source_id: source is not bound to the workflow")
+        if source_field is None or not _SOURCE_FIELD.fullmatch(source_field):
+            raise ValueError(f"{field}.source_field: invalid source field")
+    return FactDefinition(
+        fact_id=_identifier(value["fact_id"], f"{field}.fact_id"),
+        label=_required_text(value["label"], f"{field}.label"),
+        question=_required_text(value["question"], f"{field}.question"),
+        allowed_values=tuple(allowed),
+        source_id=source_id,
+        source_field=source_field,
     )
 
-    raw_facts = raw["facts"]
-    if not isinstance(raw_facts, list) or not raw_facts:
+
+def _fact_definitions(
+    value: Any,
+    bindings: tuple[SourceBinding, ...],
+) -> tuple[tuple[FactDefinition, ...], dict[str, FactDefinition]]:
+    if not isinstance(value, list) or not value:
         raise ValueError("workflow.facts: expected a non-empty list")
     facts: list[FactDefinition] = []
-    facts_by_id: dict[str, FactDefinition] = {}
-    for index, value in enumerate(raw_facts):
+    by_id: dict[str, FactDefinition] = {}
+    bound_source_ids = {binding.source_id for binding in bindings}
+    for index, raw_fact in enumerate(value):
         field = f"workflow.facts[{index}]"
-        if not isinstance(value, dict):
-            raise ValueError(f"{field}: expected an object")
-        keys = {"fact_id", "label", "question", "allowed_values"}
-        _exact_keys(value, keys, keys, field)
-        fact_id = _identifier(value["fact_id"], f"{field}.fact_id")
-        if fact_id in facts_by_id:
+        fact = _fact_definition(raw_fact, field, bound_source_ids)
+        if fact.fact_id in by_id:
             raise ValueError(f"{field}.fact_id: duplicate fact")
-        allowed = value["allowed_values"]
-        if not isinstance(allowed, list) or tuple(allowed) != TRI_VALUES:
-            raise ValueError(f"{field}.allowed_values: expected yes, no, unknown")
-        fact = FactDefinition(
-            fact_id=fact_id,
-            label=_required_text(value["label"], f"{field}.label"),
-            question=_required_text(value["question"], f"{field}.question"),
-            allowed_values=tuple(allowed),
-        )
         facts.append(fact)
-        facts_by_id[fact_id] = fact
+        by_id[fact.fact_id] = fact
+    return tuple(facts), by_id
 
-    raw_applicability = raw["applicability"]
-    if not isinstance(raw_applicability, list) or not raw_applicability:
-        raise ValueError("workflow.applicability: expected a non-empty list")
-    applicability = tuple(
-        _load_condition(value, f"workflow.applicability[{index}]", facts_by_id)
-        for index, value in enumerate(raw_applicability)
+
+def _conditions(
+    value: Any,
+    field: str,
+    facts: dict[str, FactDefinition],
+    *,
+    non_empty: bool = False,
+) -> tuple[Condition, ...]:
+    if not isinstance(value, list) or (non_empty and not value):
+        expected = "a non-empty list" if non_empty else "a list"
+        raise ValueError(f"{field}: expected {expected}")
+    return tuple(
+        _load_condition(item, f"{field}[{index}]", facts)
+        for index, item in enumerate(value)
     )
 
-    raw_requirements = raw["requirements"]
-    if not isinstance(raw_requirements, list) or not raw_requirements:
-        raise ValueError("workflow.requirements: expected a non-empty list")
-    requirements: list[Requirement] = []
-    requirements_by_id: dict[str, Requirement] = {}
-    requirement_keys = {
+
+def _requirement(
+    value: Any,
+    field: str,
+    facts: dict[str, FactDefinition],
+    prior_requirements: dict[str, Requirement],
+    bound_source_ids: set[str],
+) -> Requirement:
+    if not isinstance(value, dict):
+        raise ValueError(f"{field}: expected an object")
+    keys = {
         "requirement_id",
         "label",
         "category",
@@ -609,99 +673,104 @@ def load_readiness_workflow(
         "source_locator",
         "source_excerpt",
     }
-    for index, value in enumerate(raw_requirements):
-        field = f"workflow.requirements[{index}]"
-        if not isinstance(value, dict):
-            raise ValueError(f"{field}: expected an object")
-        _exact_keys(value, requirement_keys, requirement_keys, field)
-        requirement_id = _identifier(value["requirement_id"], f"{field}.requirement_id")
-        if requirement_id in requirements_by_id:
-            raise ValueError(f"{field}.requirement_id: duplicate requirement")
-        item_type = _required_text(value["item_type"], f"{field}.item_type")
-        if item_type not in ITEM_TYPES:
-            raise ValueError(f"{field}.item_type: unsupported value")
-        parent_id = _optional_text(
-            value["parent_requirement_id"],
-            f"{field}.parent_requirement_id",
-        )
-        if parent_id is not None:
-            if not _IDENTIFIER.fullmatch(parent_id):
-                raise ValueError(f"{field}.parent_requirement_id: invalid identifier")
-            if parent_id not in requirements_by_id:
-                raise ValueError(
-                    f"{field}.parent_requirement_id: parent must appear first"
-                )
-        raw_conditions = value["applies_when"]
-        if not isinstance(raw_conditions, list):
-            raise ValueError(f"{field}.applies_when: expected a list")
-        conditions = tuple(
-            _load_condition(
-                condition,
-                f"{field}.applies_when[{condition_index}]",
-                facts_by_id,
-            )
-            for condition_index, condition in enumerate(raw_conditions)
-        )
-        source_id = _identifier(value["source_id"], f"{field}.source_id")
-        if source_id not in bound_source_ids:
-            raise ValueError(f"{field}.source_id: source is not bound to the workflow")
-        requirement = Requirement(
-            requirement_id=requirement_id,
-            label=_required_text(value["label"], f"{field}.label"),
-            category=_required_text(value["category"], f"{field}.category"),
-            item_type=item_type,
-            parent_requirement_id=parent_id,
-            applies_when=conditions,
-            source_id=source_id,
-            source_locator=_required_text(
-                value["source_locator"], f"{field}.source_locator"
-            ),
-            source_excerpt=_required_text(
-                value["source_excerpt"], f"{field}.source_excerpt"
-            ),
-        )
-        requirements.append(requirement)
-        requirements_by_id[requirement_id] = requirement
-
-    return ReadinessWorkflow(
-        workflow_id=workflow_id,
-        jurisdiction=jurisdiction,
-        project_type=project_type,
-        status=status,
-        title=title,
-        scope=scope,
-        source_bindings=tuple(bindings),
-        mapping_provenance=mapping_provenance,
-        applicability=applicability,
-        facts=tuple(facts),
-        requirements=tuple(requirements),
+    _exact_keys(value, keys, keys, field)
+    requirement_id = _identifier(value["requirement_id"], f"{field}.requirement_id")
+    item_type = _required_text(value["item_type"], f"{field}.item_type")
+    if item_type not in ITEM_TYPES:
+        raise ValueError(f"{field}.item_type: unsupported value")
+    parent_id = _optional_text(
+        value["parent_requirement_id"], f"{field}.parent_requirement_id"
+    )
+    if parent_id is not None and not _IDENTIFIER.fullmatch(parent_id):
+        raise ValueError(f"{field}.parent_requirement_id: invalid identifier")
+    if parent_id is not None and parent_id not in prior_requirements:
+        raise ValueError(f"{field}.parent_requirement_id: parent must appear first")
+    source_id = _identifier(value["source_id"], f"{field}.source_id")
+    if source_id not in bound_source_ids:
+        raise ValueError(f"{field}.source_id: source is not bound to the workflow")
+    return Requirement(
+        requirement_id=requirement_id,
+        label=_required_text(value["label"], f"{field}.label"),
+        category=_required_text(value["category"], f"{field}.category"),
+        item_type=item_type,
+        parent_requirement_id=parent_id,
+        applies_when=_conditions(value["applies_when"], f"{field}.applies_when", facts),
+        source_id=source_id,
+        source_locator=_required_text(
+            value["source_locator"], f"{field}.source_locator"
+        ),
+        source_excerpt=_required_text(
+            value["source_excerpt"], f"{field}.source_excerpt"
+        ),
     )
 
 
-def load_readiness_packet(
+def _requirements(
+    value: Any,
+    facts: dict[str, FactDefinition],
+    bindings: tuple[SourceBinding, ...],
+) -> tuple[Requirement, ...]:
+    if not isinstance(value, list) or not value:
+        raise ValueError("workflow.requirements: expected a non-empty list")
+    requirements: list[Requirement] = []
+    by_id: dict[str, Requirement] = {}
+    bound_source_ids = {binding.source_id for binding in bindings}
+    for index, raw_requirement in enumerate(value):
+        field = f"workflow.requirements[{index}]"
+        requirement = _requirement(
+            raw_requirement, field, facts, by_id, bound_source_ids
+        )
+        if requirement.requirement_id in by_id:
+            raise ValueError(f"{field}.requirement_id: duplicate requirement")
+        requirements.append(requirement)
+        by_id[requirement.requirement_id] = requirement
+    return tuple(requirements)
+
+
+def load_readiness_workflow(
     path: Path,
-    workflow: ReadinessWorkflow,
+    sources_path: Path,
     *,
     today: date | None = None,
-) -> ReadinessPacket:
-    """Load an explicit packet inventory for a readiness workflow."""
+) -> ReadinessWorkflow:
+    """Load and strictly validate one source-bound readiness workflow."""
 
-    payload = _read_json(path, str(path))
-    if not isinstance(payload, dict):
-        raise ValueError(f"{path}: expected an object")
-    _exact_keys(
-        payload,
-        {"schema_version", "packet"},
-        {"schema_version", "packet"},
-        str(path),
-    )
-    if payload["schema_version"] != SCHEMA_VERSION:
-        raise ValueError(f"{path}: unsupported schema version")
-    raw = payload["packet"]
-    if not isinstance(raw, dict):
-        raise ValueError(f"{path}.packet: expected an object")
     as_of = resolve_today(today)
-    packet_keys = {
+    raw = _workflow_record(path)
+    status = _required_text(raw["status"], "workflow.status")
+    if status != "prototype":
+        raise ValueError("workflow.status: current schema requires 'prototype'")
+    bindings = _source_bindings(
+        raw["source_bindings"],
+        load_sources(sources_path, today=as_of),
+        as_of,
+    )
+    facts, facts_by_id = _fact_definitions(raw["facts"], bindings)
+    return ReadinessWorkflow(
+        workflow_id=_identifier(raw["workflow_id"], "workflow.workflow_id"),
+        jurisdiction=_identifier(raw["jurisdiction"], "workflow.jurisdiction"),
+        project_type=_identifier(raw["project_type"], "workflow.project_type"),
+        status=status,
+        title=_required_text(raw["title"], "workflow.title"),
+        scope=_required_text(raw["scope"], "workflow.scope"),
+        source_bindings=bindings,
+        mapping_provenance=_load_mapping_provenance(
+            raw["mapping_provenance"], bindings, today=as_of
+        ),
+        applicability=_conditions(
+            raw["applicability"],
+            "workflow.applicability",
+            facts_by_id,
+            non_empty=True,
+        ),
+        facts=facts,
+        requirements=_requirements(raw["requirements"], facts_by_id, bindings),
+    )
+
+
+def _packet_record(path: Path) -> dict[str, Any]:
+    raw = _versioned_record(path, "packet")
+    keys = {
         "packet_id",
         "workflow_id",
         "label",
@@ -712,100 +781,199 @@ def load_readiness_packet(
         "facts",
         "inventory",
     }
-    _exact_keys(raw, packet_keys, packet_keys, f"{path}.packet")
+    _exact_keys(raw, keys, keys, f"{path}.packet")
+    return raw
+
+
+def _packet_fact_evidence(
+    value: dict[str, Any],
+    field: str,
+    definition: FactDefinition,
+    bindings: dict[str, SourceBinding],
+    provenance: str,
+    fact_value: str,
+) -> tuple[str | None, str | None, str | None]:
+    source_id = _optional_text(value["source_id"], f"{field}.source_id")
+    source_field = _optional_text(value["source_field"], f"{field}.source_field")
+    checked_value = value["source_checked_on"]
+    source_checked_on = (
+        None
+        if checked_value is None
+        else _required_text(checked_value, f"{field}.source_checked_on")
+    )
+    evidence = (source_id, source_field, source_checked_on)
+    if definition.source_id is None:
+        if any(item is not None for item in evidence):
+            raise ValueError(
+                f"{field}: applicant assertion cannot claim source evidence"
+            )
+        if provenance == "synthetic_public_record_fixture":
+            raise ValueError(f"{field}.provenance: workflow fact has no source binding")
+    else:
+        if provenance != "synthetic_public_record_fixture":
+            raise ValueError(
+                f"{field}.provenance: source-bound fixture fact requires "
+                "synthetic_public_record_fixture"
+            )
+        binding = bindings[definition.source_id]
+        if source_id != definition.source_id:
+            raise ValueError(f"{field}.source_id: does not match workflow fact binding")
+        if source_field != definition.source_field:
+            raise ValueError(
+                f"{field}.source_field: does not match workflow fact binding"
+            )
+        if source_checked_on != binding.source_checked_on:
+            raise ValueError(f"{field}.source_checked_on: does not match bound source")
+        if fact_value == "unknown":
+            raise ValueError(f"{field}.value: source fixture must be concrete")
+    return source_id, source_field, source_checked_on
+
+
+def _packet_fact(
+    value: Any,
+    field: str,
+    definitions: dict[str, FactDefinition],
+    bindings: dict[str, SourceBinding],
+) -> PacketFact:
+    if not isinstance(value, dict):
+        raise ValueError(f"{field}: expected an object")
+    keys = {
+        "fact_id",
+        "value",
+        "provenance",
+        "source_id",
+        "source_field",
+        "source_checked_on",
+    }
+    _exact_keys(value, keys, keys, field)
+    fact_id = _identifier(value["fact_id"], f"{field}.fact_id")
+    definition = definitions.get(fact_id)
+    if definition is None:
+        raise ValueError(f"{field}.fact_id: unknown workflow fact")
+    fact_value = _required_text(value["value"], f"{field}.value")
+    if fact_value not in definition.allowed_values:
+        raise ValueError(f"{field}.value: unsupported value")
+    provenance = _required_text(value["provenance"], f"{field}.provenance")
+    if provenance not in PROVENANCE_VALUES:
+        raise ValueError(f"{field}.provenance: unsupported value")
+    source_id, source_field, source_checked_on = _packet_fact_evidence(
+        value,
+        field,
+        definition,
+        bindings,
+        provenance,
+        fact_value,
+    )
+    return PacketFact(
+        fact_id=fact_id,
+        value=fact_value,
+        provenance=provenance,
+        source_id=source_id,
+        source_field=source_field,
+        source_checked_on=source_checked_on,
+    )
+
+
+def _packet_facts(
+    value: Any,
+    workflow: ReadinessWorkflow,
+) -> tuple[PacketFact, ...]:
+    if not isinstance(value, list):
+        raise ValueError("packet.facts: expected a list")
+    definitions = workflow.fact_map()
+    bindings = {binding.source_id: binding for binding in workflow.source_bindings}
+    facts: list[PacketFact] = []
+    seen: set[str] = set()
+    for index, raw_fact in enumerate(value):
+        field = f"packet.facts[{index}]"
+        fact = _packet_fact(raw_fact, field, definitions, bindings)
+        if fact.fact_id in seen:
+            raise ValueError(f"{field}.fact_id: duplicate fact")
+        facts.append(fact)
+        seen.add(fact.fact_id)
+    missing = sorted(set(definitions) - seen)
+    if missing:
+        raise ValueError("packet.facts: missing facts: " + ", ".join(missing))
+    return tuple(facts)
+
+
+def _packet_inventory_item(
+    value: Any,
+    field: str,
+    requirements: dict[str, Requirement],
+) -> InventoryItem:
+    if not isinstance(value, dict):
+        raise ValueError(f"{field}: expected an object")
+    keys = {"requirement_id", "status"}
+    _exact_keys(value, keys, keys, field)
+    requirement_id = _identifier(value["requirement_id"], f"{field}.requirement_id")
+    if requirement_id not in requirements:
+        raise ValueError(f"{field}.requirement_id: unknown workflow requirement")
+    status = _required_text(value["status"], f"{field}.status")
+    if status not in INVENTORY_STATUSES:
+        raise ValueError(f"{field}.status: unsupported value")
+    return InventoryItem(requirement_id=requirement_id, status=status)
+
+
+def _packet_inventory(
+    value: Any,
+    workflow: ReadinessWorkflow,
+) -> tuple[InventoryItem, ...]:
+    if not isinstance(value, list):
+        raise ValueError("packet.inventory: expected a list")
+    requirements = workflow.requirement_map()
+    inventory: list[InventoryItem] = []
+    seen: set[str] = set()
+    for index, raw_item in enumerate(value):
+        field = f"packet.inventory[{index}]"
+        item = _packet_inventory_item(raw_item, field, requirements)
+        if item.requirement_id in seen:
+            raise ValueError(f"{field}.requirement_id: duplicate item")
+        inventory.append(item)
+        seen.add(item.requirement_id)
+    missing = sorted(set(requirements) - seen)
+    if missing:
+        raise ValueError(
+            "packet.inventory: missing requirements: " + ", ".join(missing)
+        )
+    return tuple(inventory)
+
+
+def load_readiness_packet(
+    path: Path,
+    workflow: ReadinessWorkflow,
+    *,
+    today: date | None = None,
+) -> ReadinessPacket:
+    """Load an explicit packet inventory for a readiness workflow."""
+
+    raw = _packet_record(path)
     synthetic = raw["synthetic"]
     if not isinstance(synthetic, bool):
         raise ValueError("packet.synthetic: expected boolean")
-
-    raw_facts = raw["facts"]
-    if not isinstance(raw_facts, list):
-        raise ValueError("packet.facts: expected a list")
-    fact_definitions = workflow.fact_map()
-    facts: list[PacketFact] = []
-    seen_facts: set[str] = set()
-    for index, value in enumerate(raw_facts):
-        field = f"packet.facts[{index}]"
-        if not isinstance(value, dict):
-            raise ValueError(f"{field}: expected an object")
-        keys = {"fact_id", "value", "provenance"}
-        _exact_keys(value, keys, keys, field)
-        fact_id = _identifier(value["fact_id"], f"{field}.fact_id")
-        if fact_id in seen_facts:
-            raise ValueError(f"{field}.fact_id: duplicate fact")
-        definition = fact_definitions.get(fact_id)
-        if definition is None:
-            raise ValueError(f"{field}.fact_id: unknown workflow fact")
-        fact_value = _required_text(value["value"], f"{field}.value")
-        if fact_value not in definition.allowed_values:
-            raise ValueError(f"{field}.value: unsupported value")
-        provenance = _required_text(value["provenance"], f"{field}.provenance")
-        if provenance not in PROVENANCE_VALUES:
-            raise ValueError(f"{field}.provenance: unsupported value")
-        facts.append(
-            PacketFact(
-                fact_id=fact_id,
-                value=fact_value,
-                provenance=provenance,
-            )
-        )
-        seen_facts.add(fact_id)
-    missing_facts = sorted(set(fact_definitions) - seen_facts)
-    if missing_facts:
-        raise ValueError("packet.facts: missing facts: " + ", ".join(missing_facts))
-
-    raw_inventory = raw["inventory"]
-    if not isinstance(raw_inventory, list):
-        raise ValueError("packet.inventory: expected a list")
-    requirement_definitions = workflow.requirement_map()
-    inventory: list[InventoryItem] = []
-    seen_requirements: set[str] = set()
-    for index, value in enumerate(raw_inventory):
-        field = f"packet.inventory[{index}]"
-        if not isinstance(value, dict):
-            raise ValueError(f"{field}: expected an object")
-        keys = {"requirement_id", "status"}
-        _exact_keys(value, keys, keys, field)
-        requirement_id = _identifier(value["requirement_id"], f"{field}.requirement_id")
-        if requirement_id in seen_requirements:
-            raise ValueError(f"{field}.requirement_id: duplicate item")
-        if requirement_id not in requirement_definitions:
-            raise ValueError(f"{field}.requirement_id: unknown workflow requirement")
-        status = _required_text(value["status"], f"{field}.status")
-        if status not in INVENTORY_STATUSES:
-            raise ValueError(f"{field}.status: unsupported value")
-        inventory.append(InventoryItem(requirement_id=requirement_id, status=status))
-        seen_requirements.add(requirement_id)
-    missing_requirements = sorted(set(requirement_definitions) - seen_requirements)
-    if missing_requirements:
-        raise ValueError(
-            "packet.inventory: missing requirements: " + ", ".join(missing_requirements)
-        )
-
+    facts = _packet_facts(raw["facts"], workflow)
+    if not synthetic and any(
+        fact.provenance.startswith("synthetic_") for fact in facts
+    ):
+        raise ValueError("packet.facts: non-synthetic packet cannot use fixtures")
     return ReadinessPacket(
         packet_id=_identifier(raw["packet_id"], "packet.packet_id"),
         workflow_id=_identifier(raw["workflow_id"], "packet.workflow_id"),
         label=_required_text(raw["label"], "packet.label"),
         synthetic=synthetic,
-        evaluated_on=_iso_date(raw["evaluated_on"], "packet.evaluated_on", today=as_of),
+        evaluated_on=_iso_date(
+            raw["evaluated_on"],
+            "packet.evaluated_on",
+            today=resolve_today(today),
+        ),
         jurisdiction=_identifier(raw["jurisdiction"], "packet.jurisdiction"),
         project_type=_identifier(raw["project_type"], "packet.project_type"),
-        facts=tuple(facts),
-        inventory=tuple(inventory),
+        facts=facts,
+        inventory=_packet_inventory(raw["inventory"], workflow),
     )
 
 
-def load_readiness_remedies(
-    path: Path,
-    workflow: ReadinessWorkflow,
-    *,
-    today: date | None = None,
-) -> ReadinessRemedies:
-    """Load versioned, review-tracked action copy for readiness findings.
-
-    Remedy copy is display-only. The deterministic evaluator never imports it.
-    """
-
-    as_of = resolve_today(today)
+def _remedies_record(path: Path) -> dict[str, Any]:
     payload = _read_json(path, str(path))
     if not isinstance(payload, dict):
         raise ValueError(f"{path}: expected an object")
@@ -822,27 +990,17 @@ def load_readiness_remedies(
     _exact_keys(payload, keys, keys, str(path))
     if payload["schema_version"] != SCHEMA_VERSION:
         raise ValueError(f"{path}: unsupported schema version")
-    workflow_id = _identifier(payload["workflow_id"], "remedies.workflow_id")
-    if workflow_id != workflow.workflow_id:
-        raise ValueError("remedies.workflow_id: does not match workflow")
-    workflow_fingerprint = _required_text(
-        payload["workflow_fingerprint"],
-        "remedies.workflow_fingerprint",
-    )
-    if workflow_fingerprint != workflow.fingerprint():
-        raise ValueError("remedies.workflow_fingerprint: workflow content drifted")
-    version = _required_text(payload["version"], "remedies.version")
-    if not _SEMVER.fullmatch(version):
-        raise ValueError("remedies.version: expected semantic version")
-    updated_on = _iso_date(payload["updated_on"], "remedies.updated_on", today=as_of)
-    drafted_by = _required_text(payload["drafted_by"], "remedies.drafted_by")
-    if drafted_by != "ai_assisted":
-        raise ValueError("remedies.drafted_by: current prototype requires ai_assisted")
+    return payload
 
-    raw_review = payload["review"]
-    if not isinstance(raw_review, dict):
+
+def _remedy_review(
+    value: Any,
+    version: str,
+    as_of: date,
+) -> RemedyReview:
+    if not isinstance(value, dict):
         raise ValueError("remedies.review: expected an object")
-    review_keys = {
+    keys = {
         "status",
         "reviewer",
         "method",
@@ -850,29 +1008,29 @@ def load_readiness_remedies(
         "reviewed_version",
         "content_fingerprint",
     }
-    _exact_keys(raw_review, review_keys, review_keys, "remedies.review")
-    review_status = _required_text(raw_review["status"], "remedies.review.status")
-    if review_status not in (
+    _exact_keys(value, keys, keys, "remedies.review")
+    status = _required_text(value["status"], "remedies.review.status")
+    if status not in (
         "prototype_review_pending",
         "human_reviewed",
         "jurisdiction_approved",
     ):
         raise ValueError("remedies.review.status: unsupported status")
-    reviewer = _optional_text(raw_review["reviewer"], "remedies.review.reviewer")
-    method = _optional_text(raw_review["method"], "remedies.review.method")
+    reviewer = _optional_text(value["reviewer"], "remedies.review.reviewer")
+    method = _optional_text(value["method"], "remedies.review.method")
     reviewed_version = _optional_text(
-        raw_review["reviewed_version"],
+        value["reviewed_version"],
         "remedies.review.reviewed_version",
     )
     content_fingerprint = _optional_text(
-        raw_review["content_fingerprint"],
+        value["content_fingerprint"],
         "remedies.review.content_fingerprint",
     )
     if content_fingerprint is not None and not re.fullmatch(
         r"sha256:[0-9a-f]{64}", content_fingerprint
     ):
         raise ValueError("remedies.review.content_fingerprint: invalid fingerprint")
-    reviewed_on_value = raw_review["reviewed_on"]
+    reviewed_on_value = value["reviewed_on"]
     reviewed_on = (
         None
         if reviewed_on_value is None
@@ -882,33 +1040,21 @@ def load_readiness_remedies(
             today=as_of,
         )
     )
-    if review_status == "prototype_review_pending":
-        if any(
-            value is not None
-            for value in (
-                reviewer,
-                method,
-                reviewed_on,
-                reviewed_version,
-                content_fingerprint,
-            )
-        ):
+    metadata = (reviewer, method, reviewed_on, reviewed_version, content_fingerprint)
+    if status == "prototype_review_pending":
+        if any(item is not None for item in metadata):
             raise ValueError(
                 "remedies.review: pending review cannot carry review claims"
             )
-    elif (
-        reviewer is None
-        or method is None
-        or reviewed_on is None
-        or reviewed_version != version
-        or content_fingerprint is None
+    elif not all((reviewer, method, reviewed_on, content_fingerprint)) or (
+        reviewed_version != version
     ):
         raise ValueError(
             "remedies.review: completed review must name reviewer, method, "
             "date, and exact version"
         )
-    review = RemedyReview(
-        status=review_status,
+    return RemedyReview(
+        status=status,
         reviewer=reviewer,
         method=method,
         reviewed_on=reviewed_on,
@@ -916,48 +1062,63 @@ def load_readiness_remedies(
         content_fingerprint=content_fingerprint,
     )
 
-    raw_entries = payload["entries"]
-    if not isinstance(raw_entries, list):
+
+def _remedy_entry(
+    value: Any,
+    field: str,
+    requirements: dict[str, Requirement],
+) -> ReadinessRemedy:
+    if not isinstance(value, dict):
+        raise ValueError(f"{field}: expected an object")
+    keys = {"requirement_id", "requirement_fingerprint", "action"}
+    _exact_keys(value, keys, keys, field)
+    requirement_id = _identifier(value["requirement_id"], f"{field}.requirement_id")
+    requirement = requirements.get(requirement_id)
+    if requirement is None:
+        raise ValueError(f"{field}.requirement_id: orphan entry")
+    fingerprint = _required_text(
+        value["requirement_fingerprint"], f"{field}.requirement_fingerprint"
+    )
+    if fingerprint != requirement.fingerprint():
+        raise ValueError(f"{field}.requirement_fingerprint: requirement drifted")
+    return ReadinessRemedy(
+        requirement_id=requirement_id,
+        requirement_fingerprint=fingerprint,
+        action=_required_text(value["action"], f"{field}.action"),
+    )
+
+
+def _remedy_entries(
+    value: Any,
+    workflow: ReadinessWorkflow,
+) -> tuple[ReadinessRemedy, ...]:
+    if not isinstance(value, list):
         raise ValueError("remedies.entries: expected a list")
     requirements = workflow.requirement_map()
     entries: list[ReadinessRemedy] = []
     seen: set[str] = set()
-    for index, value in enumerate(raw_entries):
+    for index, raw_entry in enumerate(value):
         field = f"remedies.entries[{index}]"
-        if not isinstance(value, dict):
-            raise ValueError(f"{field}: expected an object")
-        entry_keys = {
-            "requirement_id",
-            "requirement_fingerprint",
-            "action",
-        }
-        _exact_keys(value, entry_keys, entry_keys, field)
-        requirement_id = _identifier(value["requirement_id"], f"{field}.requirement_id")
-        if requirement_id in seen:
+        entry = _remedy_entry(raw_entry, field, requirements)
+        if entry.requirement_id in seen:
             raise ValueError(f"{field}.requirement_id: duplicate entry")
-        requirement = requirements.get(requirement_id)
-        if requirement is None:
-            raise ValueError(f"{field}.requirement_id: orphan entry")
-        fingerprint = _required_text(
-            value["requirement_fingerprint"],
-            f"{field}.requirement_fingerprint",
-        )
-        if fingerprint != requirement.fingerprint():
-            raise ValueError(f"{field}.requirement_fingerprint: requirement drifted")
-        entries.append(
-            ReadinessRemedy(
-                requirement_id=requirement_id,
-                requirement_fingerprint=fingerprint,
-                action=_required_text(value["action"], f"{field}.action"),
-            )
-        )
-        seen.add(requirement_id)
+        entries.append(entry)
+        seen.add(entry.requirement_id)
     missing = sorted(set(requirements) - seen)
     if missing:
         raise ValueError(
             "remedies.entries: missing requirements: " + ", ".join(missing)
         )
-    expected_content_fingerprint = _fingerprint(
+    return tuple(entries)
+
+
+def _validate_remedy_review_fingerprint(
+    review: RemedyReview,
+    entries: tuple[ReadinessRemedy, ...],
+    version: str,
+    workflow_id: str,
+) -> None:
+    expected = _fingerprint(
         {
             "entries": [asdict(entry) for entry in entries],
             "version": version,
@@ -966,9 +1127,42 @@ def load_readiness_remedies(
     )
     if (
         review.status != "prototype_review_pending"
-        and review.content_fingerprint != expected_content_fingerprint
+        and review.content_fingerprint != expected
     ):
         raise ValueError("remedies.review.content_fingerprint: reviewed copy drifted")
+
+
+def load_readiness_remedies(
+    path: Path,
+    workflow: ReadinessWorkflow,
+    *,
+    today: date | None = None,
+) -> ReadinessRemedies:
+    """Load versioned, review-tracked action copy for readiness findings.
+
+    Remedy copy is display-only. The deterministic evaluator never imports it.
+    """
+
+    payload = _remedies_record(path)
+    workflow_id = _identifier(payload["workflow_id"], "remedies.workflow_id")
+    if workflow_id != workflow.workflow_id:
+        raise ValueError("remedies.workflow_id: does not match workflow")
+    workflow_fingerprint = _required_text(
+        payload["workflow_fingerprint"], "remedies.workflow_fingerprint"
+    )
+    if workflow_fingerprint != workflow.fingerprint():
+        raise ValueError("remedies.workflow_fingerprint: workflow content drifted")
+    version = _required_text(payload["version"], "remedies.version")
+    if not _SEMVER.fullmatch(version):
+        raise ValueError("remedies.version: expected semantic version")
+    as_of = resolve_today(today)
+    updated_on = _iso_date(payload["updated_on"], "remedies.updated_on", today=as_of)
+    drafted_by = _required_text(payload["drafted_by"], "remedies.drafted_by")
+    if drafted_by != "ai_assisted":
+        raise ValueError("remedies.drafted_by: current prototype requires ai_assisted")
+    review = _remedy_review(payload["review"], version, as_of)
+    entries = _remedy_entries(payload["entries"], workflow)
+    _validate_remedy_review_fingerprint(review, entries, version, workflow_id)
     return ReadinessRemedies(
         workflow_id=workflow_id,
         workflow_fingerprint=workflow_fingerprint,
@@ -976,7 +1170,7 @@ def load_readiness_remedies(
         updated_on=updated_on,
         drafted_by=drafted_by,
         review=review,
-        entries=tuple(entries),
+        entries=entries,
     )
 
 
@@ -1026,6 +1220,182 @@ def _source_review_due_on(
     ).isoformat()
 
 
+def _finding(
+    requirement: Requirement,
+    status: str,
+    reason: str,
+) -> ReadinessFinding:
+    return ReadinessFinding(
+        requirement_id=requirement.requirement_id,
+        label=requirement.label,
+        category=requirement.category,
+        status=status,
+        reason=reason,
+        source_id=requirement.source_id,
+        source_locator=requirement.source_locator,
+        source_excerpt=requirement.source_excerpt,
+        requirement_fingerprint=requirement.fingerprint(),
+    )
+
+
+def _uniform_findings(
+    workflow: ReadinessWorkflow,
+    status: str,
+    reason: str,
+) -> list[ReadinessFinding]:
+    return [
+        _finding(requirement, status, reason) for requirement in workflow.requirements
+    ]
+
+
+def _append_unknown_questions(
+    conditions: tuple[Condition, ...],
+    fact_values: dict[str, str],
+    fact_definitions: dict[str, FactDefinition],
+    questions: list[str],
+) -> None:
+    for condition in conditions:
+        if fact_values.get(condition.fact_id) in (None, "unknown"):
+            question = fact_definitions[condition.fact_id].question
+            if question not in questions:
+                questions.append(question)
+
+
+def _requirement_finding(
+    requirement: Requirement,
+    fact_values: dict[str, str],
+    fact_definitions: dict[str, FactDefinition],
+    inventory: dict[str, str],
+    prior_statuses: dict[str, str],
+    questions: list[str],
+) -> ReadinessFinding:
+    state = _condition_state(requirement.applies_when, fact_values)
+    if state == "does_not_apply":
+        return _finding(
+            requirement,
+            "not_applicable",
+            "The reported project facts do not trigger this item.",
+        )
+    if state == "unknown":
+        _append_unknown_questions(
+            requirement.applies_when,
+            fact_values,
+            fact_definitions,
+            questions,
+        )
+        return _finding(
+            requirement,
+            "needs_staff_review",
+            "A project fact that controls this item is unknown.",
+        )
+    parent_id = requirement.parent_requirement_id
+    if parent_id is not None and prior_statuses.get(parent_id) != "present":
+        return _finding(
+            requirement,
+            "not_evaluated",
+            "This content was not evaluated because its parent document "
+            "was not reported present.",
+        )
+    status, reason = _inventory_finding(inventory[requirement.requirement_id])
+    return _finding(requirement, status, reason)
+
+
+def _overall_status(findings: list[ReadinessFinding]) -> str:
+    statuses = {finding.status for finding in findings}
+    if "missing" in statuses:
+        return "known_gaps"
+    if statuses & {"conflicting", "needs_staff_review", "not_evaluated"}:
+        return "needs_review"
+    return "no_known_gaps_in_bounded_manifest"
+
+
+def _active_findings(
+    workflow: ReadinessWorkflow,
+    fact_values: dict[str, str],
+    inventory: dict[str, str],
+) -> tuple[str, list[ReadinessFinding], list[str]]:
+    fact_definitions = workflow.fact_map()
+    findings: list[ReadinessFinding] = []
+    statuses: dict[str, str] = {}
+    questions: list[str] = []
+    for requirement in workflow.requirements:
+        finding = _requirement_finding(
+            requirement,
+            fact_values,
+            fact_definitions,
+            inventory,
+            statuses,
+            questions,
+        )
+        findings.append(finding)
+        statuses[requirement.requirement_id] = finding.status
+    return _overall_status(findings), findings, questions
+
+
+def _applicability_state(
+    workflow: ReadinessWorkflow,
+    packet: ReadinessPacket,
+    fact_values: dict[str, str],
+) -> str:
+    same_workflow = (
+        packet.workflow_id == workflow.workflow_id
+        and packet.jurisdiction == workflow.jurisdiction
+        and packet.project_type == workflow.project_type
+    )
+    if not same_workflow:
+        return "does_not_apply"
+    return _condition_state(workflow.applicability, fact_values)
+
+
+def _evaluation_outcome(
+    workflow: ReadinessWorkflow,
+    packet: ReadinessPacket,
+    source_current: bool,
+) -> tuple[str, str, list[ReadinessFinding], list[str]]:
+    fact_values = packet.fact_values()
+    if not source_current:
+        findings = _uniform_findings(
+            workflow,
+            "needs_staff_review",
+            "A linked workflow source needs review before this requirement "
+            "can support a packet finding.",
+        )
+        question = (
+            "Confirm the current checklist and parcel-source fields before "
+            "using this packet-presence result."
+        )
+        return "source_review_required", "source_review_required", findings, [question]
+    applicability = _applicability_state(workflow, packet, fact_values)
+    if applicability == "does_not_apply":
+        findings = _uniform_findings(
+            workflow,
+            "not_evaluated",
+            "This packet is outside the one preapproved-plan workflow encoded "
+            "by the prototype.",
+        )
+        question = "Ask Woodland staff which current checklist applies to this project."
+        return "outside_bounded_workflow", "current", findings, [question]
+    if applicability == "unknown":
+        questions: list[str] = []
+        _append_unknown_questions(
+            workflow.applicability,
+            fact_values,
+            workflow.fact_map(),
+            questions,
+        )
+        findings = _uniform_findings(
+            workflow,
+            "not_evaluated",
+            "Confirm that this is the encoded preapproved-plan workflow before "
+            "checking its packet.",
+        )
+        return "needs_review", "current", findings, questions
+    overall, findings, questions = _active_findings(
+        workflow, fact_values, packet.inventory_map()
+    )
+    return overall, "current", findings, questions
+
+
 def evaluate_readiness(
     workflow: ReadinessWorkflow,
     packet: ReadinessPacket,
@@ -1044,163 +1414,24 @@ def evaluate_readiness(
     if max_age_days < 0:
         raise ValueError("max_age_days must be non-negative")
     as_of = resolve_today(today)
-    changed = set(changed_source_ids or set())
-    fact_values = packet.fact_values()
-    inventory = packet.inventory_map()
-    fact_definitions = workflow.fact_map()
-    findings: list[ReadinessFinding] = []
-    questions: list[str] = []
     boundary = (
         "This prototype checks reported item presence against one City "
-        "checklist. It does not inspect files, verify parcel facts, determine "
-        "legal sufficiency, certify completeness, or limit what staff may "
-        "request."
+        "checklist. Its parcel values are invented fixtures shaped like fields "
+        "in a linked public dataset; it does not query or verify a live parcel, "
+        "inspect files, determine legal sufficiency, certify completeness, or "
+        "limit what staff may request."
     )
 
-    source_current = _sources_current(
+    overall, source_status, findings, questions = _evaluation_outcome(
         workflow,
-        today=as_of,
-        changed_source_ids=changed,
-        max_age_days=max_age_days,
+        packet,
+        _sources_current(
+            workflow,
+            today=as_of,
+            changed_source_ids=set(changed_source_ids or set()),
+            max_age_days=max_age_days,
+        ),
     )
-    same_workflow = (
-        packet.workflow_id == workflow.workflow_id
-        and packet.jurisdiction == workflow.jurisdiction
-        and packet.project_type == workflow.project_type
-    )
-    applicability_state = (
-        _condition_state(workflow.applicability, fact_values)
-        if same_workflow
-        else "does_not_apply"
-    )
-
-    if not source_current:
-        overall = "source_review_required"
-        source_status = "source_review_required"
-        questions.append(
-            "Ask the City to confirm the current checklist before using this "
-            "packet-presence result."
-        )
-        for requirement in workflow.requirements:
-            findings.append(
-                ReadinessFinding(
-                    requirement_id=requirement.requirement_id,
-                    label=requirement.label,
-                    category=requirement.category,
-                    status="needs_staff_review",
-                    reason=(
-                        "The linked checklist needs source review before this "
-                        "requirement can support a packet finding."
-                    ),
-                    source_id=requirement.source_id,
-                    source_locator=requirement.source_locator,
-                    source_excerpt=requirement.source_excerpt,
-                    requirement_fingerprint=requirement.fingerprint(),
-                )
-            )
-    elif applicability_state == "does_not_apply":
-        overall = "outside_bounded_workflow"
-        source_status = "current"
-        questions.append(
-            "Ask Woodland staff which current checklist applies to this project."
-        )
-        for requirement in workflow.requirements:
-            findings.append(
-                ReadinessFinding(
-                    requirement_id=requirement.requirement_id,
-                    label=requirement.label,
-                    category=requirement.category,
-                    status="not_evaluated",
-                    reason=(
-                        "This packet is outside the one preapproved-plan "
-                        "workflow encoded by the prototype."
-                    ),
-                    source_id=requirement.source_id,
-                    source_locator=requirement.source_locator,
-                    source_excerpt=requirement.source_excerpt,
-                    requirement_fingerprint=requirement.fingerprint(),
-                )
-            )
-    elif applicability_state == "unknown":
-        overall = "needs_review"
-        source_status = "current"
-        for condition in workflow.applicability:
-            if fact_values.get(condition.fact_id) in (None, "unknown"):
-                question = fact_definitions[condition.fact_id].question
-                if question not in questions:
-                    questions.append(question)
-        for requirement in workflow.requirements:
-            findings.append(
-                ReadinessFinding(
-                    requirement_id=requirement.requirement_id,
-                    label=requirement.label,
-                    category=requirement.category,
-                    status="not_evaluated",
-                    reason=(
-                        "Confirm that this is the encoded preapproved-plan "
-                        "workflow before checking its packet."
-                    ),
-                    source_id=requirement.source_id,
-                    source_locator=requirement.source_locator,
-                    source_excerpt=requirement.source_excerpt,
-                    requirement_fingerprint=requirement.fingerprint(),
-                )
-            )
-    else:
-        source_status = "current"
-        finding_status_by_id: dict[str, str] = {}
-        for requirement in workflow.requirements:
-            condition_state = _condition_state(requirement.applies_when, fact_values)
-            if condition_state == "does_not_apply":
-                status = "not_applicable"
-                reason = "The reported project facts do not trigger this item."
-            elif condition_state == "unknown":
-                status = "needs_staff_review"
-                reason = "A project fact that controls this item is unknown."
-                for condition in requirement.applies_when:
-                    if fact_values.get(condition.fact_id) in (None, "unknown"):
-                        question = fact_definitions[condition.fact_id].question
-                        if question not in questions:
-                            questions.append(question)
-            elif requirement.parent_requirement_id is not None:
-                parent_status = finding_status_by_id.get(
-                    requirement.parent_requirement_id
-                )
-                if parent_status != "present":
-                    status = "not_evaluated"
-                    reason = (
-                        "This content was not evaluated because its parent "
-                        "document was not reported present."
-                    )
-                else:
-                    status, reason = _inventory_finding(
-                        inventory[requirement.requirement_id]
-                    )
-            else:
-                status, reason = _inventory_finding(
-                    inventory[requirement.requirement_id]
-                )
-            finding_status_by_id[requirement.requirement_id] = status
-            findings.append(
-                ReadinessFinding(
-                    requirement_id=requirement.requirement_id,
-                    label=requirement.label,
-                    category=requirement.category,
-                    status=status,
-                    reason=reason,
-                    source_id=requirement.source_id,
-                    source_locator=requirement.source_locator,
-                    source_excerpt=requirement.source_excerpt,
-                    requirement_fingerprint=requirement.fingerprint(),
-                )
-            )
-        statuses = {finding.status for finding in findings}
-        if "missing" in statuses:
-            overall = "known_gaps"
-        elif statuses & {"conflicting", "needs_staff_review", "not_evaluated"}:
-            overall = "needs_review"
-        else:
-            overall = "no_known_gaps_in_bounded_manifest"
 
     if overall not in OVERALL_STATUSES:
         raise AssertionError("unreachable overall readiness status")
