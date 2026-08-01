@@ -5,6 +5,19 @@ published a versioned release.
 
 ## [Unreleased]
 
+### Fixed
+
+- The source-currency watcher no longer reports a source it could not
+  download as a source that changed. Each watched source is now classified as
+  `unchanged`, `changed` (fetched, hash moved), or `unverifiable` (fetch
+  failed: network error, non-2xx, timeout, or bot/WAF block). An unverifiable
+  source keeps its recorded hash and last successful verification date and
+  marks no rule stale, so a blocked or rate-limited scheduled runner can no
+  longer flip every dependent rule to "stale". Fetches now retry three times
+  with exponential backoff, one dead source cannot abort the run, and the
+  harness exits `2` for "could not check" as distinct from `1` for "review
+  needed". No rule content, source hash, or demo-visible output changed.
+
 ### Changed
 
 - Reworked phone-width navigation into a native section disclosure, tightened

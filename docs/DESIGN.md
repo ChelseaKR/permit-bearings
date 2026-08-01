@@ -178,8 +178,12 @@ abstention path is a structured intake with no matching encoded rule.
   and selected local-source artifacts) for hash changes. Nineteen sources are
   watched, including the current Davis handout and the HCD letter that records
   its unresolved ordinance-status issue; the blocked Davis municipal-code host
-  remains an unwatched reference. New-law discovery and durable changed-state
-  persistence are not implemented; stable source dependency IDs are.
+  remains an unwatched reference. Every run classifies each watched source as
+  `unchanged`, `changed`, or `unverifiable`. Only a source that was actually
+  fetched can be called changed; a fetch that fails after its retry budget is
+  `unverifiable`, carries the last successful verification date, and marks no
+  rule stale. New-law discovery and durable changed-state persistence are not
+  implemented; stable source dependency IDs are.
 - **Public trust surface:** the dashboard shows date-based rule status and a
   labeled amendment rehearsal. It does not currently ingest persisted output
   from the scheduled watcher.

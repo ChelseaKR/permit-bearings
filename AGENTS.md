@@ -113,10 +113,14 @@ interpretation. New verification work should move toward explicit levels such
 as `machine_linked`, `human_reviewed`, and `jurisdiction_approved`, with
 reviewer/method metadata.
 
-Treat a changed or unreachable source as a currency problem. Prefer explicit
-source IDs and dependency edges over substring matching. A source change must
-identify every affected rule, golden case, and user-facing output until a
-person re-verifies them.
+Treat a changed or unreachable source as a currency problem, but never as the
+same currency problem. A *changed* source — one that was fetched and whose
+content hash moved — must identify every affected rule, golden case, and
+user-facing output until a person re-verifies them. An *unverifiable* source —
+one the fetch could not reach — is evidence about the network, not about the
+law: report it as its own status with the last successful verification date,
+and do not mark anything stale on its account. Prefer explicit source IDs and
+dependency edges over substring matching.
 
 ## Decision-support and AI boundaries
 

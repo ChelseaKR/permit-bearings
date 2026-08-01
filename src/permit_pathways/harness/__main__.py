@@ -6,6 +6,17 @@
 --assume-changed marks one stable source ID as changed, e.g. to rehearse what
 a legislative amendment does to the rule base: every explicitly dependent
 rule flips to stale until re-verified.
+
+Exit codes:
+
+* ``0`` — nothing needs a person: no source changed, no rule is stale, and
+  the golden set passes.
+* ``1`` — review needed: a watched source's content changed, a rule aged
+  out of its review window, or a golden case regressed.
+* ``2`` — one or more watched sources could not be re-fetched. Nothing is
+  known to be wrong with the rule base; the check simply could not confirm
+  currency for those sources this run. Kept distinct from ``1`` so a
+  blocked or rate-limited runner cannot masquerade as a legislative change.
 """
 
 from __future__ import annotations
@@ -14,11 +25,19 @@ import argparse
 import sys
 from datetime import date
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ..dates import resolve_today
 from .runner import verify_rules
 
+if TYPE_CHECKING:
+    from .watch import UnverifiableSource
+
 ROOT = Path(__file__).resolve().parents[3]
+
+EXIT_OK = 0
+EXIT_REVIEW_NEEDED = 1
+EXIT_UNVERIFIABLE = 2
 
 
 def main(*, today: date | None = None) -> int:
@@ -43,15 +62,17 @@ def main(*, today: date | None = None) -> int:
     parser.add_argument(
         "--fetch",
         action="store_true",
-        help="Re-fetch watched sources and treat any whose "
-        "content hash changed as changed",
+        help="Re-fetch watched sources; a fetched source whose content hash "
+        "moved counts as changed, while a source that could not be fetched "
+        "is reported as unverifiable and marks nothing stale",
     )
     parser.add_argument("--sources", type=Path, default=ROOT / "data" / "sources.json")
     args = parser.parse_args()
     as_of = resolve_today(args.as_of or today)
 
     changed = list(args.assume_changed)
-    watch_problem = False
+    source_changed = False
+    unverifiable: dict[str, UnverifiableSource] = {}
     if args.fetch:
         from .watch import check_sources, load_sources
 
@@ -61,10 +82,15 @@ def main(*, today: date | None = None) -> int:
             for source_id, source in load_sources(args.sources, today=as_of).items()
         }
         print(watch.summary(labels), end="\n\n")
+        # Only a *fetched* document whose hash moved is evidence of a change.
+        # A source we could not download tells us nothing about its content:
+        # its recorded hash and last verification date still stand, so its
+        # dependent rules keep the status their own review dates give them.
+        # Feeding fetch failures into `changed` here is what turned one
+        # blocked host into "every statewide rule is stale".
         changed.extend(watch.changed)
-        # A source we can't reach can't be verified as current either.
-        changed.extend(watch.errors)
-        watch_problem = bool(watch.changed or watch.errors)
+        source_changed = bool(watch.changed)
+        unverifiable = dict(watch.unverifiable)
 
     report = verify_rules(
         args.rules,
@@ -94,10 +120,24 @@ def main(*, today: date | None = None) -> int:
         "\ntrustworthy:",
         "yes" if report.trustworthy else "NO — review queue is not empty",
     )
-    # Exit nonzero only on NEW problems (stale rules or golden regressions).
-    # Known-unverified rules are a standing backlog, not a fresh alarm — a
-    # scheduled currency check should page on change, not on every run.
-    return 1 if (watch_problem or report.stale or report.golden_failed) else 0
+    if unverifiable:
+        print(
+            f"\n{len(unverifiable)} watched source(s) could not be re-fetched "
+            "this run. Their recorded hashes and last verification dates "
+            "stand, and no rule was marked stale on that account. If a source "
+            "stays unreachable, its dependent rules still age out of the "
+            "review window on their own dates."
+        )
+    # Exit nonzero only on NEW problems (changed sources, stale rules, or
+    # golden regressions). Known-unverified rules are a standing backlog, not
+    # a fresh alarm — a scheduled currency check should page on change, not on
+    # every run. Unverifiable sources get their own code so that "we could not
+    # check" is never escalated as "the law changed".
+    if source_changed or report.stale or report.golden_failed:
+        return EXIT_REVIEW_NEEDED
+    if unverifiable:
+        return EXIT_UNVERIFIABLE
+    return EXIT_OK
 
 
 if __name__ == "__main__":
