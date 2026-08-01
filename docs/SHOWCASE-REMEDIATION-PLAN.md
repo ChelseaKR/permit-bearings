@@ -1,20 +1,19 @@
-# Showcase remediation plan
+# Capability status and known limitations
 
-Status: working plan for the Intent to Showcase submission. Updated
-2026-07-29.
+Status: current capability record for the prototype. Updated 2026-08-01.
 
-This plan tracks six gaps between the current prototype and a defensible
-submission. It does not claim a pilot, external validation, legal review,
-jurisdiction approval, production deployment, or measured permitting outcome.
+This document states plainly what is built, what is verified, what is planned,
+and what is unknown, across six areas. It does not claim a pilot, external
+validation, legal review, jurisdiction approval, production deployment, or
+measured permitting outcome.
 
 ## Status labels
 
 - **Implemented:** executable code or a concrete artifact exists in the current
   repository working tree. This label does not mean merged, deployed, reviewed,
   or validated by an external person.
-- **Next:** work to complete or verify before the Intent to Showcase
-  submission.
-- **Planned:** work proposed for a bounded pilot after submission.
+- **Next:** work to complete or verify next.
+- **Planned:** work proposed for a bounded pilot.
 - **Unknown:** an unresolved fact that must not be estimated or filled in
   without evidence.
 
@@ -59,8 +58,8 @@ jurisdiction approval, production deployment, or measured permitting outcome.
 **Next**
 
 - Repeat the repository and browser checks against the exact reviewed commit.
-- Deploy the packet sample page and verify its public URL, source links, visible
-  boundary, and responsive layout before creating a screenshot or video claim.
+- Re-verify the published packet sample page's source links, visible
+  boundary, and responsive layout after any change to it.
 - Complete a manual keyboard walkthrough and a named screen-reader walkthrough
   before making accessibility-conformance claims beyond the documented static
   and automated checks.
@@ -148,38 +147,22 @@ jurisdiction approval, production deployment, or measured permitting outcome.
 
 No external participant has validated the prototype as of 2026-07-29.
 
-## 4. Applicant qualifications and delivery authority
+## 4. Project provenance and delivery capacity
 
 **Implemented**
 
-- The applicant's self-published site describes a decade of public-interest
-  technology work, California state-system experience, public-sector delivery,
-  applied AI, accessibility, security, cloud, and engineering leadership. See
-  [chelseakr.com](https://chelseakr.com/).
 - [PROVENANCE.md](../PROVENANCE.md) identifies this repository as a personal
   project created on personal equipment and accounts.
 
-**Next**
-
-- The user must confirm the current title, dates, project descriptions, scale
-  statements, and permission to use employer or client references.
-- Confirm the legal applicant name, relationship between the applicant and this
-  personal project, procurement vehicle, delivery team, and whether the
-  application is individual or organizational.
-
 **Planned**
 
-- Add only qualifications the user confirms and can support if the program
-  requests evidence.
+- Any statement of delivery capacity would be made separately and would name
+  only independently supportable experience.
 
 **Unknown**
 
-- Legal applicant entity, procurement path, proposed team, delivery capacity,
-  and authority to bind any current or former employer.
-
-The qualifications draft in
-[SHOWCASE-SUBMISSION-DRAFT.md](SHOWCASE-SUBMISSION-DRAFT.md) is based only on
-the self-published site and is not independently verified.
+- Proposed team, delivery capacity, and procurement path. This repository does
+  not represent, and cannot bind, any current or former employer.
 
 ## 5. Deployment time, operations, and cost
 
@@ -207,7 +190,7 @@ precede the current unmerged readiness implementation.
 
 **Next**
 
-- Repeat the measurement on the exact submission commit and retain the run
+- Repeat the measurement on the exact reviewed commit and retain the run
   links.
 - Ask a proposed delivery team to validate scope, staffing, dependencies, and
   assumptions before using a jurisdiction timeline.
@@ -227,52 +210,34 @@ precede the current unmerged readiness implementation.
 
 Do not infer production time or cost from the prototype CI or Pages timings.
 
-## 6. Submission proof and supporting materials
+## 6. Public evidence
 
 **Implemented**
 
 - The [public prototype](https://chelseakr.github.io/permit-pathways/) and
   [hypothetical ADU route sample](https://chelseakr.github.io/permit-pathways/check.html?sample=adu)
   are available without sign-in.
-- A readable [packet sample page](../prepare.html) exists in the current working
-  tree but is not part of the published `main` evidence until the exact commit
-  is merged and deployed.
-- The [submission draft](SHOWCASE-SUBMISSION-DRAFT.md) records current field
-  assumptions, boundaries, and unresolved placeholders.
+- The readable [packet sample page](../prepare.html) is published on `main`
+  and reachable at
+  [prepare.html](https://chelseakr.github.io/permit-pathways/prepare.html),
+  verified 2026-08-01.
 
 **Next**
 
-- Verify the live Authorium fields, word limits, qualification placement, and
-  supporting-material rules.
-- Prepare no more than two annotated screenshots and a public video no longer
-  than 120 seconds using the exact submission commit.
-- Publish and verify the packet-presence page before using it as submission
-  evidence.
-- Attend or review the July 30 Vendor Information Forum and record any change
-  to the submission interpretation.
+- Repeat the published-page checks against each reviewed commit.
 
 **Planned**
 
-- Rehearse the full submission narrative with a strict distinction between
-  implemented prototype behavior, validation work, and pilot hypotheses.
+- Keep a strict distinction, in every description of this project, between
+  implemented prototype behavior, validation work, and deployment hypotheses.
 
 **Unknown**
 
-- Whether the live portal differs from the application preview.
-- Whether a packet-presence public view, final screenshots, video, and confirmed
-  qualifications will be ready before submission.
+- Whether any external reviewer finds the published evidence sufficient.
 
-## Submission gate
+## How to read this document
 
-Do not submit until:
-
-1. every placeholder in the application draft is resolved;
-2. the exact commit is tested, published, and linked;
-3. qualifications and applicant authority are confirmed by the user;
-4. the readiness sample is described only as deterministic packet presence;
-5. external validation is either reported with its method and results or
-   explicitly reported as not completed;
-6. the production timeline is labeled an unvalidated estimate and cost remains
-   unknown unless a delivery team supplies a supportable figure; and
-7. screenshots and video show only synthetic facts and current capability
-   boundaries.
+Every claim above is meant to be checkable against this repository at the
+commit you are reading. If a statement here disagrees with the code, the
+tests, or the published pages, the code is correct and this document is
+wrong — please open an issue.

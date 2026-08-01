@@ -3,6 +3,11 @@
 Status: planned formative research. No participants have been recruited, no
 sessions have been conducted, and no findings or outcomes are claimed.
 
+As of 2026-08-01 this study has **not started**. The dated schedule near the
+end of this document is the protocol's original plan, not a record of work
+done; treat every date in it as unmet. Nothing in this repository reports a
+session, participant, or result.
+
 This plan covers two small, moderated usability studies to inform the Intent to
 Showcase submission. Each session is 25 minutes. These studies are not a
 jurisdiction pilot, legal review, accessibility audit, translation review, or
@@ -571,7 +576,11 @@ available session times are confirmed.
 > Made-up project and packet only. No address, drawings, permit file, or legal
 > advice. Reply or DM if interested.
 
-## Schedule through August 9, 2026
+## Proposed schedule (not started)
+
+The dates below were the original plan. As of 2026-08-01 none of these
+activities has been performed. Do not read this table as a record of work.
+
 
 | Date | Activity and exit condition |
 | --- | --- |
