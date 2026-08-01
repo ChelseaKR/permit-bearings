@@ -59,7 +59,8 @@ python3 scripts/build_demo_bundle.py                # after canonical JSON chang
 
 ## Standards Conformance
 
-The repository follows the portfolio controls in `~/portfolio/STANDARDS`.
+The repository follows a pinned private portfolio standards baseline, fetched
+and enforced by the `Standards` workflow in CI.
 This table reports implemented automation separately from review work that
 still needs a person.
 
