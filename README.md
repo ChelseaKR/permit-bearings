@@ -59,7 +59,8 @@ python3 scripts/build_demo_bundle.py                # after canonical JSON chang
 
 ## Standards Conformance
 
-The repository follows the portfolio controls in `~/portfolio/STANDARDS`.
+The repository follows a pinned private portfolio standards baseline, fetched
+and enforced by the `Standards` workflow in CI.
 This table reports implemented automation separately from review work that
 still needs a person.
 
@@ -284,8 +285,11 @@ prohibition, conversion exemptions, pre-2020 unpermitted-unit legalization,
 multifamily-lot 66323 allowances, JADU standards, SB 9 two-unit developments,
 SB 9 urban lot splits, and the SB 9 × ADU unit-count interaction, plus
 bounded local metadata records for the Cities of Davis and Woodland. A weekly
-GitHub Action re-fetches selected statewide sources and is intended to open an
-issue if any changed or became unreachable. Two selected Woodland workflow
+GitHub Action re-fetches selected statewide sources and classifies each as
+unchanged, changed, or unverifiable. It opens an issue when a fetched source's
+content hash moved; a source it could not download is recorded as unverifiable
+with its last successful verification date and marks no rule stale. Two
+selected Woodland workflow
 sources, the January 2026 Davis ADU handout, and HCD's October 2025 Davis
 technical-assistance letter are recorded and watched. The Davis record reports
 only the City's published processing categories; it preserves HCD's unresolved
