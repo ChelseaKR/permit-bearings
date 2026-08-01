@@ -105,49 +105,6 @@ def test_landing_scope_matches_the_current_bounded_davis_record():
     assert "HCD\u2019s unresolved ordinance-status warning" in landing
 
 
-def test_showcase_submission_draft_preserves_portal_word_limits():
-    draft = (ROOT / "docs" / "SHOWCASE-SUBMISSION-DRAFT.md").read_text(encoding="utf-8")
-    bounded_responses = [
-        ("### Company description", "## Section 2", 43, 50),
-        ("### Solution description", "### AI technical workflow", 189, 200),
-        ("### AI technical workflow", "### Maturity", 145, 150),
-        ("### Maturity", "## Section 4", 89, 100),
-        (
-            "### Work required from jurisdiction staff",
-            "### Source data and integrations",
-            89,
-            100,
-        ),
-        (
-            "### Source data and integrations",
-            "### Known exceptions",
-            95,
-            100,
-        ),
-        (
-            "### Known exceptions",
-            "### Large jurisdiction experience",
-            95,
-            100,
-        ),
-    ]
-    for start, end, expected_words, word_limit in bounded_responses:
-        section = draft[draft.index(start) : draft.index(end)]
-        answer = " ".join(
-            line[1:].strip()
-            for line in section.splitlines()
-            if line.startswith(">") and line[1:].strip()
-        )
-        assert len(answer.split()) == expected_words, start
-        assert expected_words <= word_limit - 5, start
-        assert f"Draft count: {expected_words} words by whitespace." in section, start
-
-    assert "Status: working draft, not submitted." in draft
-    assert "[LEGAL ENTITY OR INDIVIDUAL APPLICANT NAME]" in draft
-    normalized = re.sub(r"\s+", " ", draft.replace(">", " "))
-    assert "No applicant, planner, counsel, translator, or jurisdiction" in normalized
-
-
 def test_public_brand_name_and_tagline_are_consistent():
     public_files = {
         ROOT / "index.html",

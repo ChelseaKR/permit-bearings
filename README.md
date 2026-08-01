@@ -338,7 +338,8 @@ explanation sidecar and keeps a separate `/trust` route.
 - `docs/DESIGN-SYSTEM.md`: California Web Standards alignment and local
   extensions
 - `docs/PRODUCT-CONTEXT.md`: capability truth and opportunity priorities
-- `docs/SHOWCASE-SUBMISSION-DRAFT.md`: word-limited application working draft
+- `docs/SHOWCASE-REMEDIATION-PLAN.md`: capability status, evidence, and known
+  limitations
 - `docs/SHOWCASE-PILOT-BRIEF.md`: bounded small-jurisdiction deployment
   hypothesis
 - `AGENTS.md`: evidence, scope, privacy, and quality guardrails
