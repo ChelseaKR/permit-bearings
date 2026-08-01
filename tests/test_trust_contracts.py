@@ -5,6 +5,7 @@ import hashlib
 import json
 import re
 import sys
+import urllib.error
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -220,6 +221,57 @@ def test_changed_source_ids_use_exact_dependency_edges(tmp_path):
     assert exact.stale == ["test-rule"]
 
 
+class _Response:
+    """Minimal stand-in for the object urlopen yields."""
+
+    def __init__(self, content: bytes, status: int = 200):
+        self.content = content
+        self.status = status
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+    def read(self):
+        return self.content
+
+
+def _install_urlopen(monkeypatch, handler, *, requested: list[str] | None = None):
+    """Route fetches to ``handler`` and remove retry backoff from tests."""
+
+    def fake_urlopen(request, timeout):
+        assert timeout > 0
+        if requested is not None:
+            requested.append(request.full_url)
+        return handler(request.full_url)
+
+    monkeypatch.setattr(
+        "permit_pathways.harness.watch.urllib.request.urlopen",
+        fake_urlopen,
+    )
+    monkeypatch.setattr(
+        "permit_pathways.harness.watch.FETCH_BACKOFF_SECONDS",
+        0.0,
+    )
+
+
+def _watch_argv(rules_path, golden_path, sources_path) -> list[str]:
+    return [
+        "permit_pathways.harness",
+        "--rules",
+        str(rules_path),
+        "--golden",
+        str(golden_path),
+        "--sources",
+        str(sources_path),
+        "--as-of",
+        AS_OF.isoformat(),
+        "--fetch",
+    ]
+
+
 def test_watcher_reports_stable_ids_and_skips_non_watched_sources(
     tmp_path,
     monkeypatch,
@@ -234,40 +286,179 @@ def test_watcher_reports_stable_ids_and_skips_non_watched_sources(
     sources_path.write_text(json.dumps(payload), encoding="utf-8")
     requested: list[str] = []
 
-    class Response:
-        def __init__(self, content):
-            self.content = content
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *_args):
-            return False
-
-        def read(self):
-            return self.content
-
-    def fake_urlopen(request, timeout):
-        assert timeout > 0
-        requested.append(request.full_url)
-        if request.full_url.endswith("/error"):
+    def handler(url):
+        if url.endswith("/error"):
             raise OSError("offline")
-        if request.full_url.endswith("/unchanged"):
-            return Response(b"same")
-        return Response(b"after")
+        if url.endswith("/unchanged"):
+            return _Response(b"same")
+        return _Response(b"after")
 
-    monkeypatch.setattr(
-        "permit_pathways.harness.watch.urllib.request.urlopen",
-        fake_urlopen,
-    )
-    result = check_sources(sources_path)
+    _install_urlopen(monkeypatch, handler, requested=requested)
+    result = check_sources(sources_path, backoff_seconds=0.0)
+    # A fetched, matching hash is the only thing that counts as unchanged;
+    # a fetched, differing hash is the only thing that counts as changed.
     assert result.unchanged == ["source-unchanged"]
     assert result.changed == ["source-changed"]
-    assert result.errors == {"source-error": "offline"}
+    assert set(result.unverifiable) == {"source-error"}
+    assert result.unverifiable["source-error"].reason == "OSError: offline"
     assert not any(url.endswith("/manual") for url in requested)
 
 
-def test_fetch_error_exits_nonzero_even_without_a_dependent_rule(
+@pytest.mark.parametrize(
+    ("failure", "expected_reason"),
+    [
+        (OSError("offline"), "OSError: offline"),
+        (TimeoutError("timed out"), "timed out"),
+        (urllib.error.URLError(TimeoutError("timed out")), "timed out"),
+        (
+            urllib.error.HTTPError(
+                "https://example.gov/blocked", 403, "Forbidden", {}, None
+            ),
+            "HTTP 403 Forbidden",
+        ),
+        (
+            urllib.error.HTTPError(
+                "https://example.gov/blocked", 429, "Too Many Requests", {}, None
+            ),
+            "HTTP 429 Too Many Requests",
+        ),
+    ],
+    ids=["network-error", "timeout", "wrapped-timeout", "waf-block", "rate-limit"],
+)
+def test_fetch_failures_are_unverifiable_never_changed(
+    tmp_path,
+    monkeypatch,
+    failure,
+    expected_reason,
+):
+    payload = {
+        "https://example.gov/blocked": _source_meta("source-blocked", b"recorded"),
+    }
+    sources_path = tmp_path / "sources.json"
+    sources_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    def handler(_url):
+        raise failure
+
+    _install_urlopen(monkeypatch, handler)
+    result = check_sources(sources_path, backoff_seconds=0.0)
+    assert result.changed == []
+    assert result.unchanged == []
+    unverifiable = result.unverifiable["source-blocked"]
+    assert unverifiable.reason == expected_reason
+    # The freshness claim degrades to the last confirmed date rather than
+    # flipping to an unsupported "changed".
+    assert unverifiable.last_verified_on == "2026-07-28"
+    described = result.summary({"source-blocked": "Blocked source"})
+    assert "unverifiable" in described
+    assert "CHANGED" not in described
+    assert "last confirmed 2026-07-28" in described
+
+
+def test_transient_failure_retries_with_backoff_before_giving_up(
+    tmp_path,
+    monkeypatch,
+):
+    payload = {
+        "https://example.gov/flaky": _source_meta("source-flaky", b"recorded"),
+    }
+    sources_path = tmp_path / "sources.json"
+    sources_path.write_text(json.dumps(payload), encoding="utf-8")
+    attempts = {"count": 0}
+
+    def handler(_url):
+        attempts["count"] += 1
+        if attempts["count"] < 3:
+            raise TimeoutError("timed out")
+        return _Response(b"recorded")
+
+    delays: list[float] = []
+    _install_urlopen(monkeypatch, handler)
+    monkeypatch.setattr(
+        "permit_pathways.harness.watch.time.sleep",
+        lambda seconds: delays.append(seconds),
+    )
+    result = check_sources(sources_path, backoff_seconds=1.0)
+    # A blip on the first two attempts must not be reported at all.
+    assert result.unchanged == ["source-flaky"]
+    assert result.unverifiable == {}
+    assert attempts["count"] == 3
+    assert delays == [1.0, 2.0]  # exponential backoff between attempts
+
+
+def test_a_dead_source_does_not_abort_the_rest_of_the_run(tmp_path, monkeypatch):
+    payload = {
+        "https://example.gov/dead": _source_meta("source-dead", b"recorded"),
+        "https://example.gov/live": _source_meta("source-live", b"recorded"),
+        "https://example.gov/moved": _source_meta("source-moved", b"recorded"),
+    }
+    sources_path = tmp_path / "sources.json"
+    sources_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    def handler(url):
+        if url.endswith("/dead"):
+            raise OSError("connection reset")
+        if url.endswith("/moved"):
+            return _Response(b"amended")
+        return _Response(b"recorded")
+
+    _install_urlopen(monkeypatch, handler)
+    result = check_sources(sources_path, backoff_seconds=0.0)
+    assert result.unchanged == ["source-live"]
+    assert result.changed == ["source-moved"]
+    assert set(result.unverifiable) == {"source-dead"}
+    assert result.checked == 3
+
+
+def test_unverifiable_source_does_not_mark_its_dependent_rules_stale(
+    tmp_path,
+    monkeypatch,
+    capsys,
+):
+    # The exact 08-03 scenario: the statute host blocks the runner, and the
+    # rule that cites it must not be reported stale on that account.
+    rules_path = _write_rules(
+        tmp_path,
+        [
+            _rule_record(
+                source_id="source-blocked",
+                source_url="https://example.gov/blocked",
+            )
+        ],
+    )
+    golden_path = tmp_path / "golden.json"
+    golden_path.write_text("[]", encoding="utf-8")
+    sources_payload = {
+        "https://example.gov/blocked": _source_meta("source-blocked", b"recorded"),
+    }
+    sources_path = tmp_path / "sources.json"
+    sources_path.write_text(json.dumps(sources_payload), encoding="utf-8")
+
+    def handler(_url):
+        raise urllib.error.HTTPError(
+            "https://example.gov/blocked", 403, "Forbidden", {}, None
+        )
+
+    _install_urlopen(monkeypatch, handler)
+    monkeypatch.setattr(sys, "argv", _watch_argv(rules_path, golden_path, sources_path))
+    # Exit 2 == "could not check", kept distinct from exit 1 == "review needed".
+    assert harness_main() == 2
+    printed = capsys.readouterr().out
+    assert "rules stale:            0" in printed
+    assert "unverifiable:" in printed
+    assert "CHANGED" not in printed
+
+    direct = verify_rules(
+        rules_path,
+        golden_path,
+        today=AS_OF,
+        changed_source_ids=[],
+    )
+    assert direct.stale == []
+    assert direct.verified == ["test-rule"]
+
+
+def test_unverifiable_source_exits_two_even_without_a_dependent_rule(
     tmp_path,
     monkeypatch,
 ):
@@ -289,42 +480,66 @@ def test_fetch_error_exits_nonzero_even_without_a_dependent_rule(
     sources_path = tmp_path / "sources.json"
     sources_path.write_text(json.dumps(sources_payload), encoding="utf-8")
 
-    class Response:
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *_args):
-            return False
-
-        def read(self):
-            return b"current"
-
-    def fake_urlopen(request, timeout):
-        if request.full_url.endswith("/unrelated"):
+    def handler(url):
+        if url.endswith("/unrelated"):
             raise OSError("unreachable")
-        return Response()
+        return _Response(b"current")
 
-    monkeypatch.setattr(
-        "permit_pathways.harness.watch.urllib.request.urlopen",
-        fake_urlopen,
-    )
-    monkeypatch.setattr(
-        sys,
-        "argv",
+    _install_urlopen(monkeypatch, handler)
+    monkeypatch.setattr(sys, "argv", _watch_argv(rules_path, golden_path, sources_path))
+    assert harness_main() == 2
+
+
+def test_real_content_change_still_exits_with_the_review_code(
+    tmp_path,
+    monkeypatch,
+    capsys,
+):
+    rules_path = _write_rules(
+        tmp_path,
         [
-            "permit_pathways.harness",
-            "--rules",
-            str(rules_path),
-            "--golden",
-            str(golden_path),
-            "--sources",
-            str(sources_path),
-            "--as-of",
-            AS_OF.isoformat(),
-            "--fetch",
+            _rule_record(
+                source_id="source-amended",
+                source_url="https://example.gov/amended",
+            )
         ],
     )
+    golden_path = tmp_path / "golden.json"
+    golden_path.write_text("[]", encoding="utf-8")
+    sources_payload = {
+        "https://example.gov/amended": _source_meta("source-amended", b"recorded"),
+    }
+    sources_path = tmp_path / "sources.json"
+    sources_path.write_text(json.dumps(sources_payload), encoding="utf-8")
+
+    _install_urlopen(monkeypatch, lambda _url: _Response(b"amended text"))
+    monkeypatch.setattr(sys, "argv", _watch_argv(rules_path, golden_path, sources_path))
+    # A genuine content drift still pages: exit 1, dependent rule stale.
     assert harness_main() == 1
+    printed = capsys.readouterr().out
+    assert "CHANGED" in printed
+    assert "rules stale:            1" in printed
+
+
+def test_non_2xx_status_without_an_exception_is_unverifiable(
+    tmp_path,
+    monkeypatch,
+):
+    # Some handlers hand back an error page instead of raising. An error page
+    # hashes differently from the statute, so it must never read as "changed".
+    payload = {
+        "https://example.gov/interstitial": _source_meta("source-gate", b"recorded"),
+    }
+    sources_path = tmp_path / "sources.json"
+    sources_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    _install_urlopen(
+        monkeypatch,
+        lambda _url: _Response(b"<html>Access denied</html>", status=403),
+    )
+    result = check_sources(sources_path, backoff_seconds=0.0)
+    assert result.changed == []
+    assert result.unverifiable["source-gate"].reason == "HTTP 403"
 
 
 def test_completed_review_digest_is_bound_to_exact_copy(tmp_path):
