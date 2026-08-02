@@ -37,11 +37,20 @@ async function expectNoAutomatedWcagViolations(page) {
 }
 
 async function expectBrowserStorageEmpty(page) {
-  const storage = await page.evaluate(() => ({
+  const storage = await page.evaluate(async () => ({
     local: Object.keys(localStorage),
     session: Object.keys(sessionStorage),
+    cookie: document.cookie,
+    indexed: typeof indexedDB.databases === "function"
+      ? (await indexedDB.databases()).map(database => database.name)
+      : [],
   }));
-  expect(storage).toEqual({ local: [], session: [] });
+  expect(storage).toEqual({
+    local: [],
+    session: [],
+    cookie: "",
+    indexed: [],
+  });
 }
 
 async function openCanonicalJourney(page) {
@@ -152,9 +161,124 @@ test("canonical journey gates the packet link on the editable applicability fact
   await expect(page.locator("#journeyEntryId")).toHaveText(JOURNEY_ID);
   await expect(page.locator("#journeyEntryVersion")).toHaveText(JOURNEY_VERSION);
   await expect(page.locator("#packetCover")).toBeVisible();
+  await expect(page.locator("#journeyEvidenceSummary")).toBeVisible();
   await expect(page.locator("#readinessMethod")).toBeVisible();
   await expect(page.locator("#readinessVerdictHeading")).toBeVisible();
   await expectBrowserStorageEmpty(page);
+});
+
+test("valid journey presents a bounded portable evidence summary and print action", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.__permitBearingsPrintCalls = 0;
+    window.print = () => {
+      window.__permitBearingsPrintCalls += 1;
+    };
+  });
+  await page.goto(VALID_PACKET_PATH);
+
+  const summary = page.locator("#journeyEvidenceSummary");
+  await expect(summary).toBeVisible();
+  await expect(summary.locator(".journey-evidence-route")).toContainText(
+    "ADU — ministerial review and application timelines",
+  );
+  await expect(summary.locator(".journey-evidence-route")).toContainText(
+    "Gov. Code § 66317",
+  );
+  await expect(summary.locator(".journey-evidence-facts")).toContainText(
+    "Woodland",
+  );
+  await expect(summary.locator(".journey-evidence-facts")).toContainText(
+    /new detached/i,
+  );
+
+  const actions = summary.locator("#journeyEvidenceActionsList > li");
+  await expect(actions).toHaveCount(3);
+  await expect(actions.nth(0)).toContainText("property address");
+  await expect(actions.nth(0)).toContainText("page 1, Dimensioned Plot Plan");
+  await expect(actions.nth(1)).toContainText("drainage");
+  await expect(actions.nth(1)).toContainText("page 1, Dimensioned Plot Plan");
+  await expect(actions.nth(2)).toContainText("electrical load calculations");
+  await expect(actions.nth(2)).toContainText(
+    "page 1, conditional checklist item",
+  );
+  await expect(page.locator("#journeyEvidenceActionsReview")).toContainText(
+    /AI-assisted/i,
+  );
+  await expect(page.locator("#journeyEvidenceActionsReview")).toContainText(
+    /review.pending/i,
+  );
+  await expect(page.locator("#journeyEvidenceActionsReview")).toContainText(
+    /not human.reviewed/i,
+  );
+
+  const questions = summary.locator("#journeyEvidenceQuestionsList > li");
+  await expect(questions).toHaveCount(3);
+  await expect(questions.nth(0)).toContainText("solar plans");
+  await expect(questions.nth(1)).toContainText("fire sprinkler plans");
+  await expect(questions.nth(2)).toContainText("flood zone");
+
+  const sources = summary.locator("#journeyEvidenceSourcesList > div");
+  await expect(sources).toHaveCount(5);
+  await expect(summary.locator(".journey-evidence-sources")).toContainText(
+    "Gov. Code § 66317",
+  );
+  await expect(summary.locator(".journey-evidence-sources")).toContainText(
+    "City of Woodland",
+  );
+  await expect(summary.locator(".journey-evidence-sources")).toContainText(
+    "Yolo County",
+  );
+  await expect(
+    summary.locator(
+      '#journeyEvidenceSourcesList a[href*="woodland-preapproved-adu-evidence.json"]',
+    ),
+  ).toBeVisible();
+
+  await expect(summary.locator(".journey-evidence-boundary")).toContainText(
+    "synthetic",
+  );
+  await expect(summary.locator(".journey-evidence-boundary")).toContainText(
+    "does not",
+  );
+  await expect(summary.locator(".journey-evidence-meta")).toContainText(
+    JOURNEY_ID,
+  );
+  await expect(summary.locator(".journey-evidence-meta")).toContainText(
+    JOURNEY_VERSION,
+  );
+
+  await page.locator("#printJourneySummary").click();
+  await expect.poll(
+    () => page.evaluate(() => window.__permitBearingsPrintCalls),
+  ).toBe(1);
+  await expectBrowserStorageEmpty(page);
+});
+
+test("print media isolates the evidence summary without horizontal overflow", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 816, height: 1056 });
+  await page.goto(VALID_PACKET_PATH);
+  await expect(page.locator("#journeyEvidenceSummary")).toBeVisible();
+  await page.emulateMedia({ media: "print" });
+
+  await expect(page.locator("#journeyEvidenceSummary")).toBeVisible();
+  for (const selector of [
+    ".site-header",
+    ".readiness-hero",
+    "#journeyEntrySummary",
+    "#packetCover",
+    "#dataLoadError",
+    "#readinessOutput",
+    "#readinessMethod",
+    ".site-footer",
+    "#printJourneySummary",
+  ]) {
+    await expect(page.locator(selector)).toBeHidden();
+  }
+  await expectNoDocumentOverflow(page);
 });
 
 test("Spanish journey handoff declares its language and preserves the English staff question", async ({
@@ -213,6 +337,8 @@ for (const entry of invalidPacketEntries) {
     await page.goto(entry.path);
     await expect(page.locator("#entryHoldHeading")).toBeVisible();
     await expect(page.locator("#journeyEntrySummary")).toBeHidden();
+    await expect(page.locator("#journeyEvidenceSummary")).toBeHidden();
+    await expect(page.locator("#printJourneySummary")).toBeHidden();
     await expect(page.locator("#packetCover")).toBeHidden();
     await expect(page.locator("#readinessMethod")).toBeHidden();
     await expect(page.locator("#readinessVerdictHeading")).toHaveCount(0);

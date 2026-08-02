@@ -502,6 +502,43 @@ def test_journey_handoff_uses_public_ids_without_browser_storage():
         assert storage_api not in application
 
 
+def test_printable_journey_summary_is_semantic_gated_and_print_scoped():
+    page = (ROOT / "prepare.html").read_text(encoding="utf-8")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+    styles = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+
+    assert re.search(
+        r'<section class="journey-evidence-summary"\s+'
+        r'id="journeyEvidenceSummary"[^>]*\shidden>',
+        page,
+        re.DOTALL,
+    )
+    assert 'aria-labelledby="journeyEvidenceHeading"' in page
+    assert 'aria-describedby="journeyEvidenceBoundary"' in page
+    assert '<dl class="journey-evidence-meta" id="journeyEvidenceMeta">' in page
+    assert '<dl id="journeyEvidenceFactsList"></dl>' in page
+    assert '<ol id="journeyEvidenceActionsList"></ol>' in page
+    assert '<ul id="journeyEvidenceQuestionsList"></ul>' in page
+    assert 'id="journeyEvidenceSourcesList"></dl>' in page
+    assert 'id="journeyEvidenceBoundaryText"></p>' in page
+    assert '<button class="button" id="printJourneySummary" type="button">' in page
+
+    assert "function renderJourneyEvidenceSummary(" in application
+    assert "journeyEvidenceSummary" in application
+    assert "journeyEvidenceActionsReview" in application
+    assert "journeyEvidenceSourcesList" in application
+    assert "window.print()" in application
+
+    assert "@media print" in styles
+    assert (
+        'body[data-page="readiness"] .readiness-main '
+        "> :not(#journeyEvidenceSummary)" in styles
+    )
+    assert 'body[data-page="readiness"] #journeyEvidenceSummary' in styles
+    assert 'body[data-page="readiness"] #printJourneySummary' in styles
+    assert "overflow-wrap: anywhere" in styles
+
+
 def test_packet_build_explicitly_replays_canonical_evaluation_date(
     monkeypatch: pytest.MonkeyPatch,
 ):

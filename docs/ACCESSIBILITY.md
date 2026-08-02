@@ -1,4 +1,4 @@
-# Accessibility audit: static and automated browser pass, updated 2026-07-30
+# Accessibility audit: static and automated browser pass, updated 2026-08-02
 
 Scope: the five-page public static site (`index.html`, `check.html`,
 `prepare.html`, `review.html`, and `evidence.html`) and the separate applicant
@@ -46,6 +46,15 @@ use descriptive links. These observations come from markup, regression
 checks, and limited visual inspection; browser reading order and
 assistive-technology output remain pending.
 
+The exact valid journey entry adds one labeled evidence-summary section. Its
+public ID/version and facts use definition lists, preparation actions use an
+ordered list, direct staff questions use an unordered list, and source records
+retain descriptive links and visible status text. A native button opens the
+browser print dialog. The entire section, including that control, remains
+hidden on direct or invalid packet entry. These structures are covered by
+static and browser checks; their screen-reader reading order and printed-page
+usability have not been manually reviewed.
+
 ## Limited local browser checks recorded
 
 On 2026-07-29, the generated packet sample was inspected in the local in-app
@@ -59,18 +68,21 @@ behavior, or conformance for the other four static pages.
 
 ## Automated browser checks recorded
 
-On 2026-07-30, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
+On 2026-08-02, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
 AAA violations on `index.html`, `check.html`, `prepare.html`, `review.html`,
-or `evidence.html` in a Playwright-managed Chromium build. Seventeen browser
-checks also exercised each page at 320px and 390px, opened the compact
-navigation, checked document-level overflow, scanned a populated applicant
-result, and verified that mobile evidence tables render as labeled records.
-Lighthouse 13.4.1 audits all five initial pages plus the populated applicant
-sample using its mobile profile. On 2026-07-30, all six states scored 1.00 for
-accessibility, best practices, performance, and SEO. CI repeats both suites on
-pull requests, default-branch pushes, and weekly. A first performance sample
-below the 0.90 budget triggers two confirmation samples and evaluates their
-median; the budget itself is unchanged.
+or `evidence.html` in a Playwright-managed Chromium build. Twenty-nine browser
+checks also exercise each page at 320px and 390px, open the compact navigation,
+check document-level overflow, scan a populated applicant result, verify that
+mobile evidence tables render as labeled records, and cover valid/invalid
+journey-summary disclosure. A print-media check isolates the summary from the
+site and detailed packet surfaces and checks horizontal overflow at an
+816-by-1056 CSS-pixel viewport. Lighthouse 13.4.1 audits all five initial pages
+plus the populated applicant sample and exact valid journey entry using its
+mobile profile. On 2026-08-02, all seven states met 1.00 accessibility and best
+practices, at least 0.98 performance, and at least 0.90 SEO. CI repeats both
+suites on pull requests, default-branch pushes, and weekly. A first performance
+sample below the 0.90 budget triggers two confirmation samples and evaluates
+their median; the budget itself is unchanged.
 
 These automated results cover only rules the tools can evaluate. They do not
 establish WCAG conformance, substitute for the remaining keyboard and
@@ -165,6 +177,14 @@ widths, wide evidence tables become labeled records and the automated 320px
 and 390px checks find no document-level horizontal scroll. User-selectable
 colors/spacing beyond browser and OS mechanisms are not provided.
 
+**Print presentation (automated emulation only).** Readiness-page print CSS
+withholds the site header/footer, task hero, detailed packet surfaces, and
+print control while keeping the evidence summary. It uses print-sized type,
+visible black borders/status text, overflow wrapping for IDs and URLs, and
+break avoidance on bounded records. The automated check uses Chromium print
+media; it does not inspect a generated PDF, paper output, pagination across
+printer drivers, or assistive reading of a saved file.
+
 **Language switching.** The applicant page preserves the current intake and
 rendered result set, temporary cover sheet, and disclosure state when
 English/Spanish interface copy is toggled. Stable rule anchors do not change
@@ -186,6 +206,9 @@ staff-facing trust, ordinance, and clock tools remain English.
 - Physical iPhone/Safari and Android/Chrome task runs, including the compact
   section menu, form editing with the virtual keyboard, disclosures, and
   labeled evidence records.
+- Browser Print and Save-as-PDF review in Safari, Chrome, and Firefox,
+  including pagination, link destinations, long-value wrapping, grayscale,
+  and reading order in the resulting artifact.
 - `forced-colors` / high-contrast mode spot check.
 - Spanish screen-reader pronunciation check.
 - Mixed-language audit: translated intake/result labels and Spanish
