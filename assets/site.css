@@ -968,6 +968,101 @@ select[aria-invalid="true"] {
   padding: 1rem 1.15rem 0;
 }
 
+.statewide-orientation {
+  background: var(--surface);
+  border: 2px solid var(--black);
+  border-top: 0.65rem solid var(--blue);
+  margin: var(--s-5) 0;
+  max-width: var(--reading);
+  padding: clamp(var(--s-3), 4vw, var(--s-5));
+}
+
+.statewide-orientation-stage {
+  color: var(--primary-900);
+  font-family: var(--utility);
+  font-size: var(--font-size-0);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin: 0 0 var(--s-1);
+  text-transform: uppercase;
+}
+
+.statewide-orientation > h3 {
+  font-size: var(--font-size-8);
+  margin: 0 0 var(--s-2);
+}
+
+.statewide-orientation h4 {
+  font-size: var(--font-size-4);
+  margin: var(--s-4) 0 var(--s-2);
+}
+
+.statewide-orientation-coverage dl,
+.statewide-orientation-facts {
+  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  margin: 0;
+}
+
+.statewide-orientation-coverage dl > div,
+.statewide-orientation-facts > div {
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: var(--s-1) var(--s-3);
+  grid-template-columns: minmax(9rem, 0.7fr) minmax(0, 1.4fr);
+  padding: var(--s-2) 0;
+}
+
+.statewide-orientation-coverage dl > div:last-child,
+.statewide-orientation-facts > div:last-child {
+  border-bottom: 0;
+}
+
+.statewide-orientation dt {
+  font-weight: 800;
+}
+
+.statewide-orientation dd {
+  margin: 0;
+}
+
+.statewide-route-list {
+  list-style: none;
+  padding: 0;
+}
+
+.statewide-route-list li {
+  border-left: 0.3rem solid var(--teal);
+  padding: var(--s-2) var(--s-3);
+}
+
+.statewide-route-list li + li {
+  margin-top: var(--s-2);
+}
+
+.statewide-route-list span {
+  display: block;
+  margin-top: var(--s-sm);
+}
+
+.statewide-orientation-boundary {
+  border-left: 0.3rem solid var(--yellow);
+  font-size: var(--font-size-1);
+  margin-top: var(--s-4);
+  padding-left: var(--s-2);
+}
+
+.statewide-print-action {
+  border-top: 1px solid var(--line);
+  margin-top: var(--s-4);
+  padding-top: var(--s-3);
+}
+
+.statewide-print-action p {
+  color: var(--ink-soft);
+  margin-bottom: 0;
+}
+
 .result-cover-heading {
   align-items: baseline;
   display: flex;
@@ -2639,6 +2734,8 @@ tr:last-child td {
 
   .result-fields > div,
   .result-facts > div,
+  .statewide-orientation-coverage dl > div,
+  .statewide-orientation-facts > div,
   .method-list > div,
   .decision-record dl > div {
     grid-template-columns: 1fr;
@@ -2853,6 +2950,7 @@ tr:last-child td {
   .packet-evidence,
   .staff-question-list,
   .journey-evidence-summary,
+  .statewide-orientation,
   .journey-evidence-questions,
   .journey-evidence-boundary {
     border: 2px solid CanvasText;
@@ -2888,6 +2986,60 @@ tr:last-child td {
 }
 
 @media print {
+  body[data-page="project"] {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 9pt;
+    line-height: 1.35;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body[data-page="project"] > .skip-link,
+  body[data-page="project"] > .site-header,
+  body[data-page="project"] > .site-footer,
+  body[data-page="project"] #mainContent > .tool-hero,
+  body[data-page="project"] #screen .tool-shell > :not(#results),
+  body[data-page="project"] #results > :not(#statewideOrientation),
+  body[data-page="project"] .tool-section:not(#screen),
+  body[data-page="project"] .statewide-print-action {
+    display: none !important;
+  }
+
+  body[data-page="project"] #mainContent,
+  body[data-page="project"] .page-shell,
+  body[data-page="project"] .tool-main,
+  body[data-page="project"] #screen,
+  body[data-page="project"] #screen .tool-shell,
+  body[data-page="project"] #results {
+    border: 0;
+    margin: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+    width: auto !important;
+  }
+
+  body[data-page="project"] #statewideOrientation {
+    background: #fff !important;
+    border: 1.5pt solid #000;
+    border-top-width: 5pt;
+    color: #000;
+    margin: 0;
+    max-width: none;
+    overflow: visible;
+    padding: 0.22in;
+  }
+
+  body[data-page="project"] #statewideOrientation h3 {
+    font-size: 20pt;
+    line-height: 1.05;
+  }
+
+  body[data-page="project"] #statewideOrientation h4 {
+    font-size: 12pt;
+    line-height: 1.1;
+  }
+
   body[data-page="readiness"] {
     background: #fff !important;
     color: #000 !important;

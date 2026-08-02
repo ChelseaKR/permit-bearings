@@ -141,6 +141,14 @@ jurisdiction or a named project fact removes the rendered result, temporary
 answers-used cover sheet, and remembered disclosure state. This prevents a
 result from remaining visible beside facts that no longer produced it.
 
+Every resolved jurisdiction result also includes an orientation receipt built
+with native headings, definition lists, and lists. Its print action calls the
+browser's print dialog, and print media isolates the receipt from navigation,
+intake, detailed result cards, and controls. Automated coverage checks the
+receipt's reflow and print overflow across representative city, county,
+incorporation-update, and bounded-local-layer profiles. Printed-output reading
+order and assistive-technology behavior remain manual checks.
+
 **Data-loading state.** Data-dependent pathway, scanner, and trust-rehearsal
 buttons use the native `disabled` state until their datasets are ready. A
 load failure places a visible explanation in the relevant results area and a
