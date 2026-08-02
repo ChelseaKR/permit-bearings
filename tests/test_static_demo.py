@@ -24,6 +24,17 @@ from scripts.build_demo_bundle import (
 )
 
 
+def run_node_module(script: str) -> None:
+    """Run generated JavaScript over stdin to stay below OS argument limits."""
+    subprocess.run(
+        ["node", "--input-type=module"],
+        input=script,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+
 def test_committed_demo_bundle_matches_canonical_json():
     bundle = build_bundle()
 
@@ -837,12 +848,7 @@ check(
   "stale runtime exposed action-oriented findings"
 );
 """
-    subprocess.run(
-        ["node", "--input-type=module", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_node_module(script)
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
@@ -899,12 +905,7 @@ if (prepareProjectSample(
   new URLSearchParams("sample=adu"), incomplete, jurisdictions
 )) throw new Error("incomplete sample accepted");
 """
-    subprocess.run(
-        ["node", "--input-type=module", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_node_module(script)
     assert "intakeFormElement.requestSubmit()" in apply_source
     assert "screen(" not in apply_source
     assert "renderResults(" not in apply_source
@@ -1206,12 +1207,7 @@ testAssert(OPEN_RULE_IDS.size === 0, "ordinary edit kept disclosure state");
 `;
 vm.runInNewContext(application + "\\n" + assertions, context);
 """
-    subprocess.run(
-        ["node", "--input-type=module", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_node_module(script)
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
@@ -1300,12 +1296,7 @@ if (rejectedDigest.size !== 0)
 Object.defineProperty(globalThis, "crypto",
   {{value: realCrypto, configurable: true}});
 """
-    subprocess.run(
-        ["node", "--input-type=module", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_node_module(script)
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
@@ -1348,12 +1339,7 @@ const futureRule = {{
 if (ruleStatus(futureRule, []) !== "stale")
   throw new Error("future source date accepted");
 """
-    subprocess.run(
-        ["node", "--input-type=module", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_node_module(script)
 
 
 def test_demo_server_exposes_only_intended_static_files():
