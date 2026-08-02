@@ -1,0 +1,783 @@
+{
+  "schema_version": 1,
+  "record_id": "woodland-route-to-packet-manual-evidence",
+  "record_version": "1.0.0",
+  "status": "prepared_not_executed",
+  "prepared_on": "2026-08-02",
+  "scope": "Human accessibility, printed-artifact, mixed-language, and Spanish semantic review for the public synthetic Woodland route-to-packet journey.",
+  "claim_boundary": "This file is a prepared test contract, not evidence that a person, assistive-technology user, Spanish reviewer, applicant, staff member, counsel, or jurisdiction has completed or accepted any check.",
+  "artifact_lock": {
+    "execution_status": "not_run",
+    "tested_commit": null,
+    "deployed_url": null,
+    "sample_entry_path": "check.html?sample=adu",
+    "valid_journey_path": "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0",
+    "journey_id": "woodland-preapproved-detached-adu-synthetic",
+    "journey_version": "1.0.0",
+    "journey_fingerprint": "sha256:6a7734b8bc920ec13898e2c8c753ce57d27652a5d37c8a41d433798318c4641a",
+    "screening_case_id": "woodland-new-detached-adu-local-layer",
+    "screening_case_fingerprint": "sha256:3171705791a2520132e727c9d39d6f0bc710d7114e6408c0bfd2af6ebb3d754b",
+    "fact_envelope_fingerprint": "sha256:18c9bf3bdf525776352301b3150185fce8cdb0882b621d61f92eabcc25036847",
+    "readiness_workflow_id": "woodland-preapproved-detached-adu",
+    "readiness_workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
+    "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
+    "readiness_packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e",
+    "route_source_status_as_of": "2026-07-30",
+    "route_source_review_due_on": "2027-01-23"
+  },
+  "privacy_protocol": {
+    "status": "not_run",
+    "allowed_material": [
+      "The repository's public hypothetical route sample",
+      "The repository's generated synthetic packet and evidence summary",
+      "Properly redacted defect evidence that contains no participant or applicant data",
+      "Consented public tester and reviewer identifiers, broad roles, and non-identifying qualification summaries"
+    ],
+    "prohibited_material": [
+      "Private identity or attribution data without explicit consent for public use",
+      "Email addresses, phone numbers, handles, scheduling records, and other contact or identity-linking data",
+      "Employer or jurisdiction names that could identify a person without explicit authorization",
+      "Real addresses, assessor parcel numbers, application numbers, drawings, permit files, or client information",
+      "Audio, video, screen recordings, browser profiles, credentials, or unredacted screenshots"
+    ],
+    "contact_storage": "outside_repository",
+    "recording": "none",
+    "execution_confirmation": null,
+    "reviewer": null,
+    "evidence": null,
+    "signoff": null
+  },
+  "manual_checks": [
+    {
+      "check_id": "KB-INDEX",
+      "category": "keyboard_focus",
+      "surface_paths": [
+        "index.html"
+      ],
+      "required_methods": [
+        "Keyboard only; no pointer"
+      ],
+      "required_tasks": [
+        "Use the skip link and both viewport-appropriate navigation surfaces.",
+        "Verify logical focus order, persistent visible focus, and no focus loss."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "KB-JOURNEY",
+      "category": "keyboard_focus",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Keyboard only; no pointer"
+      ],
+      "required_tasks": [
+        "Complete the canonical made-up route, verify that no applicability choice is preselected, and exercise Yes, No, and I'm not sure.",
+        "Follow the exact versioned handoff after Yes and reach the route, facts, three actions, three staff questions, source records, boundary, print control, detailed packet findings, and manifest link.",
+        "Edit and clear a sample fact, verify stale output and the handoff disappear, then recover and resubmit.",
+        "Verify logical focus order, persistent visible focus, disclosure operation, and no focus loss on success, error, or withheld paths."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "KB-REVIEW",
+      "category": "keyboard_focus",
+      "surface_paths": [
+        "review.html"
+      ],
+      "required_methods": [
+        "Keyboard only; no pointer"
+      ],
+      "required_tasks": [
+        "Enter ordinance text, run the screen, reach the summary and findings, and recover from an empty submission.",
+        "Verify logical focus order, visible focus, and no focus loss."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "KB-EVIDENCE",
+      "category": "keyboard_focus",
+      "surface_paths": [
+        "evidence.html"
+      ],
+      "required_methods": [
+        "Keyboard only; no pointer"
+      ],
+      "required_tasks": [
+        "Run and reset the source-change rehearsal and follow the affected-result link.",
+        "Verify focus placement, visible focus, and status announcements."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "SR-JOURNEY-VOICEOVER-SAFARI",
+      "category": "screen_reader",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "VoiceOver with Safari on a recorded macOS version"
+      ],
+      "required_tasks": [
+        "Run the complete and withheld route-to-packet paths and verify landmarks, headings, field names, conditional questions, errors, status announcements, answers-used summary, result groups, and source status.",
+        "Verify reading order and names for the route-to-packet summary, three actions, three staff questions, source links, synthetic boundary, print control, detailed findings, disclosures, and manifest link."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "SR-JOURNEY-NVDA",
+      "category": "screen_reader",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "NVDA with Firefox or Chrome on a recorded Windows version"
+      ],
+      "required_tasks": [
+        "Run the complete and withheld route-to-packet paths and verify landmarks, headings, field names, conditional questions, errors, status announcements, answers-used summary, result groups, and source status.",
+        "Verify reading order and names for the route-to-packet summary, three actions, three staff questions, source links, synthetic boundary, print control, detailed findings, disclosures, and manifest link."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "SR-TOOLS",
+      "category": "screen_reader",
+      "surface_paths": [
+        "review.html",
+        "evidence.html"
+      ],
+      "required_methods": [
+        "VoiceOver with Safari and NVDA with Firefox or Chrome"
+      ],
+      "required_tasks": [
+        "Verify live-region timing and verbosity for scan results and the source-change rehearsal.",
+        "Confirm changed status is understandable without color."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "REFLOW-JOURNEY",
+      "category": "zoom_reflow",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Browser zoom at 200 percent and 400 percent",
+        "320 CSS-pixel viewport without browser zoom"
+      ],
+      "required_tasks": [
+        "Complete the route-to-packet journey at every setting.",
+        "Verify no loss, clipping, overlap, obscured focus, or document-level horizontal scrolling, including long IDs, fingerprints, URLs, actions, questions, and source records."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "REFLOW-OTHER-PAGES",
+      "category": "zoom_reflow",
+      "surface_paths": [
+        "index.html",
+        "review.html",
+        "evidence.html"
+      ],
+      "required_methods": [
+        "Browser zoom at 200 percent and 400 percent",
+        "320 CSS-pixel viewport without browser zoom"
+      ],
+      "required_tasks": [
+        "Verify no loss of content or function and no document-level horizontal scrolling."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "MOBILE-JOURNEY-IOS",
+      "category": "physical_mobile",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Physical iPhone with Safari and the virtual keyboard"
+      ],
+      "required_tasks": [
+        "Open and close the section menu, complete and edit the made-up route, operate the applicability choices and disclosures, and follow the exact packet handoff.",
+        "Scan every summary group and evidence record at recorded narrow and common phone widths without content loss or accidental activation."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "MOBILE-JOURNEY-ANDROID",
+      "category": "physical_mobile",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Physical Android phone with Chrome and the virtual keyboard"
+      ],
+      "required_tasks": [
+        "Open and close the section menu, complete and edit the made-up route, operate the applicability choices and disclosures, and follow the exact packet handoff.",
+        "Scan every summary group and evidence record at recorded narrow and common phone widths without content loss or accidental activation."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "TEXT-SPACING-ALL",
+      "category": "text_spacing",
+      "surface_paths": [
+        "index.html",
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0",
+        "review.html",
+        "evidence.html"
+      ],
+      "required_methods": [
+        "WCAG text-spacing overrides"
+      ],
+      "required_tasks": [
+        "Verify text is not clipped, overlapped, obscured, or made inoperable in initial and populated states."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "FORCED-COLORS-JOURNEY",
+      "category": "forced_colors",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Windows forced-colors or a recorded comparable operating-system high-contrast mode"
+      ],
+      "required_tasks": [
+        "Complete the route-to-packet journey and verify focus, native controls, links, disclosures, borders, source statuses, and synthetic or review-pending distinctions.",
+        "Confirm no status or boundary depends on color alone."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "FORCED-COLORS-OTHER-PAGES",
+      "category": "forced_colors",
+      "surface_paths": [
+        "index.html",
+        "review.html",
+        "evidence.html"
+      ],
+      "required_methods": [
+        "Windows forced-colors or a recorded comparable operating-system high-contrast mode"
+      ],
+      "required_tasks": [
+        "Verify focus, controls, links, disclosures, and status distinctions without relying on color."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "MOTION",
+      "category": "reduced_motion",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "evidence.html"
+      ],
+      "required_methods": [
+        "Operating-system reduced-motion preference"
+      ],
+      "required_tasks": [
+        "Verify navigation and result updates remain understandable without smooth scrolling."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "PRINT-JOURNEY-CHROME",
+      "category": "print_visual",
+      "surface_paths": [
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Chrome browser Print and Save as PDF on a recorded operating-system version"
+      ],
+      "required_tasks": [
+        "Verify only the portable evidence summary prints and the site shell, detailed packet, and print control are withheld.",
+        "Inspect every printed page for correct ID and version, complete route, facts, actions, questions, sources, boundary, working link destinations, grayscale distinctions, long-value wrapping, pagination, and reading order.",
+        "Confirm the app neither creates nor stores an export."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "PRINT-JOURNEY-SAFARI",
+      "category": "print_visual",
+      "surface_paths": [
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Safari browser Print and Save as PDF on a recorded macOS version"
+      ],
+      "required_tasks": [
+        "Verify only the portable evidence summary prints and the site shell, detailed packet, and print control are withheld.",
+        "Inspect every printed page for correct ID and version, complete route, facts, actions, questions, sources, boundary, working link destinations, grayscale distinctions, long-value wrapping, pagination, and reading order.",
+        "Confirm the app neither creates nor stores an export."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "PRINT-JOURNEY-FIREFOX",
+      "category": "print_visual",
+      "surface_paths": [
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Firefox browser Print and Save as PDF on a recorded operating-system version"
+      ],
+      "required_tasks": [
+        "Verify only the portable evidence summary prints and the site shell, detailed packet, and print control are withheld.",
+        "Inspect every printed page for correct ID and version, complete route, facts, actions, questions, sources, boundary, working link destinations, grayscale distinctions, long-value wrapping, pagination, and reading order.",
+        "Confirm the app neither creates nor stores an export."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "PDF-AT-JOURNEY",
+      "category": "saved_pdf_accessibility",
+      "surface_paths": [
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "A saved PDF produced by one completed print check",
+        "A recorded PDF viewer and screen-reader combination"
+      ],
+      "required_tasks": [
+        "Inspect document title, tags, heading and list structure, reading order, link purpose and destinations, text selection, and announcement of IDs, source status, and the synthetic boundary.",
+        "Record fail or blocked when the browser-produced artifact lacks usable structure; visual inspection cannot produce a pass."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "ES-USABILITY-JOURNEY",
+      "category": "spanish_language_usability",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Moderated task run with a fluent Spanish-speaking participant against the exact locked journey version"
+      ],
+      "required_tasks": [
+        "Without a product tour, identify the result as candidate guidance rather than approval, locate source status, and explain what happens when a material answer is unknown.",
+        "Recognize that packet preparation continues in English, follow the exact handoff, identify a reported gap and next action, find a staff question, and restate the synthetic not-a-decision boundary.",
+        "Record comprehension and mixed-language handoff usability only; do not infer legal fidelity, translation semantic parity, accessibility conformance, or jurisdiction acceptance."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "ES-HANDOFF",
+      "category": "mixed_language_boundary",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Spanish applicant interface in a recorded desktop browser"
+      ],
+      "required_tasks": [
+        "Switch the canonical sample to Spanish without losing the current result, answer summary, or disclosure state.",
+        "Verify English source-derived text retains an English language boundary and the packet link explicitly says packet preparation continues in English.",
+        "Exercise Yes, No, and I'm not sure; verify only Yes exposes the exact two-parameter handoff and its destination remains an English page.",
+        "Confirm no translated-interface label is represented as Spanish semantic review of source-derived guidance."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "check_id": "ES-PRONUNCIATION",
+      "category": "mixed_language_screen_reader",
+      "surface_paths": [
+        "check.html?sample=adu",
+        "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+      ],
+      "required_methods": [
+        "Spanish-capable screen-reader voice in a recorded browser and operating-system version"
+      ],
+      "required_tasks": [
+        "Verify Spanish pronunciation, English source language boundaries, the English packet-handoff warning, and understandable voice changes across the destination.",
+        "Record pronunciation or language-boundary defects separately from semantic-parity review."
+      ],
+      "result": "not_run",
+      "execution": null,
+      "reviewer": null,
+      "evidence": null,
+      "signoff": null
+    }
+  ],
+  "spanish_review_protocol": {
+    "allowed_results": [
+      "not_run",
+      "approved",
+      "changes_required",
+      "blocked_by_source"
+    ],
+    "required_dimensions": [
+      "applicant consequence and uncertainty",
+      "numbers, deadlines, thresholds, and conditions",
+      "negative and exception language",
+      "legal terms and definitions",
+      "questions, next actions, and escalation instructions",
+      "identical stale and unverified evidence behavior"
+    ],
+    "same_version_and_fingerprints_required": true,
+    "english_content_review_is_independent": true
+  },
+  "spanish_semantic_reviews": [
+    {
+      "source_rule_id": "adu-ministerial-review",
+      "explanation_version": "1.1.0",
+      "citation_fingerprint": "sha256:0604738b3a96ad57536fa14ce355ad284cf948ae363007e9f643718ce0e95a9a",
+      "rule_fingerprint": "sha256:4888800f455167140ea9f69d193a2b70f82d168e75d41f6daa34dcec1bf0b58f",
+      "english_content_fingerprint": "sha256:6ab0096c8fdfd7293c310c95f29c0fac7cdaf70d0a237b245876170e3e9e0fc3",
+      "spanish_content_fingerprint": "sha256:1b8178ada8d9b93b31c000e93fb16db4068fea4a7bad70f7194157f426a8b1ab",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "adu-protected-minimum",
+      "explanation_version": "1.1.0",
+      "citation_fingerprint": "sha256:760c091de6aa71414a4b8f88e8d83cc37149f1bb3b75f02e1a1fc738b3861ccd",
+      "rule_fingerprint": "sha256:9b4a3a8b7a60683fcba2fd0d7c603b063006bea4f8a01b194cc59889bc87e794",
+      "english_content_fingerprint": "sha256:a84eda90a4e5f1507645f195fe7e1be73250a348e133a04bd4bb241f5f2b5000",
+      "spanish_content_fingerprint": "sha256:45d80c1cfec68855697332a7934765c474dc48b8b0eede4580990606853f0cca",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "adu-height-standards",
+      "explanation_version": "1.1.0",
+      "citation_fingerprint": "sha256:f72ce4ea76a177d8b1efb4add80e55822ad8fefa074533f88204d6db5995dd77",
+      "rule_fingerprint": "sha256:5b9fb485081ccd48cd27b5c96d2d3bc978a819b4018363fb54a5db9e8a81512b",
+      "english_content_fingerprint": "sha256:ffc7505781d42403e9acf8acfaabe0cb7b5e4086251b471b120cf59bc08a2bf4",
+      "spanish_content_fingerprint": "sha256:2a95b62544caefaca8fd3e790ab209ef2b2f084824632ca7aa9a344c1f3789d7",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "jadu-standards",
+      "explanation_version": "1.1.0",
+      "citation_fingerprint": "sha256:b5d15e4b1ec352236db89057b53adddb3bffbcc84a20e4a126ef5909577ff3ce",
+      "rule_fingerprint": "sha256:759453e4b27099af7b128e66f58ff789bdc7e3dd75b90637845633dc71fd6664",
+      "english_content_fingerprint": "sha256:42689f924a13119396c68adc45e98cbdb4f9b9ab96d5a3746b35583549d4949e",
+      "spanish_content_fingerprint": "sha256:71c7cff139fd4521896c61291842750f1e4d9f8e1633e93c888d36dd3bd4c586",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "jadu-ministerial-review",
+      "explanation_version": "1.0.0",
+      "citation_fingerprint": "sha256:9683c8b30f00d1c29653b8c3e6d6b2098bbd8e5a985feceab26931ef404cc0f1",
+      "rule_fingerprint": "sha256:174e40b5422b5f9bc060c03fc2979d8d576cac85d824d589204295342be6db59",
+      "english_content_fingerprint": "sha256:12f9112ae9551e4a17ebb9e5a7fca70dfac7b2381da95d68d4bd722288115422",
+      "spanish_content_fingerprint": "sha256:f0ee22744708c0bb8103f660483a8116ec03db1f24908762030aec313bd74022",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "sb9-two-unit-ministerial",
+      "explanation_version": "1.2.0",
+      "citation_fingerprint": "sha256:dd1f0305e60314970d374d84f7c9d84673a9866279bcbb9b92cd5d6bf0db963f",
+      "rule_fingerprint": "sha256:6e62fdfcf1bb96e16626944be40aaf637c310e800a0c7e8be694e0638e55401f",
+      "english_content_fingerprint": "sha256:987a66567476cbf62ed4d78ac2869ccc6dceb6384742eee041ab52be895e61df",
+      "spanish_content_fingerprint": "sha256:f6379da43b72fc5f3175c3e7ac53fe173d8c0d58a3c9d69a068d2f82b04ed3de",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "sb9-urban-lot-split",
+      "explanation_version": "1.2.0",
+      "citation_fingerprint": "sha256:4ce8dd950b1b868c9214840ee0849cce4c6bac2e49238ece32079225412dcfca",
+      "rule_fingerprint": "sha256:10031ce9300dd62ad3ec2e0a11dd9c6b4fceb06613bb233f3cb207732317f9ff",
+      "english_content_fingerprint": "sha256:c903cd3b8ac9de5af19e7dfeb891d86479ebeeec377ea6af78c665c1c5b5af8e",
+      "spanish_content_fingerprint": "sha256:65f489540df553e1b58534c3ed8155ecb6953b23ccfa9b31e79fe2674a3a1f45",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "adu-size-allowances",
+      "explanation_version": "1.2.0",
+      "citation_fingerprint": "sha256:78e7d4b3dc5417357e403ad372ddcd4d80613eb2e0f655bdd936d4bd60f7ff02",
+      "rule_fingerprint": "sha256:d02f92f5445fe8a36cf49992526e86b7f55a6a8871ae8d85c6aa8638dbb46cdf",
+      "english_content_fingerprint": "sha256:acdfd825a788f9dcddfb8ab12befeb4e9b4f65a86f7a7d494bed2da0ca9010dd",
+      "spanish_content_fingerprint": "sha256:31768dc07b6c1bc0efd670417ad0e2591f25445b796f059d23f2e4b9e93b4a3c",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "adu-parking-limits",
+      "explanation_version": "1.1.0",
+      "citation_fingerprint": "sha256:05969381ed60eb6d14a8e5b1a372ce5e7f2da209410d038b3f24d713950d0249",
+      "rule_fingerprint": "sha256:592ccd4916311cb0125c03f74788769c2941894434a506bc8f61fbe1120f9abf",
+      "english_content_fingerprint": "sha256:9561760d722ea6ffa3d3f6349e420d92f73c8b9e2710a0942a1e4f940dc1fc7a",
+      "spanish_content_fingerprint": "sha256:8d2f5f64e723aacf75ced9fc2a4b497dffbbec38c4bbc8eeb9919874fee38011",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "adu-no-owner-occupancy-rental",
+      "explanation_version": "1.1.0",
+      "citation_fingerprint": "sha256:90160870f2cc5f51c49d39ac684f50cd4b6f5be68672bf7642c2d0c38023792f",
+      "rule_fingerprint": "sha256:df3052e0f8933e1cbd4139e6e23cab8f0cdaa7a3fd59d3d01351df50c0af4b40",
+      "english_content_fingerprint": "sha256:b04d84e6b83bd70f4d96cbfa0b22ae311e51010703e0f55333e65559b191723c",
+      "spanish_content_fingerprint": "sha256:c731c0e0b86115bda6882d67f2dc54df7a544bfdbf77e8f7812a4c6366240698",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "adu-conversion-exemptions",
+      "explanation_version": "1.1.0",
+      "citation_fingerprint": "sha256:6a9c673ae6d69096fb4e563b1f3c1fc299e8254c2ed303c798b31d1c790b80c5",
+      "rule_fingerprint": "sha256:cc83d4f47c5c97907eb1a1c7f43b0956b3c15753a351465e78493f36ceda5f1a",
+      "english_content_fingerprint": "sha256:94894fec71bf71ff48388b955e132d362eae1f8b5eb89076de01d3f37ac18cc5",
+      "spanish_content_fingerprint": "sha256:9a73fbc94e77cccea56786c09193bdfcca01c42a2fad20f15e7f32df9652632f",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "adu-unpermitted-legalization",
+      "explanation_version": "1.1.0",
+      "citation_fingerprint": "sha256:decab32ef4a20aac42bdf2db1623553b319248a8bd2cbb5e9d18e534219aefe6",
+      "rule_fingerprint": "sha256:f77e4416a7e7b9ff0516cbfc0912061f850be052aec703b6879958b1347a3b2b",
+      "english_content_fingerprint": "sha256:b531a55d88258eed151e36640c1a0442a71c9932bb75c53b22544c948cde0a41",
+      "spanish_content_fingerprint": "sha256:015f696f2e33e7f06fd3eeab8340f2d7f1ce6dd644535a4230c386a5c4c632ec",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "jadu-unpermitted-legalization",
+      "explanation_version": "1.0.0",
+      "citation_fingerprint": "sha256:decab32ef4a20aac42bdf2db1623553b319248a8bd2cbb5e9d18e534219aefe6",
+      "rule_fingerprint": "sha256:cd52bd42a4780f232e995cecbfa5da13527bc79f14273f03ed92c81b708a846d",
+      "english_content_fingerprint": "sha256:56a794698bd7f25f3d6145c74481288d70b4abb6e8ed5660940662dc5dfc72dd",
+      "spanish_content_fingerprint": "sha256:ae8f31372f5a9974568d14d5a1d898503c90604bd692c86f267792e8b29b2954",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "adu-multifamily-66323",
+      "explanation_version": "1.1.0",
+      "citation_fingerprint": "sha256:6b0887f0d3ab807352258dd57d7456557c3f33885c48c9cd9b0ccfd06967784a",
+      "rule_fingerprint": "sha256:3feab0bf08a64e792edbb8cc486bd37ca3f970357e78b3bc57c2d8992caf3ca8",
+      "english_content_fingerprint": "sha256:2cb3c0258d68ab8cff759224778697f924dd25c8014bbac67a3db1354c8b3128",
+      "spanish_content_fingerprint": "sha256:f28f24d9a841586edeb55ded2cd8fe0b1871bf64d7a8356e2a7dedf0c15093f2",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "adu-multifamily-proposed-66323",
+      "explanation_version": "1.0.0",
+      "citation_fingerprint": "sha256:8a4970db55464dae4bbc9612973cffc8266694749c48972ea645cb81fe487204",
+      "rule_fingerprint": "sha256:0bf7c588c0349b85296511858fbb1c7eb806ba15786c0853ce7b58a2253de4f5",
+      "english_content_fingerprint": "sha256:04122a86ed079c2ea88f7a66915d006281101fc73801ba3a1dac93e6c073f344",
+      "spanish_content_fingerprint": "sha256:27bf07fdd9c1dc2880734524c68ac5617f57f48e2f1f08447d6f56867f1c839d",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "sb9-adu-interaction",
+      "explanation_version": "1.1.0",
+      "citation_fingerprint": "sha256:62b8f95024fe5dbdf8e3994220dd0f2fa7861a1711bb0d979e5ce301d6f7ecd4",
+      "rule_fingerprint": "sha256:ef466bf2360f9703a40dd76d96185eb3a56abe533998127950bdbfc9f1b425f0",
+      "english_content_fingerprint": "sha256:faa38f7cae0316752572448a80fa433e345677b5fd2e7f6656296378eefc61e5",
+      "spanish_content_fingerprint": "sha256:e37a39e100585060aa43eed69de56a32ba48995f77a7fa2c735c80814b53a0ce",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "sb9-lot-split-adu-interaction",
+      "explanation_version": "1.0.0",
+      "citation_fingerprint": "sha256:befb719b5e6e5dcfc07bc874459cc017a16f2b06f90b09343b63e3f267f1ce1a",
+      "rule_fingerprint": "sha256:20cf61123e6d4bc1380ea7e11efa1b11f987e2fedf1159f4c67cc6eafcc01f34",
+      "english_content_fingerprint": "sha256:b260a210949ef4e9a45fa32d914ce9df87717841255ca6ca434bd2447d134ffc",
+      "spanish_content_fingerprint": "sha256:fee289a1e127a04081ff4259603ae21e8907ad0a1f1f4c49b28192450a6918b2",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "davis-local-adu-process",
+      "explanation_version": "1.2.0",
+      "citation_fingerprint": "sha256:43199afe4a9cf0fea0fd0cf6a9ef1ed91368278d6d70efdcba64c44fdf1bc010",
+      "rule_fingerprint": "sha256:7909a85979ea3fa489105cfd4920e6665b56944ece333f6cefa9b19c9e65f700",
+      "english_content_fingerprint": "sha256:26c7fbe2ea5b13b5d8f4b52de061ea733c5568a4ecc0167733dbe69f2acf7028",
+      "spanish_content_fingerprint": "sha256:62d02ffc832df1ff10c82c7ea6ec410305190de1fa64e2f3e40a35a99583c437",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    },
+    {
+      "source_rule_id": "woodland-adu-ordinance-2026",
+      "explanation_version": "1.2.0",
+      "citation_fingerprint": "sha256:c523a0baccc0b287994f2e2f9636f4d6ed35d299684af1e8696ee0027e56cce7",
+      "rule_fingerprint": "sha256:355ecbdb40286792d2f52f329a81f52edf390c742e6c1c5902b03c5547586f1c",
+      "english_content_fingerprint": "sha256:146daa0c1e97d2bb1a912a1c0d8ce8f35f520b6af3787ea8d39e71942dffb920",
+      "spanish_content_fingerprint": "sha256:bef79795f4c5063d0ab7407b5bd5d145e10bc9add285c6ae879fcbdf1cba3f1d",
+      "result": "not_run",
+      "reviewer": null,
+      "method": null,
+      "reviewed_on": null,
+      "evidence": null,
+      "signoff": null
+    }
+  ]
+}

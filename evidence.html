@@ -6,7 +6,7 @@
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'">
 <title>Evidence &amp; updates | Permit Bearings</title>
-<meta name="description" content="Inspect the prototype’s rule-source status, regression cases, source dependencies, known gaps, and change rehearsal.">
+<meta name="description" content="Inspect the prototype’s rule-source status, regression cases, external-evidence gate, known gaps, and change rehearsal.">
 <meta property="og:title" content="Evidence &amp; updates | Permit Bearings">
 <meta property="og:description" content="See which sources are dated, which rules depend on them, and what the prototype still cannot verify.">
 <meta property="og:type" content="website">
@@ -122,6 +122,74 @@
           <tbody></tbody>
         </table>
       </div>
+    </section>
+
+    <section class="source-section flagship-evidence-gate"
+      aria-labelledby="externalEvidenceHeading">
+      <p class="section-kicker">Flagship evidence gate</p>
+      <h2 id="externalEvidenceHeading">Prepared, not run</h2>
+      <p class="section-intro">The review and research package is versioned so
+        future evidence can be tied to one journey, source snapshot, and
+        commit. Preparing the package is not evidence that any external work
+        occurred.</p>
+
+      <div class="notice">
+        <p><strong>No external outcome is claimed.</strong> No qualified content
+          review, participant session, manual accessibility signoff, Spanish
+          semantic review, complete maintenance rehearsal, or qualifying
+          partner commitment is recorded.</p>
+      </div>
+
+      <div class="evidence-summary" role="group"
+        aria-label="External evidence gate status">
+        <article class="evidence-stat" aria-labelledby="contentReviewLabel">
+          <h3 class="utility-label" id="contentReviewLabel">25-item content review</h3>
+          <p class="hero evidence-gate-status">Not run</p>
+          <p class="small">Two independent reviewer slots are prepared. Every
+            row-level mapping and action disposition remains pending.</p>
+        </article>
+        <article class="evidence-stat" aria-labelledby="sessionStatusLabel">
+          <h3 class="utility-label" id="sessionStatusLabel">Same-version sessions</h3>
+          <p class="hero evidence-gate-status">Not run</p>
+          <p class="small">No applicant or practitioner session, score, task
+            time, quotation, or usability outcome is recorded.</p>
+        </article>
+        <article class="evidence-stat" aria-labelledby="partnerGateLabel">
+          <h3 class="utility-label" id="partnerGateLabel">Partner gate</h3>
+          <p class="hero evidence-gate-status">Pending</p>
+          <p class="small">No written next step with an owner and date is on
+            file. Interest or praise would not satisfy this gate.</p>
+        </article>
+      </div>
+
+      <dl class="method-list">
+        <div>
+          <dt>Manual access and language</dt>
+          <dd><strong>Not run.</strong> Keyboard, screen-reader, zoom, mobile,
+            print/PDF accessibility, forced-colors, and Spanish semantic checks
+            still require signed, version-bound evidence.</dd>
+        </div>
+        <div>
+          <dt>Maintenance rehearsal</dt>
+          <dd><strong>Not run.</strong> The browser simulation above is not the
+            timed detection-to-republication rehearsal and does not establish
+            an acceptable maintenance burden.</dd>
+        </div>
+      </dl>
+
+      <p class="small">Inspect the
+        <a href="data/validation/woodland-flagship-gate.json">machine-readable
+        gate ledger</a>,
+        <a href="data/validation/woodland-content-review.json">25-row review
+        matrix</a>, and
+        <a href="data/validation/woodland-manual-evidence.json">manual evidence
+        matrix</a>. Inspect the
+        <a href="data/validation/woodland-participant-sessions.json">six-session
+        scorecard ledger</a> and
+        <a href="data/validation/woodland-source-change-rehearsal.json">source-change
+        rehearsal ledger</a>. Read the
+        <a href="https://github.com/ChelseaKR/permit-pathways/blob/main/docs/VALIDATION-EVIDENCE.md"
+          rel="noopener">execution and claim protocol</a>.</p>
     </section>
 
     <section class="source-section" aria-labelledby="sourcesHeading">

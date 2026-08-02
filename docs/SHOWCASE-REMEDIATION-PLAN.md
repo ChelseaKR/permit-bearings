@@ -121,9 +121,15 @@ measured permitting outcome.
 
 **Implemented**
 
-- A concrete [formative validation plan](SHOWCASE-VALIDATION-PLAN.md) defines
-  separate staff and applicant or designer sessions, synthetic-only materials,
-  task-success criteria, safety boundaries, and a no-PII protocol.
+- A concrete [flagship evidence protocol](VALIDATION-EVIDENCE.md) and
+  [formative session plan](SHOWCASE-VALIDATION-PLAN.md) define the frozen
+  synthetic journey, two independent content reviews, six same-version
+  applicant/practitioner sessions, task and safety thresholds, manual access
+  evidence, a maintenance rehearsal, a partner gate, and a no-PII protocol.
+- Machine-readable ledgers keep every current external activity `not_run` or
+  pending and bind any future result to exact commits, journey/workflow/packet
+  fingerprints, source hashes, evidence receipts, and signoffs. Preparing
+  those ledgers is not completion evidence.
 
 **Next**
 
@@ -145,7 +151,10 @@ measured permitting outcome.
 - Any effect on submission quality, review time, correction cycles, staff
   effort, or permitting duration.
 
-No external participant has validated the prototype as of 2026-07-29.
+As of 2026-08-02, no external reviewer or participant outcome, manual
+accessibility signoff, Spanish semantic review, completed maintenance
+rehearsal, qualifying partner commitment, or jurisdiction validation is
+recorded.
 
 ## 4. Project provenance and delivery capacity
 
@@ -186,7 +195,8 @@ These are elapsed workflow timings calculated from GitHub's `startedAt` and
 already configured prototype repository. They do not measure jurisdiction
 configuration, source review, integration, security authorization, production
 deployment, support, or time to a usable permitting result. The runs also
-precede the current unmerged readiness implementation.
+precede the now-deployed route-to-packet and printable-summary iterations, so
+they do not measure those builds.
 
 **Next**
 

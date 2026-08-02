@@ -386,3 +386,39 @@ test("mobile evidence tables render as labeled records without page overflow", a
   );
   await expectNoDocumentOverflow(page);
 });
+
+test("external evidence gate stays visibly pending without success claims", async ({
+  page,
+}) => {
+  await page.goto("/evidence.html");
+  const gate = page.locator(".flagship-evidence-gate");
+
+  await expect(gate).toBeVisible();
+  await expect(gate.locator("h2")).toHaveText("Prepared, not run");
+  await expect(gate.locator(".evidence-gate-status")).toHaveText([
+    "Not run",
+    "Not run",
+    "Pending",
+  ]);
+  await expect(gate).toContainText("No external outcome is claimed");
+  await expect(gate).toContainText("No applicant or practitioner session");
+  await expect(gate).toContainText("No written next step");
+  await expect(gate.locator('a[href$="woodland-flagship-gate.json"]')).toBeVisible();
+  await expect(gate.locator('a[href$="woodland-content-review.json"]')).toBeVisible();
+  await expect(gate.locator('a[href$="woodland-manual-evidence.json"]')).toBeVisible();
+  await expect(
+    gate.locator('a[href$="woodland-participant-sessions.json"]'),
+  ).toBeVisible();
+  await expect(
+    gate.locator('a[href$="woodland-source-change-rehearsal.json"]'),
+  ).toBeVisible();
+  await expect(
+    gate.getByRole("link", { name: "execution and claim protocol" }),
+  ).toHaveAttribute(
+    "href",
+    "https://github.com/ChelseaKR/permit-pathways/blob/main/docs/VALIDATION-EVIDENCE.md",
+  );
+  await expectNoDocumentOverflow(page);
+  await expectNoAutomatedWcagViolations(page);
+  await expectBrowserStorageEmpty(page);
+});

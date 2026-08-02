@@ -1,126 +1,241 @@
-# Manual accessibility and language validation record
+# Manual accessibility, print, and language validation record
 
 Status: prepared, not executed  
-Record version: 1.0  
-Prepared: 2026-07-30
+Record version: 1.0.0
+Prepared: 2026-08-02
 
-This record defines the human checks required before Permit Bearings can
-describe its public interface or Spanish guidance as applicant-ready. It does
-not record a completed accessibility audit, WCAG conformance determination,
-Spanish semantic-parity review, or legal review.
+The canonical machine-checkable record is
+[`data/validation/woodland-manual-evidence.json`](../data/validation/woodland-manual-evidence.json).
+It defines the human checks required before Permit Bearings can describe the
+public synthetic Woodland route-to-packet journey, its printed artifact, or
+its Spanish guidance as applicant-ready.
 
-Automated axe, Lighthouse, schema, and regression results remain separate
-evidence. A person must perform and sign each check below. Failed and blocked
-checks remain visible; they are not converted to passes by changing interface
-copy.
+This record does **not** report a completed accessibility audit, WCAG
+conformance determination, physical-device test, printed-output review,
+accessible-PDF result, Spanish semantic-parity review, applicant study, legal
+review, or jurisdiction approval. Every human result remains `not_run`.
+Automated axe, Lighthouse, reflow, print-media, schema, fingerprint, and
+regression checks are separate evidence and cannot promote a row in this
+record.
 
-## Evidence rules
+## Exact synthetic artifact under review
 
-For every executed check, record:
+The prepared matrix is bound to one public synthetic fixture. The execution
+lock remains unfilled until a human run records both the exact deployed commit
+and deployed URL.
 
-- check ID and page or content version;
-- result: `pass`, `fail`, or `blocked`;
-- tester or reviewer name;
-- test date;
-- operating system and version;
-- browser and version;
-- assistive technology, input method, display setting, or language-review
-  method;
-- concise observations and reproduction steps;
-- linked defect or follow-up when the result is not `pass`.
+| Lock | Prepared value |
+|---|---|
+| Sample entry | `check.html?sample=adu` |
+| Valid packet entry | `prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0` |
+| Journey ID / version | `woodland-preapproved-detached-adu-synthetic` / `1.0.0` |
+| Journey fingerprint | `sha256:6a7734b8bc920ec13898e2c8c753ce57d27652a5d37c8a41d433798318c4641a` |
+| Screening-case fingerprint | `sha256:3171705791a2520132e727c9d39d6f0bc710d7114e6408c0bfd2af6ebb3d754b` |
+| Fact-envelope fingerprint | `sha256:18c9bf3bdf525776352301b3150185fce8cdb0882b621d61f92eabcc25036847` |
+| Workflow fingerprint | `sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5` |
+| Packet fingerprint | `sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e` |
+| Tested commit | `null` — no run has been executed |
+| Deployed URL | `null` — no run has been executed |
 
-Use `not_run` until all required evidence exists. Do not use `pass` for a
-partial workflow, an automated result, or an informal spot check.
+The valid packet URL has exactly the `journey` and `version` parameters.
+Direct, missing, duplicate, extra-parameter, mismatched-version, and stale
+entries are withheld states, not substitutes for testing the valid journey.
+Do not combine, average, or carry forward results from different commits,
+journey versions, or fingerprints. A changed lock requires a new run.
 
-## Public-page task matrix
+## Evidence and transition rules
 
-| Check ID | Page | Required human task | Current result |
-|---|---|---|---|
-| KB-INDEX | `index.html` | Use the skip link and primary navigation without a pointer; verify visible focus and logical order. | `not_run` |
-| KB-CHECK | `check.html?sample=adu` | Complete, edit, clear, and resubmit the sample using only the keyboard; operate every disclosure and follow every result jump link. | `not_run` |
-| KB-PREPARE | `prepare.html` | Reach the packet summary, source record, missing items, staff questions, disclosures, and manifest link using only the keyboard. | `not_run` |
-| KB-REVIEW | `review.html` | Enter ordinance text, run the screen, reach the result summary and findings, and recover from an empty submission using only the keyboard. | `not_run` |
-| KB-EVIDENCE | `evidence.html` | Run and reset the source-change rehearsal, follow the affected-result link, and verify focus placement and status announcements. | `not_run` |
-| SR-CHECK | `check.html?sample=adu` | With VoiceOver/Safari and separately NVDA/Firefox or NVDA/Chrome, verify landmarks, headings, field names, conditional questions, errors, answers-used summary, result groups, source status, and disclosure reading order. | `not_run` |
-| SR-PREPARE | `prepare.html` | Verify loading status, packet summary, finding counts, missing and unresolved items, source evidence, disclosure names, and manifest-link purpose with a screen reader. | `not_run` |
-| SR-TOOLS | `review.html` and `evidence.html` | Verify live-region timing and verbosity for scan results and the source-change rehearsal; confirm that changed status is not conveyed by color alone. | `not_run` |
-| REFLOW-ALL | All five pages | Test browser zoom at 200% and 400%, then a 320 CSS-pixel viewport; verify no loss of content or function and no document-level horizontal scrolling. | `not_run` |
-| TOUCH-IOS | `index.html`, `check.html?sample=adu`, and `evidence.html` | On a physical iPhone using Safari, open and close the section menu, complete and edit the sample with the virtual keyboard, operate disclosures, and scan the labeled evidence records at 320px-equivalent and 390px-equivalent widths. | `not_run` |
-| TOUCH-ANDROID | `index.html`, `check.html?sample=adu`, and `evidence.html` | On a physical Android phone using Chrome, open and close the section menu, complete and edit the sample with the virtual keyboard, operate disclosures, and scan the labeled evidence records at a narrow and a common phone width. | `not_run` |
-| TEXT-SPACING | All five pages | Apply WCAG text-spacing overrides and verify that text is not clipped, overlapped, or made inoperable. | `not_run` |
-| CONTRAST-MODE | All five pages | Test forced-colors or a comparable high-contrast mode; verify focus, controls, links, disclosures, and status distinctions. | `not_run` |
-| MOTION | `check.html` and `evidence.html` | Enable reduced motion and verify that navigation and result updates remain understandable without smooth scrolling. | `not_run` |
-| ES-PRONUNCIATION | `check.html` | With the page in Spanish, verify language switching, pronunciation, English-source `lang` boundaries, and understandable mixed-language transitions with a Spanish-capable screen reader voice. | `not_run` |
+Use `not_run` until every required field exists. Do not use `pass` for a
+partial workflow, an automated result, an informal spot check, a visual PDF
+inspection standing in for assistive-technology review, or a fixed defect that
+has not been retested against the same locked artifact.
 
-Keyboard and screen-reader runs must include both successful and error or
-unknown-input paths. Record defects independently from this table; the table
-records the result of the tested version, not the eventual intention to fix
-it.
+For an executed manual check, record:
 
-## Run record template
+- the exact 40-character deployed commit and HTTPS deployment URL;
+- check ID, result (`pass`, `fail`, or `blocked`), start and completion time;
+- a consented public tester identifier and broad role;
+- operating system and version, device, browser and version;
+- assistive technology, input method, display setting, print driver, PDF
+  viewer, or language-review method;
+- the exact successful, error, unknown, and withheld task paths used;
+- observations and reproduction steps;
+- redacted evidence references;
+- defect and retest references when applicable;
+- tester attestation and a consented public identifier for the independent
+  acceptance reviewer; and
+- signoff disposition and dates.
 
-Copy this block once for each executed check:
+A `not_run` row must retain `execution`, `reviewer`, `evidence`, and `signoff`
+as `null`. A non-`not_run` row is invalid unless the artifact lock is
+`executed` and contains the exact commit and deployment, and the row contains
+a complete execution record, evidence, reviewer, and signoff. `in_progress`
+means at least one but not all required manual and Spanish rows has a signed
+result. `complete` means every required row has a signed non-`not_run` result,
+including unfavorable `fail`, `blocked`, `changes_required`, or
+`blocked_by_source` outcomes; it does not mean every check passed. Failed and
+blocked checks remain visible and cannot be converted to passes by changing
+prose.
+
+## Human task matrix
+
+Keyboard and screen-reader runs include successful, error, unknown-input, and
+withheld paths. The journey rows start at the made-up sample, exercise the
+unselected applicability gate, and follow the exact versioned packet handoff.
+
+| Check ID | Human method and required surface | Current result |
+|---|---|---|
+| KB-INDEX | Keyboard-only skip-link, navigation, focus-order, and visible-focus run on `index.html`. | `not_run` |
+| KB-JOURNEY | Keyboard-only full route, Yes/No/unknown gate, exact handoff, summary, print control, packet, source, manifest, edit, clear, error, and recovery run. | `not_run` |
+| KB-REVIEW | Keyboard-only ordinance input, result, empty-state recovery, focus-order, and visible-focus run. | `not_run` |
+| KB-EVIDENCE | Keyboard-only source-change rehearsal, reset, affected link, focus, and status-announcement run. | `not_run` |
+| SR-JOURNEY-VOICEOVER-SAFARI | Full journey with VoiceOver/Safari, including names, roles, states, live regions, reading order, summary, packet, sources, disclosures, and manifest. | `not_run` |
+| SR-JOURNEY-NVDA | Full journey with NVDA and Firefox or Chrome, covering the same successful and withheld states independently. | `not_run` |
+| SR-TOOLS | VoiceOver and NVDA review of live-region timing and non-color status for `review.html` and `evidence.html`. | `not_run` |
+| REFLOW-JOURNEY | Full populated journey at 200% and 400% browser zoom and a 320 CSS-pixel viewport, including long IDs, fingerprints, and URLs. | `not_run` |
+| REFLOW-OTHER-PAGES | `index.html`, `review.html`, and `evidence.html` at 200%, 400%, and 320 CSS pixels. | `not_run` |
+| MOBILE-JOURNEY-IOS | Full journey on a physical iPhone with Safari and the virtual keyboard at recorded narrow and common widths. | `not_run` |
+| MOBILE-JOURNEY-ANDROID | Full journey on a physical Android phone with Chrome and the virtual keyboard at recorded narrow and common widths. | `not_run` |
+| TEXT-SPACING-ALL | WCAG text-spacing overrides on initial and populated states of all five pages. | `not_run` |
+| FORCED-COLORS-JOURNEY | Full journey in Windows forced-colors or a recorded comparable high-contrast mode; verify focus, controls, borders, links, and every status distinction. | `not_run` |
+| FORCED-COLORS-OTHER-PAGES | High-contrast run of `index.html`, `review.html`, and `evidence.html`. | `not_run` |
+| MOTION | Reduced-motion run of applicant-result navigation and the source-change rehearsal. | `not_run` |
+| PRINT-JOURNEY-CHROME | Chrome Print and Save as PDF; inspect isolation, content, links, grayscale, wrapping, pagination, and reading order. | `not_run` |
+| PRINT-JOURNEY-SAFARI | Safari Print and Save as PDF; repeat the complete visual and functional printed-output review. | `not_run` |
+| PRINT-JOURNEY-FIREFOX | Firefox Print and Save as PDF; repeat the complete visual and functional printed-output review. | `not_run` |
+| PDF-AT-JOURNEY | Inspect a saved artifact with a recorded PDF viewer and screen reader for title, tags, structure, order, links, selectable text, IDs, status, and boundary. | `not_run` |
+| ES-USABILITY-JOURNEY | Moderated Spanish-language comprehension run against the exact journey version: candidate-not-approval meaning, source status, unknown escalation, explicit English handoff, packet action, staff question, and synthetic boundary. | `not_run` |
+| ES-HANDOFF | Verify Spanish state preservation, English source boundaries, explicit English packet label, Yes/No/unknown behavior, exact two-parameter link, and English destination. | `not_run` |
+| ES-PRONUNCIATION | Verify Spanish pronunciation and understandable voice changes across English source text and the English packet destination with a Spanish-capable screen-reader voice. | `not_run` |
+
+The three print rows concern visual and functional printed output. They do not
+establish an accessible PDF. `PDF-AT-JOURNEY` remains independently
+`not_run`; if a browser-generated PDF is untagged or has unusable reading
+order, record `fail` or `blocked`, not a visual pass.
+
+## Execution record template
+
+Copy this structure for each run. Do not fill it with inferred, automated, or
+undated evidence.
 
 ```text
 Check ID:
 Result: not_run | pass | fail | blocked
-Tester:
-Date:
-Commit or deployed URL:
+Tested commit: [full 40-character SHA]
+Deployed URL: [HTTPS URL]
+Journey ID and version:
+Journey, screening-case, fact-envelope, workflow, and packet fingerprints:
+Consented public tester identifier and broad role:
+Started at / completed at:
 OS/device:
 Browser:
-Assistive technology or setting:
-Task path:
-Observations:
+Assistive technology, setting, print driver, or PDF viewer:
+Task paths:
+Observations and reproduction steps:
+Redacted evidence references:
 Defect/follow-up:
 Retest record:
+Privacy/redaction confirmation:
+Tester attestation date:
+Consented public acceptance-reviewer identifier and review date:
+Signoff disposition: accepted_for_tested_artifact | rejected | exception_pending
 ```
 
-## Spanish semantic-parity review
+## Privacy handling
 
-Interface localization and source-derived guidance are separate review
-surfaces. A fluent or qualified reviewer must compare each Spanish
-explanation with its English explanation and cited source evidence.
+Use only the repository's public made-up route, generated synthetic packet,
+properly redacted defect evidence, and consented public tester or reviewer
+identifiers with broad non-identifying role or qualification summaries. Do not
+retain private names or attribution details without explicit public-use
+consent. Never retain email addresses, phone numbers, handles, scheduling
+records, identity-linking details, unauthorized employer or jurisdiction
+names, real addresses, APNs, application numbers, drawings, permit files,
+client information, credentials, browser profiles, or unredacted screenshots.
+Do not record audio, video, or screens. Contact and identity-linking material
+stays outside the repository.
 
-For every reviewed rule, record:
+Before committing any executed record, a second person must confirm that the
+record and linked evidence contain no applicant, private participant,
+unauthorized employer or jurisdiction, contact, identity-linking, or
+credential data and that each public tester or reviewer identifier has
+explicit attribution consent. Until that confirmation is recorded, privacy
+status, reviewer, evidence, and signoff remain `not_run` or `null`.
 
-- stable `source_rule_id`;
-- explanation `version`;
-- English localized-content fingerprint;
-- Spanish localized-content fingerprint;
-- citation fingerprint and full-rule fingerprint;
-- reviewer name and relevant language/domain qualification;
-- review method and date;
-- disposition: `approved`, `changes_required`, or `blocked_by_source`;
-- each meaning, threshold, exception, legal-term, and next-action difference.
+## Spanish-language usability check
 
-The review is incomplete if it checks only fluency or interface labels. It
-must separately examine:
+`ES-USABILITY-JOURNEY` is a distinct version-bound human task run. It asks a
+fluent Spanish-speaking participant to interpret the candidate-route boundary,
+source status, unknown escalation, explicit English packet transition, one
+packet action, one staff question, and the synthetic not-a-decision boundary
+without a product tour. Its outcome is usability evidence only. It cannot
+promote a translation, establish semantic fidelity or accessibility, or stand
+in for any of the 19 rule-by-rule reviews below.
+
+## Spanish semantic-parity protocol
+
+Interface localization and source-derived guidance are independent review
+surfaces. A fluent or qualified reviewer must compare the exact Spanish copy
+with its English copy and cited source evidence. Each row is bound to the
+version, citation fingerprint, full-rule fingerprint, and computed English
+and Spanish localized-content fingerprints stored in the canonical JSON.
+
+The review must separately examine:
 
 - applicant consequence and uncertainty;
 - every number, deadline, threshold, and condition;
 - negative and exception language;
 - legal terms that remain untranslated or are defined differently;
-- questions and escalation instructions;
-- whether stale or unverified evidence is handled identically.
+- questions, next actions, and escalation instructions; and
+- identical handling of stale or unverified evidence.
 
-Only after that review may the exact Spanish record move from
-`machine_draft` to a completed review status. The record must contain the
-reviewer, method, date, reviewed version, and matching content fingerprint.
-English content/legal review remains independent and must not be inferred
-from Spanish approval.
+| Source rule ID | Explanation version | Current result |
+|---|---:|---|
+| `adu-ministerial-review` | `1.1.0` | `not_run` |
+| `adu-protected-minimum` | `1.1.0` | `not_run` |
+| `adu-height-standards` | `1.1.0` | `not_run` |
+| `jadu-standards` | `1.1.0` | `not_run` |
+| `jadu-ministerial-review` | `1.0.0` | `not_run` |
+| `sb9-two-unit-ministerial` | `1.2.0` | `not_run` |
+| `sb9-urban-lot-split` | `1.2.0` | `not_run` |
+| `adu-size-allowances` | `1.2.0` | `not_run` |
+| `adu-parking-limits` | `1.1.0` | `not_run` |
+| `adu-no-owner-occupancy-rental` | `1.1.0` | `not_run` |
+| `adu-conversion-exemptions` | `1.1.0` | `not_run` |
+| `adu-unpermitted-legalization` | `1.1.0` | `not_run` |
+| `jadu-unpermitted-legalization` | `1.0.0` | `not_run` |
+| `adu-multifamily-66323` | `1.1.0` | `not_run` |
+| `adu-multifamily-proposed-66323` | `1.0.0` | `not_run` |
+| `sb9-adu-interaction` | `1.1.0` | `not_run` |
+| `sb9-lot-split-adu-interaction` | `1.0.0` | `not_run` |
+| `davis-local-adu-process` | `1.2.0` | `not_run` |
+| `woodland-adu-ordinance-2026` | `1.2.0` | `not_run` |
+
+Allowed review dispositions are `approved`, `changes_required`, and
+`blocked_by_source`. Any executed disposition requires a consented public
+reviewer identifier, relevant language/domain qualification, method, date,
+redacted evidence, and signoff against the exact lock. `approved` is invalid
+unless the matching Spanish explanation record is promoted with the same
+reviewer identifier, date, version, method, and Spanish content fingerprint.
+Conversely, `changes_required` or `blocked_by_source` is invalid if the
+matching translation has already been promoted to `human_reviewed` or
+`jurisdiction_approved`. English content or legal approval remains independent
+and cannot be inferred from Spanish approval.
 
 ## Exit criteria
 
-Human validation is complete only when:
+The relevant acceptance claim remains open until:
 
-1. every matrix row has a signed `pass` record for the commit or deployment
-   being accepted;
-2. every failed or blocked result has been fixed and retested, or remains
-   explicitly open without an applicant-ready claim;
-3. screen-reader coverage includes VoiceOver/Safari and one NVDA/browser
-   combination;
-4. Spanish source-derived guidance has rule-by-rule semantic-parity evidence
-   bound to exact versions and fingerprints; and
-5. `docs/ACCESSIBILITY.md`, `docs/I18N.md`, the capability matrix, README, and
-   public labels accurately reflect the completed and still-open work.
+1. each required matrix row has a signed result for the exact accepted commit,
+   deployment, journey version, and fingerprints;
+2. every failed or blocked result is fixed and retested or remains explicitly
+   open without an applicant-ready or conformance claim;
+3. screen-reader coverage includes both VoiceOver/Safari and NVDA with a
+   recorded browser;
+4. Chrome, Safari, and Firefox printed-output rows and the independent PDF/AT
+   row are resolved without conflating their evidence;
+5. the distinct Spanish-language usability row has a signed result for the
+   same locked artifact;
+6. Spanish source-derived guidance has rule-by-rule semantic-parity evidence
+   bound to the exact 19 records; and
+7. the README, product context, accessibility record, i18n record, capability
+   matrix, and public labels accurately distinguish completed and open work.

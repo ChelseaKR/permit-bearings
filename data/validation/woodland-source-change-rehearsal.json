@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "record_id": "woodland-checklist-source-change-rehearsal",
+  "record_version": "1.0.0",
+  "status": "prepared_not_executed",
+  "prepared_on": "2026-08-02",
+  "claim_boundary": "This is a controlled rehearsal contract. No source change was fetched or detected, no review was performed, no guidance was updated or approved, and no build was republished.",
+  "artifact_lock": {
+    "lock_id": "woodland-route-to-packet-frozen-artifact-1",
+    "status": "not_run",
+    "baseline_commit_sha": null,
+    "baseline_deployed_url": null,
+    "source_snapshot_id": "woodland-route-to-packet-sources-1",
+    "source_snapshot_receipt_id": null,
+    "journey_id": "woodland-preapproved-detached-adu-synthetic",
+    "journey_version": "1.0.0",
+    "journey_fingerprint": "sha256:6a7734b8bc920ec13898e2c8c753ce57d27652a5d37c8a41d433798318c4641a",
+    "readiness_workflow_id": "woodland-preapproved-detached-adu",
+    "readiness_workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
+    "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
+    "readiness_packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e"
+  },
+  "simulation_contract": {
+    "change_kind": "controlled_source_hash_change",
+    "must_not_be_described_as_change_in_law": true,
+    "target_source_id": "woodland-preapproved-adu-checklist",
+    "target_source_url": "https://www.cityofwoodland.gov/DocumentCenter/View/12372",
+    "baseline_sha256": "59ebf082a59ff257f104a13f75d63faa869565bfdecc33a6e1eba306b4796d62",
+    "baseline_recorded_on": "2026-07-29",
+    "simulated_changed_sha256": null,
+    "changed_fixture_receipt_id": null,
+    "detection_method": "Compare the controlled fixture hash with the frozen source hash, then invoke the readiness evaluator changed-source input.",
+    "readiness_command_argv": [
+      "python",
+      "-m",
+      "permit_pathways.readiness_cli",
+      "--as-of",
+      "2026-07-30",
+      "--changed-source-id",
+      "woodland-preapproved-adu-checklist"
+    ],
+    "expected_source_state": "source_review_required",
+    "expected_fail_closed_behavior": "withhold_current_packet_findings_actions_and_printable_summary"
+  },
+  "expected_impact": {
+    "affected_requirement_ids": [
+      "building-permit-application",
+      "plan-owner-contract-or-authorization",
+      "dimensioned-plot-plan",
+      "plot-plan-address-apn",
+      "plot-plan-owner-contact",
+      "plot-plan-scale",
+      "plot-plan-lot-dimensions",
+      "plot-plan-footprints-setbacks",
+      "plot-plan-other-structures",
+      "plot-plan-easements",
+      "plot-plan-utilities",
+      "plot-plan-drainage",
+      "plot-plan-tree-removal",
+      "plot-plan-driveway",
+      "site-specific-construction-details",
+      "foundation-plan",
+      "plumbing-electrical-tie-in",
+      "electrical-load-calculations",
+      "waste-reduction-recycling-plan",
+      "solar-plans",
+      "fire-sprinkler-plans",
+      "upgrade-to-city-services",
+      "spring-lake-geotechnical-report",
+      "spring-lake-post-tension-slab",
+      "flood-elevation-certificate"
+    ],
+    "affected_actions_use_same_requirement_ids": true,
+    "affected_records": [
+      "data/readiness/workflows/woodland-preapproved-detached-adu.json",
+      "data/readiness/remedies/woodland-preapproved-detached-adu.json",
+      "data/readiness/generated/woodland-preapproved-adu-evidence.json",
+      "data/journeys/generated/woodland-preapproved-detached-adu.json",
+      "data/demo-data.js",
+      "prepare.html"
+    ],
+    "unaffected_controls": [
+      {
+        "control_id": "candidate-route-rule-remains-source-separate",
+        "rule_id": "adu-ministerial-review",
+        "rule_fingerprint": "sha256:4888800f455167140ea9f69d193a2b70f82d168e75d41f6daa34dcec1bf0b58f",
+        "reason": "The candidate route depends on Gov. Code section 66317 and the HCD ADU Handbook, not the City checklist. The packet transition must still fail closed because its checklist evidence changed."
+      }
+    ]
+  },
+  "execution": {
+    "rehearsal_started_at": null,
+    "rehearsal_completed_at": null,
+    "maintainer_code": null,
+    "reviewer_code": null,
+    "human_owner_role": null,
+    "privacy_review_receipt_id": null,
+    "protocol_deviations": null
+  },
+  "stages": [
+    {
+      "stage_id": "detect",
+      "status": "not_run",
+      "started_at": null,
+      "completed_at": null,
+      "actor_code": null,
+      "method": null,
+      "observed_result": null,
+      "evidence_receipt_id": null,
+      "review_receipt_id": null
+    },
+    {
+      "stage_id": "identify_affected_and_unaffected",
+      "status": "not_run",
+      "started_at": null,
+      "completed_at": null,
+      "actor_code": null,
+      "method": null,
+      "observed_result": null,
+      "evidence_receipt_id": null,
+      "review_receipt_id": null
+    },
+    {
+      "stage_id": "review",
+      "status": "not_run",
+      "started_at": null,
+      "completed_at": null,
+      "actor_code": null,
+      "method": null,
+      "observed_result": null,
+      "evidence_receipt_id": null,
+      "review_receipt_id": null
+    },
+    {
+      "stage_id": "update_or_suppress",
+      "status": "not_run",
+      "started_at": null,
+      "completed_at": null,
+      "actor_code": null,
+      "method": null,
+      "observed_result": null,
+      "evidence_receipt_id": null,
+      "review_receipt_id": null
+    },
+    {
+      "stage_id": "approve",
+      "status": "not_run",
+      "started_at": null,
+      "completed_at": null,
+      "actor_code": null,
+      "method": null,
+      "observed_result": null,
+      "evidence_receipt_id": null,
+      "review_receipt_id": null
+    },
+    {
+      "stage_id": "republish",
+      "status": "not_run",
+      "started_at": null,
+      "completed_at": null,
+      "actor_code": null,
+      "method": null,
+      "observed_result": null,
+      "evidence_receipt_id": null,
+      "review_receipt_id": null
+    }
+  ],
+  "observed_impact": {
+    "detected_source_state": null,
+    "detected_sha256": null,
+    "affected_requirement_ids": null,
+    "affected_action_requirement_ids": null,
+    "affected_record_paths": null,
+    "unaffected_control_ids": null,
+    "dispositions": null,
+    "blocking_defects_found": null
+  },
+  "publication_receipt": {
+    "approval_receipt_id": null,
+    "republished_commit_sha": null,
+    "republished_url": null,
+    "republished_source_sha256": null,
+    "verification_receipt_id": null,
+    "rollback_receipt_id": null
+  },
+  "timing": {
+    "elapsed_minutes": null,
+    "maintainer_active_minutes": null,
+    "reviewer_active_minutes": null
+  },
+  "partner_burden_decision": {
+    "status": "pending",
+    "acceptable": null,
+    "partner_role": null,
+    "decided_on": null,
+    "private_evidence_receipt_id": null,
+    "receipt_verified_on": null,
+    "receipt_verified_by_code": null
+  },
+  "aggregate": {
+    "status": "not_run",
+    "stages_completed": 0,
+    "rehearsals_completed": 0,
+    "affected_requirements_confirmed": null,
+    "unaffected_controls_confirmed": null,
+    "defects_found": null,
+    "human_owner_recorded": null,
+    "republication_verified": null,
+    "acceptable_burden": null,
+    "acceptable_burden_decided_by_partner": null
+  }
+}
