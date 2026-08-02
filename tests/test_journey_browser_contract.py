@@ -102,6 +102,20 @@ check(
   canonicalJourney.journey_id === "woodland-preapproved-detached-adu-synthetic",
   "unexpected canonical journey resolved",
 );
+check(
+  generatedDataIsDeeplyFrozen(canonicalJourney),
+  "normalized journey tree was not recursively frozen",
+);
+const originalRoutePathway = canonicalJourney.candidate_routes[0].pathway;
+try {
+  canonicalJourney.candidate_routes[0].pathway += " drift";
+} catch {
+  // ES modules throw on writes to frozen objects; classic scripts ignore the write.
+}
+check(
+  canonicalJourney.candidate_routes[0].pathway === originalRoutePathway,
+  "same-object mutation bypassed normalized journey integrity",
+);
 
 const malformedCases = [
   ["null screening intake", ({journeys}) => {

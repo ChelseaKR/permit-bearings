@@ -47,9 +47,11 @@ The submitted facts, grouped summary, jump links, and disclosure state exist
 only in current browser page memory. Changing the jurisdiction or any named
 project answer clears the old packet and requires a new submission. The
 surface does not persist an applicant record or implement parcel verification,
-packet completeness, or an exportable evidence manifest. The next coherent
-output is a permit-readiness evidence packet that also separates submission
-completeness, consistency standards, and unresolved staff questions.
+packet completeness, or an exportable evidence manifest. The bounded Woodland
+continuation now demonstrates a smaller portable output: a print-focused view
+of its integrity-checked synthetic route and packet evidence. A real
+permit-readiness record that separates submission completeness, consistency
+standards, and unresolved staff questions remains planned.
 
 One bounded browser continuation is implemented for the canonical made-up
 Woodland sample. It appears only while that sample remains active and
@@ -58,7 +60,9 @@ readiness fingerprint validates, and the route and readiness sources remain
 inside their review windows. The remaining workflow-applicability fact has no
 default. **Yes** exposes a versioned packet-example link; **No** or **I'm not
 sure** withholds it. This continuation does not turn the temporary route
-result into a stored or unified applicant evidence packet.
+result into a stored applicant evidence packet. On an exact valid packet
+entry, it can compose a print-focused synthetic summary without persisting or
+transferring applicant facts.
 
 #### Plain-language explanation layer (prototype)
 
@@ -147,6 +151,17 @@ commits the generated evidence JSON, and embeds the result in the static
 bundle. `prepare.html` validates and renders that generated result. The
 browser does not contain a second packet evaluator.
 
+After those same entry, integrity, and current-source checks pass,
+`prepare.html` also derives a print-focused summary from the normalized journey
+and readiness objects. It combines the candidate route and source status,
+labeled synthetic facts, the three reported-missing actions, direct staff
+questions, route/checklist/parcel-metadata evidence, boundary text, and the
+public journey ID/version. Its native button calls the browser print dialog;
+the action block retains its AI-assisted, review-pending, not-human-reviewed
+label. Print CSS isolates the summary while the browser owns Print/Save as
+PDF. No second evaluation, app-side file generation, upload, or storage is
+introduced.
+
 The checklist mapping and action wording are recorded as AI-assisted,
 `prototype_review_pending` drafts. Remedy copy cannot affect evaluation.
 Mapping metadata records its version, date, exact input-source fingerprints,
@@ -202,9 +217,9 @@ server-side applicant record.
 `prepare.html` accepts exactly the current journey ID and version and reruns
 the contract and source-currency checks before showing packet findings.
 Direct, malformed, duplicated, extra, mismatched, or stale entry fails closed.
-This is one replayable synthetic journey, not authorization, a real applicant
-case, a completeness or eligibility finding, or a unified printable evidence
-packet.
+The printable view is one replayable synthetic journey summary, not
+authorization, a real or persisted applicant case, a completeness or
+eligibility finding, an official checklist, or jurisdiction-approved packet.
 
 ### 3. Citation-grounded Q&A (planned)
 
@@ -267,7 +282,8 @@ job:
   shareable sample that reuses a canonical golden fixture, its explicit
   applicability gate, and the separate clock;
 - `prepare.html`: a fail-closed versioned entry to the generated synthetic
-  Woodland packet-presence result and evidence-manifest link;
+  Woodland packet-presence result, evidence-manifest link, and print-focused
+  journey evidence summary;
 - `review.html`: bounded ordinance-text screen; and
 - `evidence.html`: source status, regression summary, and change rehearsal.
 
@@ -283,8 +299,11 @@ At phone widths, the full primary link row is replaced by a native
 collapses to one column, primary task actions span the available width, and
 the evidence tables render as labeled source/rule records instead of requiring
 horizontal page scrolling. Browser checks exercise every page at 320px and
-390px plus populated applicant and evidence states; physical-device and
-assistive-technology validation remain separate manual work.
+390px plus populated applicant and evidence states. A separate print-media
+check confirms that the summary remains visible while navigation, task chrome,
+the detailed packet surface, and print button are withheld without horizontal
+document overflow. Physical-device, printed-output, and assistive-technology
+validation remain separate manual work.
 
 The generated bundle must never become a second hand-edited source of truth;
 the test suite compares it byte-for-byte with the canonical JSON inputs and
@@ -324,9 +343,13 @@ The current build-time and browser boundaries are documented in
 2. Follow that link to `prepare.html`. Point out that the URL contains only a
    public journey ID and version. Show the 25 source-bound requirements, three
    known gaps, five items needing confirmation, the review-pending AI-assisted
-   action wording, and the generated evidence manifest. State that the Python
-   evaluator compared explicit synthetic inventory statuses and never opened
-   a file or verified a parcel. Direct or invalid entry withholds the findings.
+   action wording, and the generated evidence manifest. Show the print-focused
+   summary's candidate route, labeled made-up facts, three preparation actions,
+   direct staff questions, source evidence, boundary, and ID/version on one
+   portable surface. State that Print/Save is the browser's operation and that
+   the app stores no export. The Python evaluator compared explicit synthetic
+   inventory statuses and never opened a file or verified a parcel. Direct or
+   invalid entry withholds both findings and summary.
 3. Select an unsupported fact combination → visible abstention + staff routing
    (current trust moment; free-text Q&A remains planned).
 4. Use the ordinance-review page to flag a documented sample provision.

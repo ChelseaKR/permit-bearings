@@ -27,6 +27,14 @@ by default. A matching **Yes** opens the versioned packet example, while
 **No** or **I'm not sure** withholds it and preserves the relevant boundary or
 staff question.
 
+On an exact, current packet entry, the browser also composes a print-focused
+summary from that integrity-checked envelope: the candidate route, made-up
+facts, the three reported-missing preparation actions, staff questions,
+source evidence, the prototype boundary, and the public journey ID/version.
+The button opens the browser's print dialog, where a person may choose Print
+or Save as PDF. The app does not create, upload, or store a file, and direct or
+invalid packet entry withholds the summary with the underlying findings.
+
 **Live demo:** https://chelseakr.github.io/permit-pathways/
 
 **Made-up Woodland route-to-packet journey** (answer the applicability
@@ -79,11 +87,11 @@ still needs a person.
 | Security & Supply-Chain | Event-armed CodeQL, Bandit, pip-audit, gitleaks, zizmor, Dependabot, and Scorecard; all workflow actions are pinned to full commit SHAs and use scoped token permissions. |
 | CI/CD | Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. |
 | Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. Storage, telemetry, uploads, or external model calls would trigger a new operational design review. |
-| Accessibility | Axe runs on all five public pages plus populated candidate-route and valid packet states; Lighthouse covers seven public page states. Browser tests also check 320px and 390px reflow, compact mobile navigation, the Spanish handoff language boundary, labeled mobile evidence records, and document-level overflow. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps physical-device, virtual-keyboard, keyboard, screen-reader, zoom, forced-colors, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
+| Accessibility | Axe runs on all five public pages plus populated candidate-route and valid packet states; Lighthouse covers seven public page states. Browser tests also check 320px and 390px reflow, compact mobile navigation, the Spanish handoff language boundary, labeled mobile evidence records, document-level overflow, and the print summary's isolated print-media layout. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps physical-device, virtual-keyboard, keyboard, screen-reader, zoom, forced-colors, printed-output, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 234 Python tests, 86.92% branch coverage, 29/29 golden cases, 27 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.99 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
+| Quality & Metrics | Automated evidence includes 235 Python tests, 86.92% branch coverage, 29/29 golden cases, 29 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.98 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -161,7 +169,15 @@ implemented. The temporary result packet does not change those boundaries.
    cookies. `prepare.html` withholds packet findings on direct, malformed,
    duplicated, mismatched, or stale entry; a valid entry replays and renders
    the generated Python result. It does not contain a second packet evaluator.
-7. The checklist mapping and plain-language action copy are AI-assisted
+7. For that exact valid entry, the page derives a print-focused journey
+   summary from the same integrity-checked records. It combines the candidate route,
+   labeled synthetic facts, exactly three reported-missing preparation
+   actions, three staff questions, route/checklist/parcel-metadata evidence,
+   the prototype boundary, and journey ID/version. The print control calls the
+   browser's native print dialog; the app stores no export. The action block
+   remains labeled AI-assisted, review-pending, and not human-reviewed.
+   Invalid or direct entry leaves the summary hidden.
+8. The checklist mapping and plain-language action copy are AI-assisted
    drafts. They are versioned, fingerprint-bound, and marked
    `prototype_review_pending`; no named human, planner, or Woodland reviewer
    has approved them. A generated content fingerprint detects action-copy
@@ -169,7 +185,7 @@ implemented. The temporary result packet does not change those boundaries.
    metadata binds the exact checklist and
    parcel-schema source digests and records that provider, model, and a
    reproducible run record are unknown or were not retained.
-8. No model runs in the CLI, build evaluator, or public browser. The public
+9. No model runs in the CLI, build evaluator, or public browser. The public
    sample is bundled synthetic data, and the page stores no applicant record.
 
 The sample reports item presence against one checklist and demonstrates
@@ -344,10 +360,14 @@ shown. Stale and unverified records suppress action copy, interpretive notes,
 and document hints. For the canonical active, unedited Woodland sample, an
 explicit applicability answer can open the versioned packet step; all other
 entry states fail closed. The packet page renders a Python-generated result
-and links its evidence manifest. The evidence page includes a clearly labeled
-one-click rehearsal of an amendment to Gov. Code § 66321; matching applicant
-records can be opened in the stale state, but the rehearsal is not persisted
-production state. The smaller Python reference demo renders the same
+and links its evidence manifest. The same exact valid entry presents a
+print-focused summary of the integrity-checked route, made-up facts, first
+three preparation actions, staff questions, evidence sources, boundary, and
+journey ID/version; its button delegates Print or Save as PDF to the browser
+without creating an app-side export. The evidence page includes a clearly
+labeled one-click rehearsal of an amendment to Gov. Code § 66321; matching
+applicant records can be opened in the stale state, but the rehearsal is not
+persisted production state. The smaller Python reference demo renders the same
 explanation sidecar and keeps a separate `/trust` route.
 
 ## Layout

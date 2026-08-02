@@ -11,7 +11,7 @@
 <meta property="og:description" content="See reported gaps and staff questions in a made-up Woodland preapproved ADU packet.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20260802b">
+<link rel="stylesheet" href="assets/site.css?v=20260802c">
 </head>
 <body data-page="readiness">
 <a class="skip-link" href="#mainContent">Skip to main content</a>
@@ -77,6 +77,90 @@
           <dd><code id="journeyEntryVersion">Loading</code></dd>
         </div>
       </dl>
+    </section>
+
+    <section class="journey-evidence-summary" id="journeyEvidenceSummary"
+      aria-labelledby="journeyEvidenceHeading"
+      aria-describedby="journeyEvidenceBoundary" hidden>
+      <header class="journey-evidence-header">
+        <div>
+          <p class="section-kicker">Portable orientation record</p>
+          <h2 id="journeyEvidenceHeading">Route-to-packet evidence summary</h2>
+          <p>This printable view carries the made-up route, its assumptions,
+            bounded preparation steps, and exact questions for staff in one
+            place.</p>
+        </div>
+        <dl class="journey-evidence-meta" id="journeyEvidenceMeta">
+          <div>
+            <dt>Journey ID</dt>
+            <dd><code id="journeyEvidenceId">Loading</code></dd>
+          </div>
+          <div>
+            <dt>Version</dt>
+            <dd><code id="journeyEvidenceVersion">Loading</code></dd>
+          </div>
+        </dl>
+      </header>
+
+      <section class="journey-evidence-route" id="journeyEvidenceRoute"
+        aria-labelledby="journeyEvidenceRouteHeading">
+        <p class="section-kicker">Candidate route</p>
+        <h3 id="journeyEvidenceRouteHeading">The path carried into packet preparation</h3>
+        <div id="journeyEvidenceRouteContent"></div>
+      </section>
+
+      <div class="journey-evidence-grid">
+        <section class="journey-evidence-panel journey-evidence-actions"
+          id="journeyEvidenceActions"
+          aria-labelledby="journeyEvidenceActionsHeading">
+          <h3 id="journeyEvidenceActionsHeading">First preparation actions</h3>
+          <p id="journeyEvidenceActionsReview"></p>
+          <ol id="journeyEvidenceActionsList"></ol>
+        </section>
+
+        <div class="journey-evidence-context-grid">
+          <section class="journey-evidence-panel journey-evidence-facts"
+            id="journeyEvidenceFacts"
+            aria-labelledby="journeyEvidenceFactsHeading">
+            <h3 id="journeyEvidenceFactsHeading">Made-up facts and assumptions</h3>
+            <p>Every value below is a synthetic fixture. Its provenance says how
+              the prototype treats it, not that the value is true for a parcel.</p>
+            <dl id="journeyEvidenceFactsList"></dl>
+          </section>
+
+          <div class="journey-evidence-context-column">
+            <section class="journey-evidence-panel journey-evidence-questions"
+              id="journeyEvidenceQuestions"
+              aria-labelledby="journeyEvidenceQuestionsHeading">
+              <h3 id="journeyEvidenceQuestionsHeading">Ask Woodland staff exactly</h3>
+              <ul id="journeyEvidenceQuestionsList"></ul>
+            </section>
+
+            <section class="journey-evidence-panel journey-evidence-sources"
+              id="journeyEvidenceSources"
+              aria-labelledby="journeyEvidenceSourcesHeading">
+              <h3 id="journeyEvidenceSourcesHeading">Source and evidence status</h3>
+              <dl class="journey-evidence-source-list"
+                id="journeyEvidenceSourcesList"></dl>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <aside class="journey-evidence-boundary" id="journeyEvidenceBoundary"
+        aria-labelledby="journeyEvidenceBoundaryHeading">
+        <h3 id="journeyEvidenceBoundaryHeading">Synthetic orientation, not a decision</h3>
+        <p id="journeyEvidenceBoundaryText"></p>
+      </aside>
+
+      <div class="journey-evidence-controls" id="journeyEvidenceControls">
+        <button class="button" id="printJourneySummary" type="button">
+          Print or save this evidence summary
+        </button>
+        <a id="journeyEvidenceRouteBack" href="check.html?sample=adu">
+          Return to the candidate route
+        </a>
+      </div>
     </section>
 
     <section class="packet-cover" id="packetCover"
@@ -158,7 +242,7 @@
   </div>
 </footer>
 
-<script src="data/demo-data.js?v=20260802b" defer></script>
-<script src="assets/demo.js?v=20260802b" defer></script>
+<script src="data/demo-data.js?v=20260802c" defer></script>
+<script src="assets/demo.js?v=20260802c" defer></script>
 </body>
 </html>

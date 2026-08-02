@@ -66,7 +66,13 @@ fingerprints, and current source-review windows
     |        +--> prepare.html?journey=<public-id>&version=<version>
     |                 |
     |                 +--> Exact current entry: render generated result
+    |                 |        |
+    |                 |        +--> Derive print-focused journey summary
+    |                 |                 |
+    |                 |                 +--> Browser Print / Save as PDF
+    |                 |                      (no app-side export or storage)
     |                 +--> Direct, malformed, mismatched, or stale: hold
+    |                      findings and print summary
     |
     +--> Edited/different sample, No, or I'm not sure: no packet link
 ```
@@ -171,11 +177,25 @@ malformed, mismatched, or stale entry withholds the packet cover and findings.
 A valid entry renders the Python-generated result; JavaScript does not
 recalculate packet findings.
 
+Only after that same exact entry and integrity path succeeds, the browser
+derives a print-focused summary from the normalized journey and readiness
+objects already in memory. It includes the candidate route, labeled synthetic
+facts, the three reported-missing preparation actions, direct staff questions,
+route/checklist/parcel-metadata evidence, boundary text, and the journey
+ID/version. The action block preserves its AI-assisted, review-pending, and
+not-human-reviewed status. It does not fetch new data or recalculate either the
+route or packet result. The print button invokes `window.print()`; the browser, not the
+application, controls printing or Save as PDF. Print media hides the remaining
+site and detailed packet surfaces. Invalid or direct entry never reveals this
+summary.
+
 The browser does not send the synthetic facts to a server or model. It does
 not use local storage, session storage, cookies, or an upload control. A user
 may choose to follow the official checklist or parcel-metadata link. The
 handoff is therefore replay of one public made-up record, not continuity for
-a real applicant case.
+a real applicant case. Choosing browser Print or Save as PDF can create a
+user-controlled artifact outside the app; the app does not create, name,
+upload, retain, or later retrieve it.
 
 ## AI boundary
 

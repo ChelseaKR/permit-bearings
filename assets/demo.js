@@ -897,6 +897,8 @@ async function resolveJourney(journeys, readiness, rules, golden) {
   const {journey_fingerprint: recordedFingerprint, ...unsignedJourney} = journey;
   if (recordedFingerprint !== await sha256Fingerprint(unsignedJourney))
     return null;
+  deepFreezeGeneratedData(journey);
+  if (!generatedDataIsDeeplyFrozen(journey)) return null;
   return journey;
 }
 
@@ -999,6 +1001,250 @@ function journeyEntryHoldMarkup(state) {
   </section>`;
 }
 
+function journeyEvidenceScreeningLabel(factId, projectType) {
+  if (factId === "jurisdiction") return "Jurisdiction selected";
+  if (factId === "project_type") return "Project";
+  return questionLabel(factId, projectType);
+}
+
+function journeyEvidenceScreeningValue(factId, value, projectType) {
+  if (factId === "jurisdiction" && value === "woodland")
+    return "City of Woodland";
+  if (factId === "adu_project_form" && value === "new_detached")
+    return "New detached ADU";
+  return factValueLabel(factId, value, projectType);
+}
+
+function journeyEvidenceProvenance(fact) {
+  if (fact.provenance === "synthetic_public_record_fixture") {
+    const sourceField = nonBlank(fact.source_field)
+      ? ` It is shaped like the ${fact.source_field} source field.` : "";
+    const recorded = validIsoDate(fact.source_checked_on)
+      ? ` Source metadata was recorded ${formatSourceDate(
+        fact.source_checked_on,
+      )}.` : "";
+    return "Fabricated public-record-shaped fixture; no parcel was queried "
+      + `or verified.${sourceField}${recorded}`;
+  }
+  if (fact.provenance === "synthetic_applicant_assertion")
+    return "Made-up applicant assertion; not independently checked.";
+  return "Made-up canonical screening answer from the synthetic golden "
+    + "fixture; not independently checked.";
+}
+
+function journeyEvidenceSourceLabel(binding) {
+  const source = binding && SOURCES[binding.url];
+  return nonBlank(source?.label) ? source.label : binding.source_id;
+}
+
+function journeyEvidenceOfficialLink(binding, fallbackLabel) {
+  const sourceUrl = safeExternalUrl(binding?.url);
+  if (!sourceUrl) return esc(fallbackLabel);
+  return `<a href="${esc(sourceUrl)}">${esc(fallbackLabel)}</a>`;
+}
+
+function journeyEvidenceRouteMarkup(journey) {
+  return `<ul>${journey.candidate_routes.map(route => {
+    const citationUrl = safeExternalUrl(route.citation.url);
+    const citation = citationUrl
+      ? `<a href="${esc(citationUrl)}">${esc(route.citation.source)}</a>`
+      : esc(route.citation.source);
+    return `<li class="journey-evidence-route-line">
+      <h4>${escVerbatim(route.pathway)}</h4>
+      <p><strong>Candidate only.</strong> This orientation record does not
+        rank or recommend the route, determine eligibility, or predict a
+        permit decision.</p>
+      <dl>
+        <div>
+          <dt>Review type recorded</dt>
+          <dd>${esc(route.route_class)}</dd>
+        </div>
+        <div>
+          <dt>Rule scope</dt>
+          <dd>${esc(route.jurisdiction_scope)}</dd>
+        </div>
+        <div>
+          <dt>Official route source</dt>
+          <dd>${citation}; evidence recorded
+            ${esc(formatSourceDate(route.citation.verified_on))}</dd>
+        </div>
+        <div>
+          <dt>Recorded source status</dt>
+          <dd>${route.source_status === "current" ? "Current" : esc(route.source_status)}
+            as of ${esc(formatSourceDate(route.source_status_as_of))};
+            review through ${esc(formatSourceDate(
+              route.source_review_due_on,
+            ))}</dd>
+        </div>
+      </dl>
+    </li>`;
+  }).join("")}</ul>`;
+}
+
+function journeyEvidenceFactsMarkup(data) {
+  const projectType = JOURNEY.screening_intake.project_type;
+  const definitions = new Map(
+    data.workflow.facts.map(fact => [fact.fact_id, fact])
+  );
+  const screeningFacts = JOURNEY.fact_envelope.screening_facts.map(fact => ({
+    ...fact,
+    label: journeyEvidenceScreeningLabel(fact.fact_id, projectType),
+    displayValue: journeyEvidenceScreeningValue(
+      fact.fact_id,
+      fact.value,
+      projectType,
+    ),
+  }));
+  const readinessFacts = JOURNEY.fact_envelope.readiness_facts.map(fact => ({
+    ...fact,
+    label: definitions.get(fact.fact_id).label,
+    displayValue: factValueLabel(fact.fact_id, fact.value, projectType),
+  }));
+  return [...screeningFacts, ...readinessFacts].map(fact => `<div>
+    <dt>${esc(fact.label)}</dt>
+    <dd><strong>${esc(fact.displayValue)}</strong>
+      <span class="journey-evidence-provenance">
+        ${esc(journeyEvidenceProvenance(fact))}
+      </span>
+    </dd>
+  </div>`).join("");
+}
+
+function journeyEvidenceActionsMarkup(data) {
+  const remedies = new Map(
+    data.remedies.entries.map(entry => [entry.requirement_id, entry])
+  );
+  const bindings = new Map(
+    data.workflow.source_bindings.map(binding => [binding.source_id, binding])
+  );
+  return data.result.findings
+    .filter(finding => finding.status === "missing")
+    .slice(0, 3)
+    .map(finding => {
+      const remedy = remedies.get(finding.requirement_id);
+      const binding = bindings.get(finding.source_id);
+      const sourceLink = journeyEvidenceOfficialLink(
+        binding,
+        journeyEvidenceSourceLabel(binding),
+      );
+      return `<li>
+        <h4>${esc(finding.label)}</h4>
+        <p class="journey-evidence-action-review"><strong>AI-assisted
+          preparation step · not human-reviewed · review pending</strong></p>
+        <p>${esc(remedy.action)}</p>
+        <p class="journey-evidence-action-source">Requirement source:
+          ${sourceLink}; ${esc(finding.source_locator)}.</p>
+      </li>`;
+    }).join("");
+}
+
+function journeyEvidenceSourcesMarkup(data) {
+  const packetStatus = data.result.source_status === "current"
+    ? "Current" : data.result.source_status;
+  const route = JOURNEY.candidate_routes[0];
+  const routeUrl = safeExternalUrl(route.citation.url);
+  const routeSource = routeUrl
+    ? `<a href="${esc(routeUrl)}">${escVerbatim(route.citation.source)}</a>`
+    : escVerbatim(route.citation.source);
+  const bindingRows = data.workflow.source_bindings.map(binding => {
+    const label = journeyEvidenceSourceLabel(binding);
+    const sourceLink = journeyEvidenceOfficialLink(binding, label);
+    return `<div>
+      <dt>${esc(label)}</dt>
+      <dd>${sourceLink}<br>
+        Packet evidence ${esc(packetStatus.toLowerCase())} as of
+        ${esc(formatSourceDate(readinessSourceStatusAsOf(data)))}; review
+        through ${esc(formatSourceDate(readinessReviewDueOn(data)))}.<br>
+        Source metadata recorded
+        ${esc(formatSourceDate(binding.source_checked_on))}.<br>
+        Bound content fingerprint:
+        <code>${esc(`sha256:${binding.sha256}`)}</code></dd>
+    </div>`;
+  }).join("");
+  return `<div>
+      <dt>Candidate-route evidence</dt>
+      <dd>${routeSource}<br>
+        Recorded status ${JOURNEY.route_source_status === "current"
+          ? "current" : esc(JOURNEY.route_source_status)} as of
+        ${esc(formatSourceDate(JOURNEY.route_source_status_as_of))}; review
+        through ${esc(formatSourceDate(
+          JOURNEY.route_source_review_due_on,
+        ))}. Rule fingerprint:
+        <code>${esc(route.rule_fingerprint)}</code></dd>
+    </div>
+    <div>
+      <dt>Packet evidence</dt>
+      <dd>${esc(packetStatus)} as of
+        ${esc(formatSourceDate(readinessSourceStatusAsOf(data)))}; review
+        through ${esc(formatSourceDate(readinessReviewDueOn(data)))}.</dd>
+    </div>
+    ${bindingRows}
+    <div>
+      <dt>Generated evidence record</dt>
+      <dd><a href="data/readiness/generated/woodland-preapproved-adu-evidence.json">Open
+        the generated source-bound JSON manifest</a>. Packet
+        <code>${esc(data.packet.packet_id)}</code>; evaluated
+        ${esc(formatSourceDate(data.result.evaluated_on))}.</dd>
+    </div>`;
+}
+
+function renderJourneyEvidenceSummary(data) {
+  const section = document.getElementById("journeyEvidenceSummary");
+  if (!section) return;
+  section.hidden = true;
+  const state = journeyQueryState(
+    new URLSearchParams(window.location.search),
+    JOURNEY,
+    data,
+  );
+  if (state.status !== "ready"
+      || !generatedDataIsDeeplyFrozen(JOURNEY)
+      || !NORMALIZED_READINESS_DATA.has(data)
+      || !generatedDataIsDeeplyFrozen(data)
+      || !validReadinessData(data)) return;
+
+  const requiredIds = [
+    "journeyEvidenceId", "journeyEvidenceVersion",
+    "journeyEvidenceRouteContent", "journeyEvidenceFactsList",
+    "journeyEvidenceActionsReview", "journeyEvidenceActionsList",
+    "journeyEvidenceQuestionsList", "journeyEvidenceSourcesList",
+    "journeyEvidenceBoundaryText", "printJourneySummary",
+  ];
+  const elements = new Map(requiredIds.map(id => [
+    id,
+    document.getElementById(id),
+  ]));
+  if ([...elements.values()].some(element => !element)) return;
+
+  elements.get("journeyEvidenceId").textContent = JOURNEY.journey_id;
+  elements.get("journeyEvidenceVersion").textContent = JOURNEY.version;
+  elements.get("journeyEvidenceRouteContent").innerHTML =
+    journeyEvidenceRouteMarkup(JOURNEY);
+  elements.get("journeyEvidenceFactsList").innerHTML =
+    journeyEvidenceFactsMarkup(data);
+  elements.get("journeyEvidenceActionsReview").textContent =
+    "These are the first three reported missing-item actions. Each is an "
+    + "AI-assisted draft, not human-reviewed; review pending.";
+  elements.get("journeyEvidenceActionsList").innerHTML =
+    journeyEvidenceActionsMarkup(data);
+  elements.get("journeyEvidenceQuestionsList").innerHTML =
+    data.result.staff_questions.map(question =>
+      `<li>${esc(question)}</li>`
+    ).join("");
+  elements.get("journeyEvidenceSourcesList").innerHTML =
+    journeyEvidenceSourcesMarkup(data);
+  elements.get("journeyEvidenceBoundaryText").textContent =
+    "This summary is a made-up, versioned orientation artifact, not a permit "
+    + `decision. ${JOURNEY.boundary} ${data.result.boundary} Printing or `
+    + "saving it does not make it an eligibility, legal-sufficiency, "
+    + "completeness, or approval finding. Confirm facts, sources, and current "
+    + "requirements with Woodland staff.";
+  elements.get("printJourneySummary").addEventListener("click", () => {
+    window.print();
+  });
+  section.hidden = false;
+}
+
 function renderReadinessEntry(data) {
   const state = journeyQueryState(
     new URLSearchParams(window.location.search),
@@ -1008,10 +1254,12 @@ function renderReadinessEntry(data) {
   const output = document.getElementById("readinessOutput");
   const cover = document.getElementById("packetCover");
   const summary = document.getElementById("journeyEntrySummary");
+  const evidenceSummary = document.getElementById("journeyEvidenceSummary");
   const method = document.getElementById("readinessMethod");
   if (state.status !== "ready") {
     if (cover) cover.hidden = true;
     if (summary) summary.hidden = true;
+    if (evidenceSummary) evidenceSummary.hidden = true;
     if (method) method.hidden = true;
     output.innerHTML = journeyEntryHoldMarkup(state);
     output.setAttribute("aria-busy", "false");
@@ -1025,6 +1273,7 @@ function renderReadinessEntry(data) {
   }
   if (method) method.hidden = false;
   renderReadiness(data);
+  renderJourneyEvidenceSummary(data);
 }
 
 async function normalizeExplanations(payload, rules) {

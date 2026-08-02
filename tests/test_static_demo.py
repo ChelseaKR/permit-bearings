@@ -24,6 +24,17 @@ from scripts.build_demo_bundle import (
 )
 
 
+def run_node_module(script: str) -> None:
+    """Run generated JavaScript over stdin to stay below OS argument limits."""
+    subprocess.run(
+        ["node", "--input-type=module"],
+        input=script,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+
 def test_committed_demo_bundle_matches_canonical_json():
     bundle = build_bundle()
 
@@ -502,6 +513,43 @@ def test_journey_handoff_uses_public_ids_without_browser_storage():
         assert storage_api not in application
 
 
+def test_printable_journey_summary_is_semantic_gated_and_print_scoped():
+    page = (ROOT / "prepare.html").read_text(encoding="utf-8")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+    styles = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+
+    assert re.search(
+        r'<section class="journey-evidence-summary"\s+'
+        r'id="journeyEvidenceSummary"[^>]*\shidden>',
+        page,
+        re.DOTALL,
+    )
+    assert 'aria-labelledby="journeyEvidenceHeading"' in page
+    assert 'aria-describedby="journeyEvidenceBoundary"' in page
+    assert '<dl class="journey-evidence-meta" id="journeyEvidenceMeta">' in page
+    assert '<dl id="journeyEvidenceFactsList"></dl>' in page
+    assert '<ol id="journeyEvidenceActionsList"></ol>' in page
+    assert '<ul id="journeyEvidenceQuestionsList"></ul>' in page
+    assert 'id="journeyEvidenceSourcesList"></dl>' in page
+    assert 'id="journeyEvidenceBoundaryText"></p>' in page
+    assert '<button class="button" id="printJourneySummary" type="button">' in page
+
+    assert "function renderJourneyEvidenceSummary(" in application
+    assert "journeyEvidenceSummary" in application
+    assert "journeyEvidenceActionsReview" in application
+    assert "journeyEvidenceSourcesList" in application
+    assert "window.print()" in application
+
+    assert "@media print" in styles
+    assert (
+        'body[data-page="readiness"] .readiness-main '
+        "> :not(#journeyEvidenceSummary)" in styles
+    )
+    assert 'body[data-page="readiness"] #journeyEvidenceSummary' in styles
+    assert 'body[data-page="readiness"] #printJourneySummary' in styles
+    assert "overflow-wrap: anywhere" in styles
+
+
 def test_packet_build_explicitly_replays_canonical_evaluation_date(
     monkeypatch: pytest.MonkeyPatch,
 ):
@@ -800,12 +848,7 @@ check(
   "stale runtime exposed action-oriented findings"
 );
 """
-    subprocess.run(
-        ["node", "--input-type=module", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_node_module(script)
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
@@ -862,12 +905,7 @@ if (prepareProjectSample(
   new URLSearchParams("sample=adu"), incomplete, jurisdictions
 )) throw new Error("incomplete sample accepted");
 """
-    subprocess.run(
-        ["node", "--input-type=module", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_node_module(script)
     assert "intakeFormElement.requestSubmit()" in apply_source
     assert "screen(" not in apply_source
     assert "renderResults(" not in apply_source
@@ -1169,12 +1207,7 @@ testAssert(OPEN_RULE_IDS.size === 0, "ordinary edit kept disclosure state");
 `;
 vm.runInNewContext(application + "\\n" + assertions, context);
 """
-    subprocess.run(
-        ["node", "--input-type=module", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_node_module(script)
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
@@ -1263,12 +1296,7 @@ if (rejectedDigest.size !== 0)
 Object.defineProperty(globalThis, "crypto",
   {{value: realCrypto, configurable: true}});
 """
-    subprocess.run(
-        ["node", "--input-type=module", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_node_module(script)
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
@@ -1311,12 +1339,7 @@ const futureRule = {{
 if (ruleStatus(futureRule, []) !== "stale")
   throw new Error("future source date accepted");
 """
-    subprocess.run(
-        ["node", "--input-type=module", "-e", script],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    run_node_module(script)
 
 
 def test_demo_server_exposes_only_intended_static_files():
