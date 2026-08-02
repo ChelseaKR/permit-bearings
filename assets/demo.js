@@ -35,9 +35,21 @@ const STRINGS = {
     sampleUnavailableLabel: "Example unavailable.",
     sampleUnavailableNotice: "The example could not be loaded from its canonical test case. Continue with a blank form.",
     sampleUnavailableClear: "Continue with a blank project check",
-    packetSampleTitle: "Continue with the made-up Woodland packet",
-    packetSampleText: "See the same example compared with Woodland’s source-bound preapproved ADU checklist.",
-    packetSampleLink: "Review the packet sample",
+    packetSampleTitle: "Continue from this candidate route to packet preparation",
+    packetSampleText: "First confirm the one applicant-asserted fact that controls whether this bounded Woodland packet example applies.",
+    packetSampleLink: "Continue to packet preparation",
+    journeyStage: "Stage 3 of 4 · Packet",
+    journeyApplicabilityLegend: "Is this made-up project using a City of Woodland preapproved ADU plan?",
+    journeyApplicabilityHelp: "The public-record-shaped parcel facts in this example are also made up. No parcel was queried or verified.",
+    journeyFixedFactsSummary: "See the other made-up applicability facts",
+    journeySyntheticParcelFact: field => `Made-up value shaped like the ${field} field in the linked public parcel data.`,
+    journeyReadyHeading: "The bounded packet example applies to these made-up facts",
+    journeyReadyText: "Continue to see reported checklist gaps and questions for staff. This is not an eligibility, completeness, or approval finding.",
+    journeyNoHeading: "This packet example does not apply",
+    journeyNoText: "The encoded packet workflow is only for a project using a City of Woodland preapproved ADU plan. Ask staff which current checklist applies.",
+    journeyUnknownHeading: "Pause and ask Woodland staff",
+    journeyUnavailableHeading: "Packet preparation is on hold",
+    journeyUnavailableText: "The versioned route, source status, or packet evidence no longer agrees. Start the made-up example again or take the shown source question to staff.",
     juris: "Where is the property?",
     jurisPlaceholder: "Type any California city or county…",
     jurisHelp: "Choose a suggestion, or enter the exact city or county name.",
@@ -175,9 +187,21 @@ const STRINGS = {
     sampleUnavailableLabel: "El ejemplo no está disponible.",
     sampleUnavailableNotice: "No se pudo cargar el ejemplo desde su caso de prueba canónico. Continúe con un formulario en blanco.",
     sampleUnavailableClear: "Continuar con un formulario en blanco",
-    packetSampleTitle: "Continúe con el paquete ficticio de Woodland",
-    packetSampleText: "Vea el mismo ejemplo comparado con la lista de verificación de ADU preaprobada de Woodland.",
-    packetSampleLink: "Revisar la muestra del paquete en inglés",
+    packetSampleTitle: "Continúe de esta posible vía a la preparación del paquete",
+    packetSampleText: "Primero confirme el dato declarado que controla si se aplica este ejemplo limitado de Woodland.",
+    packetSampleLink: "Continuar a la preparación del paquete en inglés",
+    journeyStage: "Etapa 3 de 4 · Paquete",
+    journeyApplicabilityLegend: "¿Este proyecto inventado usa un plano de ADU preaprobado por la Ciudad de Woodland?",
+    journeyApplicabilityHelp: "Los datos de parcela con formato de registro público también son inventados. No se consultó ni verificó ninguna parcela.",
+    journeyFixedFactsSummary: "Ver los demás datos inventados de aplicabilidad",
+    journeySyntheticParcelFact: field => `Valor inventado con el formato del campo ${field} en los datos públicos de parcela enlazados.`,
+    journeyReadyHeading: "El ejemplo limitado del paquete se aplica a estos datos inventados",
+    journeyReadyText: "Continúe para ver faltantes declarados y preguntas para el personal. Esto no determina elegibilidad, integridad ni aprobación.",
+    journeyNoHeading: "Este ejemplo de paquete no se aplica",
+    journeyNoText: "El flujo codificado solo cubre proyectos que usan un plano de ADU preaprobado por la Ciudad de Woodland. Pregunte al personal qué lista vigente corresponde.",
+    journeyUnknownHeading: "Deténgase y pregunte al personal de Woodland",
+    journeyUnavailableHeading: "La preparación del paquete está en espera",
+    journeyUnavailableText: "La vía versionada, el estado de la fuente o la evidencia del paquete ya no concuerdan. Reinicie el ejemplo inventado o lleve al personal la pregunta de fuente mostrada.",
     juris: "¿Dónde está la propiedad?",
     jurisPlaceholder: "Escriba cualquier ciudad o condado de California…",
     jurisHelp: "Elija una sugerencia o escriba el nombre exacto de la ciudad o el condado.",
@@ -304,6 +328,8 @@ let lang = "en";
 let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [], JURIS = [], LETTERS = {}, SCANS = {};
 let EXPLANATIONS = new Map();
 let READINESS = null;
+let JOURNEY = null;
+const NORMALIZED_READINESS_DATA = new WeakSet();
 let jurisByName = new Map();
 let intakeDraft = {};
 const SAMPLE_ORDINANCE =
@@ -470,6 +496,15 @@ function dateIsNotFuture(value) {
     now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()
   );
   return Date.parse(`${value}T00:00:00Z`) <= todayUtc;
+}
+
+function dateIsNotPast(value) {
+  if (!validIsoDate(value)) return false;
+  const now = new Date();
+  const todayUtc = Date.UTC(
+    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()
+  );
+  return Date.parse(`${value}T00:00:00Z`) >= todayUtc;
 }
 
 function validStableId(value) {
@@ -666,6 +701,330 @@ async function ruleFingerprint(rule) {
     rule_id: rule.rule_id,
     source_dependencies: rule.source_dependencies,
   });
+}
+
+const JOURNEY_KEYS = [
+  "applicability_facts", "applicability_status", "boundary",
+  "candidate_route_rule_ids", "candidate_routes",
+  "editable_applicability_fact_ids", "fact_envelope",
+  "fact_envelope_fingerprint", "journey_fingerprint", "journey_id", "label",
+  "readiness_evidence_manifest", "readiness_packet_fingerprint",
+  "readiness_packet_id", "readiness_workflow_fingerprint",
+  "readiness_workflow_id", "route_source_review_due_on",
+  "route_source_status", "route_source_status_as_of", "schema_version",
+  "screening_case_fingerprint", "screening_case_id",
+  "screening_expected_rule_ids", "screening_intake", "status", "synthetic",
+  "version",
+];
+const FACT_ENVELOPE_KEYS = [
+  "readiness_facts", "schema_version", "screening_facts", "synthetic",
+];
+
+function sameStringSet(left, right) {
+  if (!Array.isArray(left) || !Array.isArray(right)
+      || left.length !== right.length
+      || !left.every(validStableId) || !right.every(validStableId)
+      || new Set(left).size !== left.length
+      || new Set(right).size !== right.length) return false;
+  const sortedLeft = [...left].sort();
+  const sortedRight = [...right].sort();
+  return sortedLeft.every((value, index) => value === sortedRight[index]);
+}
+
+function expectedJourneyFactEnvelope(journey, readiness) {
+  return {
+    readiness_facts: readiness.packet.facts,
+    schema_version: 1,
+    screening_facts: Object.keys(journey.screening_intake).sort().map(
+      factId => ({
+        fact_id: factId,
+        provenance: "synthetic_golden_fixture",
+        value: journey.screening_intake[factId],
+      })
+    ),
+    synthetic: true,
+  };
+}
+
+function journeyApplicabilityIsBound(journey, readiness) {
+  const conditions = readiness.workflow.applicability;
+  const definitions = new Map(
+    readiness.workflow.facts.map(fact => [fact.fact_id, fact])
+  );
+  const packetFacts = new Map(
+    readiness.packet.facts.map(fact => [fact.fact_id, fact])
+  );
+  if (!Array.isArray(conditions) || !conditions.length
+      || !Array.isArray(journey.applicability_facts)
+      || journey.applicability_facts.length !== conditions.length
+      || !Array.isArray(journey.editable_applicability_fact_ids)
+      || journey.editable_applicability_fact_ids.length !== 1) return false;
+  const editableIds = journey.applicability_facts
+    .filter(fact => fact.editable === true)
+    .map(fact => fact.fact_id);
+  if (!sameStringSet(editableIds, journey.editable_applicability_fact_ids))
+    return false;
+  return conditions.every((condition, index) => {
+    const fact = journey.applicability_facts[index];
+    const definition = definitions.get(condition.fact_id);
+    const packetFact = packetFacts.get(condition.fact_id);
+    const boundFields = [
+      "fact_id", "value", "provenance", "source_id", "source_field",
+      "source_checked_on",
+    ];
+    return fact && definition && packetFact
+      && fact.fact_id === condition.fact_id
+      && fact.expected_value === condition.equals
+      && fact.value === condition.equals
+      && fact.value === packetFact.value
+      && boundFields.every(field => fact[field] === packetFact[field])
+      && fact.label === definition.label
+      && fact.question === definition.question
+      && nonBlank(fact.question);
+  });
+}
+
+async function resolveJourney(journeys, readiness, rules, golden) {
+  if (!Array.isArray(journeys) || journeys.length !== 1
+      || !Array.isArray(rules) || !Array.isArray(golden)) return null;
+  readiness = await normalizeReadinessData(readiness);
+  if (!readiness) return null;
+  const journey = journeys[0];
+  if (!hasExactKeys(journey, JOURNEY_KEYS, JOURNEY_KEYS)
+      || journey.schema_version !== 1
+      || journey.synthetic !== true
+      || journey.status !== "prototype"
+      || !validStableId(journey.journey_id)
+      || !/^\d+\.\d+\.\d+$/.test(journey.version || "")
+      || !nonBlank(journey.label) || !nonBlank(journey.boundary)
+      || !journey.screening_intake
+      || typeof journey.screening_intake !== "object"
+      || Array.isArray(journey.screening_intake)
+      || !Array.isArray(journey.screening_expected_rule_ids)
+      || !journey.screening_expected_rule_ids.length
+      || !Array.isArray(journey.candidate_route_rule_ids)
+      || !journey.candidate_route_rule_ids.length
+      || !Array.isArray(journey.candidate_routes)
+      || !journey.candidate_routes.length
+      || !journey.candidate_routes.every(
+        route => route && typeof route === "object" && !Array.isArray(route)
+      )
+      || !Array.isArray(journey.applicability_facts)
+      || !journey.applicability_facts.every(
+        fact => fact && typeof fact === "object" && !Array.isArray(fact)
+      )
+      || journey.applicability_status !== "applies"
+      || readiness.result.applicability_status !== "applies"
+      || journey.readiness_workflow_id !== readiness.workflow.workflow_id
+      || journey.readiness_packet_id !== readiness.packet.packet_id
+      || journey.readiness_workflow_fingerprint
+        !== readiness.result.workflow_fingerprint
+      || journey.readiness_packet_fingerprint
+        !== readiness.result.packet_fingerprint
+      || stableJson(journey.readiness_evidence_manifest)
+        !== stableJson(readiness.evidence_manifest)
+      || !hasExactKeys(
+        journey.fact_envelope,
+        FACT_ENVELOPE_KEYS,
+        FACT_ENVELOPE_KEYS,
+      )
+      || !journeyApplicabilityIsBound(journey, readiness)) return null;
+
+  const cases = golden.filter(
+    record => record && record.case_id === journey.screening_case_id
+  );
+  if (cases.length !== 1
+      || stableJson(cases[0].intake) !== stableJson(journey.screening_intake)
+      || !sameStringSet(
+        cases[0].expected_rule_ids,
+        journey.screening_expected_rule_ids,
+      )) return null;
+  const matchedRules = rules.filter(rule =>
+    (rule.jurisdiction_scope === "statewide"
+      || rule.jurisdiction_scope === journey.screening_intake.jurisdiction)
+    && matches(rule, journey.screening_intake)
+  );
+  const matchedRouteRuleIds = matchedRules
+    .filter(rule => rule.display_group === "route")
+    .map(rule => rule.rule_id);
+  if (!sameStringSet(
+    matchedRules.map(rule => rule.rule_id),
+    journey.screening_expected_rule_ids,
+  ) || !sameStringSet(
+    matchedRouteRuleIds,
+    journey.candidate_route_rule_ids,
+  ) || !sameStringSet(
+    journey.candidate_route_rule_ids,
+    journey.candidate_routes.map(route => route.rule_id),
+  )) return null;
+
+  if (journey.route_source_status !== "current"
+      || !validIsoDate(journey.route_source_status_as_of)
+      || !validIsoDate(journey.route_source_review_due_on)
+      || journey.route_source_status_as_of > journey.route_source_review_due_on
+      || journey.route_source_status_as_of !== readiness.result.evaluated_on)
+    return null;
+  for (const route of journey.candidate_routes) {
+    const matchingRules = rules.filter(rule => rule.rule_id === route.rule_id);
+    if (matchingRules.length !== 1
+        || matchingRules[0].display_group !== "route"
+        || route.pathway !== matchingRules[0].pathway
+        || route.route_class !== matchingRules[0].route_class
+        || route.jurisdiction_scope !== matchingRules[0].jurisdiction_scope
+        || stableJson(route.citation)
+          !== stableJson(normalizedCitation(matchingRules[0]))
+        || !sameStringSet(
+          route.source_dependencies,
+          matchingRules[0].source_dependencies,
+        )
+        || route.source_status !== "current"
+        || route.source_status_as_of !== journey.route_source_status_as_of
+        || !validIsoDate(route.source_review_due_on)
+        || route.source_review_due_on < route.source_status_as_of
+        || route.rule_fingerprint !== await ruleFingerprint(matchingRules[0]))
+      return null;
+  }
+  const routeReviewDueOn = journey.candidate_routes
+    .map(route => route.source_review_due_on).sort()[0];
+  if (journey.route_source_review_due_on !== routeReviewDueOn) return null;
+
+  const expectedEnvelope = expectedJourneyFactEnvelope(journey, readiness);
+  if (stableJson(journey.fact_envelope) !== stableJson(expectedEnvelope)
+      || journey.fact_envelope_fingerprint
+        !== await sha256Fingerprint(expectedEnvelope)
+      || journey.screening_case_fingerprint
+        !== await sha256Fingerprint(cases[0])) return null;
+  const {journey_fingerprint: recordedFingerprint, ...unsignedJourney} = journey;
+  if (recordedFingerprint !== await sha256Fingerprint(unsignedJourney))
+    return null;
+  return journey;
+}
+
+async function normalizeJourney(journeys, readiness, rules, golden) {
+  try {
+    return await resolveJourney(journeys, readiness, rules, golden);
+  } catch {
+    return null;
+  }
+}
+
+function journeySourcesAreCurrent(journey, readiness, rules = RULES) {
+  if (!journey || !readiness
+      || journey.route_source_status !== "current"
+      || !dateIsNotFuture(journey.route_source_status_as_of)
+      || !dateIsNotPast(journey.route_source_review_due_on)
+      || !readinessSourceIsCurrent(readiness)) return false;
+  return journey.candidate_route_rule_ids.every(ruleId => {
+    const matchesId = rules.filter(rule => rule.rule_id === ruleId);
+    return matchesId.length === 1 && ruleStatus(matchesId[0], []) === "verified";
+  });
+}
+
+function journeyHandoffState(
+  journey,
+  readiness,
+  intake,
+  results,
+  applicabilityValue,
+  sampleState,
+  rules = RULES,
+) {
+  if (!journey || !readiness)
+    return {status: "unavailable"};
+  if (sampleState !== "active")
+    return {status: "sample_required"};
+  if (stableJson(intake) !== stableJson(journey.screening_intake))
+    return {status: "intake_mismatch"};
+  if (!Array.isArray(results) || !sameStringSet(
+    results.map(rule => rule.rule_id),
+    journey.screening_expected_rule_ids,
+  ) || !journey.candidate_route_rule_ids.every(ruleId =>
+    results.some(rule => rule.rule_id === ruleId && rule.display_group === "route")
+  )) return {status: "route_mismatch"};
+  if (!journeySourcesAreCurrent(journey, readiness, rules))
+    return {status: "source_review_required"};
+  const editableFact = journey.applicability_facts.find(
+    fact => fact.editable === true
+  );
+  if (!editableFact) return {status: "unavailable"};
+  if (applicabilityValue === "unknown" || !nonBlank(applicabilityValue))
+    return {status: "unknown", question: editableFact.question};
+  if (!["yes", "no"].includes(applicabilityValue))
+    return {status: "unavailable"};
+  if (applicabilityValue !== editableFact.expected_value)
+    return {status: "does_not_apply"};
+  return {
+    status: "ready",
+    href: `prepare.html?journey=${encodeURIComponent(journey.journey_id)}`
+      + `&version=${encodeURIComponent(journey.version)}`,
+  };
+}
+
+function journeyQueryState(searchParams, journey, readiness, rules = RULES) {
+  const keys = [...searchParams.keys()];
+  if (!keys.length) return {status: "start_required"};
+  if (keys.some(key => !["journey", "version"].includes(key))
+      || searchParams.getAll("journey").length !== 1
+      || searchParams.getAll("version").length !== 1
+      || !journey || !readiness
+      || searchParams.get("journey") !== journey.journey_id
+      || searchParams.get("version") !== journey.version)
+    return {status: "invalid"};
+  if (!journeySourcesAreCurrent(journey, readiness, rules))
+    return {status: "source_review_required"};
+  return {status: "ready"};
+}
+
+function journeyEntryHoldMarkup(state) {
+  if (state.status === "source_review_required") {
+    return `<section class="journey-entry-hold" aria-labelledby="entryHoldHeading">
+      <p class="journey-stage-label">Stage 3 of 4 · Packet</p>
+      <h2 id="entryHoldHeading">Source review is required before using this packet example</h2>
+      <p>The route or packet evidence is outside its recorded review window.
+        No packet findings are shown as current.</p>
+      <p><a href="evidence.html">Inspect sources and limits</a></p>
+    </section>`;
+  }
+  const invalid = state.status === "invalid";
+  return `<section class="journey-entry-hold" aria-labelledby="entryHoldHeading">
+    <p class="journey-stage-label">Stage 3 of 4 · Packet</p>
+    <h2 id="entryHoldHeading">${invalid
+      ? "This packet link does not match the current made-up journey"
+      : "Start with the made-up Woodland example"}</h2>
+    <p>${invalid
+      ? "The journey ID or version is missing, duplicated, or different from the generated evidence."
+      : "Packet preparation follows the candidate route and its applicability check. No project facts are carried in this URL."}</p>
+    <p><a class="button" href="check.html?sample=adu">
+      Open the made-up Woodland example</a></p>
+  </section>`;
+}
+
+function renderReadinessEntry(data) {
+  const state = journeyQueryState(
+    new URLSearchParams(window.location.search),
+    JOURNEY,
+    data,
+  );
+  const output = document.getElementById("readinessOutput");
+  const cover = document.getElementById("packetCover");
+  const summary = document.getElementById("journeyEntrySummary");
+  const method = document.getElementById("readinessMethod");
+  if (state.status !== "ready") {
+    if (cover) cover.hidden = true;
+    if (summary) summary.hidden = true;
+    if (method) method.hidden = true;
+    output.innerHTML = journeyEntryHoldMarkup(state);
+    output.setAttribute("aria-busy", "false");
+    return;
+  }
+  if (cover) cover.hidden = false;
+  if (summary) {
+    summary.hidden = false;
+    document.getElementById("journeyEntryId").textContent = JOURNEY.journey_id;
+    document.getElementById("journeyEntryVersion").textContent = JOURNEY.version;
+  }
+  if (method) method.hidden = false;
+  renderReadiness(data);
 }
 
 async function normalizeExplanations(payload, rules) {
@@ -1176,6 +1535,97 @@ function renderResultCard(rule, explanation, options = {}) {
   </article>`;
 }
 
+function journeyGateOutcomeMarkup(state) {
+  const s = STRINGS[lang];
+  if (state.status === "ready") {
+    return `<div class="journey-outcome">
+      <h4>${esc(s.journeyReadyHeading)}</h4>
+      <p>${esc(s.journeyReadyText)}</p>
+      <p><a class="button" href="${esc(state.href)}">
+        ${esc(s.packetSampleLink)}</a></p>
+    </div>`;
+  }
+  if (state.status === "does_not_apply") {
+    return `<div class="journey-outcome journey-outcome-hold">
+      <h4>${esc(s.journeyNoHeading)}</h4>
+      <p>${esc(s.journeyNoText)}</p>
+    </div>`;
+  }
+  if (state.status === "unknown") {
+    return `<div class="journey-outcome journey-outcome-hold">
+      <h4>${esc(s.journeyUnknownHeading)}</h4>
+      <p lang="en">${esc(state.question)}</p>
+    </div>`;
+  }
+  return `<div class="journey-outcome journey-outcome-hold">
+    <h4>${esc(s.journeyUnavailableHeading)}</h4>
+    <p>${esc(s.journeyUnavailableText)}</p>
+  </div>`;
+}
+
+function renderJourneyHandoffOutcome() {
+  const output = document.getElementById("journeyGateOutcome");
+  if (!output) return;
+  const state = journeyHandoffState(
+    JOURNEY,
+    READINESS,
+    LAST_INTAKE,
+    LAST_RESULTS,
+    journeyApplicabilityValue,
+    projectSampleState,
+  );
+  output.innerHTML = journeyGateOutcomeMarkup(state);
+}
+
+function journeyHandoffMarkup() {
+  if (projectSampleState !== "active") return "";
+  const s = STRINGS[lang];
+  if (!JOURNEY) {
+    return `<aside class="journey-handoff" lang="${lang}"
+        aria-labelledby="journeyGateHeading">
+      <p class="journey-stage-label">${esc(s.journeyStage)}</p>
+      <h3 id="journeyGateHeading">${esc(s.journeyUnavailableHeading)}</h3>
+      <div id="journeyGateOutcome" role="status" aria-live="polite">
+        ${journeyGateOutcomeMarkup({status: "unavailable"})}
+      </div>
+    </aside>`;
+  }
+  const editableFact = JOURNEY.applicability_facts.find(
+    fact => fact.editable === true
+  );
+  if (!editableFact) return "";
+  const fixedFacts = JOURNEY.applicability_facts.filter(
+    fact => fact.editable !== true
+  );
+  const yesLabel = STRINGS[lang].tri.find(([value]) => value === "yes")[1];
+  const options = STRINGS[lang].tri.map(([value, label]) =>
+    `<label><input type="radio" name="journey_applicability"
+      value="${esc(value)}"
+      ${journeyApplicabilityValue === value ? "checked" : ""}>
+      ${esc(label)}</label>`
+  ).join("");
+  return `<aside class="journey-handoff" lang="${lang}"
+      aria-labelledby="journeyGateHeading">
+    <p class="journey-stage-label">${esc(s.journeyStage)}</p>
+    <h3 id="journeyGateHeading">${esc(s.packetSampleTitle)}</h3>
+    <p>${esc(s.packetSampleText)}</p>
+    <fieldset aria-describedby="journeyApplicabilityHelp">
+      <legend>${esc(s.journeyApplicabilityLegend)}</legend>
+      <p class="small" id="journeyApplicabilityHelp">
+        ${esc(s.journeyApplicabilityHelp)}</p>
+      <div class="choice-grid">${options}</div>
+    </fieldset>
+    <details class="journey-fixed-facts">
+      <summary lang="${lang}">${esc(s.journeyFixedFactsSummary)}</summary>
+      <ul lang="${lang}">${fixedFacts.map(fact =>
+        `<li><strong lang="en">${esc(fact.label)}:</strong> ${esc(yesLabel)}.
+          ${esc(s.journeySyntheticParcelFact(fact.source_field))}</li>`
+      ).join("")}</ul>
+    </details>
+    <div id="journeyGateOutcome" role="status" aria-live="polite"></div>
+  </aside>`;
+}
+
 function renderResults(list) {
   const s = STRINGS[lang];
   const el = document.getElementById("results");
@@ -1209,8 +1659,9 @@ function renderResults(list) {
     && shownExplanations.every(({explanation, localized, copyLang}) =>
       explanation.review.status === "prototype_review_pending"
       && (lang !== "es"
-        || (copyLang === "es" && localized.translation_status === "machine_draft"))
+      || (copyLang === "es" && localized.translation_status === "machine_draft"))
     );
+  const packetSampleLink = journeyHandoffMarkup();
   const sections = RESULT_GROUPS.map(group => {
     const records = grouped.get(group);
     if (!records.length) return "";
@@ -1223,12 +1674,13 @@ function renderResults(list) {
       ? `<p class="small result-local-boundary" lang="${lang}">
           ${esc(s.localBoundary)}
         </p>` : "";
-    return `<section class="result-group ${group === "local_process" ? "result-local" : ""}"
+    const section = `<section class="result-group ${group === "local_process" ? "result-local" : ""}"
         aria-labelledby="result-group-${group}">
           <h3 id="result-group-${group}" tabindex="-1"
             lang="${lang}">${esc(s.groups[group])}</h3>
           ${localBoundary}<div class="result-records">${cards}</div>
         </section>`;
+    return section + (group === "route" ? packetSampleLink : "");
   }).join("");
   const draftBanner = oneSharedDraftLabel
     ? `<div class="result-trust-note small" lang="${lang}">${esc(s.explanationBanner)}</div>`
@@ -1239,20 +1691,15 @@ function renderResults(list) {
         <p>${esc(s.none)}</p>
         <p>${esc(s.supportingOnly)}</p>
       </div>`;
-  const packetSampleLink = projectSampleState === "active"
-    ? `<aside class="packet-route-link" lang="${lang}">
-        <p class="utility-label">${esc(s.packetSampleTitle)}</p>
-        <p>${esc(s.packetSampleText)}</p>
-        <p><a href="prepare.html">${esc(s.packetSampleLink)}</a></p>
-      </aside>`
-    : "";
   el.innerHTML = `<h2 class="result-heading" id="resultsHeading"
       tabindex="-1" lang="${lang}">${esc(s.results)}</h2>
     ${renderProjectFacts()}
     <p class="result-count" lang="${lang}">${esc(summaryText)}</p>
     <p class="small result-limit" lang="${lang}">${esc(s.resultIntro)}
       ${hasRoute ? esc(s.routeOrientation) : ""}</p>
-    ${noRouteNotice}${packetSampleLink}${draftBanner}${renderResultIndex(grouped)}${sections}`;
+    ${noRouteNotice}${draftBanner}${renderResultIndex(grouped)}${sections}
+    ${hasRoute ? "" : packetSampleLink}`;
+  renderJourneyHandoffOutcome();
 }
 
 function questionLabel(name, projectType = intakeDraft.project_type) {
@@ -1317,6 +1764,7 @@ let LAST_JURISDICTION = null;
 const OPEN_RULE_IDS = new Set();
 let sampleSubmissionInProgress = false;
 let projectSampleState = null;
+let journeyApplicabilityValue = null;
 
 function renderProjectSampleText() {
   const s = STRINGS[lang];
@@ -1351,6 +1799,7 @@ function invalidateRenderedProjectResult(message = "") {
   LAST_UNRESOLVED = null;
   LAST_INTAKE = null;
   LAST_JURISDICTION = null;
+  journeyApplicabilityValue = null;
   OPEN_RULE_IDS.clear();
   const results = document.getElementById("results");
   if (results) results.innerHTML = "";
@@ -1376,6 +1825,12 @@ if (pageIs("project") && resultContainerElement) {
     if (disclosure.open) OPEN_RULE_IDS.add(ruleId);
     else OPEN_RULE_IDS.delete(ruleId);
   }, true);
+  resultContainerElement.addEventListener("change", event => {
+    const input = event.target;
+    if (input.name !== "journey_applicability") return;
+    journeyApplicabilityValue = input.value;
+    renderJourneyHandoffOutcome();
+  });
 }
 
 function renderDashboard() {
@@ -1863,6 +2318,13 @@ const READINESS_FINDING_STATUSES = new Set([
   "not_evaluated",
 ]);
 
+const READINESS_INVENTORY_STATUSES = new Set([
+  "present",
+  "missing",
+  "unknown",
+  "conflicting",
+]);
+
 const READINESS_OVERALL_STATUSES = new Set([
   "known_gaps",
   "needs_review",
@@ -1911,8 +2373,16 @@ function validReadinessData(data) {
       || data.packet.synthetic !== true
       || !validStableId(data.workflow.workflow_id)
       || data.packet.workflow_id !== data.workflow.workflow_id
+      || data.packet.jurisdiction !== data.workflow.jurisdiction
+      || data.packet.project_type !== data.workflow.project_type
       || data.result.workflow_id !== data.workflow.workflow_id
       || data.result.packet_id !== data.packet.packet_id
+      || !/^sha256:[0-9a-f]{64}$/.test(
+        data.result.workflow_fingerprint || ""
+      )
+      || !/^sha256:[0-9a-f]{64}$/.test(
+        data.result.packet_fingerprint || ""
+      )
       || !validIsoDate(data.packet.evaluated_on)
       || !validIsoDate(data.result.evaluated_on)
       || data.result.evaluated_on !== data.packet.evaluated_on
@@ -1936,10 +2406,23 @@ function validReadinessData(data) {
       || !Array.isArray(data.packet.facts)
       || data.workflow.facts.length !== data.packet.facts.length
       || !Array.isArray(data.workflow.requirements)
+      || !Array.isArray(data.packet.inventory)
+      || data.workflow.requirements.length !== data.packet.inventory.length
       || !Array.isArray(data.result.findings)
       || data.workflow.requirements.length !== data.result.findings.length
       || !Array.isArray(data.remedies.entries)
       || data.remedies.entries.length !== data.workflow.requirements.length
+      || data.remedies.workflow_id !== data.workflow.workflow_id
+      || !/^sha256:[0-9a-f]{64}$/.test(
+        data.remedies.workflow_fingerprint || ""
+      )
+      || !/^\d+\.\d+\.\d+$/.test(data.remedies.version || "")
+      || !/^sha256:[0-9a-f]{64}$/.test(
+        data.remedies.content_fingerprint || ""
+      )
+      || !validIsoDate(data.remedies.updated_on)
+      || data.remedies.updated_on > data.result.evaluated_on
+      || data.remedies.drafted_by !== "ai_assisted"
       || !Array.isArray(data.result.staff_questions)
       || !data.result.staff_questions.every(nonBlank)
       || !nonBlank(data.result.boundary)) return false;
@@ -1948,6 +2431,9 @@ function validReadinessData(data) {
   );
   const factIds = data.workflow.facts.map(fact => fact.fact_id);
   const packetFactIds = data.packet.facts.map(fact => fact.fact_id);
+  const inventoryIds = data.packet.inventory.map(
+    item => item.requirement_id
+  );
   const sourceBindings = new Map(
     data.workflow.source_bindings.map(binding => [binding.source_id, binding])
   );
@@ -1984,6 +2470,12 @@ function validReadinessData(data) {
           && /^sha256:[0-9a-f]{64}$/.test(
             review.content_fingerprint || ""
           )
+    );
+  const reviewDateValid = review?.status === "prototype_review_pending"
+    || (
+      dateIsNotFuture(review?.reviewed_on)
+      && review.reviewed_on >= data.remedies.updated_on
+      && review.reviewed_on <= data.result.evaluated_on
     );
   const countsMatch = [...READINESS_FINDING_STATUSES].every(status =>
     Number.isInteger(data.counts[status])
@@ -2045,15 +2537,25 @@ function validReadinessData(data) {
         && fact.source_checked_on === binding?.source_checked_on;
     })
     && new Set(requirementIds).size === requirementIds.length
+    && inventoryIds.every(validStableId)
+    && new Set(inventoryIds).size === inventoryIds.length
+    && inventoryIds.every(id => requirementIds.includes(id))
+    && data.packet.inventory.every(item =>
+      READINESS_INVENTORY_STATUSES.has(item.status)
+    )
     && findingIds.every((id, index) => id === requirementIds[index])
     && new Set(remedyIds).size === remedyIds.length
     && remedyIds.every(id => requirementIds.includes(id))
-    && data.result.findings.every(finding =>
-      nonBlank(finding.label)
-      && nonBlank(finding.category)
-      && nonBlank(finding.reason)
-      && READINESS_FINDING_STATUSES.has(finding.status)
-    )
+    && data.result.findings.every((finding, index) => {
+      const requirement = data.workflow.requirements[index];
+      return nonBlank(finding.reason)
+        && READINESS_FINDING_STATUSES.has(finding.status)
+        && finding.label === requirement.label
+        && finding.category === requirement.category
+        && finding.source_id === requirement.source_id
+        && finding.source_locator === requirement.source_locator
+        && finding.source_excerpt === requirement.source_excerpt;
+    })
     && data.workflow.source_bindings.every(binding =>
       validStableId(binding.source_id)
       && validHttpsUrl(binding.url)
@@ -2067,9 +2569,117 @@ function validReadinessData(data) {
       )
     )
     && reviewValid
+    && reviewDateValid
     && countsMatch
     && overallMatchesFindings
     && applicabilityMatchesFindings;
+}
+
+function readinessEvidenceManifest(data, workflowFingerprint, packetFingerprint) {
+  const counts = {};
+  for (const status of READINESS_FINDING_STATUSES) {
+    counts[status] = data.result.findings.filter(
+      finding => finding.status === status
+    ).length;
+  }
+  return {
+    applicability_status: data.result.applicability_status,
+    boundary: data.result.boundary,
+    counts,
+    evaluated_on: data.result.evaluated_on,
+    facts: data.packet.facts,
+    findings: data.result.findings,
+    inventory: data.packet.inventory,
+    manifest_type: "prototype_packet_presence",
+    overall_status: data.result.overall_status,
+    packet_fingerprint: packetFingerprint,
+    packet_id: data.result.packet_id,
+    schema_version: 1,
+    source_bindings: data.workflow.source_bindings,
+    source_review_due_on: data.result.source_review_due_on,
+    source_status: data.result.source_status,
+    source_status_as_of: data.result.source_status_as_of,
+    staff_questions: data.result.staff_questions,
+    synthetic: data.packet.synthetic,
+    workflow_fingerprint: workflowFingerprint,
+    workflow_id: data.result.workflow_id,
+  };
+}
+
+async function normalizeReadinessData(data) {
+  try {
+    if (data && typeof data === "object"
+        && NORMALIZED_READINESS_DATA.has(data)
+        && generatedDataIsDeeplyFrozen(data)) return data;
+    if (!validReadinessData(data)) return null;
+    const [workflowFingerprint, packetFingerprint] = await Promise.all([
+      sha256Fingerprint(data.workflow),
+      sha256Fingerprint(data.packet),
+    ]);
+    if (workflowFingerprint !== data.result.workflow_fingerprint
+        || workflowFingerprint !== data.remedies.workflow_fingerprint
+        || data.ai_trace?.output_workflow_fingerprint !== workflowFingerprint
+        || data.ai_trace?.output_remedy_version !== data.remedies.version
+        || packetFingerprint !== data.result.packet_fingerprint)
+      return null;
+
+    const requirementFingerprints = new Map(await Promise.all(
+      data.workflow.requirements.map(async requirement => [
+        requirement.requirement_id,
+        await sha256Fingerprint(requirement),
+      ])
+    ));
+    const remedyById = new Map(
+      data.remedies.entries.map(entry => [entry.requirement_id, entry])
+    );
+    if (!data.result.findings.every(finding => {
+      const fingerprint = requirementFingerprints.get(finding.requirement_id);
+      return fingerprint === finding.requirement_fingerprint
+        && fingerprint
+          === remedyById.get(finding.requirement_id)?.requirement_fingerprint;
+    })) return null;
+
+    if (stableJson(data.evidence_manifest) !== stableJson(
+      readinessEvidenceManifest(
+        data,
+        workflowFingerprint,
+        packetFingerprint,
+      )
+    )) return null;
+
+    const remedyContentFingerprint = await sha256Fingerprint({
+      entries: data.remedies.entries,
+      version: data.remedies.version,
+      workflow_id: data.remedies.workflow_id,
+    });
+    if (data.remedies.content_fingerprint !== remedyContentFingerprint
+        || data.ai_trace?.output_remedy_content_fingerprint
+          !== remedyContentFingerprint)
+      return null;
+    const review = data.remedies.review;
+    if (review.status !== "prototype_review_pending"
+        && review.content_fingerprint !== remedyContentFingerprint)
+      return null;
+    deepFreezeGeneratedData(data);
+    if (!generatedDataIsDeeplyFrozen(data)) return null;
+    NORMALIZED_READINESS_DATA.add(data);
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function deepFreezeGeneratedData(value) {
+  if (!value || typeof value !== "object" || Object.isFrozen(value))
+    return value;
+  for (const nested of Object.values(value)) deepFreezeGeneratedData(nested);
+  return Object.freeze(value);
+}
+
+function generatedDataIsDeeplyFrozen(value) {
+  if (!value || typeof value !== "object") return true;
+  return Object.isFrozen(value)
+    && Object.values(value).every(generatedDataIsDeeplyFrozen);
 }
 
 function readinessParcelEvidenceMarkup(data, current) {
@@ -2328,9 +2938,10 @@ function readinessCountMarkup(data) {
 }
 
 function renderReadiness(data) {
-  if (!validReadinessData(data))
+  if (!NORMALIZED_READINESS_DATA.has(data)
+      || !generatedDataIsDeeplyFrozen(data)
+      || !validReadinessData(data))
     throw new Error("generated packet-presence data failed validation");
-  READINESS = data;
   const output = document.getElementById("readinessOutput");
   const remedyById = new Map(
     data.remedies.entries.map(entry => [entry.requirement_id, entry])
@@ -2628,8 +3239,17 @@ async function initializeDemo() {
     CHECKS = data.checks;
     LETTERS = data.letters.letters || {};
     SCANS = data.scans;
+    READINESS = await normalizeReadinessData(data.readiness);
+    JOURNEY = await normalizeJourney(
+      data.journeys,
+      READINESS,
+      RULES,
+      GOLDEN,
+    );
     if (pageIs("readiness")) {
-      renderReadiness(data.readiness);
+      if (!READINESS)
+        throw new Error("generated packet-presence data failed validation");
+      renderReadinessEntry(READINESS);
     }
     if (pageIs("project")) {
       EXPLANATIONS = await normalizeExplanations(

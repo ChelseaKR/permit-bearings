@@ -29,6 +29,13 @@ supply chain. An evidence-integrity bypass—such as action copy appearing from
 a stale or fingerprint-mismatched source—is treated as a security-relevant
 trust failure.
 
+The made-up Woodland browser handoff accepts only a public journey ID and
+version; it does not put project facts in the URL or browser storage. Both
+entry pages validate the generated journey, linked route/readiness evidence,
+fingerprints, and current source-review windows. Direct, malformed,
+duplicated, mismatched, or stale packet entry must withhold findings. The URL
+is an identifier for one public synthetic record, not authorization.
+
 The demo is not approved for real applicant data. A deployment that adds
 storage, identity, uploads, telemetry, external models, or permitting-system
 integration requires a new threat model and privacy review before use.

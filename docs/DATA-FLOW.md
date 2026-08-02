@@ -8,8 +8,9 @@ not a production deployment or a compliance assessment.
 The public static site has no accounts, uploads, telemetry, applicant-data
 store, external model call, parcel connection, or permitting-system
 integration. The applicant routing form keeps submitted facts only in current
-page memory. The packet-presence page uses a committed synthetic record and
-does not accept applicant input.
+page memory. The route-to-packet link contains only a public journey ID and
+version; it carries no project facts. The packet-presence page uses a
+committed synthetic record and does not accept applicant input.
 
 The Python reference server can receive a form submission to render one
 response, but it does not persist that submission. A production deployment
@@ -57,7 +58,17 @@ Versioned journey resolver
 Static build bundle
              |
              v
-Browser validates and renders the generated readiness result
+Browser validates the journey, linked route/readiness evidence,
+fingerprints, and current source-review windows
+    |
+    +--> Active, unedited canonical sample + explicit Yes
+    |        |
+    |        +--> prepare.html?journey=<public-id>&version=<version>
+    |                 |
+    |                 +--> Exact current entry: render generated result
+    |                 +--> Direct, malformed, mismatched, or stale: hold
+    |
+    +--> Edited/different sample, No, or I'm not sure: no packet link
 ```
 
 ### Source acquisition
@@ -107,7 +118,9 @@ synthetic fact envelope with per-fact provenance, applicability facts, the
 full readiness evidence manifest, and fingerprints for the route, screening
 case, fact envelope, workflow, packet, and complete journey. A mismatch stops
 generation. Browser code must still compare the recorded review deadlines
-with the current date before presenting an affirmative handoff.
+with the current date before presenting an affirmative handoff. It does so at
+runtime together with the route, readiness, fact-envelope, and journey
+fingerprint checks described below.
 
 ### Deterministic evaluation and CLI
 
@@ -140,26 +153,39 @@ canonical journey definition, writes
 `data/journeys/generated/woodland-preapproved-detached-adu.json`, and embeds
 that same envelope in the bundle.
 
-`prepare.html` loads the static bundle. `assets/demo.js` validates identifiers,
-dates, counts, source bindings, remedy coverage, and review metadata before
-rendering the result. It also checks the recorded source-review window. It
-does not recalculate packet findings in JavaScript.
+`check.html` consumes the journey envelope only for the active, unedited
+`sample=adu` fixture after the normal deterministic screening result exactly
+matches the bound golden case and candidate route. `assets/demo.js` checks the
+journey schema and identity; the linked golden intake, route, and readiness
+records; the shared applicability provenance; every recorded fingerprint; and
+the route and readiness source-review windows against the current date. The
+remaining editable applicability fact has no default. **Yes** exposes the
+packet link; **No** withholds it as not applicable; and **I'm not sure**
+withholds it and shows the exact staff question.
 
-The browser does not currently consume the journey envelope or move submitted
-facts from `check.html` into `prepare.html`. Routing and packet presence remain
-separate browser surfaces until a tested handoff is implemented.
+The handoff URL has exactly two fields: the public `journey` ID and its
+`version`. It does not move project facts from `check.html` to `prepare.html`
+or claim authorization. `prepare.html` validates those two fields and repeats
+the journey and source-currency checks. A missing, duplicated, extra,
+malformed, mismatched, or stale entry withholds the packet cover and findings.
+A valid entry renders the Python-generated result; JavaScript does not
+recalculate packet findings.
 
 The browser does not send the synthetic facts to a server or model. It does
 not use local storage, session storage, cookies, or an upload control. A user
-may choose to follow the official checklist or parcel-metadata link.
+may choose to follow the official checklist or parcel-metadata link. The
+handoff is therefore replay of one public made-up record, not continuity for
+a real applicant case.
 
 ## AI boundary
 
 The repository records that AI assisted the checklist-to-requirement mapping
 and the plain-language action drafts before runtime. Those artifacts are
 portable files, are bound to workflow and requirement fingerprints, and
-remain review-pending. They have not been approved by a named human, planner,
-counsel, applicant, Woodland staff member, or another jurisdiction.
+the generated remedy record carries a recomputed content fingerprint. They
+remain review-pending. The fingerprint detects copy drift; it does not record
+review or approval by a named human, planner, counsel, applicant, Woodland
+staff member, or another jurisdiction.
 The mapping record includes exact input-source fingerprints and explicitly
 states that provider, model, and a reproducible run record are unknown or not
 retained.
@@ -173,9 +199,9 @@ No model runs in:
 - the public browser.
 
 AI-assisted copy cannot create or change a readiness finding. The evaluator
-does not import the remedy sidecar. The browser rejects a generated readiness
-record with invalid review metadata and withholds action wording when the
-source state is not current.
+does not import the remedy sidecar. The browser recomputes its content
+fingerprint, rejects invalid review metadata, and withholds action wording
+when the source state is not current.
 
 ## What the generated record does not establish
 

@@ -95,11 +95,25 @@ def test_python_trust_rehearsal_uses_human_readable_source_label():
 
 def test_static_pages_load_only_the_assets_they_need():
     landing = (ROOT / "index.html").read_text(encoding="utf-8")
-    bundle_tag = '<script src="data/demo-data.js?v=20260802a" defer></script>'
-    application_tag = '<script src="assets/demo.js?v=20260802a" defer></script>'
+    assert 'src="data/demo-data.js?' not in landing
+    assert 'src="assets/demo.js?' not in landing
+    style_versions = {}
+    for page_name in (
+        "index.html",
+        "check.html",
+        "prepare.html",
+        "review.html",
+        "evidence.html",
+    ):
+        html = (ROOT / page_name).read_text(encoding="utf-8")
+        style_match = re.search(
+            r'<link rel="stylesheet" href="assets/site\.css\?v=([a-zA-Z0-9]+)">',
+            html,
+        )
+        assert style_match, page_name
+        style_versions[page_name] = style_match.group(1)
+    assert len(set(style_versions.values())) == 1
 
-    assert bundle_tag not in landing
-    assert application_tag not in landing
     for page_name, page_id in {
         "check.html": "project",
         "prepare.html": "readiness",
@@ -108,9 +122,19 @@ def test_static_pages_load_only_the_assets_they_need():
     }.items():
         html = (ROOT / page_name).read_text(encoding="utf-8")
         assert f'<body data-page="{page_id}">' in html
-        assert bundle_tag in html
-        assert application_tag in html
-        assert html.index(bundle_tag) < html.index(application_tag)
+        bundle_match = re.search(
+            r'<script src="data/demo-data\.js\?v=([a-zA-Z0-9]+)" defer></script>',
+            html,
+        )
+        application_match = re.search(
+            r'<script src="assets/demo\.js\?v=([a-zA-Z0-9]+)" defer></script>',
+            html,
+        )
+        assert bundle_match, page_name
+        assert application_match, page_name
+        assert bundle_match.group(1) == application_match.group(1), page_name
+        assert application_match.group(1) == style_versions[page_name], page_name
+        assert bundle_match.start() < application_match.start(), page_name
 
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in application
@@ -118,26 +142,27 @@ def test_static_pages_load_only_the_assets_they_need():
 
 
 def test_static_pages_have_consistent_navigation_and_resolvable_links():
-    pages = [
-        ROOT / "index.html",
-        ROOT / "check.html",
-        ROOT / "prepare.html",
-        ROOT / "review.html",
-        ROOT / "evidence.html",
-    ]
+    pages = {
+        ROOT / "index.html": 1,
+        ROOT / "check.html": 2,
+        ROOT / "prepare.html": 0,
+        ROOT / "review.html": 2,
+        ROOT / "evidence.html": 2,
+    }
     expected_nav = [
-        "Home",
-        "Check a project",
-        "Packet sample",
-        "Review local rules",
-        "Evidence &amp; updates",
+        ("check.html", "Start"),
+        ("evidence.html", "Sources &amp; limits"),
+        ("review.html", "For staff"),
     ]
-    for path in pages:
+    for path, expected_current_count in pages.items():
         html = path.read_text(encoding="utf-8")
+        site_header = html[
+            html.index('<header class="site-header">') : html.index("</header>")
+        ]
         assert html.count("<main ") == 1
         assert html.count("<h1") == 1
         assert 'href="#mainContent"' in html
-        assert html.count('aria-current="page"') == 2
+        assert html.count('aria-current="page"') == expected_current_count
         assert html.count('class="mobile-menu"') == 1
         assert html.count('aria-label="Mobile primary"') == 1
         assert "<summary>Sections</summary>" in html
@@ -145,8 +170,9 @@ def test_static_pages_have_consistent_navigation_and_resolvable_links():
             '<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">' in html
         )
         assert 'http-equiv="Content-Security-Policy"' in html
-        for label in expected_nav:
-            assert f">{label}</a>" in html
+        for target, label in expected_nav:
+            assert site_header.count(f'<a href="{target}"') == 2
+            assert site_header.count(f">{label}</a>") == 2
         for target in re.findall(r'(?:href|src)="([^"]+)"', html):
             if target.startswith(("https://", "http://", "#", "data:")):
                 continue
@@ -194,12 +220,11 @@ def test_public_brand_name_and_tagline_are_consistent():
         "Take open questions to staff."
     )
     assert (
-        "<title>Permit Bearings | California ADU, JADU, and SB 9 prototype</title>"
-        in landing
+        "<title>Permit Bearings | Get your bearings before you file</title>" in landing
     )
     assert (
-        '<meta property="og:title" content="Permit Bearings | California ADU, '
-        'JADU, and SB 9 prototype">' in landing
+        '<meta property="og:title" content="Permit Bearings | Get your bearings '
+        'before you file">' in landing
     )
     assert (
         '<meta property="og:url" '
@@ -210,8 +235,10 @@ def test_public_brand_name_and_tagline_are_consistent():
         'permit-pathways/assets/social-card.png">' in landing
     )
     assert '<meta name="twitter:card" content="summary_large_image">' in landing
-    assert "Check an ADU, JADU, or SB 9 project" in landing
-    assert "Start a project check" in landing
+    assert "Get your bearings before you file." in landing
+    assert "Know the path in. Test the path out." in landing
+    assert "Open the made-up Woodland example" in landing
+    assert "Check a different project" in landing
     assert 'href="check.html?sample=adu"' in landing
     social_card = (ROOT / "assets" / "social-card.png").read_bytes()
     assert social_card[:8] == b"\x89PNG\r\n\x1a\n"
@@ -405,6 +432,7 @@ def test_packet_sample_renders_only_the_generated_python_result():
         "not_evaluated": 0,
     }
     assert readiness["remedies"]["review"]["status"] == ("prototype_review_pending")
+    assert readiness["remedies"]["content_fingerprint"].startswith("sha256:")
     assert readiness["ai_trace"]["runtime_model_call"] is False
     assert readiness["ai_trace"]["applicant_data_sent_to_model"] is False
     assert readiness["ai_trace"]["mapping_version"] == "1.1.0"
@@ -416,6 +444,10 @@ def test_packet_sample_renders_only_the_generated_python_result():
     assert readiness["ai_trace"]["mapping_run_record_status"] == ("not_recorded")
     assert readiness["ai_trace"]["remedy_review_status"] == ("prototype_review_pending")
     assert readiness["ai_trace"]["remedy_reviewer"] is None
+    assert (
+        readiness["ai_trace"]["output_remedy_content_fingerprint"]
+        == readiness["remedies"]["content_fingerprint"]
+    )
     assert readiness["source_review_due_on"] == "2027-01-25"
     parcel_facts = [
         fact
@@ -442,6 +474,32 @@ def test_packet_sample_renders_only_the_generated_python_result():
     assert "Action copy is" in application
     assert "withheld." in application
     assert "data.readiness" in application
+
+
+def test_journey_handoff_uses_public_ids_without_browser_storage():
+    project = (ROOT / "check.html").read_text(encoding="utf-8")
+    packet = (ROOT / "prepare.html").read_text(encoding="utf-8")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+
+    assert 'href="check.html?sample=adu"' in project
+    assert 'id="journeyEntrySummary"' in packet
+    assert 'id="packetCover"' in packet
+    assert 'id="readinessMethod"' in packet
+    assert "function journeyHandoffState(" in application
+    assert "function journeyQueryState(" in application
+    assert (
+        "href: `prepare.html?journey=${encodeURIComponent(journey.journey_id)}`"
+        in application
+    )
+    assert "`&version=${encodeURIComponent(journey.version)}`" in application
+    assert '["journey", "version"]' in application
+    for storage_api in (
+        "localStorage",
+        "sessionStorage",
+        "indexedDB",
+        "document.cookie",
+    ):
+        assert storage_api not in application
 
 
 def test_packet_build_explicitly_replays_canonical_evaluation_date(
@@ -485,6 +543,9 @@ function validIsoDate(value) {{
   return !Number.isNaN(parsed.getTime())
     && parsed.toISOString().slice(0, 10) === value;
 }}
+function dateIsNotFuture(value) {{
+  return validIsoDate(value) && value <= "2026-08-02";
+}}
 function validHttpsUrl(value) {{
   try {{
     return new URL(value).protocol === "https:";
@@ -507,6 +568,7 @@ function esc(value) {{
     .replaceAll("'", "&#39;");
 }}
 let READINESS = null;
+const NORMALIZED_READINESS_DATA = new WeakSet();
 const nodes = {{
   readinessOutput: {{
     innerHTML: "",
@@ -527,6 +589,8 @@ function check(condition, message) {{
 }}
 function render(payload) {{
   nodes.readinessOutput.innerHTML = "";
+  deepFreezeGeneratedData(payload);
+  NORMALIZED_READINESS_DATA.add(payload);
   renderReadiness(payload);
   return nodes.readinessOutput.innerHTML;
 }}
@@ -542,6 +606,25 @@ function setAllFindings(payload, status) {{
 }}
 
 check(validReadinessData(canonical), "canonical readiness data rejected");
+const directRender = deepFreezeGeneratedData(structuredClone(canonical));
+let directRenderRejected = false;
+try {{
+  renderReadiness(directRender);
+}} catch {{
+  directRenderRejected = true;
+}}
+check(directRenderRejected, "direct render before normalization was accepted");
+
+const forgedMutableRender = structuredClone(canonical);
+NORMALIZED_READINESS_DATA.add(forgedMutableRender);
+let mutableRenderRejected = false;
+try {{
+  renderReadiness(forgedMutableRender);
+}} catch {{
+  mutableRenderRejected = true;
+}}
+check(mutableRenderRejected, "mutable data with a forged trust token was accepted");
+
 const canonicalHtml = render(structuredClone(canonical));
 check(
   canonicalHtml.includes("3 reported missing items in this bounded checklist"),

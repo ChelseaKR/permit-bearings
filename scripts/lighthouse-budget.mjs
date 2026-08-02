@@ -8,6 +8,10 @@ import { median } from "./lighthouse-score.mjs";
 const pages = [
   { label: "index.html", url: "index.html" },
   { label: "prepare.html", url: "prepare.html" },
+  {
+    label: "prepare-journey",
+    url: "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0",
+  },
   { label: "review.html", url: "review.html" },
   { label: "evidence.html", url: "evidence.html" },
   { label: "check.html", url: "check.html" },

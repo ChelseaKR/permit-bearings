@@ -51,6 +51,15 @@ packet completeness, or an exportable evidence manifest. The next coherent
 output is a permit-readiness evidence packet that also separates submission
 completeness, consistency standards, and unresolved staff questions.
 
+One bounded browser continuation is implemented for the canonical made-up
+Woodland sample. It appears only while that sample remains active and
+unedited, its results exactly match the bound golden route, every journey and
+readiness fingerprint validates, and the route and readiness sources remain
+inside their review windows. The remaining workflow-applicability fact has no
+default. **Yes** exposes a versioned packet-example link; **No** or **I'm not
+sure** withholds it. This continuation does not turn the temporary route
+result into a stored or unified applicant evidence packet.
+
 #### Plain-language explanation layer (prototype)
 
 `data/explanations/plain-language.json` is a canonical sidecar keyed by stable
@@ -113,7 +122,9 @@ are separate portable records:
   fabricated parcel values, and an inventory status for every requirement;
 - `data/readiness/remedies/woodland-preapproved-detached-adu.json` stores
   display-only AI-assisted action drafts with workflow and requirement
-  fingerprints, a version, and explicit review metadata.
+  fingerprints, a version, and explicit review metadata. The generated
+  browser record adds a content fingerprint for drift detection; that
+  fingerprint is not a human-review receipt.
 
 The evaluator checks exact schema coverage, stable identifiers, parent-child
 ordering, workflow applicability, conditional requirements, fact-to-source
@@ -156,7 +167,7 @@ approval. The sample is made up and has not been validated by an applicant,
 planner, Woodland staff member, counsel, or another jurisdiction
 representative.
 
-#### Versioned Woodland journey contract (implemented data contract)
+#### Versioned Woodland journey contract (implemented data and browser contract)
 
 `data/journeys/woodland-preapproved-detached-adu.json` is a strict,
 reference-only definition that joins the existing synthetic Woodland golden
@@ -178,10 +189,22 @@ screening case, rule, shared fact envelope, workflow, packet, and journey.
 `data/journeys/generated/woodland-preapproved-detached-adu.json` and includes
 it in `data/demo-data.js`.
 
-This implements a versioned composition contract for one prototype fixture,
-not the applicant-facing transition. `check.html` and `prepare.html` remain
-separate surfaces, and the browser does not yet consume this envelope to carry
-answers, authorize a next step, or render a unified route-to-packet journey.
+The browser consumes this envelope as a fail-closed transition for the active,
+unedited canonical sample. It independently checks the linked golden result,
+candidate route, applicability provenance, route/readiness evidence,
+fingerprints, and current source-review windows. Only an explicit matching
+applicability answer exposes
+`prepare.html?journey=<public-id>&version=<version>`; the other answers preserve
+the not-applicable boundary or exact staff question. The URL contains no
+project answers, and the browser uses no local or session storage, cookies, or
+server-side applicant record.
+
+`prepare.html` accepts exactly the current journey ID and version and reruns
+the contract and source-currency checks before showing packet findings.
+Direct, malformed, duplicated, extra, mismatched, or stale entry fails closed.
+This is one replayable synthetic journey, not authorization, a real applicant
+case, a completeness or eligibility finding, or a unified printable evidence
+packet.
 
 ### 3. Citation-grounded Q&A (planned)
 
@@ -241,10 +264,10 @@ job:
 
 - `index.html`: lightweight orientation and scope; it loads no data bundle;
 - `check.html`: applicant intake, a temporary grouped result packet, a labeled
-  shareable sample that reuses a canonical golden fixture, and the separate
-  clock;
-- `prepare.html`: the generated synthetic Woodland packet-presence result and
-  evidence-manifest link;
+  shareable sample that reuses a canonical golden fixture, its explicit
+  applicability gate, and the separate clock;
+- `prepare.html`: a fail-closed versioned entry to the generated synthetic
+  Woodland packet-presence result and evidence-manifest link;
 - `review.html`: bounded ordinance-text screen; and
 - `evidence.html`: source status, regression summary, and change rehearsal.
 
@@ -277,7 +300,7 @@ The current build-time and browser boundaries are documented in
 
 | Challenge requirement | Current evidence | Next gap |
 |---|---|---|
-| Privacy (Info Practices Act, Gov C §§ 11015.5/11019.9) | Public demo persists no applicant input. The packet page uses one committed synthetic record and makes no runtime model call. | Deployment data inventory, flow, purpose, access, retention/deletion, subprocessors, and privacy review. |
+| Privacy (Info Practices Act, Gov C §§ 11015.5/11019.9) | Public demo persists no applicant input. Its handoff URL carries only a public journey ID and version; the packet page uses one committed synthetic record and makes no runtime model call. | Deployment data inventory, flow, purpose, access, retention/deletion, subprocessors, and privacy review. |
 | Jurisdiction data ownership | Rules, corpus, fixtures, and source metadata use open repository formats. | Tested full export/offboarding once any hosted or case data exists. |
 | CPRA (Gov C § 7920.000 et seq.) | No applicant record store exists. | Deployment-specific retention, search/export, legal-hold, exemption handling, and audit design; no blanket compliance claim. |
 | Low-capacity affordability | Dependency-light Python core and static-friendly browser demo. | Pilot deployment/TCO evidence and an integration contract beside existing systems. |
@@ -295,12 +318,15 @@ The current build-time and browser boundaries are documented in
    always-visible citations and source status. These are prototype candidate
    rules and generic document hints, not a complete application checklist.
    Change one answer to show that the old result is invalidated until the form
-   is submitted again.
-2. Continue to `prepare.html`. Show the 25 source-bound requirements, three
-   known gaps, five items needing confirmation, the review-pending
-   AI-assisted action wording, and the generated evidence manifest. State that
-   the Python evaluator compared explicit synthetic inventory statuses and
-   never opened a file or verified a parcel.
+   is submitted again. Restore the canonical sample and show that its
+   applicability question has no default: **No** and **I'm not sure** withhold
+   the packet, while **Yes** exposes the versioned link.
+2. Follow that link to `prepare.html`. Point out that the URL contains only a
+   public journey ID and version. Show the 25 source-bound requirements, three
+   known gaps, five items needing confirmation, the review-pending AI-assisted
+   action wording, and the generated evidence manifest. State that the Python
+   evaluator compared explicit synthetic inventory statuses and never opened
+   a file or verified a parcel. Direct or invalid entry withholds the findings.
 3. Select an unsupported fact combination → visible abstention + staff routing
    (current trust moment; free-text Q&A remains planned).
 4. Use the ordinance-review page to flag a documented sample provision.
