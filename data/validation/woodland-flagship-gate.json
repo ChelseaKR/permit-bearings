@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "gate_id": "woodland-preapproved-detached-adu-flagship-2026-08",
+  "status": "pending",
+  "prepared_on": "2026-08-02",
+  "claim_boundary": "This record prepares an evidence gate. It is not evidence of outreach, recruitment, review, a participant session, a partner commitment, a source-change rehearsal, accessibility validation, language review, adoption, or a permitting outcome.",
+  "artifact_lock": {
+    "lock_id": "woodland-route-to-packet-frozen-artifact-1",
+    "status": "not_run",
+    "commit_sha": null,
+    "deployed_url": null,
+    "frozen_on": null,
+    "frozen_by_code": null,
+    "protocol_version": "2.0.0",
+    "source_snapshot_id": "woodland-route-to-packet-sources-1",
+    "source_snapshot_receipt_id": null,
+    "answer_key_version": "1.1.0",
+    "thresholds_version": "1.0.0",
+    "journey_id": "woodland-preapproved-detached-adu-synthetic",
+    "journey_version": "1.0.0",
+    "journey_fingerprint": "sha256:6a7734b8bc920ec13898e2c8c753ce57d27652a5d37c8a41d433798318c4641a",
+    "fact_envelope_fingerprint": "sha256:18c9bf3bdf525776352301b3150185fce8cdb0882b621d61f92eabcc25036847",
+    "screening_case_id": "woodland-new-detached-adu-local-layer",
+    "screening_case_fingerprint": "sha256:3171705791a2520132e727c9d39d6f0bc710d7114e6408c0bfd2af6ebb3d754b",
+    "readiness_workflow_id": "woodland-preapproved-detached-adu",
+    "readiness_workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
+    "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
+    "readiness_packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e",
+    "sample_urls": {
+      "landing": "index.html",
+      "journey_start": "check.html?sample=adu",
+      "packet_result": "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+    },
+    "source_snapshot": [
+      {
+        "source_id": "ca-gov-66317",
+        "sha256": "10f931b210d739fc3460bb5e5f8099609c82445f33c5343fc94751ae0e0d6405",
+        "recorded_on": "2026-07-27"
+      },
+      {
+        "source_id": "hcd-adu-handbook-2026-03",
+        "sha256": "ec499e12c08974d8e25af352539b23afc8c26bc7dd200453bd35796de3188e6a",
+        "recorded_on": "2026-07-27"
+      },
+      {
+        "source_id": "woodland-preapproved-adu-checklist",
+        "sha256": "59ebf082a59ff257f104a13f75d63faa869565bfdecc33a6e1eba306b4796d62",
+        "recorded_on": "2026-07-29"
+      },
+      {
+        "source_id": "yolo-public-parcels-layer",
+        "sha256": "5f99beaf208dc10d8794df0ce1cd3d66f7414ac062d81cbdc018403ef01badb5",
+        "recorded_on": "2026-07-30"
+      }
+    ],
+    "internal_dry_run": {
+      "status": "not_run",
+      "artifact_lock_id": null,
+      "commit_sha": null,
+      "deployed_url": null,
+      "source_snapshot_id": null,
+      "source_snapshot_receipt_id": null,
+      "run_on": null,
+      "tester_code": null,
+      "result": null,
+      "evidence_receipt_id": null
+    }
+  },
+  "evidence_ledgers": {
+    "content_authority_review": {
+      "record_id": "woodland_content_review_evidence",
+      "record_version": 2,
+      "path": "data/validation/woodland-content-review.json"
+    },
+    "participant_sessions": {
+      "record_id": "woodland-route-to-packet-participant-sessions",
+      "record_version": "1.0.0",
+      "path": "data/validation/woodland-participant-sessions.json"
+    },
+    "manual_and_language_evidence": {
+      "record_id": "woodland-route-to-packet-manual-evidence",
+      "record_version": "1.0.0",
+      "path": "data/validation/woodland-manual-evidence.json"
+    },
+    "source_change_rehearsal": {
+      "record_id": "woodland-checklist-source-change-rehearsal",
+      "record_version": "1.0.0",
+      "path": "data/validation/woodland-source-change-rehearsal.json"
+    }
+  },
+  "answer_key": {
+    "candidate_route_rule_id": "adu-ministerial-review",
+    "candidate_route_is_not": [
+      "approval",
+      "final_eligibility",
+      "legal_advice",
+      "completeness_certification"
+    ],
+    "material_fact_ids": [
+      "project_type",
+      "primary_dwelling_status",
+      "uses_city_preapproved_plan",
+      "parcel_city_matches_woodland",
+      "parcel_land_use_is_residential"
+    ],
+    "official_route_citation": "Gov. Code § 66317",
+    "route_source_status": "current",
+    "route_source_status_as_of": "2026-07-30",
+    "route_source_review_due_on": "2027-01-23",
+    "applicability_status": "applies",
+    "applicability_conditions": [
+      {
+        "fact_id": "uses_city_preapproved_plan",
+        "equals": "yes"
+      },
+      {
+        "fact_id": "parcel_city_matches_woodland",
+        "equals": "yes"
+      },
+      {
+        "fact_id": "parcel_land_use_is_residential",
+        "equals": "yes"
+      }
+    ],
+    "editable_applicability_fact_ids": [
+      "uses_city_preapproved_plan"
+    ],
+    "unknown_applicability_fact_id": "uses_city_preapproved_plan",
+    "unknown_applicability_value": "unknown",
+    "unknown_expected_behavior": "withhold_packet_handoff_and_ask_staff",
+    "unknown_staff_question": "Is this packet using a City of Woodland preapproved ADU plan?",
+    "restored_applicability_value": "yes",
+    "valid_handoff_query_keys": [
+      "journey",
+      "version"
+    ],
+    "valid_handoff_path": "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0",
+    "entry_state_contract": {
+      "start_required": "withhold_packet_findings_actions_and_printable_summary",
+      "invalid": "withhold_packet_findings_actions_and_printable_summary",
+      "source_review_required": "withhold_packet_findings_actions_and_printable_summary",
+      "ready": "render_integrity_checked_packet_and_printable_summary"
+    },
+    "invalid_entry_examples": [
+      "missing_query",
+      "duplicate_journey_or_version",
+      "extra_query_parameter",
+      "mismatched_journey_id",
+      "mismatched_version",
+      "expired_or_changed_source"
+    ],
+    "readiness_source_status": "current",
+    "readiness_source_status_as_of": "2026-07-30",
+    "readiness_source_review_due_on": "2027-01-25",
+    "readiness_overall_status": "known_gaps",
+    "readiness_boundary": "This prototype checks reported item presence against one City checklist. Its parcel values are invented fixtures shaped like fields in a linked public dataset; it does not query or verify a live parcel, inspect files, determine legal sufficiency, certify completeness, or limit what staff may request.",
+    "action_review_status": "prototype_review_pending",
+    "action_content_fingerprint": "sha256:3e49650e15f812f4ce0dfc13caa57b0ea9d20649a24b19b79ef4cca1be804787",
+    "runtime_model_call": false,
+    "applicant_data_sent_to_model": false,
+    "reported_missing_requirement_ids": [
+      "plot-plan-address-apn",
+      "plot-plan-drainage",
+      "electrical-load-calculations"
+    ],
+    "needs_confirmation_requirement_ids": [
+      "plot-plan-easements",
+      "plot-plan-tree-removal",
+      "solar-plans",
+      "fire-sprinkler-plans",
+      "flood-elevation-certificate"
+    ],
+    "staff_questions": [
+      "Do solar plans apply to this project?",
+      "Do fire sprinkler plans apply to this project?",
+      "Is the property in a flood zone?"
+    ],
+    "reported_present_is_not": [
+      "correct",
+      "compliant",
+      "complete",
+      "accepted",
+      "approved"
+    ]
+  },
+  "thresholds": {
+    "content_authority": {
+      "independent_reviewers_required": 2,
+      "requirements_reviewed_per_reviewer": 25,
+      "minimum_initial_agreement": 22,
+      "known_blocking_content_defects_allowed": 0,
+      "all_disagreements_must_be_resolved": true
+    },
+    "cohort": {
+      "sessions_required": 6,
+      "minimum_primary_beneficiaries": 3,
+      "minimum_primary_with_recent_attempt": 2,
+      "minimum_primary_with_preapproved_plan_exposure": 1,
+      "minimum_practitioners": 2,
+      "minimum_with_small_jurisdiction_experience": 1,
+      "single_frozen_version_required": true
+    },
+    "problem_evidence": {
+      "minimum_participants_with_specific_recent_pain": 3,
+      "minimum_primary_beneficiaries_with_specific_recent_pain": 2,
+      "minimum_domain_participants_reporting_monthly_recurrence": 1
+    },
+    "trust_and_task": {
+      "minimum_candidate_guidance_correct": 5,
+      "minimum_source_and_unknown_escalation_correct": 5,
+      "minimum_packet_and_next_action_correct": 5,
+      "denominator": 6,
+      "maximum_median_route_seconds": 300,
+      "maximum_median_packet_seconds": 360,
+      "maximum_repeated_navigation_blocker_sessions": 1,
+      "confident_critical_errors_allowed": 0
+    },
+    "partner": {
+      "qualifying_written_next_steps_required": 1,
+      "owner_role_required": true,
+      "date_required": true,
+      "qualifying_next_step_types": [
+        "recruit_pilot_users",
+        "provide_official_public_source_package",
+        "schedule_bounded_pilot_scoping_or_decision_session"
+      ]
+    },
+    "maintainability": {
+      "completed_source_change_rehearsals_required": 1,
+      "named_human_owner_required": true,
+      "acceptable_burden_is_partner_decision": true
+    }
+  },
+  "recruitment": {
+    "status": "pending",
+    "reviewers": {
+      "contacted": 0,
+      "screened": 0,
+      "qualified": 0,
+      "scheduled": 0,
+      "completed": 0,
+      "withdrawn": 0,
+      "excluded": 0
+    },
+    "participants": {
+      "contacted": 0,
+      "screened": 0,
+      "qualified": 0,
+      "scheduled": 0,
+      "completed": 0,
+      "withdrawn": 0,
+      "excluded": 0,
+      "technically_interrupted": 0
+    },
+    "partners": {
+      "contacted": 0,
+      "discovery_conversations_completed": 0,
+      "qualifying_written_next_steps": 0
+    }
+  },
+  "external_evidence": {
+    "content_authority_review": {
+      "ledger_id": "woodland_content_review_evidence",
+      "ledger_version": 2,
+      "ledger_path": "data/validation/woodland-content-review.json",
+      "status": "not_run",
+      "reviewers_completed": 0,
+      "requirements_reviewed": 0,
+      "initial_agreement_count": null,
+      "disagreements_resolved_count": 0,
+      "known_blocking_content_defects": null
+    },
+    "participant_sessions": {
+      "ledger_id": "woodland-route-to-packet-participant-sessions",
+      "ledger_version": "1.0.0",
+      "ledger_path": "data/validation/woodland-participant-sessions.json",
+      "status": "not_run",
+      "same_version_verified": null,
+      "sessions_completed": 0,
+      "primary_beneficiaries_completed": 0,
+      "primary_with_recent_attempt_completed": 0,
+      "primary_with_preapproved_plan_exposure_completed": 0,
+      "practitioners_completed": 0,
+      "participants_with_small_jurisdiction_experience_completed": 0,
+      "problem_evidence_count": null,
+      "primary_problem_evidence_count": null,
+      "monthly_recurrence_count": null,
+      "candidate_guidance_correct_count": null,
+      "source_and_unknown_escalation_correct_count": null,
+      "packet_and_next_action_correct_count": null,
+      "median_route_seconds": null,
+      "median_packet_seconds": null,
+      "repeated_navigation_blocker_sessions": null,
+      "confident_critical_errors": null,
+      "cohort_invalidated_by_version_change": null
+    },
+    "manual_accessibility": {
+      "ledger_id": "woodland-route-to-packet-manual-evidence",
+      "ledger_version": "1.0.0",
+      "ledger_path": "data/validation/woodland-manual-evidence.json",
+      "status": "not_run",
+      "required_check_count": 21,
+      "checks_completed": 0,
+      "checks_passing": null
+    },
+    "spanish_semantic_review": {
+      "ledger_id": "woodland-route-to-packet-manual-evidence",
+      "ledger_version": "1.0.0",
+      "ledger_path": "data/validation/woodland-manual-evidence.json",
+      "status": "not_run",
+      "records_required": 19,
+      "records_reviewed": 0,
+      "records_approved": null
+    },
+    "spanish_usability": {
+      "ledger_id": "woodland-route-to-packet-manual-evidence",
+      "ledger_version": "1.0.0",
+      "ledger_path": "data/validation/woodland-manual-evidence.json",
+      "check_id": "ES-USABILITY-JOURNEY",
+      "status": "not_run",
+      "checks_required": 1,
+      "checks_completed": 0,
+      "checks_passing": null
+    },
+    "partner_gate": {
+      "gate_version": "1.0.0",
+      "status": "pending",
+      "artifact_lock_id": "woodland-route-to-packet-frozen-artifact-1",
+      "tested_commit_sha": null,
+      "journey_id": "woodland-preapproved-detached-adu-synthetic",
+      "journey_version": "1.0.0",
+      "qualifying_written_next_steps": 0,
+      "partner_category": null,
+      "next_step_type": null,
+      "owner_role": null,
+      "due_on": null,
+      "written_on": null,
+      "private_evidence_receipt_id": null,
+      "receipt_verified_on": null,
+      "receipt_verified_by_code": null,
+      "institutional_authorization": "not_established"
+    },
+    "source_change_rehearsal": {
+      "ledger_id": "woodland-checklist-source-change-rehearsal",
+      "ledger_version": "1.0.0",
+      "ledger_path": "data/validation/woodland-source-change-rehearsal.json",
+      "status": "not_run",
+      "target_source_id": "woodland-preapproved-adu-checklist",
+      "stages_completed": 0,
+      "rehearsals_completed": 0,
+      "elapsed_minutes": null,
+      "maintainer_active_minutes": null,
+      "reviewer_active_minutes": null,
+      "defects_found": null,
+      "human_owner_role": null,
+      "human_owner_recorded": null,
+      "affected_requirements_confirmed": null,
+      "unaffected_controls_confirmed": null,
+      "republication_verified": null,
+      "acceptable_burden": null,
+      "acceptable_burden_decided_by_partner": null
+    }
+  },
+  "decision": {
+    "status": "pending",
+    "recommendation": null,
+    "decided_on": null,
+    "decision_owner_code": null,
+    "tested_commit_sha": null,
+    "evaluated_on": null,
+    "evaluation_receipt_id": null,
+    "failure_reasons": null,
+    "bounded_public_claim": "The evidence protocol is prepared. Expert review, participant sessions, manual accessibility checks, Spanish semantic review, Spanish-language usability, the partner gate, and the source-change rehearsal have not been completed.",
+    "permitted_recommendations": [
+      "proceed",
+      "extend",
+      "pivot",
+      "stop"
+    ]
+  }
+}

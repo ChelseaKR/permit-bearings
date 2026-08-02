@@ -18,7 +18,9 @@ physical-device, or assistive-technology review.
 Items under "Remaining" require a person using the named browsers, input
 methods, or assistive technology. The executable task matrix and signed-result
 requirements are defined in `docs/MANUAL-VALIDATION.md`; every row is
-currently `not_run`.
+currently `not_run`. The corresponding machine-readable execution fields and
+version locks are in `data/validation/woodland-manual-evidence.json`; creating
+that ledger does not count as a human check.
 
 ## Static and code checks recorded
 
@@ -70,7 +72,7 @@ behavior, or conformance for the other four static pages.
 
 On 2026-08-02, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
 AAA violations on `index.html`, `check.html`, `prepare.html`, `review.html`,
-or `evidence.html` in a Playwright-managed Chromium build. Twenty-nine browser
+or `evidence.html` in a Playwright-managed Chromium build. Thirty browser
 checks also exercise each page at 320px and 390px, open the compact navigation,
 check document-level overflow, scan a populated applicant result, verify that
 mobile evidence tables render as labeled records, and cover valid/invalid

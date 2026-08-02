@@ -37,11 +37,21 @@ invalid packet entry withholds the summary with the underlying findings.
 
 **Live demo:** https://chelseakr.github.io/permit-pathways/
 
+**External evidence gate:** prepared, not run. The repository now binds future
+content review, same-version sessions, manual access/language checks, a timed
+maintenance rehearsal, and a qualifying partner step to explicit ledgers and
+thresholds. No reviewer outcome, participant result, accessibility signoff,
+Spanish semantic approval, completed rehearsal, or partner commitment is
+claimed. Inspect the current status on the live **Sources & limits** page or in
+[`data/validation/woodland-flagship-gate.json`](data/validation/woodland-flagship-gate.json).
+
 **Made-up Woodland route-to-packet journey** (answer the applicability
 question to continue):
 https://chelseakr.github.io/permit-pathways/check.html?sample=adu
 
-**Local static demo:** open `index.html` directly, or run
+## Quickstart
+
+Open `index.html` directly, or run
 `python3 -m http.server 8765` and visit `http://localhost:8765/`. The landing,
 applicant guide, packet sample, ordinance screen, and evidence page use
 relative links and work without network requests. Only the four data-driven
@@ -52,6 +62,8 @@ truth, challenge fit, and prioritized opportunity map. Repository-specific
 contributor and agent guardrails live in [AGENTS.md](AGENTS.md). The visual
 and interaction alignment with California Web Standards is recorded in
 [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md).
+The execution, privacy, scoring, and claim rules for the external evidence
+gate are in [docs/VALIDATION-EVIDENCE.md](docs/VALIDATION-EVIDENCE.md).
 
 ## Run it
 
@@ -91,7 +103,7 @@ still needs a person.
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 235 Python tests, 86.92% branch coverage, 29/29 golden cases, 29 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.98 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
+| Quality & Metrics | Automated evidence includes 301 Python tests, 86.92% branch coverage, 29/29 golden cases, 30 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.98 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works

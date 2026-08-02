@@ -1,347 +1,308 @@
-# Showcase formative validation plan
-
-Status: planned formative research. No participants have been recruited, no
-sessions have been conducted, and no findings or outcomes are claimed.
-
-As of 2026-08-01 this study has **not started**. The dated schedule near the
-end of this document is the protocol's original plan, not a record of work
-done; treat every date in it as unmet. Nothing in this repository reports a
-session, participant, or result.
-
-This plan covers two small, moderated usability studies to inform the Intent to
-Showcase submission. Each session is 25 minutes. These studies are not a
-jurisdiction pilot, legal review, accessibility audit, translation review, or
-measurement of permitting outcomes.
-
-## Objectives
-
-The studies will examine whether people can:
-
-1. recognize that the applicant result is a candidate route, not an approval,
-   final eligibility finding, legal opinion, or complete local checklist;
-2. identify which made-up facts produced a result and what happens when a
-   material fact is unknown;
-3. locate the source status, citation, evidence disclosure, suggested starting
-   steps, and questions for staff;
-4. distinguish a packet item's presence from its consistency, legal
-   sufficiency, or agency acceptance;
-5. find an item labeled "Reported missing," an item labeled "Needs
-   confirmation," and the stated next action in the synthetic
-   packet-readiness sample; and
-6. complete these tasks without avoidable navigation, terminology, or
-   comprehension errors.
-
-Staff sessions will also collect bounded observations about whether the
-presentation could support an intake or routing conversation. Applicant and
-designer sessions will collect bounded observations about whether the
-presentation helps a person understand what to verify and what to prepare
-next.
-
-The studies will not determine whether encoded rules are legally correct,
-whether a jurisdiction accepts an interpretation, whether a real application
-is complete, or whether the product reduces delay, rework, or staff effort.
-
-## Study design
-
-| Study | Participants | Method | Session length |
-| --- | --- | --- | --- |
-| Staff usability study | 3 to 5 California planning, building, permit intake, or permit-program staff | Moderated remote session with screen sharing | 25 minutes |
-| Applicant and designer usability study | 3 to 5 California ADU applicants, prospective applicants, designers, or permit professionals | Moderated remote session with screen sharing | 25 minutes |
-
-The target is formative coverage, not statistical representation. Report the
-number recruited, scheduled, completed, withdrawn, and excluded for each
-cohort. Keep the cohorts separate during analysis.
-
-## Participant criteria
-
-### Staff study
-
-Include an adult who:
-
-- currently works, or worked within the last three years, in California local
-  planning, building, permit intake, or an ADU permit program;
-- has handled or observed applicant routing, application intake, or
-  completeness questions; and
-- can use a desktop or laptop browser while sharing the prototype screen.
-
-Exclude a person who:
-
-- contributed to this repository, its design, or its research plan;
-- does not have California planning, building, or permit-intake experience;
-- is participating as an official spokesperson without authorization;
-- wants the session to review a live application or provide legal advice; or
-- cannot give informed, voluntary consent.
-
-Recruit across more than one role or jurisdiction type when practical. Do not
-describe this convenience sample as representative of California staff.
-
-### Applicant and designer study
-
-Include an adult who:
-
-- has considered, prepared, designed, or submitted a California ADU project
-  within the last three years; or
-- professionally helps California homeowners prepare ADU applications; and
-- can use a desktop or laptop browser while sharing the prototype screen.
-
-Exclude a person who:
-
-- contributed to this repository, its design, or its research plan;
-- has no California ADU experience or near-term intent;
-- wants advice about a live parcel, dispute, application, or deadline;
-- plans to enter or share a real address, assessor parcel number, application
-  number, drawing, permit file, or other project record; or
-- cannot give informed, voluntary consent.
-
-Recruit a mix of homeowners and design or permit professionals when practical.
-Report the mix exactly. Do not combine professional and homeowner observations
-without showing the separate counts.
-
-## No-PII and study-data rules
-
-- Use only the repository's labeled hypothetical ADU sample and the prepared
-  synthetic packet-readiness sample.
-- Do not ask for or enter names, addresses, assessor parcel numbers, permit
-  numbers, application files, employer names, jurisdiction names, or contact
-  details in the prototype or study notes.
-- Use participant codes `S01` to `S05` for staff and `A01` to `A05` for
-  applicants and designers.
-- Keep scheduling contact information outside the repository. Do not copy
-  direct messages, email addresses, calendar invitations, or recruitment
-  lists into committed research artifacts.
-- Do not record audio, video, or the participant's screen for these studies.
-  The moderator may take structured notes after obtaining consent.
-- Paraphrase by default. Record a short de-identified quotation only when the
-  participant separately consents to quotation.
-- Do not commit participant names, contact information, employers,
-  jurisdictions, raw recordings, or unredacted screenshots.
-- If a participant begins to disclose personal, confidential, or live project
-  information, stop the disclosure, remind them to use only the synthetic
-  material, and omit the information from notes. If it was captured, remove it
-  before analysis or sharing.
-- The public prototype has no applicant-data store. Do not add telemetry,
-  accounts, uploads, or external model calls for this research.
-
-## Materials and artifact lock
-
-Before the first session:
-
-1. record the exact 40-character product commit used in every session;
-2. verify the hypothetical sample at `check.html?sample=adu`;
-3. record the exact URL or local path for the packet-readiness sample;
-4. verify that both samples are made up and visibly labeled as such;
-5. prepare a packet-readiness answer key containing at least one `present`
-   item, one `missing` item, and one `needs_staff_review` item, and verify that
-   the public page labels the latter two "Reported missing" and "Needs
-   confirmation";
-6. verify that the packet sample separates presence from consistency,
-   compliance, and agency acceptance;
-7. verify that citations and source status remain visible or discoverable;
-8. disable or avoid any tool that could collect participant input; and
-9. complete one internal dry run against the timing and task-success rubric.
-
-Do not improvise a packet assessment from a real application. If the synthetic
-packet-readiness sample is not executable at the locked commit, omit that task,
-record the protocol deviation, and do not claim packet-readiness usability
-evidence.
-
-## Staff usability study, 25 minutes
-
-### Session sequence
-
-| Time | Activity |
-| --- | --- |
-| 0:00 to 3:00 | Welcome, scope, consent, and no-PII reminder |
-| 3:00 to 5:00 | Role context using broad categories only |
-| 5:00 to 13:00 | Task S1, candidate-route and uncertainty flow |
-| 13:00 to 21:00 | Task S2, synthetic packet-readiness flow |
-| 21:00 to 24:00 | Confidence ratings and staff-specific follow-up |
-| 24:00 to 25:00 | Final comment and close |
-
-### Context questions
-
-Ask only:
-
-1. "Which broad role best describes your work: planning, building, permit
-   intake, program management, or another related role?"
-2. "How often do you encounter ADU routing or application-completeness
-   questions: rarely, monthly, weekly, or most workdays?"
-
-Do not ask for the employer, jurisdiction, or a real case.
-
-### Task S1: interpret a candidate route
-
-Read this task exactly:
-
-> Open the hypothetical detached ADU sample. Using only what is on the page,
-> tell me what the product says this made-up project may be able to do and what
-> it does not decide. Show me two facts used for the result, the source status,
-> and one official citation. Then edit the answer to "What dwelling exists on
-> the lot now, or is proposed?" to "I'm not sure," submit the answers again,
-> and explain what changed.
-
-Do not explain the interface before the participant attempts the task.
-
-Full task success requires the participant to:
-
-- describe the route as a candidate or possible route, not an approval;
-- identify that the facts are hypothetical and applicant-supplied;
-- find two answers used for the result;
-- find a source-status label and an official citation; and
-- observe that the unknown material fact produces a staff question or
-  abstention instead of a favorable route.
-
-### Task S2: interpret packet readiness
-
-Read this task exactly:
-
-> Open the synthetic packet-readiness sample. Identify one item marked
-> "Reported missing," one item marked "Needs confirmation," and the next
-> action shown for each. Find the evidence or source for one requirement.
-> Finally, tell me whether an item marked "Reported present" means that the
-> document is correct,
-> compliant, or accepted by the agency.
-
-Full task success requires the participant to:
-
-- locate the requested "Reported missing" and "Needs confirmation" states;
-- identify the displayed next action for both;
-- find requirement evidence or a citation; and
-- state that "Reported present" does not establish consistency, compliance, legal
-  sufficiency, or agency acceptance.
-
-### Staff follow-up
-
-Ask:
-
-1. "What, if anything, could cause staff or an applicant to overread this
-   result?"
-2. "Which label or next action would you change first for an intake
-   conversation?"
-3. "What information would staff still need before relying on this in a real
-   workflow?"
-
-Record these as participant observations, not jurisdiction requirements or
-institutional approval.
-
-## Applicant and designer usability study, 25 minutes
-
-### Session sequence
-
-| Time | Activity |
-| --- | --- |
-| 0:00 to 3:00 | Welcome, scope, consent, and no-PII reminder |
-| 3:00 to 5:00 | ADU experience context using broad categories only |
-| 5:00 to 13:00 | Task A1, understand the route and open questions |
-| 13:00 to 21:00 | Task A2, act on synthetic packet findings |
-| 21:00 to 24:00 | Confidence ratings and applicant-specific follow-up |
-| 24:00 to 25:00 | Final comment and close |
-
-### Context questions
-
-Ask only:
-
-1. "Which broad description fits you best: homeowner considering an ADU,
-   homeowner who prepared or submitted one, designer, or permit
-   professional?"
-2. "Before today, how familiar were you with California ADU permitting: not at
-   all, a little, somewhat, or very?"
-
-Do not ask for a property address, jurisdiction, client, or real application.
-
-### Task A1: find a route and know what to verify
-
-Read this task exactly:
-
-> Imagine the made-up facts in the hypothetical detached ADU sample describe
-> your project. In your own words, tell me what route the page found, whether
-> that means the project is approved or eligible, and what you would do next.
-> Show me where you would check the source. Then edit the answer to "What
-> dwelling exists on the lot now, or is proposed?" to "I'm not sure," submit
-> again, and tell me what you would ask local staff.
-
-Full task success requires the participant to:
-
-- identify the candidate route without describing it as approval or final
-  eligibility;
-- find a suggested next step and the source or evidence disclosure;
-- change the material fact and resubmit; and
-- identify the resulting direct question or need to confirm the fact with
-  staff.
-
-### Task A2: decide what to prepare next
-
-Read this task exactly:
-
-> Open the synthetic packet-readiness sample. Tell me which material you would
-> work on first and why. Find one item labeled "Needs confirmation" and
-> explain the question you would bring to staff. Then tell me whether this
-> page says the sample packet is complete, compliant, or ready for agency
-> acceptance.
-
-Full task success requires the participant to:
-
-- choose a displayed "Reported missing" item and connect it to its stated
-  remedy;
-- identify a "Needs confirmation" item and its direct question;
-- avoid treating "Reported present" as proof of correctness or compliance;
+# Woodland flagship formative evidence protocol
+
+Status: prepared, not started
+Protocol version: 2.0.0
+Prepared: 2026-08-02
+
+No expert review, recruitment, participant session, partner commitment,
+manual accessibility check, Spanish semantic review, Spanish-language
+usability check, source-change rehearsal, or permitting outcome is claimed.
+Aggregate counts and activity states remain zero, `not_run`, or `pending` in
+the canonical
+[`woodland-flagship-gate.json`](../data/validation/woodland-flagship-gate.json).
+
+This protocol covers two independent content-authority reviews and exactly six
+moderated sessions on one frozen version of the synthetic Woodland
+route-to-packet journey. It is formative research, not a jurisdiction pilot,
+legal review, accessibility audit, translation review, representative sample,
+or measurement of permitting outcomes.
+
+Operational evidence, privacy, partner, maintenance-rehearsal, and decision
+rules are defined in [`VALIDATION-EVIDENCE.md`](VALIDATION-EVIDENCE.md).
+
+The canonical activity ledgers are:
+
+- [`woodland-content-review.json`](../data/validation/woodland-content-review.json)
+  for the two independent content-authority reviews;
+- [`woodland-participant-sessions.json`](../data/validation/woodland-participant-sessions.json)
+  for exactly six completed, de-identified, same-version scorecards;
+- [`woodland-manual-evidence.json`](../data/validation/woodland-manual-evidence.json)
+  for manual access, Spanish semantic review, and Spanish-language usability;
   and
-- avoid describing the sample as an agency-approved completeness finding.
+- [`woodland-source-change-rehearsal.json`](../data/validation/woodland-source-change-rehearsal.json)
+  for the controlled source-change and re-review rehearsal.
 
-### Applicant and designer follow-up
+Gate aggregates are derived from those ledgers. Do not edit an aggregate to
+manufacture a passing result.
 
-Ask:
+## Questions this protocol can answer
 
-1. "Which phrase, status, or instruction was hardest to understand?"
-2. "What would you expect to happen after this screen?"
-3. "What information would you still need from local staff?"
+The work examines whether:
 
-Record professional participants' suggestions as opinions based on their
-experience, not as controlling requirements.
+1. two qualified reviewers agree that each of the 25 bounded checklist
+   mappings and its action draft is supported, safely worded, or routed to
+   staff;
+2. relevant people independently describe a recent analogous permitting pain,
+   consequence, and workaround;
+3. a participant can explain the displayed route as candidate guidance rather
+   than approval or final eligibility;
+4. a participant can locate material facts, source status, and an official
+   citation;
+5. choosing "I'm not sure" for the City-preapproved-plan applicability fact
+   visibly withholds the packet transition and creates a staff question;
+6. a participant can restore the synthetic fact, carry the same versioned
+   journey into packet preparation, and identify the first three actions;
+7. a participant can distinguish reported presence from correctness,
+   compliance, completeness, acceptance, or approval; and
+8. the selected workflow avoids repeated navigation blockers and confident
+   critical over-trust.
 
-## Moderator consent and observation script
+The work cannot determine whether an encoded rule is legally correct, whether
+Woodland accepts an interpretation, whether a real application is complete,
+whether the interface conforms to WCAG, whether Spanish guidance is
+semantically equivalent, or whether the product changes permit time, staff
+effort, correction cycles, or housing production.
 
-### Opening and consent
+## Evidence design
 
-Read this script:
+| Activity | Target | Method | Current state |
+|---|---:|---|---|
+| Content-authority review | 2 reviewers | Independent classification of all 25 mappings and action drafts, followed by sourced adjudication | `not_run` |
+| Applicant/practitioner sessions | Exactly 6 | Moderated remote session using one frozen deployed commit and synthetic facts only | `not_run` |
+| Partner gate | 1 qualifying written next step | Private receipt with a concrete next step, owner role, and date | `pending` |
+| Source-change/re-review rehearsal | 1 | Timed controlled rehearsal from detection through republication | `not_run` |
+| Manual accessibility and language work | See signoff-required matrix | Version-bound human checks, kept separate from usability | `not_run` |
 
-> Thank you for joining. I am evaluating a prototype, not you. This session
-> will take about 25 minutes and uses only made-up ADU information. The
-> prototype provides candidate information and is not legal advice, an
-> approval, or a complete local checklist.
->
-> Please do not share any real address, parcel number, application number,
-> drawing, client information, employer, jurisdiction, or confidential work
-> material. I will take structured notes using a participant code. I will not
-> make an audio or video recording. Participation is voluntary. You may skip a
-> question or stop at any time.
->
-> De-identified observations may be summarized in product documentation or an
-> Intent to Showcase submission. Your name, contact information, employer, and
-> jurisdiction will not be included. Do you consent to participate and to
-> de-identified note taking?
+Do not combine these activities into one favorable label. Usability cannot
+substitute for content authority, partner evidence, accessibility, language
+review, or maintenance ownership.
 
-Record `yes` or `no`. End the session if the answer is not `yes`.
+## Freeze before external work
 
-Then ask:
+Before either reviewer receives material and before the first participant
+session:
 
-> May I include a short, de-identified quotation from you if one is useful?
-> Saying no will not affect your participation.
+1. Record the artifact lock ID, one full 40-character commit SHA, its exact
+   deployed URL, freeze date, source snapshot ID, source-snapshot receipt ID,
+   verifier code, and verification receipt.
+2. Verify the journey ID/version and every journey, fact-envelope, screening,
+   readiness-workflow, and readiness-packet fingerprint in the canonical gate
+   record.
+3. Record the exact source IDs and hashes for Gov. Code section 66317, the HCD
+   ADU Handbook, the City checklist, and Yolo parcel-layer metadata.
+4. Verify `index.html`, `check.html?sample=adu`, and the exact versioned packet
+   URL recorded in the gate.
+5. Verify the versioned answer key against the generated journey and readiness
+   evidence.
+6. Complete one internal dry run from the landing page without a product tour.
+   Bind its receipt to the lock ID, commit, exact deployed URL, source snapshot
+   ID, and source-snapshot receipt; record a passing result on or after the
+   freeze date.
+7. Confirm that no telemetry, account, upload, external model call, or
+   participant-data store is active.
 
-Record quote consent separately. Do not treat general participation consent as
-quote consent.
+Do not test a moving branch, local working tree, pull-request preview, or a
+deployment that differs from the locked SHA. If a blocking content defect or
+dangerous over-trust requires a change, close that cohort against the old
+version, freeze the new deployment, and recruit a fresh cohort. Never combine
+task results or timings across versions.
 
-### Think-aloud instruction
+## Two independent expert reviews
+
+### Reviewer criteria
+
+- Reviewer 1 must know Woodland's selected checklist or intake workflow.
+- Reviewer 2 may be a California ADU architect, residential designer, permit
+  expeditor, contractor, housing navigator, or comparable professional with
+  recent packet experience.
+- A reviewer must not have authored the mapping, actions, or this protocol.
+- Participation is individual unless formal institutional authorization is
+  separately recorded. Individual review is not agency approval.
+
+### Review procedure
+
+Give each reviewer an isolated copy containing the same frozen source package,
+25 requirement rows, action drafts, and disposition definitions. Do not show
+one reviewer the other's answers before both independent records are locked.
+
+For every row, independently classify the mapping and action as `supported`,
+`changes_required`, `suppress`, `route_to_staff`, or `blocked_by_source`. Record a
+short sourced rationale for any result other than `supported`.
+
+Initial agreement requires the same mapping and action disposition before
+adjudication. The content gate requires at least 22 of 25 rows to agree
+initially. Every disagreement must be resolved through better sourcing,
+suppression, or explicit staff routing. Zero known blocking content defects
+may remain visible before participant testing.
+
+A blocking content defect is:
+
+- an unsupported requirement or omission;
+- an incorrect applicability condition;
+- a source, locator, excerpt, or fingerprint mismatch;
+- an action that implies approval, compliance, completeness, or acceptance;
+  or
+- an unknown treated favorably.
+
+The review does not promote production data automatically. A later content
+pull request must bind any completed review claim to its exact reviewer,
+method, date, version, fingerprints, and authorization scope.
+
+## Participant cohort
+
+Run exactly six sessions. Categories may overlap, but report every raw count.
+The completed cohort must include:
+
+- at least 3 homeowners or small property owners;
+- among those primary beneficiaries, at least 2 who recently attempted an ADU
+  or analogous small-jurisdiction residential packet;
+- among those primary beneficiaries, at least 1 who considered or used a
+  preapproved plan;
+- at least 2 practitioners with recent ADU packet experience; and
+- at least 1 participant with experience in a smaller jurisdiction.
+
+Include an adult who can give informed voluntary consent, can use a desktop or
+laptop browser for the remote session, and meets at least one cohort category.
+Exclude a person who contributed to the repository or protocol, wants advice
+about a live case, intends to disclose a real parcel or packet, or cannot give
+consent.
+
+Do not describe this maximum-six convenience cohort as representative of
+California applicants, practitioners, or staff.
+
+## Privacy and study-data rules
+
+- Use participant codes `P01` through `P06` only.
+- Use the repository's made-up Woodland journey and synthetic packet only.
+- Do not ask for a name, employer, jurisdiction, address, assessor parcel
+  number, permit number, application number, client, drawing, packet, or real
+  project detail.
+- Keep contact, screening, scheduling, consent administration, code-to-person
+  mapping, and private correspondence outside the repository.
+- Do not record audio, video, screen content, or a transcript.
+- Keep only de-identified structured scorecards and aggregate funnel counts in
+  the repository. Paraphrase; do not store quotations in the public record.
+- If personal, confidential, or live-project information is disclosed, stop
+  it, remind the participant of the boundary, and remove it before analysis or
+  commit.
+- Do not add telemetry, accounts, uploads, external model calls, or persistent
+  browser storage for the study.
+
+## Session sequence, approximately 35 minutes
+
+| Time | Activity |
+|---|---|
+| 0:00 to 3:00 | Scope, consent, synthetic-only and no-PII reminder |
+| 3:00 to 13:00 | Critical-incident interview about the last analogous attempt |
+| 13:00 to 20:00 | Task 1: candidate route, evidence, and unknown applicability |
+| 20:00 to 28:00 | Task 2: packet preparation and portable summary |
+| 28:00 to 33:00 | Confidence, comprehension, and next-action follow-up |
+| 33:00 to 35:00 | Debrief, safety correction if needed, and close |
+
+The task windows are observation caps, not passing-time thresholds. The gate
+uses a median of at most five minutes for routing and at most six minutes for
+packet preparation.
+
+## Opening and consent script
 
 Read:
 
-> As you work, please say what you are looking for, what you expect to happen,
-> and what you think the page means. I may remind you to keep talking, but I
-> will not teach you how to complete the task until the task ends.
+> Thank you for joining. I am evaluating a prototype, not you. This session
+> takes about 35 minutes and uses only made-up ADU information. The prototype
+> shows candidate guidance. It is not legal advice, approval, final
+> eligibility, or a complete local checklist.
+>
+> Please do not share a name, employer, jurisdiction, real address, parcel or
+> application number, drawing, packet, client information, or confidential
+> material. I will take a structured, de-identified scorecard under a
+> participant code. I will not record audio, video, or your screen. You may
+> skip a question or stop at any time.
+>
+> De-identified observations and aggregate counts may be published with the
+> tested commit and method. Do you consent to participate and to this
+> structured note taking?
 
-### Neutral observation prompts
+Record `yes` or `no` outside the public scorecard. End the session if the
+answer is not `yes`.
 
-Use only when needed:
+Then read:
+
+> As you work, say what you are looking for, what you expect to happen, and
+> what you think the page means. I may remind you to keep talking, but I will
+> not show you how to complete a task until its timer ends.
+
+## Critical-incident interview, 10 minutes
+
+Ask about the participant's last analogous attempt without requesting a place,
+parcel, organization, client, or case identifier:
+
+1. "What were you trying to prepare or understand?"
+2. "What specific event or question made the process difficult?"
+3. "What happened because of that difficulty?"
+4. "What workaround did you use, and who or what helped?"
+5. "How often do you encounter something similar: once, less than monthly,
+   monthly, weekly, or more often?"
+
+Record only broad, de-identified categories for trigger, consequence,
+workaround, and recurrence. A general opinion that permitting is hard does not
+meet the problem-evidence threshold. The record needs a specific recent
+trigger, consequence, and workaround.
+
+## Task 1: candidate route and honest unknown
+
+Start the timer, then read:
+
+> Starting from this landing page, use the made-up Woodland example. Explain
+> the candidate route in your own words and what it does not decide. Show two
+> material facts, the source status, and one official citation. At the packet
+> applicability question, choose "I'm not sure." Explain what happened, why
+> packet preparation is blocked, and what you would ask staff. Then restore
+> the made-up answer to "Yes" and continue into packet preparation.
+
+Do not provide a direct task URL or interface tour. Full success requires the
+participant to:
+
+- reach the example from `index.html`;
+- describe the route as candidate guidance, not approval or final eligibility;
+- identify two facts as made up or applicant-asserted rather than verified
+  parcel facts;
+- find source status and the Gov. Code section 66317 citation;
+- choose `unknown` for `uses_city_preapproved_plan`;
+- recognize that the packet handoff is withheld and repeat or paraphrase the
+  staff question; and
+- restore `yes` and follow the exact versioned handoff.
+
+Stop timing when the participant reaches packet preparation and states why the
+transition is available.
+
+## Task 2: packet preparation and carry-forward
+
+Start the timer, then read:
+
+> In this synthetic packet result, find one item marked "Reported missing" and
+> its next action. Find one item marked "Needs confirmation" and the question
+> you would take to staff. Locate the evidence for one requirement. Identify
+> the first three preparation actions, then show how you would carry the
+> summary forward. Finally, tell me whether "Reported present" means correct,
+> compliant, complete, accepted, or approved.
+
+Full success requires the participant to:
+
+- identify a displayed missing item and its source-backed action;
+- identify a needs-confirmation item and a direct staff question;
+- locate the City checklist evidence and its source status;
+- identify the three reported-missing preparation actions;
+- locate the print/save control and recognize that the app does not store the
+  resulting artifact; and
+- state that reported presence establishes none of correctness, compliance,
+  completeness, acceptance, or approval.
+
+The participant need not create a local PDF. Stop timing after the final
+presence-boundary explanation.
+
+## Neutral prompts and assistance
+
+Allowed neutral prompts are:
 
 - "What are you looking for now?"
 - "What do you expect that control to do?"
@@ -349,252 +310,234 @@ Use only when needed:
 - "What makes you say that?"
 - "What would you do next?"
 
-Do not say where an answer is, praise a choice, correct an interpretation
-during the timed task, or ask a leading question. After time is stopped, the
-moderator may explain a safety-critical misunderstanding and record that the
-explanation occurred.
+A think-aloud reminder is not assistance. A statement identifying a control,
+section, answer, or route is directional assistance and must be recorded. Do
+not correct an interpretation during timing. After timing ends, correct any
+safety-critical misunderstanding and record that the correction occurred.
 
-### Closing
+## Scoring
 
-Read:
+### Task result
 
-> That completes the study. This was formative feedback on a tested prototype,
-> not a review of a real project or a request for agency endorsement. Please do
-> not rely on anything shown today for a real application. Is there one final
-> observation you want included?
+- `independent`: every critical criterion completed without a directional
+  hint;
+- `assisted`: every critical criterion completed after directional help;
+- `partial`: at least one critical criterion completed but one or more missed;
+- `not_completed`: no critical criterion completed, the participant stops, or
+  the observation cap is reached; and
+- `not_observed`: a protocol or technical problem prevents the task.
 
-## Measures and scoring
+### Timing
 
-Record measures per task, not only per participant.
+Start when the moderator finishes the task prompt. Stop at the task-specific
+endpoint. Record seconds. Keep setup, consent, critical-incident questions,
+follow-up, and moderator explanations outside the task time. Report median,
+range, and denominator for the six same-version sessions.
 
-### Task success
-
-Use this scale:
-
-- `independent success`: all required success criteria completed without a
-  directional hint;
-- `assisted success`: all required criteria completed after one neutral
-  reminder or one directional hint;
-- `partial`: at least one required criterion completed, but one or more
-  critical criteria missed;
-- `not completed`: no critical criterion completed, the participant gives up,
-  or the time cap is reached; and
-- `not observed`: task omitted because of a technical or protocol problem.
-
-A neutral think-aloud reminder is not assistance. A statement that identifies
-the control, section, or answer is assistance and must be recorded.
-
-### Time on task
-
-- Start when the moderator finishes reading the task.
-- Stop when the participant states they are done or the eight-minute task
-  window ends.
-- Record minutes and seconds.
-- Keep setup, consent, follow-up questions, and moderator explanation outside
-  task time.
-- Report the median and range only when at least three people completed the
-  same task in a cohort. Always show the denominator.
-
-### Errors
-
-Record each observed error once per task using these codes:
+### Error codes
 
 | Code | Observed error |
-| --- | --- |
-| `CANDIDATE_AS_APPROVAL` | Treats a candidate route as approval or final eligibility |
-| `HYPOTHETICAL_AS_REAL` | Treats made-up or applicant-supplied facts as verified parcel facts |
-| `SOURCE_STATUS_MISREAD` | Treats stale, unverified, or review-pending material as reviewed current guidance |
-| `UNKNOWN_ASSUMED_FAVORABLE` | Expects an unknown material fact to preserve a favorable route |
-| `EVIDENCE_NOT_FOUND` | Cannot locate source status, citation, or evidence |
-| `PRESENT_AS_COMPLIANT` | Treats document presence as proof of consistency, compliance, or acceptance |
-| `STAFF_REVIEW_MISSED` | Misses or resolves an item that the sample routes to staff |
-| `NEXT_ACTION_NOT_FOUND` | Cannot identify the displayed remedy or next action |
-| `NAVIGATION_ERROR` | Takes an unintended path and cannot recover without assistance |
+|---|---|
+| `CANDIDATE_AS_APPROVAL` | Treats candidate guidance as approval or final eligibility |
+| `HYPOTHETICAL_AS_REAL` | Treats made-up facts as verified parcel facts |
+| `SOURCE_STATUS_MISREAD` | Treats dated, stale, unverified, or review-pending evidence as human-approved guidance |
+| `UNKNOWN_ASSUMED_FAVORABLE` | Expects an unknown applicability fact to preserve the packet handoff |
+| `EVIDENCE_NOT_FOUND` | Cannot locate source status, citation, or requirement evidence |
+| `PRESENT_AS_COMPLIANT` | Treats reported presence as correctness, compliance, completeness, acceptance, or approval |
+| `STAFF_REVIEW_MISSED` | Resolves or overlooks an item routed to staff |
+| `NEXT_ACTION_NOT_FOUND` | Cannot identify the displayed next action |
+| `NAVIGATION_BLOCKER` | Cannot reach or continue the journey without directional help |
 | `TECHNICAL_ERROR` | Browser, connection, or prototype failure prevents observation |
 
-Record what happened before assigning a code. Do not infer an error solely
-from silence.
+Record observed behavior before assigning a code. Silence alone is not an
+error.
 
-### Confidence
+### Confidence and critical error
 
-After each task, ask:
+After each task ask:
 
 > On a scale from 1 to 5, how confident are you that you understood what the
-> page says and what you would do next? One means not confident and five means
-> very confident. What is the main reason for your rating?
+> page says and what you would do next? What is the main reason?
 
-Confidence is self-report, not evidence of correctness. Report confidence
-beside observed task success and errors, never as a substitute for them.
+Confidence is self-report, not correctness. A confident critical error exists
+when a participant finishes believing that a candidate route is approval or
+final eligibility, or that reported presence means compliant or accepted, and
+either rates that interpretation 4 or 5 or repeats it after the neutral prompt
+"What makes you say that?" Any confident critical error fails that version.
 
-## Session evidence template
+## De-identified scorecard template
 
-Create one de-identified record per completed or attempted session:
+The participant ledger reserves `P01` through `P06` only for the final six
+completed sessions that make up the same-version denominator. A withdrawal,
+exclusion, failed screening, or technical interruption remains in the
+aggregate recruitment funnel and does not fill or partially fill a scorecard
+slot. Keep the slot `not_run` until one complete, de-identified record and all
+required receipts exist. Check every record for accidental PII before commit.
 
-```markdown
-# Session [S01 or A01]
+```text
+Participant code: P01 | P02 | P03 | P04 | P05 | P06
+Scorecard status: not_run | complete
+Broad cohort categories:
+Primary beneficiary: yes | no
+Recent analogous packet attempt: yes | no
+Preapproved-plan exposure: yes | no
+Practitioner with recent ADU packet experience: yes | no
+Smaller-jurisdiction experience: yes | no
+Session date:
+Artifact lock ID: woodland-route-to-packet-frozen-artifact-1
+Frozen commit SHA:
+Deployed landing URL:
+Journey ID and version:
+Source snapshot ID:
+Artifact verified on and by code:
+Artifact-verification receipt ID:
+Protocol version: 2.0.0
+Answer-key version: 1.1.0
+Browser and device category:
+Moderator code:
+Recording: none
+Protocol deviations:
+Private screening receipt ID:
+Private consent receipt ID:
+Privacy-review receipt ID:
+Scorecard integrity SHA-256:
 
-- Cohort: [staff | applicant/designer]
-- Participant role category: [broad category only]
-- California ADU exposure: [frequency or familiarity category]
-- Session date: [YYYY-MM-DD]
-- Time zone: [time zone]
-- Product commit: [full 40-character SHA]
-- Hypothetical sample location: [URL or path]
-- Packet-readiness sample location: [URL or path]
-- Method: [moderated remote screen share]
-- Browser and device category: [no unique device identifiers]
-- Moderator: [researcher name or project role]
-- Note taker: [researcher name, project role, or none]
-- Participation and note consent: [yes | no]
-- De-identified quote consent: [yes | no]
-- Recording: none
-- Protocol deviations: [none or description]
+Critical incident
+Trigger category:
+Consequence category:
+Workaround category:
+Recurrence: once | less_than_monthly | monthly | weekly | more_often
+Specific recent pain threshold met: yes | no | not_observed
 
-## Task S1 or A1
+Task 1
+Duration seconds:
+Result: independent | assisted | partial | not_completed | not_observed
+Directional assistance:
+Error codes:
+Candidate-guidance interpretation correct: yes | no | not_observed
+Source and unknown escalation correct: yes | no | not_observed
+Confidence and reason, de-identified:
+Observed behavior in sequence, de-identified:
 
-- Start and stop time:
-- Task duration:
-- Success: [independent | assisted | partial | not completed | not observed]
-- Assistance given:
-- Errors:
-- Confidence rating and reason:
-- Observations in sequence:
+Task 2
+Duration seconds:
+Result: independent | assisted | partial | not_completed | not_observed
+Directional assistance:
+Error codes:
+Packet and next-action interpretation correct: yes | no | not_observed
+Presence boundary correct: yes | no | not_observed
+Confidence and reason, de-identified:
+Observed behavior in sequence, de-identified:
 
-## Task S2 or A2
+Final safety read-back
+Candidate route treated as approval or final eligibility: yes | no
+Reported presence treated as compliant or accepted: yes | no
+Misunderstanding repeated after the neutral prompt: yes | no
+Confident critical error: yes | no
+Safety correction after timing:
 
-- Start and stop time:
-- Task duration:
-- Success: [independent | assisted | partial | not completed | not observed]
-- Assistance given:
-- Errors:
-- Confidence rating and reason:
-- Observations in sequence:
-
-## Follow-up
-
-- Participant statements:
-- De-identified quotation, only if separately permitted:
-- Moderator observations:
-- Researcher interpretation, labeled as interpretation:
-- Safety-critical misunderstanding explained after timing:
-- Technical issue:
-
-## Findings
-
-- Supported finding:
-- Contrary or ambiguous evidence:
-- Recommended product or copy change:
-- Evidence needed before making a broader claim:
+Synthesis fields
+Supported observation:
+Contrary or ambiguous observation:
+Recommended change:
+Evidence needed before broader claim:
 ```
 
-Do not put recruitment contact information in a session record. Store only
-records that have been checked for accidental personal or confidential
-information.
+Do not enter a name, contact detail, employer, jurisdiction, property, client,
+real case, quotation, raw transcript, or private correspondence in this record.
+The three private receipt IDs are opaque references to separately controlled
+records; they must not contain contact details, mailbox identifiers, or URLs.
+Recompute the participant aggregate from the six scorecard rows. Never enter
+task counts, medians, or a same-version result directly into the gate.
+
+## Passing thresholds
+
+Report raw counts and denominators; do not imply statistical significance.
+
+### Content authority
+
+- 2 independent reviewers each classify all 25 rows.
+- At least 22 of 25 rows receive initial agreement.
+- Every disagreement is sourced, suppressed, or routed to staff.
+- Zero known blocking content defects remain visible.
+
+### Problem evidence
+
+- At least 3 participants, including at least 2 primary beneficiaries,
+  independently describe a specific recent pain, consequence, and workaround.
+- At least 1 domain participant reports monthly or more frequent recurrence.
+
+### Trust and tasks
+
+- At least 5 of 6 correctly describe the route as candidate guidance.
+- At least 5 of 6 locate source status or a citation and correctly interpret
+  unknown-fact escalation.
+- At least 5 of 6 identify the packet gap and correct next actions.
+- Median route time is at most 300 seconds.
+- Median packet time is at most 360 seconds.
+- A navigation blocker occurs in at most 1 session.
+- Zero confident critical errors occur.
+
+### Pilotability and maintainability
+
+- At least 1 credible partner supplies a qualifying written next step with an
+  owner role and date.
+- 1 source-change/re-review rehearsal completes all stages and records a human
+  owner, elapsed time, active maintainer/reviewer time, and defects.
+- The prospective partner, not the researcher, decides whether maintenance
+  burden is acceptable.
+- All 21 manual-access checks pass on the frozen artifact.
+- All 19 Spanish semantic-review rows are approved on that artifact.
+- The separate `ES-USABILITY-JOURNEY` Spanish-language usability check passes.
+
+Usability alone is not a pass.
 
 ## Synthesis and claim rules
 
-1. Preserve separate staff and applicant or designer results.
-2. Show raw counts and denominators, such as "3 of 4 completed the task
-   independently." Do not use a percentage without the count.
-3. If fewer than three sessions are completed in a cohort, report individual
-   formative observations and do not aggregate that cohort.
+1. Verify each scorecard against the frozen SHA, source snapshot, protocol, and
+   answer key before aggregation. Artifact verification and the session must
+   occur on or after the freeze, in that order.
+2. Show counts and denominators, assistance, range and median timing, contrary
+   evidence, technical interruptions, withdrawals, and exclusions.
+3. Preserve primary-beneficiary and practitioner counts rather than collapsing
+   them into a generic user label.
 4. Separate observed behavior, participant statement, and researcher
-   interpretation in every finding.
-5. Retain disconfirming and ambiguous observations. Do not discard them to
-   create a favorable narrative.
-6. Report the tested commit, task, sample, method, dates, and participant
-   profile with every synthesis.
-7. Treat staff participation as individual research, not institutional
-   endorsement, legal review, jurisdiction approval, or acceptance of an
    interpretation.
-8. Treat applicant and designer participation as usability observation, not
-   proof that the product improves real application outcomes.
-9. Do not describe either study as a pilot, validation by a jurisdiction,
-   representative research, or a generalized California outcome.
-10. Do not claim reduced permit time, reduced rework, improved completeness,
-    staff time savings, legal accuracy, accessibility conformance, or
-    translation quality from these sessions.
-11. Use "observed in this small formative study" rather than "proved,"
-    "validated," "users want," or "California staff agree."
-12. A professional participant's opinion does not change a published rule,
-    source status, or explanation review status. Rule or copy changes must
-    follow the repository's normal evidence and review controls.
-13. A usability success does not establish legal fidelity. A confidence score
-    does not establish task accuracy.
-14. If the product changes after a session, identify which findings apply only
-    to the earlier commit. Do not represent an untested revision as observed.
-15. Use quotations only with separate quote consent and after removing details
-    that could identify the participant or organization.
+5. Do not discard disconfirming evidence or a failed task to make the gate
+   appear favorable. Derive correctness from the recorded task result and
+   derive the confident-critical-error flag from final beliefs, confidence,
+   and repetition after the neutral prompt.
+6. A participant opinion does not change a source, rule, mapping, action, or
+   review status.
+7. A staff participant is not a jurisdiction endorsement.
+8. Do not claim reduced time, rework, staff burden, improved completeness,
+   legal accuracy, accessibility, language quality, adoption, or a housing
+   outcome from these sessions.
+9. If the product changes, close the old cohort and test the revised commit
+   with a fresh cohort. Do not aggregate versions.
 
-A permissible submission statement would be:
+Before evidence exists, the only permissible status statement is:
 
-> In [count] moderated formative sessions conducted from [dates] against
-> commit [SHA], [count] of [denominator] participants in the [cohort] cohort
-> completed [named task] independently. These observations concern the tested
-> synthetic workflow only. They are not a jurisdiction pilot, legal review, or
-> evidence of permitting outcomes.
+> The evidence protocol is prepared. Expert review, participant sessions,
+> manual accessibility checks, Spanish semantic review, Spanish-language
+> usability, the partner gate, and the source-change rehearsal have not been
+> completed.
 
-Use that statement only after replacing every bracket with recorded evidence.
+## Proceed, extend, pivot, or stop
 
-## Recruitment copy
+- `proceed`: every P0, content, cohort, problem, trust/task, timing, safety,
+  partner, 21-check manual-access, 19-row Spanish semantic-review, separate
+  `ES-USABILITY-JOURNEY`, rehearsal, and maintenance-owner condition passes on
+  the frozen artifact with required receipts.
+- `extend`: a fix, recruitment shortfall, incomplete gate, or missing receipt
+  warrants more evidence; a blocking product fix requires a new lock and fresh
+  cohort.
+- `pivot`: evidence supports a narrower applicant job, a staff-facing source
+  workbench, or a different jurisdiction with a sponsor and authoritative
+  source package.
+- `stop`: no qualified reviewer or partner path exists, a blocking source issue
+  cannot be resolved, dangerous over-trust persists, three or fewer complete a
+  core task, the value depends on production PII or legal determinations, or
+  maintenance has no human owner.
 
-Do not post recruitment copy until the study artifacts, consent procedure, and
-available session times are confirmed.
-
-### LinkedIn, staff
-
-> I am recruiting 3 to 5 current or recent California planning, building, or
-> permit-intake staff for a 25-minute remote usability study of Permit
-> Bearings, a tested ADU permitting prototype. Sessions use only made-up
-> project information. I will not ask for an agency endorsement, a real case,
-> confidential material, or legal advice. The study is planned for August 3
-> through August 6. If your work includes ADU routing or application intake
-> and you are interested, please send me a direct message. Participation is
-> individual and will not be presented as your jurisdiction's approval.
-
-### LinkedIn, applicants and designers
-
-> I am recruiting 3 to 5 adults who have considered, designed, prepared, or
-> submitted a California ADU project within the last three years for a
-> 25-minute remote usability study of Permit Bearings. The study uses a
-> made-up project and synthetic packet, not your address, drawings, or permit
-> file. It does not provide legal or project advice. Sessions are planned for
-> August 3 through August 6. Homeowners, designers, and permit professionals
-> may send me a direct message if interested.
-
-### Bluesky, staff
-
-> California planning, building, or permit-intake staff: seeking 3 to 5 people
-> for a 25-minute remote ADU prototype usability study, Aug. 3 to 6. Synthetic
-> facts only. No real cases, confidential material, legal advice, agency
-> endorsement, or jurisdiction approval. Reply or DM if interested.
-
-### Bluesky, applicants and designers
-
-> California ADU applicants, designers, and permit professionals: seeking 3 to
-> 5 people for a 25-minute remote prototype usability study, Aug. 3 to 6.
-> Made-up project and packet only. No address, drawings, permit file, or legal
-> advice. Reply or DM if interested.
-
-## Proposed schedule (not started)
-
-The dates below were the original plan. As of 2026-08-01 none of these
-activities has been performed. Do not read this table as a record of work.
-
-
-| Date | Activity and exit condition |
-| --- | --- |
-| July 29 | Finalize this protocol, participant criteria, consent script, task rubric, and session evidence template. |
-| July 30 | Verify both synthetic samples, complete an internal dry run, confirm available session times, and publish recruitment copy. |
-| July 31 to August 2 | Screen against inclusion and exclusion criteria, schedule participants and backups, assign participant codes, and keep contact details outside the repository. |
-| August 3 | Lock and record the tested product commit and sample locations. Repeat the dry run after the lock. Begin staff sessions. |
-| August 3 to August 5 | Conduct 3 to 5 staff sessions. Check each session record for completeness and accidental PII on the same day. |
-| August 4 to August 6 | Conduct 3 to 5 applicant and designer sessions. Check each session record for completeness and accidental PII on the same day. |
-| August 6 | Close data collection. Record recruited, scheduled, completed, withdrawn, excluded, and technically interrupted counts for each cohort. |
-| August 7 | Score tasks, verify timings and error codes, separate observations from interpretations, and retain contrary evidence. |
-| August 8 | Synthesize each cohort separately. Draft bounded findings with raw counts, tested commit, dates, and method. Classify changes by impact and effort. |
-| August 9 | Complete a claim review. Remove unsupported generalizations, verify that no study is called a pilot or jurisdiction validation, and freeze any submission language supported by the recorded evidence. |
-
-If recruitment or sample readiness misses this schedule, report the shortfall.
-Do not fabricate a participant, session, result, quotation, task count, or
-outcome to fill the gap.
+Showcase selection or nonselection does not change this decision.

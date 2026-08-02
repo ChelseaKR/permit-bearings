@@ -1,0 +1,525 @@
+{
+  "schema_version": 1,
+  "record_id": "woodland-route-to-packet-participant-sessions",
+  "record_version": "1.0.0",
+  "status": "prepared_not_executed",
+  "prepared_on": "2026-08-02",
+  "claim_boundary": "This ledger reserves six de-identified same-version scorecards. It is not evidence that recruitment, screening, consent, a session, a participant statement, or a usability outcome exists.",
+  "artifact_lock": {
+    "lock_id": "woodland-route-to-packet-frozen-artifact-1",
+    "status": "not_run",
+    "commit_sha": null,
+    "deployed_url": null,
+    "frozen_on": null,
+    "frozen_by_code": null,
+    "source_snapshot_id": "woodland-route-to-packet-sources-1",
+    "source_snapshot_receipt_id": null,
+    "protocol_version": "2.0.0",
+    "answer_key_version": "1.1.0",
+    "thresholds_version": "1.0.0",
+    "journey_id": "woodland-preapproved-detached-adu-synthetic",
+    "journey_version": "1.0.0",
+    "journey_fingerprint": "sha256:6a7734b8bc920ec13898e2c8c753ce57d27652a5d37c8a41d433798318c4641a",
+    "screening_case_id": "woodland-new-detached-adu-local-layer",
+    "screening_case_fingerprint": "sha256:3171705791a2520132e727c9d39d6f0bc710d7114e6408c0bfd2af6ebb3d754b",
+    "fact_envelope_fingerprint": "sha256:18c9bf3bdf525776352301b3150185fce8cdb0882b621d61f92eabcc25036847",
+    "readiness_workflow_id": "woodland-preapproved-detached-adu",
+    "readiness_workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
+    "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
+    "readiness_packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e",
+    "landing_path": "index.html",
+    "sample_entry_path": "check.html?sample=adu",
+    "valid_journey_path": "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
+  },
+  "privacy_protocol": {
+    "status": "not_run",
+    "participant_codes_only": true,
+    "recording": "none",
+    "contact_and_code_mapping_storage": "outside_repository",
+    "real_parcels_or_packets_allowed": false,
+    "raw_notes_or_quotations_allowed": false,
+    "aggregate_recruitment_only": true,
+    "execution_confirmation": null,
+    "privacy_review_receipt_id": null
+  },
+  "scorecard_version": "1.0.0",
+  "scorecards": [
+    {
+      "scorecard_id": "P01",
+      "status": "not_run",
+      "artifact_receipt": {
+        "lock_id": "woodland-route-to-packet-frozen-artifact-1",
+        "commit_sha": null,
+        "deployed_url": null,
+        "source_snapshot_id": "woodland-route-to-packet-sources-1",
+        "artifact_verified_on": null,
+        "artifact_verified_by_code": null,
+        "artifact_verification_receipt_id": null
+      },
+      "receipts": {
+        "private_screening_receipt_id": null,
+        "private_consent_receipt_id": null,
+        "privacy_review_receipt_id": null,
+        "scorecard_integrity_sha256": null
+      },
+      "cohort_eligibility": {
+        "qualified": null,
+        "primary_beneficiary": null,
+        "recent_analogous_packet_attempt": null,
+        "preapproved_plan_exposure": null,
+        "practitioner_with_recent_adu_packet_experience": null,
+        "smaller_jurisdiction_experience": null
+      },
+      "session": {
+        "session_date": null,
+        "started_at": null,
+        "completed_at": null,
+        "moderator_code": null,
+        "browser_device_category": null,
+        "protocol_deviation": null
+      },
+      "critical_incident": {
+        "status": "not_run",
+        "trigger_category": null,
+        "consequence_category": null,
+        "workaround_category": null,
+        "recurrence": null,
+        "specific_recent_pain_threshold_met": null
+      },
+      "route_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "candidate_guidance_correct": null,
+        "source_and_unknown_escalation_correct": null
+      },
+      "packet_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "packet_and_next_action_correct": null,
+        "presence_boundary_correct": null
+      },
+      "final_safety_readback": {
+        "status": "not_run",
+        "candidate_route_treated_as_approval": null,
+        "reported_presence_treated_as_compliant_or_accepted": null,
+        "confidence_rating": null,
+        "misunderstanding_repeated_after_neutral_prompt": null,
+        "confident_critical_error": null,
+        "safety_correction_after_timing": null
+      },
+      "deidentified_synthesis": {
+        "supported_observation": null,
+        "contrary_or_ambiguous_observation": null,
+        "recommended_change": null,
+        "evidence_needed_before_broader_claim": null
+      }
+    },
+    {
+      "scorecard_id": "P02",
+      "status": "not_run",
+      "artifact_receipt": {
+        "lock_id": "woodland-route-to-packet-frozen-artifact-1",
+        "commit_sha": null,
+        "deployed_url": null,
+        "source_snapshot_id": "woodland-route-to-packet-sources-1",
+        "artifact_verified_on": null,
+        "artifact_verified_by_code": null,
+        "artifact_verification_receipt_id": null
+      },
+      "receipts": {
+        "private_screening_receipt_id": null,
+        "private_consent_receipt_id": null,
+        "privacy_review_receipt_id": null,
+        "scorecard_integrity_sha256": null
+      },
+      "cohort_eligibility": {
+        "qualified": null,
+        "primary_beneficiary": null,
+        "recent_analogous_packet_attempt": null,
+        "preapproved_plan_exposure": null,
+        "practitioner_with_recent_adu_packet_experience": null,
+        "smaller_jurisdiction_experience": null
+      },
+      "session": {
+        "session_date": null,
+        "started_at": null,
+        "completed_at": null,
+        "moderator_code": null,
+        "browser_device_category": null,
+        "protocol_deviation": null
+      },
+      "critical_incident": {
+        "status": "not_run",
+        "trigger_category": null,
+        "consequence_category": null,
+        "workaround_category": null,
+        "recurrence": null,
+        "specific_recent_pain_threshold_met": null
+      },
+      "route_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "candidate_guidance_correct": null,
+        "source_and_unknown_escalation_correct": null
+      },
+      "packet_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "packet_and_next_action_correct": null,
+        "presence_boundary_correct": null
+      },
+      "final_safety_readback": {
+        "status": "not_run",
+        "candidate_route_treated_as_approval": null,
+        "reported_presence_treated_as_compliant_or_accepted": null,
+        "confidence_rating": null,
+        "misunderstanding_repeated_after_neutral_prompt": null,
+        "confident_critical_error": null,
+        "safety_correction_after_timing": null
+      },
+      "deidentified_synthesis": {
+        "supported_observation": null,
+        "contrary_or_ambiguous_observation": null,
+        "recommended_change": null,
+        "evidence_needed_before_broader_claim": null
+      }
+    },
+    {
+      "scorecard_id": "P03",
+      "status": "not_run",
+      "artifact_receipt": {
+        "lock_id": "woodland-route-to-packet-frozen-artifact-1",
+        "commit_sha": null,
+        "deployed_url": null,
+        "source_snapshot_id": "woodland-route-to-packet-sources-1",
+        "artifact_verified_on": null,
+        "artifact_verified_by_code": null,
+        "artifact_verification_receipt_id": null
+      },
+      "receipts": {
+        "private_screening_receipt_id": null,
+        "private_consent_receipt_id": null,
+        "privacy_review_receipt_id": null,
+        "scorecard_integrity_sha256": null
+      },
+      "cohort_eligibility": {
+        "qualified": null,
+        "primary_beneficiary": null,
+        "recent_analogous_packet_attempt": null,
+        "preapproved_plan_exposure": null,
+        "practitioner_with_recent_adu_packet_experience": null,
+        "smaller_jurisdiction_experience": null
+      },
+      "session": {
+        "session_date": null,
+        "started_at": null,
+        "completed_at": null,
+        "moderator_code": null,
+        "browser_device_category": null,
+        "protocol_deviation": null
+      },
+      "critical_incident": {
+        "status": "not_run",
+        "trigger_category": null,
+        "consequence_category": null,
+        "workaround_category": null,
+        "recurrence": null,
+        "specific_recent_pain_threshold_met": null
+      },
+      "route_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "candidate_guidance_correct": null,
+        "source_and_unknown_escalation_correct": null
+      },
+      "packet_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "packet_and_next_action_correct": null,
+        "presence_boundary_correct": null
+      },
+      "final_safety_readback": {
+        "status": "not_run",
+        "candidate_route_treated_as_approval": null,
+        "reported_presence_treated_as_compliant_or_accepted": null,
+        "confidence_rating": null,
+        "misunderstanding_repeated_after_neutral_prompt": null,
+        "confident_critical_error": null,
+        "safety_correction_after_timing": null
+      },
+      "deidentified_synthesis": {
+        "supported_observation": null,
+        "contrary_or_ambiguous_observation": null,
+        "recommended_change": null,
+        "evidence_needed_before_broader_claim": null
+      }
+    },
+    {
+      "scorecard_id": "P04",
+      "status": "not_run",
+      "artifact_receipt": {
+        "lock_id": "woodland-route-to-packet-frozen-artifact-1",
+        "commit_sha": null,
+        "deployed_url": null,
+        "source_snapshot_id": "woodland-route-to-packet-sources-1",
+        "artifact_verified_on": null,
+        "artifact_verified_by_code": null,
+        "artifact_verification_receipt_id": null
+      },
+      "receipts": {
+        "private_screening_receipt_id": null,
+        "private_consent_receipt_id": null,
+        "privacy_review_receipt_id": null,
+        "scorecard_integrity_sha256": null
+      },
+      "cohort_eligibility": {
+        "qualified": null,
+        "primary_beneficiary": null,
+        "recent_analogous_packet_attempt": null,
+        "preapproved_plan_exposure": null,
+        "practitioner_with_recent_adu_packet_experience": null,
+        "smaller_jurisdiction_experience": null
+      },
+      "session": {
+        "session_date": null,
+        "started_at": null,
+        "completed_at": null,
+        "moderator_code": null,
+        "browser_device_category": null,
+        "protocol_deviation": null
+      },
+      "critical_incident": {
+        "status": "not_run",
+        "trigger_category": null,
+        "consequence_category": null,
+        "workaround_category": null,
+        "recurrence": null,
+        "specific_recent_pain_threshold_met": null
+      },
+      "route_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "candidate_guidance_correct": null,
+        "source_and_unknown_escalation_correct": null
+      },
+      "packet_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "packet_and_next_action_correct": null,
+        "presence_boundary_correct": null
+      },
+      "final_safety_readback": {
+        "status": "not_run",
+        "candidate_route_treated_as_approval": null,
+        "reported_presence_treated_as_compliant_or_accepted": null,
+        "confidence_rating": null,
+        "misunderstanding_repeated_after_neutral_prompt": null,
+        "confident_critical_error": null,
+        "safety_correction_after_timing": null
+      },
+      "deidentified_synthesis": {
+        "supported_observation": null,
+        "contrary_or_ambiguous_observation": null,
+        "recommended_change": null,
+        "evidence_needed_before_broader_claim": null
+      }
+    },
+    {
+      "scorecard_id": "P05",
+      "status": "not_run",
+      "artifact_receipt": {
+        "lock_id": "woodland-route-to-packet-frozen-artifact-1",
+        "commit_sha": null,
+        "deployed_url": null,
+        "source_snapshot_id": "woodland-route-to-packet-sources-1",
+        "artifact_verified_on": null,
+        "artifact_verified_by_code": null,
+        "artifact_verification_receipt_id": null
+      },
+      "receipts": {
+        "private_screening_receipt_id": null,
+        "private_consent_receipt_id": null,
+        "privacy_review_receipt_id": null,
+        "scorecard_integrity_sha256": null
+      },
+      "cohort_eligibility": {
+        "qualified": null,
+        "primary_beneficiary": null,
+        "recent_analogous_packet_attempt": null,
+        "preapproved_plan_exposure": null,
+        "practitioner_with_recent_adu_packet_experience": null,
+        "smaller_jurisdiction_experience": null
+      },
+      "session": {
+        "session_date": null,
+        "started_at": null,
+        "completed_at": null,
+        "moderator_code": null,
+        "browser_device_category": null,
+        "protocol_deviation": null
+      },
+      "critical_incident": {
+        "status": "not_run",
+        "trigger_category": null,
+        "consequence_category": null,
+        "workaround_category": null,
+        "recurrence": null,
+        "specific_recent_pain_threshold_met": null
+      },
+      "route_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "candidate_guidance_correct": null,
+        "source_and_unknown_escalation_correct": null
+      },
+      "packet_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "packet_and_next_action_correct": null,
+        "presence_boundary_correct": null
+      },
+      "final_safety_readback": {
+        "status": "not_run",
+        "candidate_route_treated_as_approval": null,
+        "reported_presence_treated_as_compliant_or_accepted": null,
+        "confidence_rating": null,
+        "misunderstanding_repeated_after_neutral_prompt": null,
+        "confident_critical_error": null,
+        "safety_correction_after_timing": null
+      },
+      "deidentified_synthesis": {
+        "supported_observation": null,
+        "contrary_or_ambiguous_observation": null,
+        "recommended_change": null,
+        "evidence_needed_before_broader_claim": null
+      }
+    },
+    {
+      "scorecard_id": "P06",
+      "status": "not_run",
+      "artifact_receipt": {
+        "lock_id": "woodland-route-to-packet-frozen-artifact-1",
+        "commit_sha": null,
+        "deployed_url": null,
+        "source_snapshot_id": "woodland-route-to-packet-sources-1",
+        "artifact_verified_on": null,
+        "artifact_verified_by_code": null,
+        "artifact_verification_receipt_id": null
+      },
+      "receipts": {
+        "private_screening_receipt_id": null,
+        "private_consent_receipt_id": null,
+        "privacy_review_receipt_id": null,
+        "scorecard_integrity_sha256": null
+      },
+      "cohort_eligibility": {
+        "qualified": null,
+        "primary_beneficiary": null,
+        "recent_analogous_packet_attempt": null,
+        "preapproved_plan_exposure": null,
+        "practitioner_with_recent_adu_packet_experience": null,
+        "smaller_jurisdiction_experience": null
+      },
+      "session": {
+        "session_date": null,
+        "started_at": null,
+        "completed_at": null,
+        "moderator_code": null,
+        "browser_device_category": null,
+        "protocol_deviation": null
+      },
+      "critical_incident": {
+        "status": "not_run",
+        "trigger_category": null,
+        "consequence_category": null,
+        "workaround_category": null,
+        "recurrence": null,
+        "specific_recent_pain_threshold_met": null
+      },
+      "route_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "candidate_guidance_correct": null,
+        "source_and_unknown_escalation_correct": null
+      },
+      "packet_task": {
+        "status": "not_run",
+        "result": null,
+        "duration_seconds": null,
+        "directional_assistance_count": null,
+        "error_codes": null,
+        "packet_and_next_action_correct": null,
+        "presence_boundary_correct": null
+      },
+      "final_safety_readback": {
+        "status": "not_run",
+        "candidate_route_treated_as_approval": null,
+        "reported_presence_treated_as_compliant_or_accepted": null,
+        "confidence_rating": null,
+        "misunderstanding_repeated_after_neutral_prompt": null,
+        "confident_critical_error": null,
+        "safety_correction_after_timing": null
+      },
+      "deidentified_synthesis": {
+        "supported_observation": null,
+        "contrary_or_ambiguous_observation": null,
+        "recommended_change": null,
+        "evidence_needed_before_broader_claim": null
+      }
+    }
+  ],
+  "aggregate": {
+    "status": "not_run",
+    "same_version_verified": null,
+    "sessions_completed": 0,
+    "primary_beneficiaries_completed": 0,
+    "primary_with_recent_attempt_completed": 0,
+    "primary_with_preapproved_plan_exposure_completed": 0,
+    "practitioners_completed": 0,
+    "participants_with_small_jurisdiction_experience_completed": 0,
+    "problem_evidence_count": null,
+    "primary_problem_evidence_count": null,
+    "monthly_recurrence_count": null,
+    "candidate_guidance_correct_count": null,
+    "source_and_unknown_escalation_correct_count": null,
+    "packet_and_next_action_correct_count": null,
+    "median_route_seconds": null,
+    "median_packet_seconds": null,
+    "repeated_navigation_blocker_sessions": null,
+    "confident_critical_errors": null,
+    "cohort_invalidated_by_version_change": null
+  }
+}
