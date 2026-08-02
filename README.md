@@ -19,18 +19,19 @@ completeness, or approve permits.
 
 At build time, a versioned synthetic journey definition binds the existing
 Woodland golden routing fixture to that readiness workflow and packet. The
-generated, fingerprinted envelope is an implemented data contract for these
-prototype inputs. The current browser still presents routing and packet
-presence on separate pages; it does not yet use the envelope for a route-to-
-packet handoff.
+generated, fingerprinted envelope is also the browser's fail-closed handoff
+contract for these prototype inputs. Only the active, unedited made-up
+Woodland sample can offer the packet step. The applicant must explicitly
+answer its remaining workflow-applicability question; no answer is selected
+by default. A matching **Yes** opens the versioned packet example, while
+**No** or **I'm not sure** withholds it and preserves the relevant boundary or
+staff question.
 
 **Live demo:** https://chelseakr.github.io/permit-pathways/
 
-**Hypothetical ADU sample:**
+**Made-up Woodland route-to-packet journey** (answer the applicability
+question to continue):
 https://chelseakr.github.io/permit-pathways/check.html?sample=adu
-
-**Synthetic packet-presence sample:**
-https://chelseakr.github.io/permit-pathways/prepare.html
 
 **Local static demo:** open `index.html` directly, or run
 `python3 -m http.server 8765` and visit `http://localhost:8765/`. The landing,
@@ -49,7 +50,7 @@ and interaction alignment with California Web Standards is recorded in
 ```sh
 make verify                                        # locked Python quality/security/data gates
 npm ci && npx playwright install chromium          # one-time browser test setup
-npm run test:a11y                                  # axe across all five public pages
+npm run test:a11y                                  # axe, reflow, and journey-state checks
 npm run test:perf                                  # Lighthouse category budgets
 PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip --lat 38.5449 --lon -121.7442
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
@@ -78,11 +79,11 @@ still needs a person.
 | Security & Supply-Chain | Event-armed CodeQL, Bandit, pip-audit, gitleaks, zizmor, Dependabot, and Scorecard; all workflow actions are pinned to full commit SHAs and use scoped token permissions. |
 | CI/CD | Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. |
 | Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. Storage, telemetry, uploads, or external model calls would trigger a new operational design review. |
-| Accessibility | Axe and Lighthouse run on all five public pages. Browser tests also check 320px and 390px reflow, compact mobile navigation, a populated applicant result, labeled mobile evidence records, and document-level overflow. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps physical-device, virtual-keyboard, keyboard, screen-reader, zoom, forced-colors, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
+| Accessibility | Axe runs on all five public pages plus populated candidate-route and valid packet states; Lighthouse covers seven public page states. Browser tests also check 320px and 390px reflow, compact mobile navigation, the Spanish handoff language boundary, labeled mobile evidence records, and document-level overflow. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps physical-device, virtual-keyboard, keyboard, screen-reader, zoom, forced-colors, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 203 tests, 85.98% branch coverage, 29/29 golden cases, and six mobile Lighthouse states at 1.00 for accessibility, best practices, performance, and SEO, plus dependency audits and source-currency output. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
+| Quality & Metrics | Automated evidence includes 234 Python tests, 86.92% branch coverage, 29/29 golden cases, 27 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.99 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -111,6 +112,13 @@ still needs a person.
    available evidence visible but suppresses action copy and document hints.
 9. If complete answers match no encoded route, the app says the bounded rule
    set found no path and routes the applicant generally to local staff.
+10. For the active, unedited made-up Woodland sample only, the browser checks
+    the generated journey, route, readiness, fingerprint, and source-review
+    contracts. It then asks one explicit applicability question. Nothing is
+    preselected: **Yes** exposes a packet link, **No** records that the bounded
+    workflow does not apply, and **I'm not sure** shows the exact staff
+    question. The link contains only the public journey ID and version, not
+    project facts.
 
 The current app covers statewide ADU, JADU, and SB 9 screening and two bounded
 local rule records. Parcel retrieval, application-file inspection,
@@ -145,13 +153,20 @@ implemented. The temporary result packet does not change those boundaries.
    `data/journeys/generated/woodland-preapproved-detached-adu.json` and embeds
    the same envelope in the static bundle. The envelope emits per-fact
    provenance and the candidate route's recorded source-status date and
-   review deadline. No browser transition consumes it yet.
-6. `prepare.html` validates and renders that generated Python result. It does
-   not contain a second packet evaluator.
+   review deadline. The browser independently checks the envelope, its linked
+   route and readiness evidence, their fingerprints, and current source-review
+   windows before offering a handoff from the canonical sample.
+6. The handoff URL contains exactly `journey=<public-id>&version=<version>`.
+   It carries no project facts and uses no local storage, session storage, or
+   cookies. `prepare.html` withholds packet findings on direct, malformed,
+   duplicated, mismatched, or stale entry; a valid entry replays and renders
+   the generated Python result. It does not contain a second packet evaluator.
 7. The checklist mapping and plain-language action copy are AI-assisted
    drafts. They are versioned, fingerprint-bound, and marked
    `prototype_review_pending`; no named human, planner, or Woodland reviewer
-   has approved them. Mapping metadata binds the exact checklist and
+   has approved them. A generated content fingerprint detects action-copy
+   drift; it is an integrity check, not evidence of human review. Mapping
+   metadata binds the exact checklist and
    parcel-schema source digests and records that provider, model, and a
    reproducible run record are unknown or were not retained.
 8. No model runs in the CLI, build evaluator, or public browser. The public
@@ -312,10 +327,10 @@ ordinance-status warning and does not determine which category lawfully
 applies. Comprehensive local-source and newly enacted-law discovery are not
 implemented.
 
-The full static showcase has five task-focused pages: a lightweight landing
-page; an English/Spanish applicant guide with review clocks; the generated
-synthetic packet-presence sample; a bounded ordinance screen; and an
-evidence-and-updates page. The applicant guide renders a temporary
+The full static showcase has five task-focused pages: an applicant-first
+landing page; an English/Spanish applicant guide with review clocks; the
+gated generated synthetic packet-presence sample; a bounded ordinance screen;
+and an evidence-and-updates page. The applicant guide renders a temporary
 answers-used cover sheet, a dynamic grouped summary with jump links, one
 candidate route open by default when the configured route matches, and compact
 supporting records. Citations and source-status badges stay visible outside
@@ -326,8 +341,10 @@ encoded state pathway matches. Spanish explanation copy is an unreviewed
 machine draft; applicant-facing titles are localized drafts while canonical
 pathway labels, excerpts, citations, and document hints remain English when
 shown. Stale and unverified records suppress action copy, interpretive notes,
-and document hints. The packet page renders a Python-generated result and
-links its evidence manifest. The evidence page includes a clearly labeled
+and document hints. For the canonical active, unedited Woodland sample, an
+explicit applicability answer can open the versioned packet step; all other
+entry states fail closed. The packet page renders a Python-generated result
+and links its evidence manifest. The evidence page includes a clearly labeled
 one-click rehearsal of an amendment to Gov. Code § 66321; matching applicant
 records can be opened in the stale state, but the rehearsal is not persisted
 production state. The smaller Python reference demo renders the same

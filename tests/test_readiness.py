@@ -737,6 +737,7 @@ def test_canonical_remedies_cover_and_bind_every_requirement(
 
     assert remedies.workflow_id == workflow.workflow_id
     assert remedies.workflow_fingerprint == workflow.fingerprint()
+    assert remedies.content_fingerprint.startswith("sha256:")
     assert set(remedies.entry_map()) == set(requirements)
     assert len(remedies.entries) == len(requirements) == 25
     assert all(
@@ -853,6 +854,19 @@ def test_remedy_review_metadata_is_versioned_and_copy_bound(
     )
     assert loaded.review.status == "human_reviewed"
     assert loaded.review.reviewed_version == loaded.version
+
+    review_before_update = copy.deepcopy(reviewed)
+    review_before_update["review"]["reviewed_on"] = "2026-07-28"
+    with pytest.raises(ValueError, match="predates remedy update"):
+        load_readiness_remedies(
+            _write_json(
+                tmp_path,
+                "remedy-review-before-update.json",
+                review_before_update,
+            ),
+            workflow,
+            today=AS_OF,
+        )
 
     wrong_version = copy.deepcopy(reviewed)
     wrong_version["review"]["reviewed_version"] = "0.9.0"

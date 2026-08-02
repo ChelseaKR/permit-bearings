@@ -195,6 +195,7 @@ def build_readiness_payload(
             ),
             "output_workflow_fingerprint": workflow.fingerprint(),
             "output_remedy_version": remedies.version,
+            "output_remedy_content_fingerprint": remedies.content_fingerprint,
             "remedy_review_status": remedies.review.status,
             "remedy_reviewer": remedies.review.reviewer,
         },

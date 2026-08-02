@@ -329,6 +329,7 @@ class ReadinessRemedies:
     workflow_id: str
     workflow_fingerprint: str
     version: str
+    content_fingerprint: str
     updated_on: str
     drafted_by: str
     review: RemedyReview
@@ -1115,22 +1116,27 @@ def _remedy_entries(
     return tuple(entries)
 
 
-def _validate_remedy_review_fingerprint(
-    review: RemedyReview,
+def _remedy_content_fingerprint(
     entries: tuple[ReadinessRemedy, ...],
     version: str,
     workflow_id: str,
-) -> None:
-    expected = _fingerprint(
+) -> str:
+    return _fingerprint(
         {
             "entries": [asdict(entry) for entry in entries],
             "version": version,
             "workflow_id": workflow_id,
         }
     )
+
+
+def _validate_remedy_review_fingerprint(
+    review: RemedyReview,
+    content_fingerprint: str,
+) -> None:
     if (
         review.status != "prototype_review_pending"
-        and review.content_fingerprint != expected
+        and review.content_fingerprint != content_fingerprint
     ):
         raise ValueError("remedies.review.content_fingerprint: reviewed copy drifted")
 
@@ -1164,12 +1170,20 @@ def load_readiness_remedies(
     if drafted_by != "ai_assisted":
         raise ValueError("remedies.drafted_by: current prototype requires ai_assisted")
     review = _remedy_review(payload["review"], version, as_of)
+    if review.reviewed_on is not None and review.reviewed_on < updated_on:
+        raise ValueError("remedies.review.reviewed_on: predates remedy update")
     entries = _remedy_entries(payload["entries"], workflow)
-    _validate_remedy_review_fingerprint(review, entries, version, workflow_id)
+    content_fingerprint = _remedy_content_fingerprint(
+        entries,
+        version,
+        workflow_id,
+    )
+    _validate_remedy_review_fingerprint(review, content_fingerprint)
     return ReadinessRemedies(
         workflow_id=workflow_id,
         workflow_fingerprint=workflow_fingerprint,
         version=version,
+        content_fingerprint=content_fingerprint,
         updated_on=updated_on,
         drafted_by=drafted_by,
         review=review,
