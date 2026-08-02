@@ -122,6 +122,24 @@ const STRINGS = {
     jurisdictionFact: "Jurisdiction selected",
     projectFact: "Project",
     editAnswers: "Edit these answers",
+    statewideStage: "Statewide handoff",
+    statewideTitle: "Take this orientation to local staff",
+    statewideIntro: (jurisdiction, total) => `This receipt applies the same bounded statewide candidate-rule set available for all ${total} California cities and counties to the answers entered for ${jurisdiction}.`,
+    statewideCoverage: "Coverage for this jurisdiction",
+    statewideBaselineLabel: "Statewide baseline",
+    statewideBaselineValue: "Candidate ADU, JADU, and SB 9 screening is available.",
+    statewideLocalLabel: "Local requirements",
+    statewideLocalPresent: "A limited jurisdiction-scoped source record is encoded. It is not a complete local code or checklist.",
+    statewideLocalMissing: "Not encoded. Confirm the current local ordinance, forms, fees, and process with staff.",
+    statewideRoutes: "Candidate routes to discuss",
+    statewideNoRoute: "The bounded rules did not identify a candidate route. This is a question for staff, not a finding that the project is impossible.",
+    statewideQuestions: "Questions to bring",
+    statewideCurrentLocalQuestion: "Which current local ordinance, application form, and checklist apply to this project?",
+    statewideFactsQuestion: "Which parcel, zoning, hazard, historic, utility, and prior-permit facts should staff verify?",
+    statewideProcessQuestion: "Which department should receive the application, and what local steps or fees are not represented here?",
+    statewideBoundary: "Orientation only. This receipt does not verify the property, encode a complete local requirements layer, certify completeness or eligibility, or predict approval. Source-linked explanation and Spanish copy remain review-pending unless their records say otherwise.",
+    statewidePrint: "Print or save this orientation",
+    statewidePrintHelp: "Your browser handles printing or saving as PDF. Permit Bearings does not upload or store this receipt.",
     resultSummary: parts => `Based on these answers, this prototype shows ${parts}.`,
     groupCounts: {
       route: count => `${count} possible permit path${count === 1 ? "" : "s"}`,
@@ -274,6 +292,24 @@ const STRINGS = {
     jurisdictionFact: "Jurisdicción seleccionada",
     projectFact: "Proyecto",
     editAnswers: "Editar estas respuestas",
+    statewideStage: "Entrega para cualquier jurisdicción",
+    statewideTitle: "Lleve esta orientación al personal local",
+    statewideIntro: (jurisdiction, total) => `Este comprobante aplica a las respuestas ingresadas para ${jurisdiction} el mismo conjunto limitado de posibles reglas estatales disponible para las ${total} ciudades y condados de California.`,
+    statewideCoverage: "Cobertura para esta jurisdicción",
+    statewideBaselineLabel: "Base estatal",
+    statewideBaselineValue: "Está disponible la evaluación de posibles vías para ADU, JADU y SB 9.",
+    statewideLocalLabel: "Requisitos locales",
+    statewideLocalPresent: "Se codificó un registro limitado de fuentes de la jurisdicción. No es un código local ni una lista de documentos completa.",
+    statewideLocalMissing: "No están codificados. Confirme con el personal la ordenanza, los formularios, las tarifas y el proceso vigentes.",
+    statewideRoutes: "Posibles vías para consultar",
+    statewideNoRoute: "Las reglas limitadas no identificaron una posible vía. Es una pregunta para el personal, no una conclusión de que el proyecto sea imposible.",
+    statewideQuestions: "Preguntas para llevar",
+    statewideCurrentLocalQuestion: "¿Qué ordenanza, formulario de solicitud y lista de documentos locales vigentes corresponden a este proyecto?",
+    statewideFactsQuestion: "¿Qué datos de parcela, zonificación, riesgos, patrimonio histórico, servicios públicos y permisos anteriores debe verificar el personal?",
+    statewideProcessQuestion: "¿Qué departamento debe recibir la solicitud y qué pasos o tarifas locales no se representan aquí?",
+    statewideBoundary: "Solo para orientación. Este comprobante no verifica la propiedad, no codifica todos los requisitos locales, no certifica integridad ni elegibilidad y no predice la aprobación. Las explicaciones vinculadas a fuentes y el texto en español siguen pendientes de revisión, salvo que sus registros indiquen lo contrario.",
+    statewidePrint: "Imprimir o guardar esta orientación",
+    statewidePrintHelp: "El navegador se encarga de imprimir o guardar como PDF. Permit Bearings no carga ni almacena este comprobante.",
     resultSummary: parts => `Según estas respuestas, este prototipo muestra ${parts}.`,
     groupCounts: {
       route: count => `${count} posible${count === 1 ? "" : "s"} vía${count === 1 ? "" : "s"} de permiso`,
@@ -1613,11 +1649,11 @@ function resultSummaryText(grouped) {
   return s.resultSummary(formatResultList(parts));
 }
 
-function renderProjectFacts() {
-  if (!LAST_INTAKE || !LAST_JURISDICTION) return "";
+function projectFactRecords() {
+  if (!LAST_INTAKE || !LAST_JURISDICTION) return [];
   const s = STRINGS[lang];
   const projectType = LAST_INTAKE.project_type;
-  const facts = [
+  return [
     {
       name: "jurisdiction",
       label: s.jurisdictionFact,
@@ -1634,6 +1670,12 @@ function renderProjectFacts() {
       value: factValueLabel(name, LAST_INTAKE[name], projectType),
     })),
   ];
+}
+
+function renderProjectFacts() {
+  const facts = projectFactRecords();
+  if (!facts.length) return "";
+  const s = STRINGS[lang];
   const isSample = projectSampleState === "active";
   return `<section class="result-cover-sheet" aria-labelledby="projectFactsHeading"
       lang="${lang}">
@@ -1650,6 +1692,76 @@ function renderProjectFacts() {
         <dd>${esc(fact.value)}</dd>
       </div>`).join("")}
     </dl>
+  </section>`;
+}
+
+function statewideOrientationMarkup(list = [], unresolved = []) {
+  if (!LAST_INTAKE || !LAST_JURISDICTION) return "";
+  const s = STRINGS[lang];
+  const facts = projectFactRecords();
+  const candidateRoutes = list.filter(rule => resultGroup(rule) === "route");
+  const routeItems = candidateRoutes.map(rule => {
+    const localized = usableLocalizedExplanation(EXPLANATIONS.get(rule.rule_id));
+    const title = localized?.localized.title || rule.pathway;
+    const titleLang = localized?.copyLang || "en";
+    const status = ruleStatus(rule, simulating ? ["ca-gov-66321"] : []);
+    const statusLabel = status === "verified"
+      ? s.verifiedOn(formatSourceDate(rule.citation.verified_on))
+      : status === "stale" ? s.stale : s.unverified;
+    return `<li>
+      <strong lang="${titleLang}">${esc(title)}</strong>
+      <span class="small" lang="en">${esc(rule.citation.source)}</span>
+      <span class="small" lang="${lang}">${esc(statusLabel)}</span>
+    </li>`;
+  }).join("");
+  const questions = [
+    ...unresolved.map(name => questionLabel(name, LAST_INTAKE.project_type)),
+    s.statewideCurrentLocalQuestion,
+    s.statewideFactsQuestion,
+    s.statewideProcessQuestion,
+  ];
+  const jurisdiction = jurisDisplay(LAST_JURISDICTION);
+  const localCoverage = LAST_JURISDICTION.has_local_layer
+    ? s.statewideLocalPresent : s.statewideLocalMissing;
+  return `<section class="statewide-orientation" id="statewideOrientation"
+      aria-labelledby="statewideOrientationHeading" lang="${lang}"
+      data-jurisdiction="${esc(LAST_JURISDICTION.slug)}"
+      data-local-layer="${LAST_JURISDICTION.has_local_layer ? "true" : "false"}">
+    <p class="statewide-orientation-stage">${esc(s.statewideStage)}</p>
+    <h3 id="statewideOrientationHeading">${esc(s.statewideTitle)}</h3>
+    <p>${esc(s.statewideIntro(jurisdiction, JURIS.length))}</p>
+    <section class="statewide-orientation-coverage"
+        aria-labelledby="statewideCoverageHeading">
+      <h4 id="statewideCoverageHeading">${esc(s.statewideCoverage)}</h4>
+      <dl>
+        <div><dt>${esc(s.statewideBaselineLabel)}</dt>
+          <dd>${esc(s.statewideBaselineValue)}</dd></div>
+        <div><dt>${esc(s.statewideLocalLabel)}</dt>
+          <dd>${esc(localCoverage)}</dd></div>
+      </dl>
+    </section>
+    <section aria-labelledby="statewideFactsHeading">
+      <h4 id="statewideFactsHeading">${esc(s.answersHeading)}</h4>
+      <dl class="statewide-orientation-facts">
+        ${facts.map(fact => `<div><dt>${esc(fact.label)}</dt>
+          <dd>${esc(fact.value)}</dd></div>`).join("")}
+      </dl>
+    </section>
+    <section aria-labelledby="statewideRoutesHeading">
+      <h4 id="statewideRoutesHeading">${esc(s.statewideRoutes)}</h4>
+      ${routeItems ? `<ul class="statewide-route-list">${routeItems}</ul>`
+        : `<p class="notice">${esc(s.statewideNoRoute)}</p>`}
+    </section>
+    <section aria-labelledby="statewideQuestionsHeading">
+      <h4 id="statewideQuestionsHeading">${esc(s.statewideQuestions)}</h4>
+      <ul>${questions.map(question => `<li>${esc(question)}</li>`).join("")}</ul>
+    </section>
+    <p class="statewide-orientation-boundary">${esc(s.statewideBoundary)}</p>
+    <div class="statewide-print-action">
+      <button class="button print-statewide-orientation" type="button">
+        ${esc(s.statewidePrint)}</button>
+      <p class="small">${esc(s.statewidePrintHelp)}</p>
+    </div>
   </section>`;
 }
 
@@ -1888,6 +2000,7 @@ function renderResults(list) {
     el.innerHTML = `<div lang="${lang}">
       <h2 class="result-heading" id="resultsHeading" tabindex="-1">${esc(s.results)}</h2>
       ${renderProjectFacts()}
+      ${statewideOrientationMarkup()}
       <div class="notice">${esc(s.none)}</div></div>`;
     return;
   }
@@ -1943,6 +2056,7 @@ function renderResults(list) {
   el.innerHTML = `<h2 class="result-heading" id="resultsHeading"
       tabindex="-1" lang="${lang}">${esc(s.results)}</h2>
     ${renderProjectFacts()}
+    ${statewideOrientationMarkup(list)}
     <p class="result-count" lang="${lang}">${esc(summaryText)}</p>
     <p class="small result-limit" lang="${lang}">${esc(s.resultIntro)}
       ${hasRoute ? esc(s.routeOrientation) : ""}</p>
@@ -1974,6 +2088,7 @@ function renderNeedsStaffReview(fieldNames) {
         ${esc(s.unknownHeading)}
       </h2>
       ${renderProjectFacts()}
+      ${statewideOrientationMarkup([], fieldNames)}
       <div class="notice">
         <p>${esc(s.unknownIntro)}</p>
         <ul>${fieldNames.map(name =>
@@ -2032,6 +2147,7 @@ function storeSubmittedProject(intake, jurisdiction, list = []) {
   LAST_INTAKE = {...intake};
   LAST_JURISDICTION = {
     county: jurisdiction.county,
+    has_local_layer: jurisdiction.has_local_layer === true,
     kind: jurisdiction.kind,
     name: jurisdiction.name,
     slug: jurisdiction.slug,
@@ -2059,6 +2175,11 @@ function invalidateRenderedProjectResult(message = "") {
 const resultContainerElement = document.getElementById("results");
 if (pageIs("project") && resultContainerElement) {
   resultContainerElement.addEventListener("click", event => {
+    const printButton = event.target.closest?.(".print-statewide-orientation");
+    if (printButton) {
+      window.print();
+      return;
+    }
     const editLink = event.target.closest?.("a.edit-answers");
     if (!editLink) return;
     const heading = document.getElementById("screenHeading");

@@ -47,9 +47,14 @@ The submitted facts, grouped summary, jump links, and disclosure state exist
 only in current browser page memory. Changing the jurisdiction or any named
 project answer clears the old packet and requires a new submission. The
 surface does not persist an applicant record or implement parcel verification,
-packet completeness, or an exportable evidence manifest. The bounded Woodland
-continuation now demonstrates a smaller portable output: a print-focused view
-of its integrity-checked synthetic route and packet evidence. A real
+packet completeness, or an exportable evidence manifest. For every recognized
+city or county, it can derive a bilingual print-focused orientation receipt
+from those same in-memory facts and matches. The receipt reports candidate
+route sources and currency, explicitly distinguishes the statewide baseline
+from bounded local coverage, and carries questions to local staff. It is not
+stored and does not generalize a local packet workflow. The bounded Woodland
+continuation demonstrates the deeper portable output: a print-focused view of
+its integrity-checked synthetic route and packet evidence. A real
 permit-readiness record that separates submission completeness, consistency
 standards, and unresolved staff questions remains planned.
 
@@ -278,9 +283,10 @@ journey envelope into `data/demo-data.js`. The static surface is split by user
 job:
 
 - `index.html`: lightweight orientation and scope; it loads no data bundle;
-- `check.html`: applicant intake, a temporary grouped result packet, a labeled
-  shareable sample that reuses a canonical golden fixture, its explicit
-  applicability gate, and the separate clock;
+- `check.html`: applicant intake, a temporary grouped result packet, a
+  statewide orientation receipt, a labeled shareable sample that reuses a
+  canonical golden fixture, its explicit applicability gate, and the separate
+  clock;
 - `prepare.html`: a fail-closed versioned entry to the generated synthetic
   Woodland packet-presence result, evidence-manifest link, and print-focused
   journey evidence summary;
@@ -299,11 +305,13 @@ At phone widths, the full primary link row is replaced by a native
 collapses to one column, primary task actions span the available width, and
 the evidence tables render as labeled source/rule records instead of requiring
 horizontal page scrolling. Browser checks exercise every page at 320px and
-390px plus populated applicant and evidence states. A separate print-media
-check confirms that the summary remains visible while navigation, task chrome,
-the detailed packet surface, and print button are withheld without horizontal
-document overflow. Physical-device, printed-output, and assistive-technology
-validation remain separate manual work.
+390px plus populated applicant and evidence states. They also exercise the
+statewide handoff across an ordinary city, a county, post-2020 Mountain House,
+and Davis's bounded local layer. Separate print-media checks confirm that each
+print-focused summary remains visible while navigation, task chrome, detailed
+results, and print controls are withheld without horizontal document overflow.
+Physical-device, printed-output, and assistive-technology validation remain
+separate manual work.
 
 The generated bundle must never become a second hand-edited source of truth;
 the test suite compares it byte-for-byte with the canonical JSON inputs and

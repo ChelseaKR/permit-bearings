@@ -51,6 +51,13 @@ Start at `/` for the product boundary, then use `/review.html`,
   State that the cover sheet exists only in the current page. It is not a
   stored applicant record, verified parcel record, completeness finding, or
   exportable evidence manifest.
+- Change the jurisdiction to Alameda or Los Angeles County and submit the same
+  made-up facts. Show the statewide orientation receipt: selected facts,
+  candidate-route source status, an explicit "local requirements not encoded"
+  boundary, and questions for the local counter. Print or save the receipt,
+  then state that the browser owns that operation and the app stores nothing.
+  This is the useful statewide handoff; it does not make Woodland's deeper
+  checklist workflow statewide.
 - Read the generated result sentence and use the jump links. Show candidate
   routes first, relevant standards second, and the bounded Woodland local
   information record last. State that Woodland is not a comprehensive local

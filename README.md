@@ -103,7 +103,7 @@ still needs a person.
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 301 Python tests, 86.92% branch coverage, 29/29 golden cases, 30 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.98 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
+| Quality & Metrics | Automated evidence includes 301 Python tests, 86.92% branch coverage, 29/29 golden cases, 31 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.98 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -132,7 +132,14 @@ still needs a person.
    available evidence visible but suppresses action copy and document hints.
 9. If complete answers match no encoded route, the app says the bounded rule
    set found no path and routes the applicant generally to local staff.
-10. For the active, unedited made-up Woodland sample only, the browser checks
+10. Every recognized city or county receives a bilingual, print-focused
+    orientation receipt from the current in-memory result. It preserves the
+    selected facts, candidate routes and source status, labels whether a
+    bounded local record exists, and supplies questions for local staff. The
+    browser handles Print or Save as PDF; the app does not upload or store the
+    receipt. It is not a complete local checklist, parcel verification,
+    eligibility or completeness finding, or approval prediction.
+11. For the active, unedited made-up Woodland sample only, the browser checks
     the generated journey, route, readiness, fingerprint, and source-review
     contracts. It then asks one explicit applicability question. Nothing is
     preselected: **Yes** exposes a packet link, **No** records that the bounded
@@ -140,10 +147,11 @@ still needs a person.
     question. The link contains only the public journey ID and version, not
     project facts.
 
-The current app covers statewide ADU, JADU, and SB 9 screening and two bounded
-local rule records. Parcel retrieval, application-file inspection,
-packet-level completeness, reviewed remedies, SB 35, AB 2011, reviewed
-translation, and comprehensive local rules are planned rather than
+The current app covers statewide ADU, JADU, and SB 9 screening and provides a
+bounded orientation handoff for all 541 registry entries, while only two
+jurisdictions have local rule records. Parcel retrieval, application-file
+inspection, packet-level completeness, reviewed remedies, SB 35, AB 2011,
+reviewed translation, and comprehensive local rules are planned rather than
 implemented. The temporary result packet does not change those boundaries.
 
 ## How the bounded packet sample works
@@ -363,7 +371,11 @@ answers-used cover sheet, a dynamic grouped summary with jump links, one
 candidate route open by default when the configured route matches, and compact
 supporting records. Citations and source-status badges stay visible outside
 the disclosures. Ordinary answer edits clear the old result until the
-applicant submits again. The applicant guide also includes plain-language
+applicant submits again. Every recognized jurisdiction also receives a
+bilingual print-focused orientation receipt derived from the current page:
+facts used, candidate-route sources and currency, local-coverage status, and
+questions for staff. Printing or saving is browser-owned and the app stores no
+receipt. The applicant guide also includes plain-language
 explanation drafts and an abstention path ("needs staff review") when no
 encoded state pathway matches. Spanish explanation copy is an unreviewed
 machine draft; applicant-facing titles are localized drafts while canonical

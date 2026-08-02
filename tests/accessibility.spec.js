@@ -374,6 +374,48 @@ test("populated applicant result reflows without automated WCAG violations", asy
   await expectNoAutomatedWcagViolations(page);
 });
 
+test("statewide orientation handoff works across city, county, and local-layer profiles", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.__permitBearingsPrintCalls = 0;
+    window.print = () => {
+      window.__permitBearingsPrintCalls += 1;
+    };
+  });
+  const profiles = [
+    { display: "Alameda (Alameda Co.)", slug: "alameda", local: "false" },
+    { display: "Los Angeles County", slug: "los-angeles-county", local: "false" },
+    { display: "Mountain House (San Joaquin Co.)", slug: "mountain-house", local: "false" },
+    { display: "Davis (Yolo Co.)", slug: "davis", local: "true" },
+  ];
+
+  for (const profile of profiles) {
+    await page.goto("/check.html?sample=adu");
+    await page.locator("#jurisInput").fill(profile.display);
+    await page.locator("#t-submit").click();
+    const receipt = page.locator("#statewideOrientation");
+    await expect(receipt).toBeVisible();
+    await expect(receipt).toHaveAttribute("data-jurisdiction", profile.slug);
+    await expect(receipt).toHaveAttribute("data-local-layer", profile.local);
+    await expect(receipt).toContainText("541 California cities and counties");
+    await expect(receipt.locator(".statewide-route-list > li")).not.toHaveCount(0);
+    await expect(receipt).toContainText("Orientation only");
+    await expectBrowserStorageEmpty(page);
+  }
+
+  await page.locator(".print-statewide-orientation").click();
+  await expect.poll(
+    () => page.evaluate(() => window.__permitBearingsPrintCalls),
+  ).toBe(1);
+  await page.emulateMedia({ media: "print" });
+  await expect(page.locator("#statewideOrientation")).toBeVisible();
+  await expect(page.locator(".site-header")).toBeHidden();
+  await expect(page.locator("#intake")).toBeHidden();
+  await expect(page.locator(".statewide-print-action")).toBeHidden();
+  await expectNoDocumentOverflow(page);
+});
+
 test("mobile evidence tables render as labeled records without page overflow", async ({
   page,
 }) => {

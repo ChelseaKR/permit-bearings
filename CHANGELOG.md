@@ -20,6 +20,12 @@ published a versioned release.
 
 ### Changed
 
+- Added a bilingual, print-focused statewide orientation handoff for all 541
+  recognized California cities and counties. It carries the selected facts,
+  candidate-route sources and currency, local-coverage boundary, and questions
+  for staff without storing applicant input. Automated browser coverage spans
+  an ordinary city, a county, post-2020 Mountain House, and Davis's bounded
+  local layer. The deeper 25-item packet remains explicitly Woodland-only.
 - Reworked phone-width navigation into a native section disclosure, tightened
   narrow-screen spacing, expanded primary task actions, and restyled evidence
   tables as labeled records without changing their table semantics. Automated
