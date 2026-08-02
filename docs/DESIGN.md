@@ -156,6 +156,33 @@ approval. The sample is made up and has not been validated by an applicant,
 planner, Woodland staff member, counsel, or another jurisdiction
 representative.
 
+#### Versioned Woodland journey contract (implemented data contract)
+
+`data/journeys/woodland-preapproved-detached-adu.json` is a strict,
+reference-only definition that joins the existing synthetic Woodland golden
+screening case and candidate route to the bounded readiness workflow and
+packet. `src/permit_pathways/journey.py` resolves those references at build
+time, replays the deterministic screening case, and reuses the existing
+readiness result rather than evaluating the packet a second time. Resolution
+fails closed unless the route matches the complete named fixture and is
+inside its source-review window on the sample's recorded evaluation date, the
+screening and readiness scopes agree, the packet is synthetic, and the
+readiness result explicitly reports that the workflow applies.
+
+The generated envelope includes resolved route evidence with its source-status
+as-of date and review deadline, the emitted shared synthetic fact envelope
+with per-fact provenance, the applicability facts and applicant-editable
+subset, the complete readiness evidence manifest, and fingerprints for the
+screening case, rule, shared fact envelope, workflow, packet, and journey.
+`scripts/build_demo_bundle.py` writes it to
+`data/journeys/generated/woodland-preapproved-detached-adu.json` and includes
+it in `data/demo-data.js`.
+
+This implements a versioned composition contract for one prototype fixture,
+not the applicant-facing transition. `check.html` and `prepare.html` remain
+separate surfaces, and the browser does not yet consume this envelope to carry
+answers, authorize a next step, or render a unified route-to-packet journey.
+
 ### 3. Citation-grounded Q&A (planned)
 
 For free-text questions the deterministic core can't answer, a retrieval layer
@@ -196,6 +223,10 @@ The bounded readiness slice also records:
 
 `source ID → requirement → finding → synthetic packet evidence manifest`
 
+The versioned Woodland contract composes the two bounded traces as:
+
+`golden case + candidate route current on the recorded date + applicable readiness evidence → synthetic journey envelope`
+
 A changed or unreachable source should create a durable review queue for all
 affected nodes while proving that unrelated nodes remain current.
 
@@ -204,8 +235,9 @@ affected nodes while proving that unrelated nodes remain current.
 The browser showcase remains dependency-free and static-host friendly.
 Canonical rules, explanations, registries, fixtures, checks, and source
 metadata stay in JSON. `scripts/build_demo_bundle.py` deterministically
-compiles those files into `data/demo-data.js`. The static surface is split by
-user job:
+compiles those files, the generated readiness record, and the generated
+journey envelope into `data/demo-data.js`. The static surface is split by user
+job:
 
 - `index.html`: lightweight orientation and scope; it loads no data bundle;
 - `check.html`: applicant intake, a temporary grouped result packet, a labeled
@@ -233,7 +265,8 @@ assistive-technology validation remain separate manual work.
 
 The generated bundle must never become a second hand-edited source of truth;
 the test suite compares it byte-for-byte with the canonical JSON inputs and
-checks the committed readiness evidence against a fresh Python evaluation.
+checks the committed readiness evidence and journey envelope against fresh
+Python resolution.
 Visual primitives follow the published California Design System token
 vocabulary and California Web Standards principles; the exact adoption and
 product-specific extensions are documented in `docs/DESIGN-SYSTEM.md`.

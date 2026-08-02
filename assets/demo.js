@@ -1876,6 +1876,12 @@ const READINESS_SOURCE_STATUSES = new Set([
   "source_review_required",
 ]);
 
+const READINESS_APPLICABILITY_STATUSES = new Set([
+  "applies",
+  "unknown",
+  "does_not_apply",
+]);
+
 function readinessReviewDueOn(data) {
   const candidates = [
     data?.source_review_due_on,
@@ -1914,6 +1920,11 @@ function validReadinessData(data) {
       || !readinessSourceStatusAsOf(data)
       || !READINESS_OVERALL_STATUSES.has(data.result.overall_status)
       || !READINESS_SOURCE_STATUSES.has(data.result.source_status)
+      || !READINESS_APPLICABILITY_STATUSES.has(
+        data.result.applicability_status
+      )
+      || data.evidence_manifest.applicability_status
+        !== data.result.applicability_status
       || (
         data.result.overall_status === "source_review_required"
           ? data.result.source_status !== "source_review_required"
@@ -1994,6 +2005,15 @@ function validReadinessData(data) {
     source_review_required:
       data.counts.needs_staff_review === data.result.findings.length,
   }[data.result.overall_status] === true;
+  const applicabilityMatchesFindings = data.result.source_status !== "current"
+    || {
+      applies: data.result.overall_status !== "outside_bounded_workflow",
+      unknown: data.result.overall_status === "needs_review"
+        && data.counts.not_evaluated === data.result.findings.length,
+      does_not_apply:
+        data.result.overall_status === "outside_bounded_workflow"
+        && data.counts.not_evaluated === data.result.findings.length,
+    }[data.result.applicability_status] === true;
   return requirementIds.every(validStableId)
     && factIds.every(validStableId)
     && new Set(factIds).size === factIds.length
@@ -2048,7 +2068,8 @@ function validReadinessData(data) {
     )
     && reviewValid
     && countsMatch
-    && overallMatchesFindings;
+    && overallMatchesFindings
+    && applicabilityMatchesFindings;
 }
 
 function readinessParcelEvidenceMarkup(data, current) {
@@ -2532,7 +2553,9 @@ async function fetchRuleData() {
 function loadDemoData() {
   if (globalThis.PERMIT_PATHWAYS_DEMO_DATA) {
     const data = globalThis.PERMIT_PATHWAYS_DEMO_DATA;
-    if (!Array.isArray(data.rules) || !validRuleManifest(data.rule_manifest))
+    if (data?._meta?.format_version !== 2
+        || !Array.isArray(data.rules)
+        || !validRuleManifest(data.rule_manifest))
       return Promise.reject(new Error("generated demo bundle has invalid rule data"));
     return Promise.resolve(data);
   }

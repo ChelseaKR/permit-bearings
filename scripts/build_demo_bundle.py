@@ -25,8 +25,15 @@ from permit_pathways.harness.watch import (  # noqa: E402
     load_sources,
     normalized_digest,
 )
+from permit_pathways.journey import (  # noqa: E402
+    load_journey_config,
+    resolve_journey,
+)
 from permit_pathways.readiness import (  # noqa: E402
     SOURCE_MAX_AGE_DAYS,
+    ReadinessPacket,
+    ReadinessResult,
+    ReadinessWorkflow,
     load_and_evaluate_readiness,
     load_readiness_remedies,
 )
@@ -37,14 +44,16 @@ RULE_MANIFEST_OUTPUT = ROOT / "data" / "rules" / "index.json"
 READINESS_WORKFLOW = Path(
     "data/readiness/workflows/woodland-preapproved-detached-adu.json"
 )
-READINESS_SAMPLE = Path(
-    "data/readiness/samples/woodland-preapproved-adu.json"
-)
+READINESS_SAMPLE = Path("data/readiness/samples/woodland-preapproved-adu.json")
 READINESS_REMEDIES = Path(
     "data/readiness/remedies/woodland-preapproved-detached-adu.json"
 )
 READINESS_EVIDENCE_OUTPUT = ROOT / (
     "data/readiness/generated/woodland-preapproved-adu-evidence.json"
+)
+JOURNEY_BINDING = Path("data/journeys/woodland-preapproved-detached-adu.json")
+JOURNEY_OUTPUT = ROOT / (
+    "data/journeys/generated/woodland-preapproved-detached-adu.json"
 )
 INPUTS = {
     "golden": Path("data/golden/example.json"),
@@ -55,6 +64,13 @@ INPUTS = {
     "scans": Path("data/conformance/results/index.json"),
     "plain_language": Path("data/explanations/plain-language.json"),
 }
+
+CanonicalReadinessRecords = tuple[
+    ReadinessWorkflow,
+    ReadinessPacket,
+    ReadinessResult,
+    date,
+]
 
 
 def discover_rule_files(root: Path = ROOT) -> list[Path]:
@@ -78,12 +94,15 @@ def rule_manifest(root: Path = ROOT) -> dict[str, object]:
 
 
 def encoded_rule_manifest(root: Path = ROOT) -> str:
-    return json.dumps(
-        rule_manifest(root),
-        ensure_ascii=True,
-        indent=2,
-        sort_keys=True,
-    ) + "\n"
+    return (
+        json.dumps(
+            rule_manifest(root),
+            ensure_ascii=True,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
 
 
 def aggregate_rule_records(
@@ -104,22 +123,15 @@ def aggregate_rule_records(
     return aggregate, digests
 
 
-def build_readiness_payload(
-    root: Path = ROOT,
-) -> tuple[dict[str, object], dict[str, str]]:
-    """Build one deterministic, source-bound synthetic readiness sample."""
-
+def _canonical_readiness_records(root: Path) -> CanonicalReadinessRecords:
     workflow_path = root / READINESS_WORKFLOW
     sample_path = root / READINESS_SAMPLE
-    remedies_path = root / READINESS_REMEDIES
     sample_payload = json.loads(sample_path.read_text(encoding="utf-8"))
     try:
         canonical_evaluated_on = sample_payload["packet"]["evaluated_on"]
         evaluation_date = date.fromisoformat(canonical_evaluated_on)
     except (KeyError, TypeError, ValueError) as error:
-        raise ValueError(
-            f"{READINESS_SAMPLE}: invalid packet.evaluated_on"
-        ) from error
+        raise ValueError(f"{READINESS_SAMPLE}: invalid packet.evaluated_on") from error
     workflow, packet, result = load_and_evaluate_readiness(
         workflow_path,
         sample_path,
@@ -127,9 +139,21 @@ def build_readiness_payload(
         today=evaluation_date,
     )
     if not packet.synthetic:
-        raise ValueError(
-            f"{READINESS_SAMPLE}: public demo packets must be synthetic"
-        )
+        raise ValueError(f"{READINESS_SAMPLE}: public demo packets must be synthetic")
+    return workflow, packet, result, evaluation_date
+
+
+def build_readiness_payload(
+    root: Path = ROOT,
+    *,
+    records: CanonicalReadinessRecords | None = None,
+) -> tuple[dict[str, object], dict[str, str]]:
+    """Build one deterministic, source-bound synthetic readiness sample."""
+
+    remedies_path = root / READINESS_REMEDIES
+    workflow, packet, result, evaluation_date = records or _canonical_readiness_records(
+        root
+    )
     remedies = load_readiness_remedies(
         remedies_path,
         workflow,
@@ -163,9 +187,7 @@ def build_readiness_payload(
                 binding.source_id for binding in workflow.source_bindings
             ],
             "mapping_version": workflow.mapping_provenance.version,
-            "mapping_review_status": (
-                workflow.mapping_provenance.review_status
-            ),
+            "mapping_review_status": (workflow.mapping_provenance.review_status),
             "mapping_provider": workflow.mapping_provenance.provider,
             "mapping_model": workflow.mapping_provenance.model,
             "mapping_run_record_status": (
@@ -178,9 +200,7 @@ def build_readiness_payload(
         },
     }
     digests = {
-        relative.as_posix(): hashlib.sha256(
-            (root / relative).read_bytes()
-        ).hexdigest()
+        relative.as_posix(): hashlib.sha256((root / relative).read_bytes()).hexdigest()
         for relative in (
             READINESS_WORKFLOW,
             READINESS_SAMPLE,
@@ -192,12 +212,52 @@ def build_readiness_payload(
 
 def encoded_readiness_evidence(root: Path = ROOT) -> str:
     payload, _ = build_readiness_payload(root)
-    return json.dumps(
-        payload["evidence_manifest"],
-        ensure_ascii=True,
-        indent=2,
-        sort_keys=True,
-    ) + "\n"
+    return (
+        json.dumps(
+            payload["evidence_manifest"],
+            ensure_ascii=True,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
+
+
+def build_journey_payload(
+    root: Path = ROOT,
+    *,
+    records: CanonicalReadinessRecords | None = None,
+) -> tuple[dict[str, object], dict[str, str]]:
+    """Build the versioned synthetic route-to-packet journey envelope."""
+
+    workflow, packet, result, _ = records or _canonical_readiness_records(root)
+    config = load_journey_config(root / JOURNEY_BINDING)
+    manifest = resolve_journey(
+        config,
+        root / INPUTS["golden"],
+        load_rules(root / "data" / "rules"),
+        workflow,
+        packet,
+        result,
+    )
+    return manifest, {
+        JOURNEY_BINDING.as_posix(): hashlib.sha256(
+            (root / JOURNEY_BINDING).read_bytes()
+        ).hexdigest()
+    }
+
+
+def encoded_journey(root: Path = ROOT) -> str:
+    payload, _ = build_journey_payload(root)
+    return (
+        json.dumps(
+            payload,
+            ensure_ascii=True,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
 
 
 def _validate_local_source_copies(root: Path) -> None:
@@ -207,22 +267,16 @@ def _validate_local_source_copies(root: Path) -> None:
     resolved_root = root.resolve()
     for source in sources.values():
         if source.watch and source.local_copy is None:
-            raise ValueError(
-                f"{source.source_id}: watched source requires local_copy"
-            )
+            raise ValueError(f"{source.source_id}: watched source requires local_copy")
         if source.local_copy is None:
             continue
         local_path = (root / source.local_copy).resolve()
         if resolved_root not in local_path.parents:
-            raise ValueError(
-                f"{source.source_id}.local_copy: path leaves repository"
-            )
+            raise ValueError(f"{source.source_id}.local_copy: path leaves repository")
         try:
             content = local_path.read_bytes()
         except OSError as error:
-            raise ValueError(
-                f"{source.source_id}.local_copy: unavailable"
-            ) from error
+            raise ValueError(f"{source.source_id}.local_copy: unavailable") from error
         digest = normalized_digest(content, source.normalize)
         if digest != source.sha256:
             raise ValueError(
@@ -230,7 +284,11 @@ def _validate_local_source_copies(root: Path) -> None:
             )
 
 
-def build_bundle(root: Path = ROOT) -> str:
+def build_bundle(
+    root: Path = ROOT,
+    *,
+    records: CanonicalReadinessRecords | None = None,
+) -> str:
     """Return the generated bundle text from canonical JSON inputs."""
 
     rules = load_rules(root / "data" / "rules")
@@ -240,8 +298,7 @@ def build_bundle(root: Path = ROOT) -> str:
         unknown = sorted(set(rule.source_dependencies) - known_sources)
         if unknown:
             raise ValueError(
-                f"{rule.rule_id}: unknown source dependencies: "
-                + ", ".join(unknown)
+                f"{rule.rule_id}: unknown source dependencies: " + ", ".join(unknown)
             )
         dependency_urls = {
             sources[source_id].url for source_id in rule.source_dependencies
@@ -262,8 +319,7 @@ def build_bundle(root: Path = ROOT) -> str:
                 or cited_source.local_copy is None
             ):
                 raise ValueError(
-                    f"{rule.rule_id}: dated citation has no preserved "
-                    "source evidence"
+                    f"{rule.rule_id}: dated citation has no preserved source evidence"
                 )
             if cited_source.fetched_on > rule.citation.verified_on:
                 raise ValueError(
@@ -282,9 +338,19 @@ def build_bundle(root: Path = ROOT) -> str:
     digests.update(rule_digests)
     payload["rules"] = aggregate_rules
     payload["rule_manifest"] = rule_manifest(root)
-    readiness, readiness_digests = build_readiness_payload(root)
+    canonical_records = records or _canonical_readiness_records(root)
+    readiness, readiness_digests = build_readiness_payload(
+        root,
+        records=canonical_records,
+    )
     payload["readiness"] = readiness
     digests.update(readiness_digests)
+    journey, journey_digests = build_journey_payload(
+        root,
+        records=canonical_records,
+    )
+    payload["journeys"] = [journey]
+    digests.update(journey_digests)
 
     for key, relative_path in INPUTS.items():
         raw = (root / relative_path).read_bytes()
@@ -292,7 +358,7 @@ def build_bundle(root: Path = ROOT) -> str:
         digests[relative_path.as_posix()] = hashlib.sha256(raw).hexdigest()
 
     payload["_meta"] = {
-        "format_version": 1,
+        "format_version": 2,
         "generated_from": digests,
     }
     encoded = json.dumps(
@@ -315,29 +381,52 @@ def main() -> int:
         help="fail if the committed bundle differs from the canonical JSON",
     )
     args = parser.parse_args()
-    expected = build_bundle()
+    records = _canonical_readiness_records(ROOT)
+    readiness, _ = build_readiness_payload(ROOT, records=records)
+    journey, _ = build_journey_payload(ROOT, records=records)
+    expected = build_bundle(ROOT, records=records)
     expected_manifest = encoded_rule_manifest()
-    expected_readiness_evidence = encoded_readiness_evidence()
+    expected_readiness_evidence = (
+        json.dumps(
+            readiness["evidence_manifest"],
+            ensure_ascii=True,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    expected_journey = (
+        json.dumps(
+            journey,
+            ensure_ascii=True,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
 
     if args.check:
         bundle_current = (
-            OUTPUT.exists()
-            and OUTPUT.read_text(encoding="utf-8") == expected
+            OUTPUT.exists() and OUTPUT.read_text(encoding="utf-8") == expected
         )
         manifest_current = (
             RULE_MANIFEST_OUTPUT.exists()
-            and RULE_MANIFEST_OUTPUT.read_text(encoding="utf-8")
-            == expected_manifest
+            and RULE_MANIFEST_OUTPUT.read_text(encoding="utf-8") == expected_manifest
         )
         readiness_current = (
             READINESS_EVIDENCE_OUTPUT.exists()
             and READINESS_EVIDENCE_OUTPUT.read_text(encoding="utf-8")
             == expected_readiness_evidence
         )
+        journey_current = (
+            JOURNEY_OUTPUT.exists()
+            and JOURNEY_OUTPUT.read_text(encoding="utf-8") == expected_journey
+        )
         if (
             not bundle_current
             or not manifest_current
             or not readiness_current
+            or not journey_current
         ):
             print(
                 "generated demo data is out of date; "
@@ -345,7 +434,8 @@ def main() -> int:
             )
             return 1
         print(
-            "demo bundle, rule manifest, and readiness evidence are in sync"
+            "demo bundle, rule manifest, readiness evidence, and journey "
+            "evidence are in sync"
         )
         return 0
 
@@ -355,9 +445,12 @@ def main() -> int:
         expected_readiness_evidence,
         encoding="utf-8",
     )
+    JOURNEY_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    JOURNEY_OUTPUT.write_text(expected_journey, encoding="utf-8")
     OUTPUT.write_text(expected, encoding="utf-8")
     print(f"wrote {RULE_MANIFEST_OUTPUT.relative_to(ROOT)}")
     print(f"wrote {READINESS_EVIDENCE_OUTPUT.relative_to(ROOT)}")
+    print(f"wrote {JOURNEY_OUTPUT.relative_to(ROOT)}")
     print(f"wrote {OUTPUT.relative_to(ROOT)}")
     return 0
 

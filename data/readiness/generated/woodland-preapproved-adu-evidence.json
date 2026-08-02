@@ -1,4 +1,5 @@
 {
+  "applicability_status": "applies",
   "boundary": "This prototype checks reported item presence against one City checklist. Its parcel values are invented fixtures shaped like fields in a linked public dataset; it does not query or verify a live parcel, inspect files, determine legal sufficiency, certify completeness, or limit what staff may request.",
   "counts": {
     "conflicting": 0,

@@ -40,6 +40,7 @@ OVERALL_STATUSES = (
     "outside_bounded_workflow",
     "source_review_required",
 )
+APPLICABILITY_STATUSES = ("applies", "unknown", "does_not_apply")
 ITEM_TYPES = ("document", "document_content", "action")
 PROVENANCE_VALUES = (
     "synthetic_applicant_assertion",
@@ -257,6 +258,7 @@ class ReadinessFinding:
 class ReadinessResult:
     packet_id: str
     workflow_id: str
+    applicability_status: str
     overall_status: str
     evaluated_on: str
     workflow_fingerprint: str
@@ -284,6 +286,7 @@ class ReadinessResult:
             "manifest_type": "prototype_packet_presence",
             "packet_id": self.packet_id,
             "workflow_id": self.workflow_id,
+            "applicability_status": self.applicability_status,
             "synthetic": packet.synthetic,
             "overall_status": self.overall_status,
             "evaluated_on": self.evaluated_on,
@@ -1351,6 +1354,7 @@ def _evaluation_outcome(
     workflow: ReadinessWorkflow,
     packet: ReadinessPacket,
     source_current: bool,
+    applicability: str,
 ) -> tuple[str, str, list[ReadinessFinding], list[str]]:
     fact_values = packet.fact_values()
     if not source_current:
@@ -1365,7 +1369,6 @@ def _evaluation_outcome(
             "using this packet-presence result."
         )
         return "source_review_required", "source_review_required", findings, [question]
-    applicability = _applicability_state(workflow, packet, fact_values)
     if applicability == "does_not_apply":
         findings = _uniform_findings(
             workflow,
@@ -1422,6 +1425,14 @@ def evaluate_readiness(
         "limit what staff may request."
     )
 
+    applicability = _applicability_state(
+        workflow,
+        packet,
+        packet.fact_values(),
+    )
+    if applicability not in APPLICABILITY_STATUSES:
+        raise AssertionError("unreachable workflow applicability status")
+
     overall, source_status, findings, questions = _evaluation_outcome(
         workflow,
         packet,
@@ -1431,6 +1442,7 @@ def evaluate_readiness(
             changed_source_ids=set(changed_source_ids or set()),
             max_age_days=max_age_days,
         ),
+        applicability,
     )
 
     if overall not in OVERALL_STATUSES:
@@ -1440,6 +1452,7 @@ def evaluate_readiness(
     return ReadinessResult(
         packet_id=packet.packet_id,
         workflow_id=workflow.workflow_id,
+        applicability_status=applicability,
         overall_status=overall,
         evaluated_on=as_of.isoformat(),
         workflow_fingerprint=workflow.fingerprint(),
