@@ -17,6 +17,13 @@ queried. The sample does not open files, verify parcel facts, reproduce a
 complete local checklist, determine final eligibility, certify submission
 completeness, or approve permits.
 
+At build time, a versioned synthetic journey definition binds the existing
+Woodland golden routing fixture to that readiness workflow and packet. The
+generated, fingerprinted envelope is an implemented data contract for these
+prototype inputs. The current browser still presents routing and packet
+presence on separate pages; it does not yet use the envelope for a route-to-
+packet handoff.
+
 **Live demo:** https://chelseakr.github.io/permit-pathways/
 
 **Hypothetical ADU sample:**
@@ -131,15 +138,23 @@ implemented. The temporary result packet does not change those boundaries.
    uses the same Python evaluator with the sample's recorded date to generate
    `data/readiness/generated/woodland-preapproved-adu-evidence.json` and the
    static bundle.
-5. `prepare.html` validates and renders that generated Python result. It does
+5. `data/journeys/woodland-preapproved-detached-adu.json` references the
+   golden screening case, candidate route, readiness workflow, packet, and
+   applicant-editable applicability fact. `src/permit_pathways/journey.py`
+   fails closed unless those records agree, then the build writes
+   `data/journeys/generated/woodland-preapproved-detached-adu.json` and embeds
+   the same envelope in the static bundle. The envelope emits per-fact
+   provenance and the candidate route's recorded source-status date and
+   review deadline. No browser transition consumes it yet.
+6. `prepare.html` validates and renders that generated Python result. It does
    not contain a second packet evaluator.
-6. The checklist mapping and plain-language action copy are AI-assisted
+7. The checklist mapping and plain-language action copy are AI-assisted
    drafts. They are versioned, fingerprint-bound, and marked
    `prototype_review_pending`; no named human, planner, or Woodland reviewer
    has approved them. Mapping metadata binds the exact checklist and
    parcel-schema source digests and records that provider, model, and a
    reproducible run record are unknown or were not retained.
-7. No model runs in the CLI, build evaluator, or public browser. The public
+8. No model runs in the CLI, build evaluator, or public browser. The public
    sample is bundled synthetic data, and the page stores no applicant record.
 
 The sample reports item presence against one checklist and demonstrates
@@ -325,11 +340,15 @@ explanation sidecar and keeps a separate `/trust` route.
 - `src/permit_pathways/readiness.py`: deterministic bounded packet-presence
   evaluator and evidence-manifest generator
 - `src/permit_pathways/readiness_cli.py`: packet-presence CLI
+- `src/permit_pathways/journey.py`: strict versioned route-to-packet contract
+  resolver for the synthetic Woodland fixture
 - `src/permit_pathways/harness/`: verification runner and CLI
 - `data/rules/`: the cited rule base; `data/golden/`: golden cases
 - `data/explanations/plain-language.json`: English/Spanish explanation drafts
 - `data/readiness/`: the Woodland workflow, synthetic packet, review-pending
   remedies, and generated evidence manifest
+- `data/journeys/`: the reference-only Woodland journey definition and its
+  generated fingerprinted envelope
 - `data/demo-data.js`: generated offline bundle for the static showcase
 - `index.html`, `check.html`, `prepare.html`, `review.html`,
   `evidence.html`: task-focused static pages; `assets/`: shared browser

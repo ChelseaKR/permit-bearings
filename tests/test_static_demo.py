@@ -19,12 +19,72 @@ from demo.app import (
 from scripts.build_demo_bundle import (
     OUTPUT,
     build_bundle,
+    build_journey_payload,
     build_readiness_payload,
 )
 
 
 def test_committed_demo_bundle_matches_canonical_json():
-    assert OUTPUT.read_text(encoding="utf-8") == build_bundle()
+    bundle = build_bundle()
+
+    assert OUTPUT.read_text(encoding="utf-8") == bundle
+    assert '"format_version":2' in bundle
+
+
+def test_generated_woodland_journey_binds_one_route_and_packet_envelope():
+    readiness, _ = build_readiness_payload()
+
+    journey, digests = build_journey_payload()
+
+    assert journey["journey_id"] == ("woodland-preapproved-detached-adu-synthetic")
+    assert journey["version"] == "1.0.0"
+    assert journey["synthetic"] is True
+    assert journey["screening_case_id"] == ("woodland-new-detached-adu-local-layer")
+    assert journey["candidate_route_rule_ids"] == ["adu-ministerial-review"]
+    assert journey["readiness_workflow_id"] == ("woodland-preapproved-detached-adu")
+    assert journey["readiness_packet_id"] == (
+        "woodland-preapproved-adu-hypothetical-001"
+    )
+    assert journey["applicability_status"] == "applies"
+    assert [route["rule_id"] for route in journey["candidate_routes"]] == [
+        "adu-ministerial-review"
+    ]
+    assert journey["route_source_status"] == "current"
+    assert journey["route_source_status_as_of"] == "2026-07-30"
+    assert journey["route_source_review_due_on"] == "2027-01-23"
+    assert journey["screening_intake"] == {
+        "project_type": "adu",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no",
+        "jurisdiction": "woodland",
+    }
+    assert [fact["fact_id"] for fact in journey["applicability_facts"]] == [
+        "uses_city_preapproved_plan",
+        "parcel_city_matches_woodland",
+        "parcel_land_use_is_residential",
+    ]
+    assert [
+        fact["fact_id"] for fact in journey["applicability_facts"] if fact["editable"]
+    ] == ["uses_city_preapproved_plan"]
+    assert all(
+        fact["value"] == fact["expected_value"] == "yes"
+        for fact in journey["applicability_facts"]
+    )
+    assert journey["screening_case_fingerprint"].startswith("sha256:")
+    assert (
+        journey["readiness_workflow_fingerprint"]
+        == (readiness["result"]["workflow_fingerprint"])
+    )
+    assert (
+        journey["readiness_packet_fingerprint"]
+        == (readiness["result"]["packet_fingerprint"])
+    )
+    assert journey["readiness_evidence_manifest"] == readiness["evidence_manifest"]
+    assert journey["fact_envelope"]["synthetic"] is True
+    assert journey["fact_envelope_fingerprint"].startswith("sha256:")
+    assert journey["journey_fingerprint"].startswith("sha256:")
+    assert set(digests) == {"data/journeys/woodland-preapproved-detached-adu.json"}
 
 
 def test_python_trust_rehearsal_uses_human_readable_source_label():
@@ -35,11 +95,11 @@ def test_python_trust_rehearsal_uses_human_readable_source_label():
 
 def test_static_pages_load_only_the_assets_they_need():
     landing = (ROOT / "index.html").read_text(encoding="utf-8")
-    bundle_tag = '<script src="data/demo-data.js" defer></script>'
-    application_src = 'src="assets/demo.js'
+    bundle_tag = '<script src="data/demo-data.js?v=20260802a" defer></script>'
+    application_tag = '<script src="assets/demo.js?v=20260802a" defer></script>'
 
     assert bundle_tag not in landing
-    assert application_src not in landing
+    assert application_tag not in landing
     for page_name, page_id in {
         "check.html": "project",
         "prepare.html": "readiness",
@@ -49,11 +109,12 @@ def test_static_pages_load_only_the_assets_they_need():
         html = (ROOT / page_name).read_text(encoding="utf-8")
         assert f'<body data-page="{page_id}">' in html
         assert bundle_tag in html
-        assert application_src in html
-        assert html.index(bundle_tag) < html.index(application_src)
+        assert application_tag in html
+        assert html.index(bundle_tag) < html.index(application_tag)
 
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in application
+    assert "data?._meta?.format_version !== 2" in application
 
 
 def test_static_pages_have_consistent_navigation_and_resolvable_links():
@@ -332,6 +393,8 @@ def test_packet_sample_renders_only_the_generated_python_result():
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
 
     assert readiness["packet"]["synthetic"] is True
+    assert readiness["result"]["applicability_status"] == "applies"
+    assert readiness["evidence_manifest"]["applicability_status"] == ("applies")
     assert readiness["result"]["overall_status"] == "known_gaps"
     assert readiness["counts"] == {
         "present": 14,
@@ -502,6 +565,28 @@ check(
   "unknown overall readiness status accepted"
 );
 
+const missingApplicability = structuredClone(canonical);
+delete missingApplicability.result.applicability_status;
+check(
+  !validReadinessData(missingApplicability),
+  "missing applicability status accepted"
+);
+
+const mismatchedApplicability = structuredClone(canonical);
+mismatchedApplicability.evidence_manifest.applicability_status = "unknown";
+check(
+  !validReadinessData(mismatchedApplicability),
+  "mismatched applicability status accepted"
+);
+
+const contradictoryApplicability = structuredClone(canonical);
+contradictoryApplicability.result.applicability_status = "unknown";
+contradictoryApplicability.evidence_manifest.applicability_status = "unknown";
+check(
+  !validReadinessData(contradictoryApplicability),
+  "unknown applicability accepted with favorable findings"
+);
+
 const mismatchedParcelField = structuredClone(canonical);
 mismatchedParcelField.packet.facts[0].source_field = "LU_Descr";
 check(
@@ -543,11 +628,17 @@ check(
 );
 
 const outside = structuredClone(canonical);
+outside.result.applicability_status = "does_not_apply";
+outside.evidence_manifest.applicability_status = "does_not_apply";
 outside.result.overall_status = "outside_bounded_workflow";
 outside.result.staff_questions = [
   "Ask Woodland staff which current checklist applies to this project.",
 ];
 setAllFindings(outside, "not_evaluated");
+check(
+  validReadinessData(outside),
+  "consistent non-applicable readiness data rejected"
+);
 const outsideHtml = render(outside);
 check(
   outsideHtml.includes("This packet is outside the encoded Woodland workflow"),
@@ -564,11 +655,17 @@ check(
 );
 
 const needsReview = structuredClone(canonical);
+needsReview.result.applicability_status = "unknown";
+needsReview.evidence_manifest.applicability_status = "unknown";
 needsReview.result.overall_status = "needs_review";
 needsReview.result.staff_questions = [
   "Does this project use the City preapproved plan workflow?",
 ];
 setAllFindings(needsReview, "not_evaluated");
+check(
+  validReadinessData(needsReview),
+  "consistent unknown-applicability readiness data rejected"
+);
 const needsReviewHtml = render(needsReview);
 check(
   needsReviewHtml.includes(

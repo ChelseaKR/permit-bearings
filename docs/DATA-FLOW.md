@@ -1,6 +1,6 @@
 # Current prototype data flow
 
-Status: 2026-07-30. This describes the executable repository and public demo,
+Status: 2026-08-02. This describes the executable repository and public demo,
 not a production deployment or a compliance assessment.
 
 ## Boundary summary
@@ -40,13 +40,24 @@ Deterministic Python evaluator
     |
     +--> Source, workflow, requirement, and packet fingerprints
     |
-    +--> Generated evidence manifest
+    +--> Generated evidence manifest -------------------------+
+                                                               |
+Golden Woodland routing fixture + candidate rule current on recorded date --+
+                                                               |
+                                                               v
+Versioned journey resolver
+    |
+    +--> Exact scope, applicability, and reference checks
+    |
+    +--> Route, fact-envelope, workflow, packet, and journey fingerprints
+    |
+    +--> Generated synthetic journey envelope
              |
              v
 Static build bundle
              |
              v
-Browser validates and renders the generated result
+Browser validates and renders the generated readiness result
 ```
 
 ### Source acquisition
@@ -78,6 +89,26 @@ operations, not browser requests made on behalf of an applicant.
 The sample contains no real applicant, address, assessor parcel number,
 permit number, contact information, plan, or application file.
 
+### Canonical journey binding
+
+`data/journeys/woodland-preapproved-detached-adu.json` is a reference-only,
+versioned definition for one synthetic journey. It names the existing golden
+screening case, one candidate-route rule, the readiness workflow and packet,
+and designates one applicability fact as applicant-editable. It does not
+duplicate the intake, rule, workflow, packet, or evaluator output.
+
+`src/permit_pathways/journey.py` resolves those references at build time. It
+requires the candidate route to match the complete golden case and to be
+inside its source-review window on the sample's recorded evaluation date,
+requires the screening and readiness scopes to agree, and requires the
+canonical readiness applicability status to be `applies`. It emits the
+resolved route evidence with that as-of date and review deadline, the shared
+synthetic fact envelope with per-fact provenance, applicability facts, the
+full readiness evidence manifest, and fingerprints for the route, screening
+case, fact envelope, workflow, packet, and complete journey. A mismatch stops
+generation. Browser code must still compare the recorded review deadlines
+with the current date before presenting an affirmative handoff.
+
 ### Deterministic evaluation and CLI
 
 `src/permit_pathways/readiness.py` loads and strictly validates the workflow,
@@ -104,12 +135,19 @@ output creates a local file outside the CLI's storage behavior.
 `scripts/build_demo_bundle.py` runs the Python evaluator against the canonical
 synthetic sample. It writes the derived evidence record to
 `data/readiness/generated/woodland-preapproved-adu-evidence.json` and embeds
-the same readiness payload in `data/demo-data.js`.
+the same readiness payload in `data/demo-data.js`. The build also resolves the
+canonical journey definition, writes
+`data/journeys/generated/woodland-preapproved-detached-adu.json`, and embeds
+that same envelope in the bundle.
 
 `prepare.html` loads the static bundle. `assets/demo.js` validates identifiers,
 dates, counts, source bindings, remedy coverage, and review metadata before
 rendering the result. It also checks the recorded source-review window. It
 does not recalculate packet findings in JavaScript.
+
+The browser does not currently consume the journey envelope or move submitted
+facts from `check.html` into `prepare.html`. Routing and packet presence remain
+separate browser surfaces until a tested handoff is implemented.
 
 The browser does not send the synthetic facts to a server or model. It does
 not use local storage, session storage, cookies, or an upload control. A user

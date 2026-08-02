@@ -1,0 +1,705 @@
+{
+  "applicability_facts": [
+    {
+      "editable": true,
+      "expected_value": "yes",
+      "fact_id": "uses_city_preapproved_plan",
+      "label": "Uses a City preapproved ADU plan",
+      "provenance": "synthetic_applicant_assertion",
+      "question": "Is this packet using a City of Woodland preapproved ADU plan?",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
+      "value": "yes"
+    },
+    {
+      "editable": false,
+      "expected_value": "yes",
+      "fact_id": "parcel_city_matches_woodland",
+      "label": "Parcel dataset city field matches Woodland",
+      "provenance": "synthetic_public_record_fixture",
+      "question": "Does the parcel dataset identify the parcel city as Woodland?",
+      "source_checked_on": "2026-07-30",
+      "source_field": "CITY",
+      "source_id": "yolo-public-parcels-layer",
+      "value": "yes"
+    },
+    {
+      "editable": false,
+      "expected_value": "yes",
+      "fact_id": "parcel_land_use_is_residential",
+      "label": "Parcel dataset land-use description is residential",
+      "provenance": "synthetic_public_record_fixture",
+      "question": "Does the parcel dataset describe the parcel land use as residential?",
+      "source_checked_on": "2026-07-30",
+      "source_field": "LU_Descr",
+      "source_id": "yolo-public-parcels-layer",
+      "value": "yes"
+    }
+  ],
+  "applicability_status": "applies",
+  "boundary": "This versioned journey joins one made-up route fixture to one generated synthetic Woodland packet-presence result. It does not describe a real property, retrieve or verify parcel facts, inspect files, certify completeness, determine eligibility, or approve a permit.",
+  "candidate_route_rule_ids": [
+    "adu-ministerial-review"
+  ],
+  "candidate_routes": [
+    {
+      "citation": {
+        "excerpt": "A permit application for an accessory dwelling unit shall be considered and approved ministerially without discretionary review or a hearing. [...] A permitting agency shall determine whether an application [...] is complete and provide written notice [...] not later than 15 business days after the permitting agency received the application. [...] The permitting agency shall either approve or deny [...] within 60 days from the date the permitting agency receives a completed application if there is an existing single-family or multifamily dwelling on the lot.",
+        "excerpt_sha256": null,
+        "source": "Gov. Code \u00a7 66317",
+        "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=GOV&sectionNum=66317",
+        "verified_on": "2026-07-27"
+      },
+      "jurisdiction_scope": "statewide",
+      "pathway": "ADU \u2014 ministerial review and application timelines",
+      "route_class": "ministerial",
+      "rule_fingerprint": "sha256:4888800f455167140ea9f69d193a2b70f82d168e75d41f6daa34dcec1bf0b58f",
+      "rule_id": "adu-ministerial-review",
+      "source_dependencies": [
+        "ca-gov-66317",
+        "hcd-adu-handbook-2026-03"
+      ],
+      "source_review_due_on": "2027-01-23",
+      "source_status": "current",
+      "source_status_as_of": "2026-07-30"
+    }
+  ],
+  "editable_applicability_fact_ids": [
+    "uses_city_preapproved_plan"
+  ],
+  "fact_envelope": {
+    "readiness_facts": [
+      {
+        "fact_id": "parcel_city_matches_woodland",
+        "provenance": "synthetic_public_record_fixture",
+        "source_checked_on": "2026-07-30",
+        "source_field": "CITY",
+        "source_id": "yolo-public-parcels-layer",
+        "value": "yes"
+      },
+      {
+        "fact_id": "parcel_land_use_is_residential",
+        "provenance": "synthetic_public_record_fixture",
+        "source_checked_on": "2026-07-30",
+        "source_field": "LU_Descr",
+        "source_id": "yolo-public-parcels-layer",
+        "value": "yes"
+      },
+      {
+        "fact_id": "uses_city_preapproved_plan",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "yes"
+      },
+      {
+        "fact_id": "connects_to_primary_home_electrical",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "yes"
+      },
+      {
+        "fact_id": "solar_plans_applicable",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "unknown"
+      },
+      {
+        "fact_id": "fire_sprinkler_plans_applicable",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "unknown"
+      },
+      {
+        "fact_id": "uses_septic_or_well",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "no"
+      },
+      {
+        "fact_id": "in_spring_lake",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "no"
+      },
+      {
+        "fact_id": "in_flood_zone",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "unknown"
+      }
+    ],
+    "schema_version": 1,
+    "screening_facts": [
+      {
+        "fact_id": "adu_project_form",
+        "provenance": "synthetic_golden_fixture",
+        "value": "new_detached"
+      },
+      {
+        "fact_id": "jurisdiction",
+        "provenance": "synthetic_golden_fixture",
+        "value": "woodland"
+      },
+      {
+        "fact_id": "primary_dwelling_status",
+        "provenance": "synthetic_golden_fixture",
+        "value": "existing_single_family"
+      },
+      {
+        "fact_id": "project_type",
+        "provenance": "synthetic_golden_fixture",
+        "value": "adu"
+      },
+      {
+        "fact_id": "unpermitted_existing",
+        "provenance": "synthetic_golden_fixture",
+        "value": "no"
+      }
+    ],
+    "synthetic": true
+  },
+  "fact_envelope_fingerprint": "sha256:18c9bf3bdf525776352301b3150185fce8cdb0882b621d61f92eabcc25036847",
+  "journey_fingerprint": "sha256:6a7734b8bc920ec13898e2c8c753ce57d27652a5d37c8a41d433798318c4641a",
+  "journey_id": "woodland-preapproved-detached-adu-synthetic",
+  "label": "Made-up Woodland preapproved detached ADU journey",
+  "readiness_evidence_manifest": {
+    "applicability_status": "applies",
+    "boundary": "This prototype checks reported item presence against one City checklist. Its parcel values are invented fixtures shaped like fields in a linked public dataset; it does not query or verify a live parcel, inspect files, determine legal sufficiency, certify completeness, or limit what staff may request.",
+    "counts": {
+      "conflicting": 0,
+      "missing": 3,
+      "needs_staff_review": 5,
+      "not_applicable": 3,
+      "not_evaluated": 0,
+      "present": 14
+    },
+    "evaluated_on": "2026-07-30",
+    "facts": [
+      {
+        "fact_id": "parcel_city_matches_woodland",
+        "provenance": "synthetic_public_record_fixture",
+        "source_checked_on": "2026-07-30",
+        "source_field": "CITY",
+        "source_id": "yolo-public-parcels-layer",
+        "value": "yes"
+      },
+      {
+        "fact_id": "parcel_land_use_is_residential",
+        "provenance": "synthetic_public_record_fixture",
+        "source_checked_on": "2026-07-30",
+        "source_field": "LU_Descr",
+        "source_id": "yolo-public-parcels-layer",
+        "value": "yes"
+      },
+      {
+        "fact_id": "uses_city_preapproved_plan",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "yes"
+      },
+      {
+        "fact_id": "connects_to_primary_home_electrical",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "yes"
+      },
+      {
+        "fact_id": "solar_plans_applicable",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "unknown"
+      },
+      {
+        "fact_id": "fire_sprinkler_plans_applicable",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "unknown"
+      },
+      {
+        "fact_id": "uses_septic_or_well",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "no"
+      },
+      {
+        "fact_id": "in_spring_lake",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "no"
+      },
+      {
+        "fact_id": "in_flood_zone",
+        "provenance": "synthetic_applicant_assertion",
+        "source_checked_on": null,
+        "source_field": null,
+        "source_id": null,
+        "value": "unknown"
+      }
+    ],
+    "findings": [
+      {
+        "category": "Application forms",
+        "label": "Building permit application",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:868b054e3f87ebdef088c65538c4db2c03a7efc0884a7f65e4843dedb9da4212",
+        "requirement_id": "building-permit-application",
+        "source_excerpt": "Building Permit Application",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Building Permit Submittal Checklist",
+        "status": "present"
+      },
+      {
+        "category": "Application forms",
+        "label": "Contract with the preapproved plan owner or an authorization letter",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:b4a93c77960458aca9d9310ddefc1c863b729b3ebc834511fb239e66802e1f22",
+        "requirement_id": "plan-owner-contract-or-authorization",
+        "source_excerpt": "Copy of Contract with Preapproved Plan Owner. An authorization letter may also be accepted.",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Building Permit Submittal Checklist",
+        "status": "present"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Dimensioned plot plan",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:1ec6f51ebd13df18a656ad42fa755476272daaeafb3b1a666cb574cf8da2dd04",
+        "requirement_id": "dimensioned-plot-plan",
+        "source_excerpt": "Dimensioned Plot Plan, including:",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "present"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Property address and assessor parcel number on the plot plan",
+        "reason": "The synthetic inventory reports this item missing.",
+        "requirement_fingerprint": "sha256:ad06b3f2b33bb151b86e2dbc54c5e995379c1f8bc467f8569b91c1235c13ed91",
+        "requirement_id": "plot-plan-address-apn",
+        "source_excerpt": "Property Address & APN",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "missing"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Property owner name and contact information on the plot plan",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:d42c5a284339705e83216c14fd87d6807bdcb318a9b788093ed4a541ea1969bc",
+        "requirement_id": "plot-plan-owner-contact",
+        "source_excerpt": "Property Owner Name and Contact Information",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "present"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Scale on the plot plan",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:ba3972318e04916d1645e2fd1326a9aea8f11f18ab9cf0e600751f0a64264424",
+        "requirement_id": "plot-plan-scale",
+        "source_excerpt": "Scale",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "present"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Lot dimensions on the plot plan",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:4521f4bc42959127ee2be6ccc66660b4f10ec42df01011623d11b6d8605e7ba2",
+        "requirement_id": "plot-plan-lot-dimensions",
+        "source_excerpt": "Lot dimensions",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "present"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Building footprints and setbacks to property lines",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:c27b532b1586e18dd66518c9ce8e533adf07b708ba09861f43b63ca90eed08ea",
+        "requirement_id": "plot-plan-footprints-setbacks",
+        "source_excerpt": "Building footprint(s) with setbacks to property lines",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "present"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Accessory structures, walls, pools, fences, and other structures",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:aa8158fb5dff55c7c1a0124bf6cee2b405c4585a73882e14639e19a7e03c4f30",
+        "requirement_id": "plot-plan-other-structures",
+        "source_excerpt": "Location of any accessory structures, retaining walls, pools, fences, or other structures",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "present"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Easement locations on the plot plan",
+        "reason": "The synthetic inventory does not confirm whether this item is present.",
+        "requirement_fingerprint": "sha256:552047d18b53f9d2e7314759616b4a762917409e6e3ec20fb1c6c8c4c302c137",
+        "requirement_id": "plot-plan-easements",
+        "source_excerpt": "Location of any easements",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "needs_staff_review"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Existing and proposed utility locations",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:c8ee671f929d95b0fe92d22dd64b1e3d95d36451b748c361790f6c8abd6ea618",
+        "requirement_id": "plot-plan-utilities",
+        "source_excerpt": "Existing and proposed utility locations (water, gas, electric, sewer)",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "present"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Lot drainage on the plot plan",
+        "reason": "The synthetic inventory reports this item missing.",
+        "requirement_fingerprint": "sha256:dca66325344c4fa9a2cdc9df1dbfdd35b18742a0359534ddf8ccfa711ee5d3a5",
+        "requirement_id": "plot-plan-drainage",
+        "source_excerpt": "Lot drainage",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "missing"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Trees proposed for removal",
+        "reason": "The synthetic inventory does not confirm whether this item is present.",
+        "requirement_fingerprint": "sha256:3ccd2bf0e086cc21362460f533c7a8c72dec72b5ad7eb9e5228cdd987279f267",
+        "requirement_id": "plot-plan-tree-removal",
+        "source_excerpt": "Location of any trees proposed for removal",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "needs_staff_review"
+      },
+      {
+        "category": "Plot plan",
+        "label": "Driveway location and dimensions",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:7b89702d371b779da18b195b3dbc4d06f34135e4d00efe90080241064a555e7a",
+        "requirement_id": "plot-plan-driveway",
+        "source_excerpt": "Driveway location and dimensions",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Dimensioned Plot Plan",
+        "status": "present"
+      },
+      {
+        "category": "Construction details",
+        "label": "Site-specific construction details",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:de65dd6616bfaf5e63ea1efeceae04da4815563987b0346b11874a2a84169bb6",
+        "requirement_id": "site-specific-construction-details",
+        "source_excerpt": "Site-Specific Construction Details",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Site-Specific Construction Details",
+        "status": "present"
+      },
+      {
+        "category": "Construction details",
+        "label": "Foundation plan",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:3248a1ab85a816df94e3377be30e3384fb7a7ff78cebab8901d8cb314d20ce05",
+        "requirement_id": "foundation-plan",
+        "source_excerpt": "Foundation Plan",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Site-Specific Construction Details",
+        "status": "present"
+      },
+      {
+        "category": "Construction details",
+        "label": "Plumbing and electrical tie-in details",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:37f68d6d8ef30365f42301ad4e86c864a4715dd173d634477cdc5bce36cbc5fa",
+        "requirement_id": "plumbing-electrical-tie-in",
+        "source_excerpt": "Plumbing and Electrical Tie-In",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Site-Specific Construction Details",
+        "status": "present"
+      },
+      {
+        "category": "Conditional items",
+        "label": "Electrical load calculations",
+        "reason": "The synthetic inventory reports this item missing.",
+        "requirement_fingerprint": "sha256:4ff9492d2132128176fc9ed15d9832ae1dbcde457463973ab0fa2480d5b213b1",
+        "requirement_id": "electrical-load-calculations",
+        "source_excerpt": "Electrical Load Calculations (If connecting to primary home)",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, conditional checklist item",
+        "status": "missing"
+      },
+      {
+        "category": "Construction details",
+        "label": "Waste reduction and recycling plan",
+        "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+        "requirement_fingerprint": "sha256:9dd814cf0c2118dd8392cd0a5d9fdec434e5ac8f28dac53dac609492aaba7449",
+        "requirement_id": "waste-reduction-recycling-plan",
+        "source_excerpt": "Waste Reduction and Recycling Plan",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Building Permit Submittal Checklist",
+        "status": "present"
+      },
+      {
+        "category": "Conditional items",
+        "label": "Solar plans",
+        "reason": "A project fact that controls this item is unknown.",
+        "requirement_fingerprint": "sha256:f1c304ae5745acb2dc9b028854f2ad10eb3c25b005dd205c4dcaf50528abdec6",
+        "requirement_id": "solar-plans",
+        "source_excerpt": "Solar Plans (if applicable)",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, conditional checklist item",
+        "status": "needs_staff_review"
+      },
+      {
+        "category": "Conditional items",
+        "label": "Fire sprinkler plans",
+        "reason": "A project fact that controls this item is unknown.",
+        "requirement_fingerprint": "sha256:c5695c4f76e069324708a2f8d2333ef545b3fd233bb16b2213b89a3e72bbc9bf",
+        "requirement_id": "fire-sprinkler-plans",
+        "source_excerpt": "Fire Sprinkler Plans (if applicable)",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, conditional checklist item",
+        "status": "needs_staff_review"
+      },
+      {
+        "category": "Conditional items",
+        "label": "Upgrade from septic or well to City services",
+        "reason": "The reported project facts do not trigger this item.",
+        "requirement_fingerprint": "sha256:67de3f2b4e0dc3e8256ebbb4f7489030f85ca58a551c242e398f6f934bd648ca",
+        "requirement_id": "upgrade-to-city-services",
+        "source_excerpt": "If on a septic system or well: Upgrade to City Services required",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, conditional checklist item",
+        "status": "not_applicable"
+      },
+      {
+        "category": "Conditional items",
+        "label": "Signed geotechnical report or qualifying engineer letter",
+        "reason": "The reported project facts do not trigger this item.",
+        "requirement_fingerprint": "sha256:a3836228e4ac3226654b17e3fcc9976627a491a4704c841551227f3deda06ceb",
+        "requirement_id": "spring-lake-geotechnical-report",
+        "source_excerpt": "Geotechnical Report signed by a licensed geotechnical engineer",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Spring Lake checklist items",
+        "status": "not_applicable"
+      },
+      {
+        "category": "Conditional items",
+        "label": "Post-tension slab included in the preapproved plans",
+        "reason": "The reported project facts do not trigger this item.",
+        "requirement_fingerprint": "sha256:6bb76a5be1e82286506322506696d2a34c4709e445914c5ce13d67aa6fffc340",
+        "requirement_id": "spring-lake-post-tension-slab",
+        "source_excerpt": "Preapproved plans must include post-tension slab",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, Spring Lake checklist items",
+        "status": "not_applicable"
+      },
+      {
+        "category": "Conditional items",
+        "label": "Flood elevation certificate",
+        "reason": "A project fact that controls this item is unknown.",
+        "requirement_fingerprint": "sha256:1b3319d31d35dbf288db034c37cbb943efbf006558fa03fa7790774f111c3bfa",
+        "requirement_id": "flood-elevation-certificate",
+        "source_excerpt": "Flood Elevation Certificate",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "source_locator": "page 1, flood-zone checklist item",
+        "status": "needs_staff_review"
+      }
+    ],
+    "inventory": [
+      {
+        "requirement_id": "building-permit-application",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plan-owner-contract-or-authorization",
+        "status": "present"
+      },
+      {
+        "requirement_id": "dimensioned-plot-plan",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-address-apn",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "plot-plan-owner-contact",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-scale",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-lot-dimensions",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-footprints-setbacks",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-other-structures",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-easements",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "plot-plan-utilities",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plot-plan-drainage",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "plot-plan-tree-removal",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "plot-plan-driveway",
+        "status": "present"
+      },
+      {
+        "requirement_id": "site-specific-construction-details",
+        "status": "present"
+      },
+      {
+        "requirement_id": "foundation-plan",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plumbing-electrical-tie-in",
+        "status": "present"
+      },
+      {
+        "requirement_id": "electrical-load-calculations",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "waste-reduction-recycling-plan",
+        "status": "present"
+      },
+      {
+        "requirement_id": "solar-plans",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "fire-sprinkler-plans",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "upgrade-to-city-services",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "spring-lake-geotechnical-report",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "spring-lake-post-tension-slab",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "flood-elevation-certificate",
+        "status": "unknown"
+      }
+    ],
+    "manifest_type": "prototype_packet_presence",
+    "overall_status": "known_gaps",
+    "packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e",
+    "packet_id": "woodland-preapproved-adu-hypothetical-001",
+    "schema_version": 1,
+    "source_bindings": [
+      {
+        "sha256": "59ebf082a59ff257f104a13f75d63faa869565bfdecc33a6e1eba306b4796d62",
+        "source_checked_on": "2026-07-29",
+        "source_id": "woodland-preapproved-adu-checklist",
+        "url": "https://www.cityofwoodland.gov/DocumentCenter/View/12372"
+      },
+      {
+        "sha256": "5f99beaf208dc10d8794df0ce1cd3d66f7414ac062d81cbdc018403ef01badb5",
+        "source_checked_on": "2026-07-30",
+        "source_id": "yolo-public-parcels-layer",
+        "url": "https://gis.yolocounty.gov/ext/rest/services/Public/Parcels_Public/FeatureServer/0?f=pjson"
+      }
+    ],
+    "source_review_due_on": "2027-01-25",
+    "source_status": "current",
+    "source_status_as_of": "2026-07-30",
+    "staff_questions": [
+      "Do solar plans apply to this project?",
+      "Do fire sprinkler plans apply to this project?",
+      "Is the property in a flood zone?"
+    ],
+    "synthetic": true,
+    "workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
+    "workflow_id": "woodland-preapproved-detached-adu"
+  },
+  "readiness_packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e",
+  "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
+  "readiness_workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
+  "readiness_workflow_id": "woodland-preapproved-detached-adu",
+  "route_source_review_due_on": "2027-01-23",
+  "route_source_status": "current",
+  "route_source_status_as_of": "2026-07-30",
+  "schema_version": 1,
+  "screening_case_fingerprint": "sha256:3171705791a2520132e727c9d39d6f0bc710d7114e6408c0bfd2af6ebb3d754b",
+  "screening_case_id": "woodland-new-detached-adu-local-layer",
+  "screening_expected_rule_ids": [
+    "adu-ministerial-review",
+    "adu-protected-minimum",
+    "adu-height-standards",
+    "adu-size-allowances",
+    "adu-parking-limits",
+    "adu-no-owner-occupancy-rental",
+    "woodland-adu-ordinance-2026"
+  ],
+  "screening_intake": {
+    "adu_project_form": "new_detached",
+    "jurisdiction": "woodland",
+    "primary_dwelling_status": "existing_single_family",
+    "project_type": "adu",
+    "unpermitted_existing": "no"
+  },
+  "status": "prototype",
+  "synthetic": true,
+  "version": "1.0.0"
+}

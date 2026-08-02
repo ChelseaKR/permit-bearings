@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "journey": {
+    "journey_id": "woodland-preapproved-detached-adu-synthetic",
+    "version": "1.0.0",
+    "status": "prototype",
+    "label": "Made-up Woodland preapproved detached ADU journey",
+    "synthetic": true,
+    "screening_case_id": "woodland-new-detached-adu-local-layer",
+    "candidate_route_rule_ids": [
+      "adu-ministerial-review"
+    ],
+    "readiness_workflow_id": "woodland-preapproved-detached-adu",
+    "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
+    "editable_applicability_fact_ids": [
+      "uses_city_preapproved_plan"
+    ],
+    "boundary": "This versioned journey joins one made-up route fixture to one generated synthetic Woodland packet-presence result. It does not describe a real property, retrieve or verify parcel facts, inspect files, certify completeness, determine eligibility, or approve a permit."
+  }
+}

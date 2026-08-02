@@ -149,6 +149,7 @@ def test_canonical_woodland_sample_reports_bounded_known_gaps(
     assert workflow.workflow_id == "woodland-preapproved-detached-adu"
     assert packet.synthetic is True
     assert len(workflow.requirements) == 25
+    assert result.applicability_status == "applies"
     assert result.overall_status == "known_gaps"
     assert result.source_status == "current"
     assert result.source_status_as_of == AS_OF.isoformat()
@@ -351,6 +352,7 @@ def test_wrong_packet_scope_is_not_evaluated(
 
     result = evaluate_readiness(workflow, wrong_scope, today=AS_OF)
 
+    assert result.applicability_status == "does_not_apply"
     assert result.overall_status == "outside_bounded_workflow"
     assert result.source_status == "current"
     assert result.counts()["not_evaluated"] == len(workflow.requirements)
@@ -371,8 +373,28 @@ def test_negative_workflow_applicability_is_outside_bounded_scope(
 
     result = evaluate_readiness(workflow, not_preapproved, today=AS_OF)
 
+    assert result.applicability_status == "does_not_apply"
     assert result.overall_status == "outside_bounded_workflow"
     assert result.counts()["not_evaluated"] == 25
+
+
+def test_unknown_workflow_applicability_blocks_packet_evaluation(
+    workflow: ReadinessWorkflow,
+    packet: ReadinessPacket,
+):
+    unknown_plan = _packet_variant(
+        _all_present_packet(packet, conditional_value="no"),
+        facts={"uses_city_preapproved_plan": "unknown"},
+    )
+
+    result = evaluate_readiness(workflow, unknown_plan, today=AS_OF)
+
+    assert result.applicability_status == "unknown"
+    assert result.overall_status == "needs_review"
+    assert result.counts()["not_evaluated"] == 25
+    assert result.staff_questions == (
+        "Is this packet using a City of Woodland preapproved ADU plan?",
+    )
 
 
 @pytest.mark.parametrize("changed_source_id", [CHECKLIST_SOURCE_ID, PARCEL_SOURCE_ID])
@@ -389,6 +411,7 @@ def test_changed_or_stale_source_fails_closed_for_every_requirement(
     )
 
     assert changed.overall_status == "source_review_required"
+    assert changed.applicability_status == "applies"
     assert changed.source_status == "source_review_required"
     assert changed.source_status_as_of == AS_OF.isoformat()
     assert changed.source_review_due_on == "2027-01-25"
@@ -891,6 +914,7 @@ def test_manifest_is_deterministic_and_matches_committed_evidence(
     assert set(first_manifest["counts"]) == set(FINDING_STATUSES)
     assert first_manifest["workflow_fingerprint"].startswith("sha256:")
     assert first_manifest["packet_fingerprint"].startswith("sha256:")
+    assert first_manifest["applicability_status"] == "applies"
     assert first_manifest["source_status"] == "current"
     assert first_manifest["source_status_as_of"] == AS_OF.isoformat()
     assert first_manifest["source_review_due_on"] == "2027-01-25"
@@ -939,6 +963,7 @@ def test_default_loader_and_cli_use_current_date_for_source_currency(
     assert cli_manifest["source_status_as_of"] == runtime_as_of.isoformat()
     assert cli_manifest["source_review_due_on"] == "2027-01-25"
     assert cli_manifest["source_status"] == "source_review_required"
+    assert cli_manifest["applicability_status"] == "applies"
     assert cli_manifest["overall_status"] == "source_review_required"
 
 
