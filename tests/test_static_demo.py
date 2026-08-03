@@ -39,7 +39,8 @@ def test_committed_demo_bundle_matches_canonical_json():
     bundle = build_bundle()
 
     assert OUTPUT.read_text(encoding="utf-8") == bundle
-    assert '"format_version":2' in bundle
+    assert '"format_version":3' in bundle
+    assert '"source_state":' in bundle
 
 
 def test_generated_woodland_journey_binds_one_route_and_packet_envelope():
@@ -149,7 +150,7 @@ def test_static_pages_load_only_the_assets_they_need():
 
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in application
-    assert "data?._meta?.format_version !== 2" in application
+    assert "data?._meta?.format_version !== 3" in application
 
 
 def test_static_pages_have_consistent_navigation_and_resolvable_links():
@@ -479,7 +480,7 @@ def test_packet_sample_renders_only_the_generated_python_result():
     assert "function renderReadiness(data)" in application
     assert "data.result.findings.filter" in application
     assert "function evaluateReadiness" not in application
-    assert "function readinessSourceIsCurrent(data)" in application
+    assert "function readinessSourceIsCurrent(" in application
     assert "function readinessParcelEvidenceMarkup(data, current)" in application
     assert "no address, APN, or live parcel was" in application
     assert "Action copy is" in application
@@ -1352,6 +1353,9 @@ def test_demo_server_exposes_only_intended_static_files():
     assert static_path("/assets/site.css") == ROOT / "assets" / "site.css"
     assert static_path("/assets/demo.js") == ROOT / "assets" / "demo.js"
     assert static_path("/data/demo-data.js") == OUTPUT
+    assert static_path("/data/source-status/current.json") == (
+        ROOT / "data" / "source-status" / "current.json"
+    )
     assert static_path("/data/explanations/plain-language.json") == (
         ROOT / "data" / "explanations" / "plain-language.json"
     )

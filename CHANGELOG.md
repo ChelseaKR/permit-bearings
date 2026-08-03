@@ -20,6 +20,22 @@ published a versioned release.
 
 ### Changed
 
+- Added a durable, repository-adopted source-state overlay. The watcher can
+  emit a proposed completed-run receipt with observed digests; the scheduled
+  workflow retains that JSON for human adoption but never overwrites public
+  state. A strict loader and bundle-format-3 browser contract bind the source
+  registry and run receipt, re-derive exact affected/unaffected rule and
+  Golden-case IDs, and fail closed on drift. Changed dependencies stale exact
+  statewide records and block only bound Woodland route/checklist/parcel
+  surfaces; unrelated records remain available, while unverifiable fetches
+  warn without staling. The public evidence page distinguishes the committed
+  snapshot from the temporary § 66321 rehearsal. Automatic adoption, a named
+  reviewer record, staffed disposition workflow, packet-field queue records,
+  new-law discovery, and substantive approval remain planned.
+- Refreshed the public HCD Housing Accountability Unit letter corpus from
+  1,309 to 1,314 records on 2026-08-03. All 1,314 rows map cleanly to the
+  statewide jurisdiction registry or the two statewide records; Grover Beach
+  now has letter history in the applicant-facing jurisdiction context.
 - Added a bilingual, print-focused statewide orientation handoff for all 541
   recognized California cities and counties. It carries the selected facts,
   candidate-route sources and currency, local-coverage boundary, and questions

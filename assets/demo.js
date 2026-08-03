@@ -365,6 +365,7 @@ let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [], JURIS = [], LETTERS = {}
 let EXPLANATIONS = new Map();
 let READINESS = null;
 let JOURNEY = null;
+let SOURCE_STATE = null;
 const NORMALIZED_READINESS_DATA = new WeakSet();
 let jurisByName = new Map();
 let intakeDraft = {};
@@ -482,6 +483,19 @@ function ruleStatus(rule, changedSourceIds) {
   return age < 0 || age > MAX_AGE_DAYS ? "stale" : "verified";
 }
 
+function committedChangedSourceIds() {
+  return typeof SOURCE_STATE !== "undefined"
+    && Array.isArray(SOURCE_STATE?.changed_source_ids)
+    ? SOURCE_STATE.changed_source_ids : [];
+}
+
+function activeChangedSourceIds() {
+  const changed = new Set(committedChangedSourceIds());
+  if (typeof simulating !== "undefined" && simulating)
+    changed.add("ca-gov-66321");
+  return [...changed].sort();
+}
+
 function uiText(value) {
   return String(value ?? "").replace(/\s*\u2014\s*/g, " ");
 }
@@ -503,7 +517,8 @@ function escVerbatim(value) {
 function safeExternalUrl(value) {
   try {
     const parsed = new URL(String(value));
-    return ["https:", "http:"].includes(parsed.protocol) ? parsed.href : null;
+    return ["https:", "http:"].includes(parsed.protocol)
+      && !parsed.username && !parsed.password ? parsed.href : null;
   } catch {
     return null;
   }
@@ -767,6 +782,133 @@ function sameStringSet(left, right) {
   return sortedLeft.every((value, index) => value === sortedRight[index]);
 }
 
+const SOURCE_STATE_KEYS = [
+  "affected_golden_case_ids", "affected_rule_ids", "changed_source_ids",
+  "checked_at", "observations", "receipt", "schema_version", "snapshot_id",
+  "source_registry_sha256", "unaffected_golden_case_ids",
+  "unaffected_rule_ids", "unverifiable_source_ids",
+];
+const SOURCE_OBSERVATION_KEYS = [
+  "last_verified_on", "observed_sha256", "reason", "recorded_sha256",
+  "source_id", "status",
+];
+const SOURCE_RECEIPT_KEYS = ["commit_sha", "method", "run_url", "status"];
+
+function validSha256(value) {
+  return typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+}
+
+function validCommitSha(value) {
+  return typeof value === "string" && /^[0-9a-f]{40}$/.test(value);
+}
+
+function validUtcTimestamp(value) {
+  if (typeof value !== "string"
+      || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value)) return false;
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.getTime())
+    && parsed.toISOString().replace(".000Z", "Z") === value;
+}
+
+function exactSortedStringList(value) {
+  return Array.isArray(value)
+    && value.every(item => typeof item === "string")
+    && value.length === new Set(value).size
+    && value.every((item, index) => !index || value[index - 1] < item);
+}
+
+function sourceStateObservationIsValid(observation, source) {
+  if (!hasExactKeys(
+    observation,
+    SOURCE_OBSERVATION_KEYS,
+    SOURCE_OBSERVATION_KEYS,
+  ) || !source || source.watch === false
+      || observation.source_id !== source.source_id
+      || !["unchanged", "changed", "unverifiable"].includes(
+        observation.status,
+      )
+      || observation.recorded_sha256 !== source.sha256
+      || observation.last_verified_on !== source.fetched_on
+      || !validSha256(observation.recorded_sha256)) return false;
+  if (observation.status === "unverifiable") {
+    return observation.observed_sha256 === null
+      && nonBlank(observation.reason);
+  }
+  return validSha256(observation.observed_sha256)
+    && observation.reason === null
+    && (observation.status === "unchanged")
+      === (observation.observed_sha256 === observation.recorded_sha256);
+}
+
+function sourceImpactLists(changedSourceIds, rules, golden) {
+  const changed = new Set(changedSourceIds);
+  const affectedRules = rules.filter(rule =>
+    rule.source_dependencies.some(sourceId => changed.has(sourceId))
+  ).map(rule => rule.rule_id).sort();
+  const affectedRuleSet = new Set(affectedRules);
+  const unaffectedRules = rules.map(rule => rule.rule_id)
+    .filter(ruleId => !affectedRuleSet.has(ruleId)).sort();
+  const affectedCases = golden.filter(record =>
+    record.expected_rule_ids.some(ruleId => affectedRuleSet.has(ruleId))
+  ).map(record => record.case_id).sort();
+  const affectedCaseSet = new Set(affectedCases);
+  const unaffectedCases = golden.map(record => record.case_id)
+    .filter(caseId => !affectedCaseSet.has(caseId)).sort();
+  return {affectedRules, unaffectedRules, affectedCases, unaffectedCases};
+}
+
+function normalizeSourceState(data, sources, rules, golden, generatedFrom = {}) {
+  if (!hasExactKeys(data, SOURCE_STATE_KEYS, SOURCE_STATE_KEYS)
+      || data.schema_version !== 1
+      || !validStableId(data.snapshot_id)
+      || !validUtcTimestamp(data.checked_at)
+      || !validSha256(data.source_registry_sha256)
+      || (generatedFrom["data/sources.json"]
+        && generatedFrom["data/sources.json"]
+          !== data.source_registry_sha256)
+      || !hasExactKeys(
+        data.receipt,
+        SOURCE_RECEIPT_KEYS,
+        SOURCE_RECEIPT_KEYS,
+      )
+      || data.receipt.status !== "reviewed"
+      || !nonBlank(data.receipt.method)
+      || !safeExternalUrl(data.receipt.run_url)?.startsWith("https://")
+      || !validCommitSha(data.receipt.commit_sha)) return null;
+  const watched = Object.values(sources)
+    .filter(source => source && source.watch !== false && validSha256(source.sha256))
+    .sort((left, right) => left.source_id === right.source_id
+      ? 0 : left.source_id < right.source_id ? -1 : 1);
+  if (!Array.isArray(data.observations)
+      || data.observations.length !== watched.length
+      || !data.observations.every((observation, index) =>
+        sourceStateObservationIsValid(observation, watched[index])
+      )) return null;
+  const changed = data.observations.filter(item => item.status === "changed")
+    .map(item => item.source_id);
+  const unverifiable = data.observations
+    .filter(item => item.status === "unverifiable")
+    .map(item => item.source_id);
+  if (!exactSortedStringList(data.changed_source_ids)
+      || !exactSortedStringList(data.unverifiable_source_ids)
+      || stableJson(data.changed_source_ids) !== stableJson(changed)
+      || stableJson(data.unverifiable_source_ids) !== stableJson(unverifiable))
+    return null;
+  const impact = sourceImpactLists(changed, rules, golden);
+  const expected = {
+    affected_golden_case_ids: impact.affectedCases,
+    affected_rule_ids: impact.affectedRules,
+    unaffected_golden_case_ids: impact.unaffectedCases,
+    unaffected_rule_ids: impact.unaffectedRules,
+  };
+  if (!Object.entries(expected).every(([field, value]) =>
+    exactSortedStringList(data[field])
+      && stableJson(data[field]) === stableJson(value)
+  )) return null;
+  deepFreezeGeneratedData(data);
+  return generatedDataIsDeeplyFrozen(data) ? data : null;
+}
+
 function expectedJourneyFactEnvelope(journey, readiness) {
   return {
     readiness_facts: readiness.packet.facts,
@@ -946,15 +1088,21 @@ async function normalizeJourney(journeys, readiness, rules, golden) {
   }
 }
 
-function journeySourcesAreCurrent(journey, readiness, rules = RULES) {
+function journeySourcesAreCurrent(
+  journey,
+  readiness,
+  rules = RULES,
+  changedSourceIds = activeChangedSourceIds(),
+) {
   if (!journey || !readiness
       || journey.route_source_status !== "current"
       || !dateIsNotFuture(journey.route_source_status_as_of)
       || !dateIsNotPast(journey.route_source_review_due_on)
-      || !readinessSourceIsCurrent(readiness)) return false;
+      || !readinessSourceIsCurrent(readiness, changedSourceIds)) return false;
   return journey.candidate_route_rule_ids.every(ruleId => {
     const matchesId = rules.filter(rule => rule.rule_id === ruleId);
-    return matchesId.length === 1 && ruleStatus(matchesId[0], []) === "verified";
+    return matchesId.length === 1
+      && ruleStatus(matchesId[0], changedSourceIds) === "verified";
   });
 }
 
@@ -1018,8 +1166,9 @@ function journeyEntryHoldMarkup(state) {
     return `<section class="journey-entry-hold" aria-labelledby="entryHoldHeading">
       <p class="journey-stage-label">Stage 3 of 4 · Packet</p>
       <h2 id="entryHoldHeading">Source review is required before using this packet example</h2>
-      <p>The route or packet evidence is outside its recorded review window.
-        No packet findings are shown as current.</p>
+      <p>The route or one of the packet’s bound source records changed or is
+        outside its recorded review window. No packet findings are shown as
+        current.</p>
       <p><a href="evidence.html">Inspect sources and limits</a></p>
     </section>`;
   }
@@ -1704,7 +1853,7 @@ function statewideOrientationMarkup(list = [], unresolved = []) {
     const localized = usableLocalizedExplanation(EXPLANATIONS.get(rule.rule_id));
     const title = localized?.localized.title || rule.pathway;
     const titleLang = localized?.copyLang || "en";
-    const status = ruleStatus(rule, simulating ? ["ca-gov-66321"] : []);
+    const status = ruleStatus(rule, activeChangedSourceIds());
     const statusLabel = status === "verified"
       ? s.verifiedOn(formatSourceDate(rule.citation.verified_on))
       : status === "stale" ? s.stale : s.unverified;
@@ -1787,9 +1936,7 @@ function renderResultCard(rule, explanation, options = {}) {
   const c = rule.citation;
   const safeId = String(rule.rule_id).replace(/[^A-Za-z0-9_-]/g, "-");
   const group = resultGroup(rule);
-  const status = ruleStatus(
-    rule, simulating ? ["ca-gov-66321"] : []
-  );
+  const status = ruleStatus(rule, activeChangedSourceIds());
   const ok = status === "verified";
   const badge = ok
     ? `<span class="badge info" lang="${lang}"><span class="status-ico" aria-hidden="true">◷</span>${esc(s.verifiedOn(formatSourceDate(c.verified_on)))}</span>`
@@ -2010,9 +2157,7 @@ function renderResults(list) {
     ? `${summaryText} ${s.resultIntro} ${s.routeOrientation}`
     : `${summaryText} ${s.none} ${s.supportingOnly}`;
   const shownExplanations = list.map(rule => {
-    if (ruleStatus(
-      rule, simulating ? ["ca-gov-66321"] : []
-    ) !== "verified") return null;
+    if (ruleStatus(rule, activeChangedSourceIds()) !== "verified") return null;
     const explanation = EXPLANATIONS.get(rule.rule_id);
     const localized = usableLocalizedExplanation(explanation);
     return localized ? {explanation, ...localized} : null;
@@ -2204,7 +2349,7 @@ if (pageIs("project") && resultContainerElement) {
 }
 
 function renderDashboard() {
-  const changed = simulating ? ["ca-gov-66321"] : [];
+  const changed = activeChangedSourceIds();
   const statuses = RULES.map(r => ({ rule: r, st: ruleStatus(r, changed) }));
   const n = { verified: 0, stale: 0, unverified: 0 };
   statuses.forEach(x => n[x.st]++);
@@ -2262,7 +2407,83 @@ function renderDashboard() {
   document.getElementById("resetBtn").classList.toggle("hidden", !simulating);
 }
 
+function sourceStateOperationalImpact(changedSourceIds) {
+  const impact = sourceImpactLists(changedSourceIds, RULES, GOLDEN);
+  const changed = new Set(changedSourceIds);
+  const routeChanged = JOURNEY?.candidate_routes?.some(route =>
+    route.source_dependencies.some(sourceId => changed.has(sourceId))
+  ) || false;
+  const readinessChanged = READINESS?.workflow?.source_bindings?.some(
+    binding => changed.has(binding.source_id),
+  ) || false;
+  const surfaces = [];
+  if (impact.affectedRules.length) {
+    surfaces.push(
+      `${impact.affectedRules.length} dependent rule card${impact.affectedRules.length === 1 ? "" : "s"} and the matching statewide orientation receipts`,
+    );
+  }
+  if (impact.affectedCases.length) {
+    surfaces.push(
+      `${impact.affectedCases.length} structured regression scenario${impact.affectedCases.length === 1 ? "" : "s"} queued for replay`,
+    );
+  }
+  if (routeChanged) surfaces.push("the Woodland route-to-packet handoff");
+  if (readinessChanged) {
+    surfaces.push(
+      "the Woodland packet findings, draft actions, and print summary",
+    );
+  }
+  return {...impact, surfaces};
+}
+
+function renderSourceState() {
+  const summary = document.getElementById("sourceSnapshotSummary");
+  const queue = document.getElementById("sourceImpactQueue");
+  const runLink = document.getElementById("sourceSnapshotRun");
+  if (!summary || !queue || !runLink || !SOURCE_STATE) return;
+  const counts = {unchanged: 0, changed: 0, unverifiable: 0};
+  SOURCE_STATE.observations.forEach(item => counts[item.status]++);
+  summary.textContent = `Checked ${formatSourceDate(
+    SOURCE_STATE.checked_at.slice(0, 10),
+  )}: ${counts.unchanged} unchanged; ${counts.changed} changed; `
+    + `${counts.unverifiable} could not be re-fetched. This repository-adopted `
+    + "receipt is the source-state overlay used by the applicant guide.";
+  runLink.href = SOURCE_STATE.receipt.run_url;
+  const impact = sourceStateOperationalImpact(SOURCE_STATE.changed_source_ids);
+  const queueParts = [];
+  if (SOURCE_STATE.changed_source_ids.length) {
+    queueParts.push(`<p><strong>Review queue open.</strong>
+      ${SOURCE_STATE.changed_source_ids.length} changed source${SOURCE_STATE.changed_source_ids.length === 1 ? "" : "s"}
+      affect ${impact.affectedRules.length} rule record${impact.affectedRules.length === 1 ? "" : "s"}
+      and ${impact.affectedCases.length} structured scenario${impact.affectedCases.length === 1 ? "" : "s"}.</p>`);
+    if (impact.surfaces.length) {
+      queueParts.push(`<ul>${impact.surfaces.map(surface =>
+        `<li>${esc(surface)}</li>`
+      ).join("")}</ul>`);
+    }
+  } else {
+    queueParts.push(
+      "<p><strong>No source-triggered review queue is open.</strong> "
+      + "No fetched source in this committed snapshot changed.</p>",
+    );
+  }
+  if (SOURCE_STATE.unverifiable_source_ids.length) {
+    const unverifiableCount = SOURCE_STATE.unverifiable_source_ids.length;
+    const unavailableCopy = unverifiableCount === 1
+      ? "1 source was not re-fetched. Its recorded date still controls"
+      : `${unverifiableCount} sources were not re-fetched. Their recorded dates still control`;
+    queueParts.push(`<p><strong>Watch warning.</strong>
+      ${unavailableCopy}; no dependent was marked stale solely because a
+      download failed.</p>`);
+  }
+  queue.innerHTML = queueParts.join("");
+  queue.classList.remove("hidden");
+}
+
 function renderSources() {
+  const observations = new Map(
+    (SOURCE_STATE?.observations || []).map(item => [item.source_id, item]),
+  );
   document.querySelector("#sourceTable tbody").innerHTML =
     Object.entries(SOURCES).map(([url, sourceRecord]) => {
       const metadata = sourceRecord && typeof sourceRecord === "object"
@@ -2273,9 +2494,18 @@ function renderSources() {
         ? `<a href="${esc(sourceUrl)}" rel="noopener">${label}</a>`
         : `<span>${label}</span>`;
       const watched = metadata.watch !== false && nonBlank(metadata.sha256);
-      const monitoring = watched
-        ? `<span class="badge info">watched</span>`
-        : `<span class="badge info">reference only</span>`;
+      const observation = observations.get(metadata.source_id);
+      let monitoring = `<span class="badge info">reference only</span>`;
+      if (watched && observation?.status === "unchanged") {
+        monitoring = `<span class="badge ok"><span class="status-ico"
+          aria-hidden="true">✓</span>unchanged in snapshot</span>`;
+      } else if (watched && observation?.status === "changed") {
+        monitoring = `<span class="badge bad"><span class="status-ico"
+          aria-hidden="true">✕</span>changed · review required</span>`;
+      } else if (watched && observation?.status === "unverifiable") {
+        monitoring = `<span class="badge warn"><span class="status-ico"
+          aria-hidden="true">⚠</span>could not re-fetch</span>`;
+      }
       const recorded = metadata.fetched_on ? esc(metadata.fetched_on) : "Not recorded";
       const digest = nonBlank(metadata.sha256)
         ? `${esc(metadata.sha256.slice(0, 16))}…` : "not recorded";
@@ -2621,16 +2851,18 @@ if (pageIs("project") && clockButtonElement) {
 }
 
 function matchingSimulationCount() {
+  const committed = committedChangedSourceIds();
+  const rehearsal = [...new Set([...committed, "ca-gov-66321"])];
   if (pageIs("evidence")) {
     return RULES.filter(rule =>
-      ruleStatus(rule, []) === "verified"
-      && ruleStatus(rule, ["ca-gov-66321"]) === "stale"
+      ruleStatus(rule, committed) === "verified"
+      && ruleStatus(rule, rehearsal) === "stale"
     ).length;
   }
   if (LAST_RESULTS === null) return 0;
   return LAST_RESULTS.filter(rule =>
-    ruleStatus(rule, []) === "verified"
-    && ruleStatus(rule, ["ca-gov-66321"]) === "stale"
+    ruleStatus(rule, committed) === "verified"
+    && ruleStatus(rule, rehearsal) === "stale"
   ).length;
 }
 
@@ -3094,8 +3326,16 @@ function readinessParcelEvidenceMarkup(data, current) {
   </section>`;
 }
 
-function readinessSourceIsCurrent(data) {
+function readinessSourceIsCurrent(
+  data,
+  changedSourceIds = [],
+) {
   if (data.result.source_status !== "current") return false;
+  const readinessSourceIds = data.workflow.source_bindings
+    .map(binding => binding.source_id);
+  if (changedSourceIds.some(sourceId =>
+    readinessSourceIds.includes(sourceId)
+  )) return false;
   const reviewDueOn = readinessReviewDueOn(data);
   if (!reviewDueOn) return false;
   const now = new Date();
@@ -3201,7 +3441,7 @@ function readinessStatusSummary(data, current) {
     return {
       headline: "Source review is required before using this packet result",
       intro: [
-        "The dated checklist record is outside its review window or was marked changed.",
+        "One or more dated source records bound to this packet changed or fell outside the recorded review window.",
         staffQuestionText,
         "Draft actions and packet findings are withheld until the source is checked again.",
       ].filter(Boolean).join(" "),
@@ -3316,7 +3556,11 @@ function renderReadiness(data) {
   const remedyById = new Map(
     data.remedies.entries.map(entry => [entry.requirement_id, entry])
   );
-  const current = readinessSourceIsCurrent(data);
+  const current = readinessSourceIsCurrent(
+    data,
+    typeof activeChangedSourceIds === "function"
+      ? activeChangedSourceIds() : [],
+  );
   const missing = data.result.findings.filter(
     finding => finding.status === "missing"
   );
@@ -3534,9 +3778,10 @@ async function fetchRuleData() {
 function loadDemoData() {
   if (globalThis.PERMIT_PATHWAYS_DEMO_DATA) {
     const data = globalThis.PERMIT_PATHWAYS_DEMO_DATA;
-    if (data?._meta?.format_version !== 2
+    if (data?._meta?.format_version !== 3
         || !Array.isArray(data.rules)
-        || !validRuleManifest(data.rule_manifest))
+        || !validRuleManifest(data.rule_manifest)
+        || !data.source_state)
       return Promise.reject(new Error("generated demo bundle has invalid rule data"));
     return Promise.resolve(data);
   }
@@ -3550,12 +3795,14 @@ function loadDemoData() {
     fetchOptionalJson("data/conformance/results/index.json", {}),
     fetchOptionalJson("data/explanations/plain-language.json",
                       {schema_version: 1, entries: []}),
+    fetchJson("data/source-status/current.json"),
   ]).then(([ruleData, golden, sources,
-            checks, registry, letters, scans, plainLanguage]) => ({
+            checks, registry, letters, scans, plainLanguage, sourceState]) => ({
     rules: ruleData.rules,
     rule_manifest: ruleData.rule_manifest,
     golden, sources, checks, registry, letters, scans,
     plain_language: plainLanguage,
+    source_state: sourceState,
   }));
 }
 
@@ -3609,6 +3856,15 @@ async function initializeDemo() {
     CHECKS = data.checks;
     LETTERS = data.letters.letters || {};
     SCANS = data.scans;
+    SOURCE_STATE = normalizeSourceState(
+      data.source_state,
+      SOURCES,
+      RULES,
+      GOLDEN,
+      data._meta?.generated_from || {},
+    );
+    if (!SOURCE_STATE)
+      throw new Error("reviewed source-state snapshot failed validation");
     READINESS = await normalizeReadinessData(data.readiness);
     JOURNEY = await normalizeJourney(
       data.journeys,
@@ -3673,6 +3929,7 @@ async function initializeDemo() {
     }
     if (pageIs("evidence")) {
       renderDashboard();
+      renderSourceState();
       renderSources();
     }
   } catch (error) {

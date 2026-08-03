@@ -1,4 +1,4 @@
-# Accessibility audit: static and automated browser pass, updated 2026-08-02
+# Accessibility audit: static and automated browser pass, updated 2026-08-03
 
 Scope: the five-page public static site (`index.html`, `check.html`,
 `prepare.html`, `review.html`, and `evidence.html`) and the separate applicant
@@ -70,18 +70,21 @@ behavior, or conformance for the other four static pages.
 
 ## Automated browser checks recorded
 
-On 2026-08-02, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
+On 2026-08-03, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
 AAA violations on `index.html`, `check.html`, `prepare.html`, `review.html`,
-or `evidence.html` in a Playwright-managed Chromium build. Thirty browser
+or `evidence.html` in a Playwright-managed Chromium build. Thirty-four browser
 checks also exercise each page at 320px and 390px, open the compact navigation,
 check document-level overflow, scan a populated applicant result, verify that
 mobile evidence tables render as labeled records, and cover valid/invalid
-journey-summary disclosure. A print-media check isolates the summary from the
+journey-summary disclosure. The evidence-page checks now cover the adopted
+all-unchanged source receipt, an internally consistent changed receipt with
+its derived review queue, and an unverifiable receipt that warns without
+staling a dependent. A print-media check isolates the summary from the
 site and detailed packet surfaces and checks horizontal overflow at an
 816-by-1056 CSS-pixel viewport. Lighthouse 13.4.1 audits all five initial pages
 plus the populated applicant sample and exact valid journey entry using its
-mobile profile. On 2026-08-02, all seven states met 1.00 accessibility and best
-practices, at least 0.98 performance, and at least 0.90 SEO. CI repeats both
+mobile profile. On 2026-08-03, all seven states met 1.00 accessibility and best
+practices, at least 0.99 performance, and at least 0.90 SEO. CI repeats both
 suites on pull requests, default-branch pushes, and weekly. A first performance
 sample below the 0.90 budget triggers two confirmation samples and evaluates
 their median; the budget itself is unchanged.

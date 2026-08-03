@@ -130,21 +130,28 @@ Start at `/` for the product boundary, then use `/review.html`,
   Its JSON is the same evidence-manifest shape committed for the sample.
 
 ### 3. The verification harness: Scenario C (5 min)
-- Open **Evidence & updates**. Show that every current rule record has dated
-  source evidence inside the review window. For Davis, distinguish the watched
-  City handout and HCD letter from the blocked, unwatched municipal-code
-  reference, and point out that the local/state interaction still needs human
-  resolution.
+- Open **Evidence & updates**. Start with **Snapshot used by this build**:
+  checked August 3, 2026, 19 unchanged, 0 changed, and 0 could not be
+  re-fetched. Open the exact GitHub Actions run and the machine-readable
+  receipt. Say that receipt status `reviewed` means deliberately selected for
+  this repository build; it is not legal, jurisdiction, counsel, or named-human
+  content approval, and it is not a live per-page source check.
+- Show that every current rule record has dated source evidence inside the
+  review window. For Davis, distinguish the watched City handout and HCD letter
+  from the blocked, unwatched municipal-code reference, and point out that the
+  local/state interaction still needs human resolution.
 - Watched sources table: content hashes of the March 2026 ADU Handbook and
   April 2026 SB 9 fact sheet; weekly automated re-fetch (show the GitHub
-  Action) reports when either changes or becomes unreachable.
+  Action) reports when either changes or becomes unreachable and retains a
+  proposed JSON receipt. Automation does not rewrite the public snapshot.
 - One click: rehearse an amendment to § 66321. Five dependent rules flip
   stale; matching result cards rerender and withhold their drafted actions,
   while unrelated records remain unchanged. Follow the link into the
-  applicant guide to show the stale state. Label this as a simulation.
-  Stable dependency IDs are implemented; persisted changed state and a staffed
-  review queue are not. "This is what the morning after the legislative
-  session should look like."
+  applicant guide to show the stale state. Label this as a temporary simulation
+  layered over—not written into—the adopted snapshot. Durable strict snapshot
+  propagation is implemented; automatic adoption, packet-field assignments,
+  named ownership, and a staffed disposition workflow are not. "This is what
+  the morning after the legislative session should look like."
 - 29 structured golden scenarios replay in the browser. They prove matcher
   regression behavior, not natural-language accuracy or jurisdiction
   acceptance.
@@ -174,7 +181,9 @@ Start at `/` for the product boundary, then use `/review.html`,
 ### 5. What I want from you (3 min)
 - Market-research honesty: the bounded packet-presence manifest is executable,
   but its checklist mapping, action copy, and usefulness have not been
-  validated. The source review queue is also still a rehearsal.
+  validated. The adopted source-state overlay and browser holds are executable,
+  but the maintenance process has not been exercised as a timed, staffed,
+  end-to-end re-verification and republication workflow.
 - Ask: which one jurisdiction and ADU subtype should be the deep pilot, which
   public/redacted packet examples can staff review, and who approves rule and
   translation changes?

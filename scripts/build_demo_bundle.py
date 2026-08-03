@@ -16,7 +16,6 @@ from dataclasses import asdict
 from datetime import date, timedelta
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
@@ -38,6 +37,7 @@ from permit_pathways.readiness import (  # noqa: E402
     load_readiness_remedies,
 )
 from permit_pathways.screening import load_rules  # noqa: E402
+from permit_pathways.source_state import load_source_state_snapshot  # noqa: E402
 
 OUTPUT = ROOT / "data" / "demo-data.js"
 RULE_MANIFEST_OUTPUT = ROOT / "data" / "rules" / "index.json"
@@ -55,6 +55,7 @@ JOURNEY_BINDING = Path("data/journeys/woodland-preapproved-detached-adu.json")
 JOURNEY_OUTPUT = ROOT / (
     "data/journeys/generated/woodland-preapproved-detached-adu.json"
 )
+SOURCE_STATE = Path("data/source-status/current.json")
 INPUTS = {
     "golden": Path("data/golden/example.json"),
     "sources": Path("data/sources.json"),
@@ -352,6 +353,17 @@ def build_bundle(
     )
     payload["journeys"] = [journey]
     digests.update(journey_digests)
+    source_state = load_source_state_snapshot(
+        root / SOURCE_STATE,
+        root / INPUTS["sources"],
+        root / "data" / "rules",
+        root / INPUTS["golden"],
+        require_reviewed=True,
+    )
+    payload["source_state"] = source_state.to_dict()
+    digests[SOURCE_STATE.as_posix()] = hashlib.sha256(
+        (root / SOURCE_STATE).read_bytes()
+    ).hexdigest()
 
     for key, relative_path in INPUTS.items():
         raw = (root / relative_path).read_bytes()
@@ -359,7 +371,7 @@ def build_bundle(
         digests[relative_path.as_posix()] = hashlib.sha256(raw).hexdigest()
 
     payload["_meta"] = {
-        "format_version": 2,
+        "format_version": 3,
         "generated_from": digests,
     }
     encoded = json.dumps(

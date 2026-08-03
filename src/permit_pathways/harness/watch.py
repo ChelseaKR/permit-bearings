@@ -106,6 +106,9 @@ class UnverifiableSource:
 class WatchResult:
     unchanged: list[str] = field(default_factory=list)  # stable source IDs
     changed: list[str] = field(default_factory=list)
+    # Recorded for every successfully fetched source so a persisted receipt
+    # can bind the observed bytes without re-fetching or inferring a digest.
+    observed_digests: dict[str, str] = field(default_factory=dict)
     # Fetch failures. Deliberately separate from ``changed``: an unreachable
     # source is not a revised source.
     unverifiable: dict[str, UnverifiableSource] = field(default_factory=dict)
@@ -349,6 +352,7 @@ def check_sources(
                 attempts=budget,
             )
             continue
+        result.observed_digests[source_id] = digest
         if digest == source.sha256:
             result.unchanged.append(source_id)
         else:
