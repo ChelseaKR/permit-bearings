@@ -1,6 +1,6 @@
 # Current prototype data flow
 
-Status: 2026-08-02. This describes the executable repository and public demo,
+Status: 2026-08-03. This describes the executable repository and public demo,
 not a production deployment or a compliance assessment.
 
 ## Boundary summary
@@ -17,6 +17,54 @@ response, but it does not persist that submission. A production deployment
 would require a separate data inventory, purpose and authority analysis,
 access controls, retention and deletion rules, public-records workflow,
 security review, and jurisdiction approval.
+
+## Source-state receipt path
+
+```text
+19 watched source records with retained digest/date
+    |
+    v
+Scheduled or local watcher re-fetch
+    |
+    +--> unchanged: observed digest equals recorded digest
+    +--> changed: fetched digest differs
+    +--> unverifiable: fetch failed; no change inference
+    |
+    v
+Proposed JSON receipt + exact run URL/commit
+    |
+    +--> scheduled workflow retains artifact for 30 days
+    +--> automation never edits the public snapshot
+    |
+    v
+Deliberate repository adoption as data/source-status/current.json
+    |
+    v
+Strict loader re-binds source registry and re-derives
+affected/unaffected rule and Golden-case IDs
+    |
+    v
+Bundle format 3 embeds historical records + current overlay separately
+    |
+    +--> changed dependency: stale exact rule/output or block bound handoff
+    +--> unverifiable dependency: visible warning, no automatic staleness
+    +--> unrelated dependency: explicit unaffected control remains available
+```
+
+The receipt status `reviewed` means a repository maintainer deliberately
+selected a completed-run receipt for publication. It does not record a named
+human reviewer or imply legal, jurisdiction, counsel, or substantive content
+approval. `src/permit_pathways/source_state.py` requires one observation per
+watched source, binds the current `data/sources.json` digest, checks the exact
+run receipt fields, and re-derives direct rule/Golden impact. The scheduled
+workflow emits only `proposed` artifacts. New-law discovery, automatic
+adoption/publication, packet-field assignment records, and staffed review
+ownership remain outside this flow.
+
+The source-state record is an overlay. It does not rewrite the historical rule,
+Golden, journey, readiness, or evidence-manifest records. The browser derives
+the Woodland route/checklist/parcel effects from those records' existing
+source bindings.
 
 ## Bounded readiness path
 
@@ -56,10 +104,12 @@ Versioned journey resolver
              |
              v
 Static build bundle
-             |
-             v
+    |
+    +--> Includes strict repository-adopted source-state overlay
+    |
+    v
 Browser validates the journey, linked route/readiness evidence,
-fingerprints, and current source-review windows
+fingerprints, current source-review windows, and exact changed-source bindings
     |
     +--> Active, unedited canonical sample + explicit Yes
     |        |
@@ -157,14 +207,21 @@ synthetic sample. It writes the derived evidence record to
 the same readiness payload in `data/demo-data.js`. The build also resolves the
 canonical journey definition, writes
 `data/journeys/generated/woodland-preapproved-detached-adu.json`, and embeds
-that same envelope in the bundle.
+that same envelope in the bundle. It also strictly loads the repository-adopted
+`data/source-status/current.json`, requires its publication receipt to be
+`reviewed`, re-derives its dependency impacts, and embeds it as a separate
+overlay. The bundle's generated-input manifest includes the snapshot digest.
 
 `check.html` consumes the journey envelope only for the active, unedited
 `sample=adu` fixture after the normal deterministic screening result exactly
 matches the bound golden case and candidate route. `assets/demo.js` checks the
 journey schema and identity; the linked golden intake, route, and readiness
 records; the shared applicability provenance; every recorded fingerprint; and
-the route and readiness source-review windows against the current date. The
+the route and readiness source-review windows against the current date. It
+also overlays the adopted changed-source IDs. A changed candidate-route source
+blocks the handoff; a changed checklist or parcel-metadata source blocks the
+packet; unrelated changes do not. An unverifiable fetch is not included in the
+changed set and therefore does not create unsupported staleness. The
 remaining editable applicability fact has no default. **Yes** exposes the
 packet link; **No** withholds it as not applicable; and **I'm not sure**
 withholds it and shows the exact staff question.

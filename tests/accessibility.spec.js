@@ -1,5 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
+const { readFileSync } = require("node:fs");
+const { resolve } = require("node:path");
 
 const JOURNEY_ID = "woodland-preapproved-detached-adu-synthetic";
 const JOURNEY_VERSION = "1.0.0";
@@ -20,6 +22,58 @@ const pages = {
   "/evidence.html": "Sources & limits",
   "/check.html": "Start",
 };
+
+const DEMO_ASSIGNMENT = "globalThis.PERMIT_PATHWAYS_DEMO_DATA=";
+const DEMO_SOURCE = readFileSync(resolve(__dirname, "../data/demo-data.js"), "utf8");
+const DEMO_DATA = JSON.parse(
+  DEMO_SOURCE.slice(DEMO_SOURCE.indexOf(DEMO_ASSIGNMENT)
+    + DEMO_ASSIGNMENT.length).trim().replace(/;$/, ""),
+);
+
+function sourceStateFixture(status, sourceId) {
+  const data = structuredClone(DEMO_DATA);
+  const state = data.source_state;
+  const observation = state.observations.find(item => item.source_id === sourceId);
+  if (!observation) throw new Error(`unknown source fixture: ${sourceId}`);
+  observation.status = status;
+  if (status === "changed") {
+    observation.observed_sha256 = "0".repeat(64);
+    observation.reason = null;
+    state.changed_source_ids = [sourceId];
+    state.unverifiable_source_ids = [];
+  } else if (status === "unverifiable") {
+    observation.observed_sha256 = null;
+    observation.reason = "HTTP 403 Forbidden";
+    state.changed_source_ids = [];
+    state.unverifiable_source_ids = [sourceId];
+  } else {
+    throw new Error(`unsupported source fixture status: ${status}`);
+  }
+  const changed = new Set(state.changed_source_ids);
+  const affectedRules = data.rules.filter(rule =>
+    rule.source_dependencies.some(id => changed.has(id))
+  ).map(rule => rule.rule_id).sort();
+  const affectedRuleSet = new Set(affectedRules);
+  state.affected_rule_ids = affectedRules;
+  state.unaffected_rule_ids = data.rules.map(rule => rule.rule_id)
+    .filter(ruleId => !affectedRuleSet.has(ruleId)).sort();
+  state.affected_golden_case_ids = data.golden.filter(record =>
+    record.expected_rule_ids.some(ruleId => affectedRuleSet.has(ruleId))
+  ).map(record => record.case_id).sort();
+  const affectedCaseSet = new Set(state.affected_golden_case_ids);
+  state.unaffected_golden_case_ids = data.golden.map(record => record.case_id)
+    .filter(caseId => !affectedCaseSet.has(caseId)).sort();
+  return `/* test source-state fixture */\n${DEMO_ASSIGNMENT}${JSON.stringify(data)};\n`;
+}
+
+async function serveSourceStateFixture(page, status, sourceId) {
+  const body = sourceStateFixture(status, sourceId);
+  await page.route("**/data/demo-data.js*", route => route.fulfill({
+    body,
+    contentType: "application/javascript; charset=utf-8",
+    status: 200,
+  }));
+}
 
 async function expectNoDocumentOverflow(page) {
   const dimensions = await page.evaluate(() => ({
@@ -427,6 +481,91 @@ test("mobile evidence tables render as labeled records without page overflow", a
     "grid",
   );
   await expectNoDocumentOverflow(page);
+});
+
+test("reviewed source-state receipt is visible and separate from rehearsal", async ({
+  page,
+}) => {
+  await page.goto("/evidence.html");
+
+  await expect(page.locator("#sourceSnapshotSummary")).toHaveText(
+    "Checked August 3, 2026: 19 unchanged; 0 changed; 0 could not be "
+      + "re-fetched. This repository-adopted receipt is the source-state "
+      + "overlay used by the applicant guide.",
+  );
+  await expect(page.locator("#sourceSnapshotRun")).toHaveAttribute(
+    "href",
+    "https://github.com/ChelseaKR/permit-pathways/actions/runs/30835371749",
+  );
+  await expect(page.locator("#sourceImpactQueue")).toContainText(
+    "No source-triggered review queue is open.",
+  );
+  await expect(
+    page.locator("#sourceTable .badge", { hasText: "unchanged in snapshot" }),
+  ).toHaveCount(19);
+
+  await page.locator("#simBtn").click();
+  await expect(page.locator("#simNote")).toBeVisible();
+  await expect(page.locator("#sourceSnapshotSummary")).toContainText(
+    "19 unchanged; 0 changed",
+  );
+  await expect(page.locator("#sourceImpactQueue")).toContainText(
+    "No source-triggered review queue is open.",
+  );
+  await expectBrowserStorageEmpty(page);
+});
+
+test("changed source receipt opens the exact visible review queue", async ({
+  page,
+}) => {
+  await serveSourceStateFixture(page, "changed", "ca-gov-66317");
+  await page.goto("/evidence.html");
+
+  await expect(page.locator("#sourceSnapshotSummary")).toContainText(
+    "18 unchanged; 1 changed; 0 could not be re-fetched",
+  );
+  await expect(page.locator("#sourceImpactQueue")).toContainText(
+    "Review queue open.",
+  );
+  await expect(page.locator("#sourceImpactQueue")).toContainText(
+    "1 rule record and 9 structured scenarios",
+  );
+  await expect(page.locator("#sourceImpactQueue")).toContainText(
+    "the Woodland route-to-packet handoff",
+  );
+  const sourceRow = page.locator("#sourceTable tbody tr", {
+    hasText: "Gov. Code § 66317",
+  });
+  await expect(sourceRow).toContainText("changed · review required");
+  await expectNoAutomatedWcagViolations(page);
+  await expectBrowserStorageEmpty(page);
+});
+
+test("unverifiable source receipt warns without staling dependents", async ({
+  page,
+}) => {
+  await serveSourceStateFixture(page, "unverifiable", "ca-gov-66317");
+  await page.goto("/evidence.html");
+
+  await expect(page.locator("#sourceSnapshotSummary")).toContainText(
+    "18 unchanged; 0 changed; 1 could not be re-fetched",
+  );
+  await expect(page.locator("#sourceImpactQueue")).toContainText(
+    "No source-triggered review queue is open.",
+  );
+  await expect(page.locator("#sourceImpactQueue")).toContainText(
+    "Watch warning.",
+  );
+  const sourceRow = page.locator("#sourceTable tbody tr", {
+    hasText: "Gov. Code § 66317",
+  });
+  await expect(sourceRow).toContainText("could not re-fetch");
+  const routeRow = page.getByRole("row", {
+    name: /^ADU ministerial review and application timelines statewide/,
+  });
+  await expect(routeRow).toContainText("within review window");
+  await expectNoAutomatedWcagViolations(page);
+  await expectBrowserStorageEmpty(page);
 });
 
 test("external evidence gate stays visibly pending without success claims", async ({

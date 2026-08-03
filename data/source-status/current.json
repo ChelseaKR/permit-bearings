@@ -1,0 +1,222 @@
+{
+  "affected_golden_case_ids": [],
+  "affected_rule_ids": [],
+  "changed_source_ids": [],
+  "checked_at": "2026-08-03T17:08:28Z",
+  "observations": [
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "6e158b622952f048802726ad984c712e40c9851898a6b06ac68decad5c8d45d9",
+      "reason": null,
+      "recorded_sha256": "6e158b622952f048802726ad984c712e40c9851898a6b06ac68decad5c8d45d9",
+      "source_id": "ca-gov-65852-21",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "43d7a2ed3538d3c29109b64dda9798ce4edcc22082dae6cdce919437b3379710",
+      "reason": null,
+      "recorded_sha256": "43d7a2ed3538d3c29109b64dda9798ce4edcc22082dae6cdce919437b3379710",
+      "source_id": "ca-gov-66311-7",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "9933723556394e7ba9139c40416b96ee0df0e1dbe8aca056e956179e0ee3de2c",
+      "reason": null,
+      "recorded_sha256": "9933723556394e7ba9139c40416b96ee0df0e1dbe8aca056e956179e0ee3de2c",
+      "source_id": "ca-gov-66313",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "3a20838500c90f26f5ba7bf79d1bd4b42f6f11fbbfd0c6bd533c1e24e0ab1a9a",
+      "reason": null,
+      "recorded_sha256": "3a20838500c90f26f5ba7bf79d1bd4b42f6f11fbbfd0c6bd533c1e24e0ab1a9a",
+      "source_id": "ca-gov-66314",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "620bffb6f86ea40b8fe0019d1f3eeaba13cc265226d260fbb65a3ebaaff7fd3c",
+      "reason": null,
+      "recorded_sha256": "620bffb6f86ea40b8fe0019d1f3eeaba13cc265226d260fbb65a3ebaaff7fd3c",
+      "source_id": "ca-gov-66315",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "10f931b210d739fc3460bb5e5f8099609c82445f33c5343fc94751ae0e0d6405",
+      "reason": null,
+      "recorded_sha256": "10f931b210d739fc3460bb5e5f8099609c82445f33c5343fc94751ae0e0d6405",
+      "source_id": "ca-gov-66317",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "7d2d48ef8c0b694d0e4a0cb748fd4c322a73bc19b49deb4e41c016db51c6df3e",
+      "reason": null,
+      "recorded_sha256": "7d2d48ef8c0b694d0e4a0cb748fd4c322a73bc19b49deb4e41c016db51c6df3e",
+      "source_id": "ca-gov-66321",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "c7055a44abbd2eb2c5c434d7f2c0ce6a1e2c57c47297a229f89ab4990b2783f1",
+      "reason": null,
+      "recorded_sha256": "c7055a44abbd2eb2c5c434d7f2c0ce6a1e2c57c47297a229f89ab4990b2783f1",
+      "source_id": "ca-gov-66322",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "85c482354a72243a7850918f129aaf1edff448e07db7480203c0641639d3044f",
+      "reason": null,
+      "recorded_sha256": "85c482354a72243a7850918f129aaf1edff448e07db7480203c0641639d3044f",
+      "source_id": "ca-gov-66323",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "20bea23f07f1519b45cedeb56570e107d3fd04e19f206172a37464e23dc37823",
+      "reason": null,
+      "recorded_sha256": "20bea23f07f1519b45cedeb56570e107d3fd04e19f206172a37464e23dc37823",
+      "source_id": "ca-gov-66333",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-28",
+      "observed_sha256": "4194153c3579b01874ea4095ffbc73452a51696c2adfec8a45128dfd0896f469",
+      "reason": null,
+      "recorded_sha256": "4194153c3579b01874ea4095ffbc73452a51696c2adfec8a45128dfd0896f469",
+      "source_id": "ca-gov-66335",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "bdb3734436abff97b14916708fab2edc01a04ca0f5d4276f4513664bc6a6ad34",
+      "reason": null,
+      "recorded_sha256": "bdb3734436abff97b14916708fab2edc01a04ca0f5d4276f4513664bc6a6ad34",
+      "source_id": "ca-gov-66411-7",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-30",
+      "observed_sha256": "f8b63d11646edc778e710bc1431f37919c64b1945d52c496d48aa985f41f9a5b",
+      "reason": null,
+      "recorded_sha256": "f8b63d11646edc778e710bc1431f37919c64b1945d52c496d48aa985f41f9a5b",
+      "source_id": "davis-adu-handout-2026",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "ec499e12c08974d8e25af352539b23afc8c26bc7dd200453bd35796de3188e6a",
+      "reason": null,
+      "recorded_sha256": "ec499e12c08974d8e25af352539b23afc8c26bc7dd200453bd35796de3188e6a",
+      "source_id": "hcd-adu-handbook-2026-03",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-30",
+      "observed_sha256": "e1a9fe73c60605c3d332b4ef4810557daa388c67972ac312099999cc38193dbb",
+      "reason": null,
+      "recorded_sha256": "e1a9fe73c60605c3d332b4ef4810557daa388c67972ac312099999cc38193dbb",
+      "source_id": "hcd-davis-adu-ta-2025",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-27",
+      "observed_sha256": "91a6d75d99e1afeeb96d05d970fa53356597085f621d8fc500bea816d51d71e3",
+      "reason": null,
+      "recorded_sha256": "91a6d75d99e1afeeb96d05d970fa53356597085f621d8fc500bea816d51d71e3",
+      "source_id": "hcd-sb9-fact-sheet-2026-04",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-28",
+      "observed_sha256": "a5ac4dce1cd5d60a96d245b3f96ce9c656ba79d59c10461aba53943d52e1da60",
+      "reason": null,
+      "recorded_sha256": "a5ac4dce1cd5d60a96d245b3f96ce9c656ba79d59c10461aba53943d52e1da60",
+      "source_id": "woodland-ceqa-2026020683",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-29",
+      "observed_sha256": "59ebf082a59ff257f104a13f75d63faa869565bfdecc33a6e1eba306b4796d62",
+      "reason": null,
+      "recorded_sha256": "59ebf082a59ff257f104a13f75d63faa869565bfdecc33a6e1eba306b4796d62",
+      "source_id": "woodland-preapproved-adu-checklist",
+      "status": "unchanged"
+    },
+    {
+      "last_verified_on": "2026-07-30",
+      "observed_sha256": "5f99beaf208dc10d8794df0ce1cd3d66f7414ac062d81cbdc018403ef01badb5",
+      "reason": null,
+      "recorded_sha256": "5f99beaf208dc10d8794df0ce1cd3d66f7414ac062d81cbdc018403ef01badb5",
+      "source_id": "yolo-public-parcels-layer",
+      "status": "unchanged"
+    }
+  ],
+  "receipt": {
+    "commit_sha": "8d841409dc5fd16fe56b52a8b57c826c07f176a6",
+    "method": "github_actions_scheduled_watch",
+    "run_url": "https://github.com/ChelseaKR/permit-pathways/actions/runs/30835371749",
+    "status": "reviewed"
+  },
+  "schema_version": 1,
+  "snapshot_id": "source-watch-2026-08-03-run-30835371749",
+  "source_registry_sha256": "8cb44c50a79e1e42d73335284e6b2c7b9b72f884b2745552d6cc85b93a0ee472",
+  "unaffected_golden_case_ids": [
+    "adu-conversion-only",
+    "adu-detached-basic",
+    "adu-existing-multifamily-lot",
+    "adu-primary-status-unknown",
+    "adu-project-form-unknown",
+    "adu-proposed-multifamily-lot",
+    "adu-same-footprint-rebuild",
+    "adu-unpermitted-conversion-legalize",
+    "davis-new-detached-adu-local-layer",
+    "jadu-in-existing-sfr",
+    "jadu-multifamily-inconsistent",
+    "jadu-proposed-single-family",
+    "jadu-unpermitted-legalize",
+    "sb9-adjacent-split-by-same-actor",
+    "sb9-adjacent-split-unknown",
+    "sb9-duplex-clean",
+    "sb9-duplex-tenant-occupied",
+    "sb9-ellis-unknown",
+    "sb9-lot-ratio-below-boundary",
+    "sb9-lot-ratio-unknown",
+    "sb9-lot-size-below-boundary",
+    "sb9-lot-size-unknown",
+    "sb9-lot-size-verified-local-minimum",
+    "sb9-lot-split-clean-boundary",
+    "sb9-lot-split-historic-alteration-unknown",
+    "sb9-lot-split-historic-landmark-site",
+    "sb9-two-unit-historic-location-unknown",
+    "sb9-two-unit-individually-listed-historic-property",
+    "woodland-new-detached-adu-local-layer"
+  ],
+  "unaffected_rule_ids": [
+    "adu-conversion-exemptions",
+    "adu-height-standards",
+    "adu-ministerial-review",
+    "adu-multifamily-66323",
+    "adu-multifamily-proposed-66323",
+    "adu-no-owner-occupancy-rental",
+    "adu-parking-limits",
+    "adu-protected-minimum",
+    "adu-size-allowances",
+    "adu-unpermitted-legalization",
+    "davis-local-adu-process",
+    "jadu-ministerial-review",
+    "jadu-standards",
+    "jadu-unpermitted-legalization",
+    "sb9-adu-interaction",
+    "sb9-lot-split-adu-interaction",
+    "sb9-two-unit-ministerial",
+    "sb9-urban-lot-split",
+    "woodland-adu-ordinance-2026"
+  ],
+  "unverifiable_source_ids": []
+}

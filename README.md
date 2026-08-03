@@ -76,6 +76,13 @@ PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zi
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
 PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff
+PYTHONPATH=src python3 -m permit_pathways.harness --fetch \
+  --snapshot-out source-state-proposed.json \
+  --snapshot-id source-watch-local-1 \
+  --checked-at 2026-08-03T17:08:28Z \
+  --receipt-method local_source_currency_watch \
+  --run-url https://github.com/ChelseaKR/permit-pathways \
+  --commit-sha 8d841409dc5fd16fe56b52a8b57c826c07f176a6
 PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
 PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-30
 python3 -m http.server 8765                         # full static showcase
@@ -103,7 +110,7 @@ still needs a person.
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 301 Python tests, 86.92% branch coverage, 29/29 golden cases, 31 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.98 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
+| Quality & Metrics | Automated evidence includes 311 Python tests, 85.69% branch-aware coverage, 29/29 golden cases, 34 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.99 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -224,9 +231,24 @@ independently.
 
 The deterministic matcher replays 29 structured fixtures against expected rule
 IDs. The command-line harness checks selected source hashes and uses explicit
-dependency IDs to mark affected rules stale. The browser source-change control
-is a rehearsal, not persisted production state. Durable change discovery,
-review assignment, approval, and publication remain planned.
+dependency IDs to mark affected rules stale. A completed watcher run can emit
+a machine-readable **proposed** snapshot. The scheduled workflow retains that
+proposal as an artifact but never rewrites public state. A repository
+maintainer must deliberately adopt a completed-run receipt in
+`data/source-status/current.json`; the bundle accepts only a strict
+`reviewed` receipt and fails closed when its source-registry digest,
+observations, or derived rule/Golden impacts drift.
+
+For this receipt, `reviewed` means selected for publication after checking the
+run binding. It is not legal, jurisdiction, counsel, or substantive content
+approval, and it does not identify a human reviewer. Bundle format 3 carries
+the adopted overlay into the browser. A fetched changed source stales only
+exact dependent statewide records and blocks a Woodland route or packet only
+when that source is bound to the route, checklist, or parcel metadata. An
+unverifiable fetch remains a visible warning and stales nothing. The separate
+§ 66321 control is still a temporary rehearsal layered over this committed
+state. New-law discovery, automatic adoption, staffed review assignment,
+approval history, and automatic publication remain planned.
 
 The separate readiness tests cover positive, negative, boundary, unknown,
 wrong-workflow, changed-source, schema, fingerprint, review-metadata, manifest,
@@ -256,7 +278,7 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 |---|---|
 | Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, a temporary grouped result packet, citations, uncertainty routing, and one generated synthetic Woodland packet-presence sample are implemented. The sample uses 25 source-bound checklist requirements, two fabricated values tied to official parcel-layer fields, and review-pending AI-assisted action drafts. Live parcel retrieval, file inspection, parcel-specific packet completeness, reviewed remedies, and reviewed translation are planned. |
 | Scenario 2 (B): supporting internal review | Not targeted in v1. |
-| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, dependency invalidation, and an HCD-letter dataset are implemented in bounded form. Search, change discovery, comparable-jurisdiction research, and a durable review queue are planned. |
+| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, proposed run receipts, deliberate snapshot adoption, exact rule/Golden impact derivation, applicant-output invalidation, and an HCD-letter dataset are implemented in bounded form. Search, new-law discovery, automatic adoption, comparable-jurisdiction research, staffed ownership, and substantive approval history are planned. |
 
 ## Design commitments (from the challenge statement's cross-cutting requirements)
 
@@ -352,16 +374,19 @@ multifamily-lot 66323 allowances, JADU standards, SB 9 two-unit developments,
 SB 9 urban lot splits, and the SB 9 × ADU unit-count interaction, plus
 bounded local metadata records for the Cities of Davis and Woodland. A weekly
 GitHub Action re-fetches selected statewide sources and classifies each as
-unchanged, changed, or unverifiable. It opens an issue when a fetched source's
-content hash moved; a source it could not download is recorded as unverifiable
-with its last successful verification date and marks no rule stale. Two
+unchanged, changed, or unverifiable. It opens a review issue when a fetched
+source's content hash moved, a rule aged out, or a Golden scenario regressed;
+a source it could not download is recorded as unverifiable with its last
+successful verification date and marks no rule stale. Two
 selected Woodland workflow
 sources, the January 2026 Davis ADU handout, and HCD's October 2025 Davis
 technical-assistance letter are recorded and watched. The Davis record reports
 only the City's published processing categories; it preserves HCD's unresolved
 ordinance-status warning and does not determine which category lawfully
 applies. Comprehensive local-source and newly enacted-law discovery are not
-implemented.
+implemented. Each scheduled run also retains a proposed source-state receipt.
+The public build uses only the separately adopted receipt; it is a dated
+snapshot, not a live per-page check or an automatic legal update.
 
 The full static showcase has five task-focused pages: an applicant-first
 landing page; an English/Spanish applicant guide with review clocks; the
@@ -403,6 +428,8 @@ explanation sidecar and keeps a separate `/trust` route.
 - `src/permit_pathways/readiness_cli.py`: packet-presence CLI
 - `src/permit_pathways/journey.py`: strict versioned route-to-packet contract
   resolver for the synthetic Woodland fixture
+- `src/permit_pathways/source_state.py`: strict watcher-receipt validation and
+  exact rule/Golden dependency impact
 - `src/permit_pathways/harness/`: verification runner and CLI
 - `data/rules/`: the cited rule base; `data/golden/`: golden cases
 - `data/explanations/plain-language.json`: English/Spanish explanation drafts
@@ -410,6 +437,8 @@ explanation sidecar and keeps a separate `/trust` route.
   remedies, and generated evidence manifest
 - `data/journeys/`: the reference-only Woodland journey definition and its
   generated fingerprinted envelope
+- `data/source-status/current.json`: repository-adopted completed-run receipt
+  used as the public source-state overlay
 - `data/demo-data.js`: generated offline bundle for the static showcase
 - `index.html`, `check.html`, `prepare.html`, `review.html`,
   `evidence.html`: task-focused static pages; `assets/`: shared browser

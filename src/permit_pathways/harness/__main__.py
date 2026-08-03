@@ -40,6 +40,49 @@ EXIT_REVIEW_NEEDED = 1
 EXIT_UNVERIFIABLE = 2
 
 
+def _validate_snapshot_args(
+    parser: argparse.ArgumentParser,
+    args: argparse.Namespace,
+) -> None:
+    metadata = (
+        args.snapshot_id,
+        args.checked_at,
+        args.receipt_method,
+        args.run_url,
+        args.commit_sha,
+    )
+    if args.snapshot_out is not None and (not args.fetch or not all(metadata)):
+        parser.error(
+            "--snapshot-out requires --fetch, --snapshot-id, --checked-at, "
+            "--receipt-method, --run-url, and --commit-sha"
+        )
+    if args.snapshot_out is None and any(metadata):
+        parser.error("snapshot metadata requires --snapshot-out")
+
+
+def _write_snapshot(args: argparse.Namespace, watch: object) -> None:
+    from ..source_state import build_source_state_snapshot, encoded_source_state
+    from .watch import WatchResult
+
+    if not isinstance(watch, WatchResult):
+        raise AssertionError("snapshot output requires a completed source watch")
+    snapshot = build_source_state_snapshot(
+        watch,
+        args.sources,
+        args.rules,
+        args.golden,
+        snapshot_id=args.snapshot_id,
+        checked_at=args.checked_at,
+        receipt_status=args.receipt_status,
+        method=args.receipt_method,
+        run_url=args.run_url,
+        commit_sha=args.commit_sha,
+    )
+    args.snapshot_out.parent.mkdir(parents=True, exist_ok=True)
+    args.snapshot_out.write_text(encoded_source_state(snapshot), encoding="utf-8")
+    print(f"\nwrote source-state snapshot: {args.snapshot_out}")
+
+
 def main(*, today: date | None = None) -> int:
     parser = argparse.ArgumentParser(prog="permit_pathways.harness")
     parser.add_argument("--rules", type=Path, default=ROOT / "data" / "rules")
@@ -67,12 +110,30 @@ def main(*, today: date | None = None) -> int:
         "is reported as unverifiable and marks nothing stale",
     )
     parser.add_argument("--sources", type=Path, default=ROOT / "data" / "sources.json")
+    parser.add_argument(
+        "--snapshot-out",
+        type=Path,
+        default=None,
+        help="Write a machine-readable proposed or reviewed source-state receipt",
+    )
+    parser.add_argument("--snapshot-id", default=None)
+    parser.add_argument("--checked-at", default=None)
+    parser.add_argument(
+        "--receipt-status",
+        choices=("proposed", "reviewed"),
+        default="proposed",
+    )
+    parser.add_argument("--receipt-method", default=None)
+    parser.add_argument("--run-url", default=None)
+    parser.add_argument("--commit-sha", default=None)
     args = parser.parse_args()
+    _validate_snapshot_args(parser, args)
     as_of = resolve_today(args.as_of or today)
 
     changed = list(args.assume_changed)
     source_changed = False
     unverifiable: dict[str, UnverifiableSource] = {}
+    watch = None
     if args.fetch:
         from .watch import check_sources, load_sources
 
@@ -99,6 +160,9 @@ def main(*, today: date | None = None) -> int:
         changed_source_ids=changed,
     )
     print(report.summary())
+
+    if args.snapshot_out is not None:
+        _write_snapshot(args, watch)
 
     registry_path = ROOT / "data" / "jurisdictions" / "registry.json"
     if registry_path.exists() and args.rules.is_dir():

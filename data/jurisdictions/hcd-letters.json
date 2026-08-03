@@ -1,7 +1,7 @@
 {
- "source": "HCD Housing Accountability Unit letter dashboard (hcd.ca.gov/hau/enforcement-letters), full public dataset retrieved 2026-07-27; raw rows preserved at corpus/hcd/hau-letters-raw.json. Letters addressed to no single jurisdiction are under _statewide; rows whose jurisdiction could not be matched to the Census registry are under _unmatched.",
- "retrieved_on": "2026-07-27",
- "letter_count": 1309,
+ "source": "HCD Housing Accountability Unit letter dashboard (hcd.ca.gov/hau/enforcement-letters), full public dataset retrieved 2026-08-03; raw rows preserved at corpus/hcd/hau-letters-raw.json. Letters addressed to no single jurisdiction are under _statewide; rows whose jurisdiction could not be matched to the Census registry are under _unmatched.",
+ "retrieved_on": "2026-08-03",
+ "letter_count": 1314,
  "letters": {
   "adelanto": [
    {
@@ -1273,6 +1273,15 @@
     "statutes": "65580",
     "subject": "6/30/26 HCD sent a letter revoking the City of Brisbane\u2019s housing element compliance based on the City\u2019s failure to implement Program 2.A.2, including rezoning of adequate sites to accommodate a shortfall to meet the Regional Housing Needs Allocation (RHNA).",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/sma-brisbane-rezone-he-rev-out-063026.pdf",
+    "hau_number": "HAU0003610"
+   },
+   {
+    "date": "2026-04-16",
+    "kind": "Housing Element Findings of Noncompliance/ Corrective Action",
+    "authority": "Housing Element Law",
+    "statutes": "65580-65589.11",
+    "subject": "Letter was sent on 4/16/2026 to the City of Brisbane; Pursuant to the housing element, the City plans to accomplish the required rezoning via adoption of the Baylands Specific Plan, currently under review by the City. The program for rezoning adequate sites must be completed no l",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/brisbane-corr-action-041626.pdf",
     "hau_number": "HAU0003610"
    },
    {
@@ -4159,6 +4168,17 @@
     "subject": "Nonsubmittal LOI sent for noncompliance with Housing Element Law. Issued an NOV on 12/20/2024.",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/gridley-nonsubmittal-loi-100824.pdf",
     "hau_number": "HAU0001341"
+   }
+  ],
+  "grover-beach": [
+   {
+    "date": "2026-07-27",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Crisis Act of 2019, Housing Element Law",
+    "statutes": "66300, 65585, 65863, 65588, 65915, 65009.1",
+    "subject": "7/27/2026 - CT sent a TA Letter to the City and to the Requestor. The letter covered the City's responsibilities for following the Housing Crisis Act of 2019 and Housing Element Law, in relation to a proposed ballot measure, Measure F-26.",
+    "url": null,
+    "hau_number": "HAU0003468"
    }
   ],
   "gustine": [
@@ -7318,6 +7338,15 @@
   ],
   "napa": [
    {
+    "date": "2026-07-31",
+    "kind": "Technical Assistance Letter",
+    "authority": "Streamlined Ministerial Approval Process (SB 35 of 2017)",
+    "statutes": "21080.66(a)(6); 65913.4(a)(6)(G)",
+    "subject": "To meet the eligibility condition in Gov. Code section 65913.4, subd. (a)(6)(G)(ii) that &#34;the site meets FEMA requirements necessary to meet minimum flood plain management criteria of the National Flood Insurance Program,&#34; the project as proposed must meet the requirement",
+    "url": null,
+    "hau_number": "HAU0003329"
+   },
+   {
     "date": "2024-01-29",
     "kind": "Ordinance Findings Letter",
     "authority": "Accessory Dwelling Unit Law",
@@ -9392,6 +9421,15 @@
     "subject": "Other",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/sacramento-cou-he-rezone-loi-081424.pdf",
     "hau_number": "HAU0003001"
+   },
+   {
+    "date": null,
+    "kind": "Technical Assistance Letter",
+    "authority": "Duplexes and Urban Lot Splits (SB 9 of 2021)",
+    "statutes": "65852.21(a); 66411.7(a)(3)(A)",
+    "subject": "TA letter on the eligibility of the County\u2019s Agriculture-Residential (AR) zoning districts for SB 9. Additionally, the three specific questions the County posed related to this topic;\n1. onsite wastewater treatment system (OWTS) or a well, subject to a minimum lot size requiremen",
+    "url": null,
+    "hau_number": "HAU0002675"
    }
   ],
   "st-helena": [
@@ -9558,6 +9596,15 @@
    }
   ],
   "san-bernardino-county": [
+   {
+    "date": "2026-07-28",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65583(a)(3); 65583.2(b)(5)(B); 65583(a)(5); 65863; 65835.2(c)(3); 65585(b);",
+    "subject": "Follow-up TA: Sites that cannot connect to City of Redlands water due to Measure U are considered insufficient for LI RHNA. County must provide HE NNL analysis.",
+    "url": null,
+    "hau_number": "HAU0001905"
+   },
    {
     "date": "2025-10-22",
     "kind": "Technical Assistance Letter",

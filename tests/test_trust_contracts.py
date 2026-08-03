@@ -25,7 +25,7 @@ from permit_pathways.explanations import (
 )
 from permit_pathways.harness.__main__ import main as harness_main
 from permit_pathways.harness.runner import verify_rules
-from permit_pathways.harness.watch import check_sources, load_sources
+from permit_pathways.harness.watch import check_sources, load_sources, normalized_digest
 from permit_pathways.screening import load_rules, screen
 
 AS_OF = date(2026, 7, 28)
@@ -299,6 +299,10 @@ def test_watcher_reports_stable_ids_and_skips_non_watched_sources(
     # a fetched, differing hash is the only thing that counts as changed.
     assert result.unchanged == ["source-unchanged"]
     assert result.changed == ["source-changed"]
+    assert result.observed_digests == {
+        "source-changed": normalized_digest(b"after", None),
+        "source-unchanged": normalized_digest(b"same", None),
+    }
     assert set(result.unverifiable) == {"source-error"}
     assert result.unverifiable["source-error"].reason == "OSError: offline"
     assert not any(url.endswith("/manual") for url in requested)

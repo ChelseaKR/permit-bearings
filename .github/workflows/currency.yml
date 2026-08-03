@@ -23,7 +23,14 @@ jobs:
         run: |
           set +e
           set -o pipefail
-          PYTHONPATH=src python -m permit_pathways.harness --fetch | tee report.txt
+          checked_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          PYTHONPATH=src python -m permit_pathways.harness --fetch \
+            --snapshot-out source-state-proposed.json \
+            --snapshot-id "source-watch-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --checked-at "$checked_at" \
+            --receipt-method github_actions_source_currency_watch \
+            --run-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            --commit-sha "$GITHUB_SHA" | tee report.txt
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
       # Exit 1 means a source was fetched and its content hash moved, a rule
       # aged out, or a golden case regressed. Exit 2 means only that some
@@ -34,7 +41,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh issue create \
-            --title "Source currency alert: a watched legal source changed ($(date -u +%F))" \
+            --title "Source currency review needed ($(date -u +%F))" \
             --body "$(printf 'The weekly currency check found changed watched sources, stale rules, or a golden regression. Rules dependent on a changed source are stale until re-verified against the new text.\n\n```\n%s\n```' "$(cat report.txt)")"
       - name: Note sources that could not be re-fetched
         if: steps.watch.outputs.exit_code == '2'
@@ -51,6 +58,14 @@ jobs:
             cat report.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain the proposed source-state receipt for human review
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: source-state-proposed
+          path: source-state-proposed.json
+          if-no-files-found: warn
+          retention-days: 30
       - name: Check HCD HAU letters dashboard for new letters
         id: letters
         run: |

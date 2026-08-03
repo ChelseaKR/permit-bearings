@@ -1,6 +1,6 @@
 # Product context and opportunity map
 
-Status: 2026-08-02. This is the canonical product and claim context for the
+Status: 2026-08-03. This is the canonical product and claim context for the
 repository. It summarizes the supplied California AI Permitting Innovation
 Showcase challenge statement; the original challenge remains authoritative.
 
@@ -22,10 +22,13 @@ traceable lifecycle from source to output:
 
 `official source → provision → rule/check → applicant or staff output`
 
-A changed source should create a review queue containing every affected rule,
-test, jurisdiction, and output. This makes Scenario C the trust mechanism
-under a focused Scenario A product rather than a disconnected supplementary
-feature.
+The current bounded overlay makes a fetched changed source stale only its
+directly dependent rules and Golden cases, then blocks applicant outputs whose
+route, checklist, or parcel-metadata bindings include that source. A complete
+operational queue should extend that trace to packet fields, named owners,
+review decisions, jurisdictions, and publication history. This makes Scenario
+C the trust mechanism under a focused Scenario A product rather than a
+disconnected supplementary feature.
 
 ## Users and jobs
 
@@ -73,8 +76,8 @@ Status meanings are defined in `AGENTS.md`.
 | Flagship external-evidence gate | Prepared, not executed | Five machine-readable records bind the aggregate gate, future two-reviewer 25-item content review, six same-version applicant/practitioner sessions, manual access and Spanish checks, timed maintenance rehearsal, and partner gate to the exact synthetic Woodland journey, workflow, packet, source hashes, thresholds, and freeze fields. The public evidence page reports every current external outcome as `not_run` or pending. Tests derive the aggregate state from the specialized ledgers and reject unsupported completion or `proceed` states. This scaffolding is not a review, participant finding, accessibility signoff, translation approval, completed rehearsal, partner commitment, pilot, or external validation result. |
 | Application completeness | Planned | The bounded readiness slice checks reported presence in one made-up inventory. It does not query or verify a live parcel, inspect files, test document contents or consistency, determine legal sufficiency, certify completeness, limit staff requests, or predict approval. There is no parcel-specific document ingestion, cross-document validation, or externally reviewed remedy engine. |
 | Golden regression harness | Prototype | 29 structured intake-to-expected-rule-ID fixtures. It does not evaluate natural-language answers, citation fidelity, remedies, or supporting passages. |
-| Source currency monitoring | Prototype | Nineteen HCD, statute, and selected local-source URLs are hash-watched. Each run classifies every watched source as unchanged, changed (fetched, hash moved), or unverifiable (fetch failed after three backed-off retries); a fetch failure never counts as a change and never marks a rule stale. The scheduled workflow preserves the watched command's exit status through `tee` and distinguishes exit `1` (review needed) from exit `2` (could not check). The current Davis handout and HCD letter are watched; the blocked municipal-code host remains an unwatched reference, new statutes are not discovered, and watcher state is not persisted to the public dashboard. |
-| Source-impact demonstration | Prototype | Rules carry stable source-dependency IDs. The CLI marks every rule linked to an assumed-changed source stale, and the browser rehearses a § 66321 change. The public demo still lacks persisted changed state and a staffed re-verification queue. |
+| Source currency monitoring | Prototype | Nineteen HCD, statute, and selected local-source URLs are hash-watched. Each run classifies every watched source as unchanged, changed (fetched, hash moved), or unverifiable (fetch failed after three backed-off retries); a fetch failure never counts as a change and never marks a rule stale. The scheduled workflow preserves the watched command's exit status through `tee`, distinguishes exit `1` (review needed) from exit `2` (could not check), and retains a machine-readable **proposed** receipt as an artifact. It never overwrites the public snapshot. The current Davis handout and HCD letter are watched; the blocked municipal-code host remains an unwatched reference and new statutes are not discovered. |
+| Adopted source-state and impact overlay | Prototype | `data/source-status/current.json` records one completed watch run, all 19 observations, the source-registry digest, exact run/commit receipt, and exact affected/unaffected rule and Golden IDs. Bundle format 3 accepts only a strict `reviewed` receipt and the browser applies its changed IDs to statewide result cards and orientation receipts. A changed candidate-route source blocks the Woodland handoff; a changed checklist or parcel binding withholds the Woodland packet and print summary; unrelated changes do not. Unverifiable sources warn without staling. In this schema, `reviewed` means deliberately selected during repository maintenance for publication—not named-human, legal, counsel, jurisdiction, or content approval. Automatic adoption, a named reviewer record, packet-field queue entries, staffed ownership, and publication workflow remain planned. The § 66321 control is a separate temporary rehearsal. |
 | Ordinance conformance scanner | Prototype | Presence-based review flags with an HCD-derived regression fixture containing six quoted Santa Clara provisions, one negative control, and one committed San Diego scan. This is not a compliance test or measured statewide accuracy. |
 | Review clocks | Prototype | The 15-business-day date is withheld unless an agency closure calendar is supplied. The separate 60-day illustration appears only when the applicant explicitly confirms both a complete-on-receipt application and an existing primary dwelling. Cure/completion events, tolling, resubmissions, and agency closures are not modeled in the public demo, so neither output is a production deadline determination. |
 | Transit proximity | Prototype | GTFS and statewide high-quality-transit data support screening in a CLI. Peak-window edge gaps and ferry-to-bus/rail connections are covered by regression tests. Service effective dates/exceptions, planned-facility filtering, multi-operator completeness, walking-network confirmation, and parcel integration still require correction before applicant-facing eligibility use. |
@@ -102,11 +105,13 @@ These are implementation defects or evidence gaps, not general roadmap ideas:
    successful verification date, and invalidates nothing. The registry still covers
    only selected known sources; it does not discover newly enacted law or new
    local materials.
-2. **Live watcher state is not persisted into applicant results.** The browser
-   rehearsal rerenders matching cards and withholds their actions when the
-   simulated dependency changes, and both demos apply the 180-day age window.
-   A real watcher result is still not persisted or passed into screening.
-   Changed/unknown dependency state must flow into every applicant output.
+2. **Adoption and operational review ownership remain manual.** A completed
+   watch can emit a proposed receipt, and one repository-adopted snapshot now
+   reaches statewide results and the bounded Woodland route/checklist/parcel
+   bindings. The workflow does not automatically compare and adopt a proposal,
+   identify a reviewer, assign each affected node, record dispositions, or
+   publish approved replacements. The persisted exact impact list covers rules
+   and Golden cases; packet-field assignments are only derived at display time.
 3. **Verification strength remains underspecified.** Explanation records bind
    to digests of selected citation fields and the full normalized rule record;
    completed review claims require reviewer, method, date, and reviewed
@@ -224,7 +229,7 @@ model, or reproducible run record.
 |---|---|---|---|
 | P0 | Make every public claim traceable to a capability status and artifact | Trust is the product; overclaiming destroys the differentiation. | Review README, demo, design, and live UI against the capability table on every release. |
 | P0 | Extend the bounded ADU packet-presence slice into a reviewed pilot workflow | Moves from one synthetic inventory and review-pending checklist mapping toward Scenario A completeness and remedies. | Compare results on a small set of public, synthetic, or redacted packets with staff-authored completeness notices. |
-| P0 | Evidence manifest and durable source-state propagation | Turns the strongest demo simulation into operational assurance. | Replay a historical or simulated source revision and verify the exact affected/unaffected rules, cases, and packet fields across persisted outputs. |
+| P0 | Complete source-state operations and packet-field impact | The reviewed publication overlay now propagates exact rule/Golden and bounded route/packet effects, but maintenance still needs accountable ownership. | Adopt a proposed historical/simulated revision, persist exact packet-field assignments and dispositions, and measure detection-to-republication time with a named reviewer. |
 | P0 | Verification levels and evaluator provenance | Makes “verified” meaningful to staff and counsel. | Add machine-linked, human-reviewed, and jurisdiction-approved states to one pilot rule set and test status transitions. |
 | P1 | Parcel fact retrieval for one jurisdiction | Replaces high-risk self-attestation for zoning, hazards, historic status, and transit with sourced facts. | Run a known parcel set and have staff review disagreements and unknowns. |
 | P1 | Local-rule authoring and re-verification workbench | Gives lower-capacity jurisdictions a maintainable way to adopt the layer. | Have a reviewer approve/reject AI-proposed rules beside exact source passages; measure time and disagreement. |

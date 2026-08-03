@@ -6,12 +6,12 @@
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'">
 <title>Evidence &amp; updates | Permit Bearings</title>
-<meta name="description" content="Inspect the prototype’s rule-source status, regression cases, external-evidence gate, known gaps, and change rehearsal.">
+<meta name="description" content="Inspect the prototype’s committed source-watch snapshot, rule dependencies, regression cases, external-evidence gate, known gaps, and change rehearsal.">
 <meta property="og:title" content="Evidence &amp; updates | Permit Bearings">
 <meta property="og:description" content="See which sources are dated, which rules depend on them, and what the prototype still cannot verify.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20260802c">
+<link rel="stylesheet" href="assets/site.css?v=20260803a">
 </head>
 <body data-page="evidence">
 <a class="skip-link" href="#mainContent">Skip to main content</a>
@@ -62,7 +62,8 @@
       <p class="section-kicker">Current prototype state</p>
       <h2 id="statusHeading">Rule-source status</h2>
       <p class="section-intro">The browser recomputes these figures from the
-        same generated data bundle used by the project guide.</p>
+        same generated data bundle used by the project guide and applies the
+        reviewed source-watch snapshot committed with that bundle.</p>
 
       <div class="evidence-summary">
         <article class="evidence-stat">
@@ -87,12 +88,30 @@
         aria-label="Loading rule-source status"></div>
       <p class="small" id="meterLegend"></p>
 
+      <div class="simulation-box" aria-labelledby="sourceSnapshotHeading">
+        <p class="utility-label">Committed source-state receipt</p>
+        <h3 id="sourceSnapshotHeading">Snapshot used by this build</h3>
+        <p id="sourceSnapshotSummary">Loading the committed source-state
+          receipt…</p>
+        <div id="sourceImpactQueue" class="notice hidden"></div>
+        <p class="small"><strong>Receipt status “reviewed”</strong> means a
+          repository maintainer deliberately adopted this completed-run
+          receipt for publication. It does not mean that a named human,
+          counsel, or a jurisdiction approved the legal interpretation or
+          product guidance.</p>
+        <p class="small"><a id="sourceSnapshotRun" href="evidence.html">
+          Open the exact workflow receipt</a> ·
+          <a href="data/source-status/current.json">Inspect the machine-readable
+          snapshot</a></p>
+      </div>
+
       <div class="simulation-box" aria-labelledby="simulationHeading">
         <p class="utility-label">Dependency rehearsal</p>
         <h3 id="simulationHeading">What happens when § 66321 changes?</h3>
-        <p>Rehearse a change to one source ID. Every linked rule turns stale;
-          unrelated records remain unchanged. This browser-only state is not a
-          persisted production review queue.</p>
+        <p>Temporarily layer a change to one source ID over the committed
+          snapshot. Every linked rule turns stale; unrelated records remain
+          unchanged. The rehearsal itself is not written back to the committed
+          receipt or review queue.</p>
         <p>
           <button class="ghost" id="simBtn" type="button" disabled>
             Rehearse the source change
@@ -197,8 +216,10 @@
       <h2 id="sourcesHeading">Source monitoring</h2>
       <p class="section-intro">Selected official state and local sources have a
         recorded content hash and are re-fetched by the repository workflow.
-        Unwatchable sources remain visible as reference-only records. New-law
-        discovery and a durable review queue remain planned.</p>
+        A reviewed snapshot of the last run is bundled above and overlays its
+        exact changed-source dependencies on applicant outputs. Unwatchable
+        sources remain visible as reference-only records. Automatic adoption,
+        review assignment, and new-law discovery remain planned.</p>
       <div class="table-scroll" role="region"
         aria-label="Source monitoring table" tabindex="0">
         <table id="sourceTable">
@@ -232,8 +253,9 @@
         <div>
           <dt>Currency</dt>
           <dd><strong>A changed source affects its dependents.</strong> Stable
-            source IDs connect rules to evidence. The public change rehearsal
-            is temporary; durable changed-state persistence remains planned.</dd>
+            source IDs connect rules to evidence. A reviewed watch snapshot is
+            committed with the public bundle; the change rehearsal remains a
+            separate temporary overlay.</dd>
         </div>
         <div>
           <dt>Coverage</dt>
@@ -259,7 +281,7 @@
   </div>
 </footer>
 
-<script src="data/demo-data.js?v=20260802c" defer></script>
-<script src="assets/demo.js?v=20260802c" defer></script>
+<script src="data/demo-data.js?v=20260803a" defer></script>
+<script src="assets/demo.js?v=20260803a" defer></script>
 </body>
 </html>

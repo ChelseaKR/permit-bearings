@@ -54,6 +54,7 @@ const canonicalJourneys = bundle.journeys;
 const canonicalReadiness = bundle.readiness;
 const canonicalRules = bundle.rules;
 const canonicalGolden = bundle.golden;
+SOURCE_STATE = bundle.source_state;
 
 const NativeDate = Date;
 let fixedNow = "2026-08-02T12:00:00Z";
@@ -416,6 +417,15 @@ check([...readyParams.keys()].length === 2, "ready href exposed extra parameters
 check(readyParams.getAll("journey").length === 1, "journey parameter duplicated");
 check(readyParams.getAll("version").length === 1, "version parameter duplicated");
 
+SOURCE_STATE = {...bundle.source_state, changed_source_ids: ["ca-gov-66317"]};
+const committedRouteChange = handoff("yes");
+check(
+  committedRouteChange.status === "source_review_required",
+  "committed changed route source unlocked handoff",
+);
+noHref(committedRouteChange, "committed route change");
+SOURCE_STATE = bundle.source_state;
+
 const doesNotApply = handoff("no");
 check(doesNotApply.status === "does_not_apply", "no did not hold the packet");
 noHref(doesNotApply, "does not apply");
@@ -520,6 +530,42 @@ check(
   ),
   "route source rejected on its review deadline",
 );
+check(
+  !journeySourcesAreCurrent(
+    canonicalJourney,
+    canonicalReadiness,
+    canonicalRules,
+    ["ca-gov-66317"],
+  ),
+  "changed route dependency left journey current",
+);
+check(
+  journeySourcesAreCurrent(
+    canonicalJourney,
+    canonicalReadiness,
+    canonicalRules,
+    ["ca-gov-66411-7"],
+  ),
+  "unrelated statewide source disabled Woodland journey",
+);
+check(
+  !readinessSourceIsCurrent(
+    canonicalReadiness,
+    ["woodland-preapproved-adu-checklist"],
+  ),
+  "changed Woodland checklist left packet current",
+);
+check(
+  !readinessSourceIsCurrent(
+    canonicalReadiness,
+    ["yolo-public-parcels-layer"],
+  ),
+  "changed parcel source left packet current",
+);
+check(
+  readinessSourceIsCurrent(canonicalReadiness, ["ca-gov-66411-7"]),
+  "unrelated statewide source disabled Woodland packet",
+);
 fixedNow = "2027-01-24T12:00:00Z";
 check(
   !journeySourcesAreCurrent(
@@ -549,6 +595,8 @@ globalThis.Date = NativeDate;
             "  value: webcrypto, configurable: true,",
             "});",
             "let RULES = [];",
+            "let SOURCE_STATE = null;",
+            "let simulating = false;",
             "const NORMALIZED_READINESS_DATA = new WeakSet();",
             matching_source,
             validation_source,

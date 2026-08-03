@@ -252,13 +252,31 @@ abstention path is a structured intake with no matching encoded rule.
   `unchanged`, `changed`, or `unverifiable`. Only a source that was actually
   fetched can be called changed; a fetch that fails after its retry budget is
   `unverifiable`, carries the last successful verification date, and marks no
-  rule stale. New-law discovery and durable changed-state persistence are not
-  implemented; stable source dependency IDs are.
-- **Public trust surface:** the dashboard shows date-based rule status and a
-  labeled amendment rehearsal. It does not currently ingest persisted output
-  from the scheduled watcher.
+  rule stale. When requested, the watcher also emits a complete proposed
+  source-state receipt with observed digests, the run/commit binding, and
+  exact affected and unaffected rule/Golden IDs. The scheduled workflow keeps
+  that proposal as a 30-day artifact and never adopts it automatically.
+- **Reviewed publication overlay:** `src/permit_pathways/source_state.py`
+  validates one deliberately adopted receipt in
+  `data/source-status/current.json`. A public bundle requires receipt status
+  `reviewed`, binds it to the current source registry, re-derives every
+  observation and direct rule/Golden impact, and fails closed on drift. Here,
+  `reviewed` means selected by repository maintenance for publication; it is
+  not legal, jurisdiction, counsel, or substantive content approval and does
+  not identify a human reviewer.
+- **Public trust surface:** bundle format 3 carries the adopted overlay to the
+  browser. Exact changed dependencies stale statewide rule cards and
+  orientation receipts. A changed candidate-route source blocks the Woodland
+  handoff; a changed checklist or parcel-metadata binding withholds the
+  Woodland findings, actions, and print summary. An unrelated changed source
+  leaves those local surfaces available. An unverifiable source produces a
+  warning and does not stale a dependent. The § 66321 amendment control is a
+  separate temporary layer and never rewrites the committed receipt.
 
-The target dependency model is:
+New-law discovery, automatic receipt adoption/publication, a named reviewer
+record, and a staffed re-verification assignment workflow are not implemented.
+
+The implemented bounded dependency model is:
 
 `source ID → provision → rule/check → golden case → applicant/staff output`
 
@@ -270,17 +288,22 @@ The versioned Woodland contract composes the two bounded traces as:
 
 `golden case + candidate route current on the recorded date + applicable readiness evidence → synthetic journey envelope`
 
-A changed or unreachable source should create a durable review queue for all
-affected nodes while proving that unrelated nodes remain current.
+A fetched changed source creates the public review hold described above while
+preserving explicit unaffected controls. The exact persisted impact list
+covers rules and Golden cases; journey and readiness effects are re-derived
+from their source bindings in the browser. An unreachable source creates a
+warning, not a change claim. Packet-field assignments and human ownership of
+the queue remain planned.
 
 ### 5. Static delivery (implemented)
 
 The browser showcase remains dependency-free and static-host friendly.
-Canonical rules, explanations, registries, fixtures, checks, and source
-metadata stay in JSON. `scripts/build_demo_bundle.py` deterministically
-compiles those files, the generated readiness record, and the generated
-journey envelope into `data/demo-data.js`. The static surface is split by user
-job:
+Canonical rules, explanations, registries, fixtures, checks, source metadata,
+and the adopted source-state receipt stay in JSON.
+`scripts/build_demo_bundle.py` deterministically compiles those files, the
+generated readiness record, the generated journey envelope, and the strict
+source-state overlay into `data/demo-data.js`. The static surface is split by
+user job:
 
 - `index.html`: lightweight orientation and scope; it loads no data bundle;
 - `check.html`: applicant intake, a temporary grouped result packet, a
@@ -291,7 +314,8 @@ job:
   Woodland packet-presence result, evidence-manifest link, and print-focused
   journey evidence summary;
 - `review.html`: bounded ordinance-text screen; and
-- `evidence.html`: source status, regression summary, and change rehearsal.
+- `evidence.html`: adopted source-state receipt, source status, derived review
+  queue, regression summary, and separate change rehearsal.
 
 The four data-driven pages load the generated bundle before shared,
 page-gated `assets/demo.js`. Relative URLs let all five pages work from disk
@@ -331,7 +355,7 @@ The current build-time and browser boundaries are documented in
 | Jurisdiction data ownership | Rules, corpus, fixtures, and source metadata use open repository formats. | Tested full export/offboarding once any hosted or case data exists. |
 | CPRA (Gov C § 7920.000 et seq.) | No applicant record store exists. | Deployment-specific retention, search/export, legal-hold, exemption handling, and audit design; no blanket compliance claim. |
 | Low-capacity affordability | Dependency-light Python core and static-friendly browser demo. | Pilot deployment/TCO evidence and an integration contract beside existing systems. |
-| Keep pace with legislative change | Selected-source hash watcher, stable source IDs with explicit rule dependencies, date aging, and staleness rehearsal. | Source discovery, persisted source state and review queue, broader local-source coverage, and human approval history. |
+| Keep pace with legislative change | Selected-source hash watcher, proposed run artifacts, a strict repository-adopted source-state overlay, exact rule/Golden impact, applicant-output holds, date aging, and a separate staleness rehearsal. | New-law discovery, automatic adoption/publication, staffed assignment, packet-field queue records, broader local-source coverage, and human approval history. |
 | Decision support, not legal agent | Candidate labels, source links, disclaimers, visible unverified state, and abstention. | Ensure stale and unverified rules cannot appear as actionable green results. |
 | SAM 5300 / SIMM / accessibility | Static WCAG 2.2 AAA-target audit and a versioned `not_run` human-validation matrix; no-storage demo reduces the current data boundary. | Execute the human/AT matrix, then complete the threat model, control mapping, incident path, and deployment security review. |
 

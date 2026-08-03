@@ -23,20 +23,23 @@ def test_full_statewide_coverage(registry):
     assert cov.counties == 58
     assert cov.total == 541
     assert cov.local_layers == 2  # davis, woodland
-    # Full HAU letter dataset: 469 jurisdictions have letter history.
-    assert cov.with_hcd_letters >= 400
+    # Full HAU letter dataset: 470 jurisdictions have letter history.
+    assert cov.with_hcd_letters == 470
 
 
 def test_full_hau_dataset_is_complete_and_matched(registry):
     import json
 
     data = json.loads((DATA / "jurisdictions" / "hcd-letters.json").read_text())
-    assert data["letter_count"] == 1309
+    assert data["letter_count"] == 1314
+    assert data["retrieved_on"] == "2026-08-03"
     assert data["_unmatched"] == {}
     # The Santa Clara County findings letter used to validate the
     # conformance scanner appears in HCD's own dataset.
     urls = [r["url"] or "" for r in data["letters"]["santa-clara-county"]]
     assert any("santa-clara-cou-adu-sb-9-findings" in u for u in urls)
+    # The refresh added Grover Beach to the statewide coverage surface.
+    assert data["letters"]["grover-beach"][0]["hau_number"] == "HAU0003468"
 
 
 def test_slugs_are_unique(registry):
