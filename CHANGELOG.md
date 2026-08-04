@@ -20,6 +20,18 @@ published a versioned release.
 
 ### Changed
 
+- Added a prepared, not-yet-adopted rule verification-level ledger
+  (`src/permit_pathways/rule_verification.py`,
+  `data/validation/rule-verification.json`) with explicit `machine_linked`,
+  `human_reviewed`, and `jurisdiction_approved` states, as AGENTS.md's
+  evidence rules describe. A promoted level binds to the rule's exact
+  citation fingerprint and a 180-day review window; strict loading rejects
+  duplicate, orphaned, unauthorized-metadata, pre-dated, and
+  citation-drifted entries, and `effective_status` fails a claim closed back
+  to `machine_linked` once its review window elapses. All 19 current rules
+  are recorded `machine_linked`; none has an actual named reviewer or
+  jurisdiction sign-off yet, and the ledger has no browser, CLI, or
+  evidence-page surface yet. It never changes which rules match an intake.
 - Added a durable, repository-adopted source-state overlay. The watcher can
   emit a proposed completed-run receipt with observed digests; the scheduled
   workflow retains that JSON for human adoption but never overwrites public

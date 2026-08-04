@@ -110,7 +110,7 @@ still needs a person.
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 311 Python tests, 85.69% branch-aware coverage, 29/29 golden cases, 34 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.99 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
+| Quality & Metrics | Automated evidence includes 349 Python tests, 86.65% branch-aware coverage, 29/29 golden cases, 34 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.99 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts. All 19 rule records have dated source evidence inside the review window, so the current verification report is `trustworthy: yes`; that status does not mean human, counsel, or jurisdiction approval. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -320,6 +320,17 @@ fails closed to matched rules and evidence without explanation copy. All 19
 current rule records have English and Spanish drafts; none is represented as
 human-reviewed or jurisdiction-approved.
 
+A separate, prepared-but-not-adopted ledger
+(`src/permit_pathways/rule_verification.py`,
+`data/validation/rule-verification.json`) adds an explicit `machine_linked` /
+`human_reviewed` / `jurisdiction_approved` level on top of the bare
+`verified_on` date. Every current rule is recorded `machine_linked`; a
+promoted level would bind to the rule's exact citation fingerprint and a
+180-day review window, and fails a drifted or aged-out claim closed rather
+than keeping a stronger claim alive. No rule has an actual named reviewer or
+jurisdiction sign-off yet, and this ledger has no browser, CLI, or evidence-page
+surface yet.
+
 The separate Woodland readiness workflow is also machine-assisted. Its 25
 checklist mappings, two parcel-field bindings, and action drafts have
 automated schema, coverage, source, and fingerprint checks, but remain
@@ -430,9 +441,14 @@ explanation sidecar and keeps a separate `/trust` route.
   resolver for the synthetic Woodland fixture
 - `src/permit_pathways/source_state.py`: strict watcher-receipt validation and
   exact rule/Golden dependency impact
+- `src/permit_pathways/rule_verification.py`: prepared, not-yet-adopted
+  machine-linked/human-reviewed/jurisdiction-approved ledger for rule
+  citations
 - `src/permit_pathways/harness/`: verification runner and CLI
 - `data/rules/`: the cited rule base; `data/golden/`: golden cases
 - `data/explanations/plain-language.json`: English/Spanish explanation drafts
+- `data/validation/rule-verification.json`: the rule verification-level
+  ledger; every current entry is `machine_linked`
 - `data/readiness/`: the Woodland workflow, synthetic packet, review-pending
   remedies, and generated evidence manifest
 - `data/journeys/`: the reference-only Woodland journey definition and its

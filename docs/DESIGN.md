@@ -244,6 +244,18 @@ abstention path is a structured intake with no matching encoded rule.
   jurisdiction-acceptance evaluations.
 - **Verification runner:** replays the deterministic matcher, checks recorded
   verification dates, and can mark citation-matched sources stale.
+- **Verification-level ledger (prepared scaffold):**
+  `src/permit_pathways/rule_verification.py` and
+  `data/validation/rule-verification.json` add an explicit `machine_linked` /
+  `human_reviewed` / `jurisdiction_approved` level on top of the bare
+  `verified_on` date, as AGENTS.md's evidence rules describe. Every one of
+  the 19 current rules is recorded `machine_linked`; no rule has an actual
+  named review yet, and this file does not claim otherwise. A promoted level
+  binds to the exact citation fingerprint it was checked against and to a
+  180-day review window; `effective_status` fails a drifted or aged-out claim
+  closed back to `machine_linked` instead of silently keeping a stronger
+  claim alive. The ledger never changes which rules match an intake and is
+  not yet wired into the browser demo, CLI, or public evidence page.
 - **Currency watcher:** monitors the source corpus (statute text, HCD guidance,
   and selected local-source artifacts) for hash changes. Nineteen sources are
   watched, including the current Davis handout and the HCD letter that records
