@@ -20,6 +20,16 @@ published a versioned release.
 
 ### Changed
 
+- Added a read-only effective verification-level summary to
+  `python -m permit_pathways.harness` (`rule_verification.level_coverage`):
+  a one-line count of how many rules are effectively `machine_linked`,
+  `human_reviewed`, or `jurisdiction_approved` today, including how many
+  reverted closed because a review window elapsed. It loads the ledger
+  tolerantly (`require_complete=False`, `strict=False`) so pointing `--rules`
+  at a fixture the committed ledger was never meant to cover — as the
+  harness's own tests already do — degrades to the `machine_linked` default
+  rather than raising. This is visibility only: it cannot change which rules
+  match an intake or promote, demote, or otherwise write to the ledger.
 - Added a prepared, not-yet-adopted rule verification-level ledger
   (`src/permit_pathways/rule_verification.py`,
   `data/validation/rule-verification.json`) with explicit `machine_linked`,

@@ -285,6 +285,70 @@ def load_rule_verifications(
     return ledger
 
 
+@dataclass(frozen=True)
+class LevelCoverage:
+    """Effective verification-level counts across a rule set, as of a date.
+
+    Counts use :func:`effective_status`, so a recorded review whose window
+    elapsed is tallied under ``machine_linked`` here too; ``reverted_stale``
+    separately reports how many of those machine_linked counts are a decayed
+    claim rather than a rule that was never reviewed.
+    """
+
+    total: int
+    machine_linked: int
+    human_reviewed: int
+    jurisdiction_approved: int
+    reverted_stale: int
+
+    def summary(self) -> str:
+        line = (
+            f"{self.total} rules; effective verification level: "
+            f"{self.machine_linked} machine_linked, "
+            f"{self.human_reviewed} human_reviewed, "
+            f"{self.jurisdiction_approved} jurisdiction_approved"
+        )
+        if self.reverted_stale:
+            line += (
+                f" ({self.reverted_stale} reverted to machine_linked: "
+                "review window elapsed)"
+            )
+        return line
+
+
+def level_coverage(
+    rules: list[Rule],
+    ledger: dict[str, RuleVerification],
+    *,
+    today: date | None = None,
+    max_age_days: int = DEFAULT_MAX_AGE_DAYS,
+) -> LevelCoverage:
+    """Summarize the effective verification level in force across ``rules``.
+
+    Read-only visibility, not a claim: this never changes which rules match
+    an intake and does not itself promote, demote, or otherwise write to the
+    ledger.
+    """
+
+    as_of = resolve_today(today)
+    counts = {level: 0 for level in VERIFICATION_LEVELS}
+    reverted = 0
+    for rule in rules:
+        effective = effective_status(
+            rule, ledger, today=as_of, max_age_days=max_age_days
+        )
+        counts[effective.level] += 1
+        if effective.stale:
+            reverted += 1
+    return LevelCoverage(
+        total=len(rules),
+        machine_linked=counts["machine_linked"],
+        human_reviewed=counts["human_reviewed"],
+        jurisdiction_approved=counts["jurisdiction_approved"],
+        reverted_stale=reverted,
+    )
+
+
 def effective_status(
     rule: Rule,
     ledger: dict[str, RuleVerification],
