@@ -176,6 +176,25 @@ def main(*, today: date | None = None) -> int:
             )
         )
         print("\n" + cov.summary())
+
+    verification_path = ROOT / "data" / "validation" / "rule-verification.json"
+    if verification_path.exists() and args.rules.is_dir():
+        from ..rule_verification import level_coverage, load_rule_verifications
+        from ..screening import load_rules
+
+        verification_rules = load_rules(args.rules, today=as_of)
+        # Display tooling loads tolerantly: --rules may point at a fixture
+        # the committed ledger was never meant to cover (e.g. in tests), and
+        # a rule with no valid entry simply reports as machine_linked, same
+        # as effective_status's own default.
+        ledger = load_rule_verifications(
+            verification_path,
+            verification_rules,
+            require_complete=False,
+            strict=False,
+            today=as_of,
+        )
+        print("\n" + level_coverage(verification_rules, ledger, today=as_of).summary())
     if args.assume_changed:
         print(f"\n(simulating changed sources: {', '.join(args.assume_changed)})")
         for rule_id in report.stale:

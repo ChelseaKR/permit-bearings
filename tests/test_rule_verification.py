@@ -11,6 +11,7 @@ from permit_pathways.harness.runner import DEFAULT_MAX_AGE_DAYS
 from permit_pathways.rule_verification import (
     VERIFICATION_LEVELS,
     effective_status,
+    level_coverage,
     load_rule_verifications,
 )
 from permit_pathways.screening import load_rules, screen
@@ -505,3 +506,68 @@ def test_all_verification_levels_are_exercised_by_the_pilot_module():
         "human_reviewed",
         "jurisdiction_approved",
     )
+
+
+# ---------------------------------------------------------------------------
+# Level-coverage summary (read-only visibility, not a claim)
+
+
+def test_level_coverage_reports_the_committed_ledger_as_entirely_machine_linked(
+    rules, ledger
+):
+    cov = level_coverage(rules, ledger, today=TODAY)
+    assert cov.total == len(rules)
+    assert cov.machine_linked == len(rules)
+    assert cov.human_reviewed == 0
+    assert cov.jurisdiction_approved == 0
+    assert cov.reverted_stale == 0
+    summary = cov.summary()
+    assert f"{len(rules)} rules; effective verification level:" in summary
+    assert "reverted" not in summary
+
+
+@pytest.mark.parametrize("level", ["human_reviewed", "jurisdiction_approved"])
+def test_level_coverage_counts_a_fresh_review_under_its_promoted_level(
+    tmp_path, rules, level
+):
+    rule = next(r for r in rules if r.rule_id == "adu-ministerial-review")
+    payload = _payload()
+    payload["entries"] = [
+        _reviewed_entry(rule, level, reviewed_on="2026-08-01")
+        if e["rule_id"] == rule.rule_id
+        else e
+        for e in payload["entries"]
+    ]
+    ledger = load_rule_verifications(_write(tmp_path, payload), rules, today=TODAY)
+
+    still_fresh = date(2026, 8, 1) + timedelta(days=DEFAULT_MAX_AGE_DAYS)
+    cov = level_coverage(rules, ledger, today=still_fresh)
+    assert cov.total == len(rules)
+    assert getattr(cov, level) == 1
+    assert cov.machine_linked == len(rules) - 1
+    assert cov.reverted_stale == 0
+
+
+@pytest.mark.parametrize("level", ["human_reviewed", "jurisdiction_approved"])
+def test_level_coverage_tallies_an_elapsed_review_as_reverted_stale(
+    tmp_path, rules, level
+):
+    rule = next(r for r in rules if r.rule_id == "adu-ministerial-review")
+    payload = _payload()
+    payload["entries"] = [
+        _reviewed_entry(rule, level, reviewed_on="2026-08-01")
+        if e["rule_id"] == rule.rule_id
+        else e
+        for e in payload["entries"]
+    ]
+    ledger = load_rule_verifications(_write(tmp_path, payload), rules, today=TODAY)
+
+    just_past_window = date(2026, 8, 1) + timedelta(days=DEFAULT_MAX_AGE_DAYS + 1)
+    cov = level_coverage(rules, ledger, today=just_past_window)
+    # The elapsed claim reverts closed to machine_linked, exactly as
+    # effective_status reports it — the reversion is tallied separately
+    # rather than silently counted as if the rule were never reviewed.
+    assert cov.machine_linked == len(rules)
+    assert getattr(cov, level) == 0
+    assert cov.reverted_stale == 1
+    assert "1 reverted to machine_linked: review window elapsed" in cov.summary()

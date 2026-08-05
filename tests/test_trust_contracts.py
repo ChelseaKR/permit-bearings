@@ -525,6 +525,47 @@ def test_real_content_change_still_exits_with_the_review_code(
     assert "rules stale:            1" in printed
 
 
+def test_harness_cli_reports_verification_level_coverage_for_a_rule_directory(
+    tmp_path,
+    monkeypatch,
+    capsys,
+):
+    # The committed rule-verification ledger only covers the real 19 rules
+    # in data/rules; --rules can point anywhere a directory of rule JSON
+    # lives, including a fixture the ledger was never meant to cover. The
+    # coverage line must load tolerantly (require_complete=False,
+    # strict=False) and report the synthetic rule as machine_linked by
+    # default rather than raise on "missing rule IDs" or an unrecognized
+    # entry, since that default is exactly what effective_status uses for
+    # any rule absent from the ledger.
+    rules_dir = tmp_path / "rules"
+    rules_dir.mkdir()
+    (rules_dir / "rules.json").write_text(
+        json.dumps([_rule_record()]), encoding="utf-8"
+    )
+    golden_path = tmp_path / "golden.json"
+    golden_path.write_text("[]", encoding="utf-8")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "permit_pathways.harness",
+            "--rules",
+            str(rules_dir),
+            "--golden",
+            str(golden_path),
+            "--as-of",
+            AS_OF.isoformat(),
+        ],
+    )
+    assert harness_main() == 0
+    printed = capsys.readouterr().out
+    assert (
+        "1 rules; effective verification level: 1 machine_linked, "
+        "0 human_reviewed, 0 jurisdiction_approved" in printed
+    )
+
+
 def test_non_2xx_status_without_an_exception_is_unverifiable(
     tmp_path,
     monkeypatch,

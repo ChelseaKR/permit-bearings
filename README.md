@@ -328,8 +328,11 @@ A separate, prepared-but-not-adopted ledger
 promoted level would bind to the rule's exact citation fingerprint and a
 180-day review window, and fails a drifted or aged-out claim closed rather
 than keeping a stronger claim alive. No rule has an actual named reviewer or
-jurisdiction sign-off yet, and this ledger has no browser, CLI, or evidence-page
-surface yet.
+jurisdiction sign-off yet. `python -m permit_pathways.harness` now prints a
+read-only count of the effective level in force across the rule set
+(e.g. how many are `machine_linked` versus `human_reviewed` today); the
+ledger still has no browser or evidence-page surface, and this summary
+cannot change which rules match an intake or promote any claim.
 
 The separate Woodland readiness workflow is also machine-assisted. Its 25
 checklist mappings, two parcel-field bindings, and action drafts have

@@ -254,8 +254,13 @@ abstention path is a structured intake with no matching encoded rule.
   binds to the exact citation fingerprint it was checked against and to a
   180-day review window; `effective_status` fails a drifted or aged-out claim
   closed back to `machine_linked` instead of silently keeping a stronger
-  claim alive. The ledger never changes which rules match an intake and is
-  not yet wired into the browser demo, CLI, or public evidence page.
+  claim alive. The ledger never changes which rules match an intake.
+  `python -m permit_pathways.harness` prints a read-only effective-level
+  count (loaded tolerantly with `require_complete=False, strict=False`, the
+  same posture display tooling elsewhere in this module uses, so a `--rules`
+  fixture the ledger was never meant to cover degrades to the
+  `machine_linked` default instead of raising); the ledger is still not
+  wired into the browser demo or public evidence page.
 - **Currency watcher:** monitors the source corpus (statute text, HCD guidance,
   and selected local-source artifacts) for hash changes. Nineteen sources are
   watched, including the current Davis handout and the HCD letter that records
