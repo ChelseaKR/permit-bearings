@@ -1,0 +1,157 @@
+{
+  "entries": [
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "adu-ministerial-review"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "adu-protected-minimum"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "adu-height-standards"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "jadu-standards"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "jadu-ministerial-review"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "sb9-two-unit-ministerial"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "sb9-urban-lot-split"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "adu-size-allowances"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "adu-parking-limits"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "adu-no-owner-occupancy-rental"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "adu-conversion-exemptions"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "adu-unpermitted-legalization"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "jadu-unpermitted-legalization"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "adu-multifamily-66323"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "adu-multifamily-proposed-66323"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "sb9-adu-interaction"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "sb9-lot-split-adu-interaction"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "davis-local-adu-process"
+    },
+    {
+      "level": "machine_linked",
+      "method": null,
+      "reviewed_citation_fingerprint": null,
+      "reviewed_on": null,
+      "reviewer": null,
+      "rule_id": "woodland-adu-ordinance-2026"
+    }
+  ],
+  "schema_version": 1
+}
