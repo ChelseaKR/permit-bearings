@@ -477,3 +477,8 @@ explanation sidecar and keeps a separate `/trust` route.
 - `AGENTS.md`: evidence, scope, privacy, and quality guardrails
 - `LICENSE` and `THIRD_PARTY_NOTICES.md`: original-project license and
   attribution or separate terms for bundled source material
+
+## Support
+
+This is independent, unpaid work. If it has been useful to you, you can
+<a href='https://ko-fi.com/T6T6GMYTU' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
