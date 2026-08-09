@@ -507,12 +507,39 @@ in `docs/DESIGN-SYSTEM.md`.
 The current build-time and browser boundaries are documented in
 `docs/DATA-FLOW.md`.
 
+### 6. Public/synthetic evidence handoff (implemented tooling)
+
+`src/permit_pathways/evidence_export.py` packages the exact files named in the
+schema-v1 profile as one deterministic ZIP outside the repository. The
+profile uses raw byte pins for every ordinary member and a self-reference for
+the profile itself; separate assertions keep mutable validation ledgers in
+their public prepared/pending/`not_run` states. The manifest binds Git `HEAD`,
+the freeze ID/date, artifact roles, raw member hashes and sizes, a tree
+fingerprint, scope/exclusions, and official source records without retained
+copies. Normalized source-content hashes remain distinct from archive-member
+hashes and are rechecked against `data/sources.json`.
+
+Schema v1 has one canonical uncompressed ZIP representation with fixed member
+metadata and strict size/path/member limits. Verification reconstructs and
+compares the complete archive, so alternate ordering, compression, metadata,
+prefixes, trailers, unknown files, and tampering fail. Restore streams into a
+private sibling staging directory, replays the canonical loaders, and exposes
+a new destination only after every check succeeds. It never uses ZIP
+extraction helpers, merges into a destination, or changes publication state.
+
+This is an evidence-data portability mechanism for the current public and
+synthetic repository scope. It is not a sensitive-data export, applicant
+record, proof of authenticity, backup/disaster-recovery system, copyright or
+contractual ownership finding, partner acceptance, CPRA workflow, completed
+review, or beta evidence. The operator and maintenance contract is in
+`docs/EXPORT-RESTORE.md`.
+
 ## Cross-cutting requirement mapping
 
 | Challenge requirement | Current evidence | Next gap |
 |---|---|---|
 | Privacy (Info Practices Act, Gov C §§ 11015.5/11019.9) | Public demo persists no applicant input. Its handoff URL carries only a public journey ID and version; the packet page uses one committed synthetic record and makes no runtime model call. | Deployment data inventory, flow, purpose, access, retention/deletion, subprocessors, and privacy review. |
-| Jurisdiction data ownership | Rules, corpus, fixtures, and source metadata use open repository formats. | Tested full export/offboarding once any hosted or case data exists. |
+| Jurisdiction data ownership | Rules, corpus, fixtures, and source metadata use open repository formats. A schema-v1 canonical ZIP builds from 58 exact public/synthetic files verified against Git HEAD; archive-only verification and inert restore check the profile, raw and normalized-source hashes, tree fingerprint, 17 asserted validation states, licensing, and provenance without authenticating that commit. The allowlist excludes known sensitive material but is not a privacy classifier. | Partner acceptance, contractual custody/offboarding, signing, and a separately classified export after any hosted, applicant, reviewer, or participant data exists. |
 | CPRA (Gov C § 7920.000 et seq.) | No applicant record store exists. | Deployment-specific retention, search/export, legal-hold, exemption handling, and audit design; no blanket compliance claim. |
 | Low-capacity affordability | Dependency-light Python core and static-friendly browser demo. | Pilot deployment/TCO evidence and an integration contract beside existing systems. |
 | Keep pace with legislative change | Selected-source hash watcher, proposed run artifacts, a strict repository-adopted source-state overlay, exact rule/Golden and bounded packet-context worklists, separate decision templates, applicant-output holds, date aging, and a separate staleness rehearsal. | New-law discovery, automatic adoption/publication, completed staffed assignments and dispositions, broader local-source coverage, and human approval history. |

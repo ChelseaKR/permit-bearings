@@ -202,11 +202,14 @@ Start at `/` for the product boundary, then use `/review.html`,
   schedule are versioned evidence."
 
 ### 4. Fit and posture (4 min)
-- Rules, sources, and the golden set are portable files that can be copied and
-  inspected without vendor-only tooling. Operational export, ownership terms,
-  production retention, CPRA export, privacy review, and security controls
-  remain deployment work. The demo persists no applicant data. Decision
-  support, not a legal agent, is stated on every page.
+- Rules, sources, and the golden set are portable files. A schema-v1 command
+  packages the exact Git-tracked public/synthetic evidence profile into a
+  deterministic ZIP, verifies its hashes and source digests, and restores it
+  inertly without vendor-only tooling. This is prototype-data portability,
+  not applicant-data or CPRA export, contractual ownership or offboarding,
+  partner acceptance, or a backup. Production retention, privacy review, and
+  security controls remain deployment work. The demo persists no applicant
+  data. Decision support, not a legal agent, is stated on every page.
 - Built for low-capacity jurisdictions: static-friendly, runs beside existing
   permitting systems, no rip-and-replace.
 - Teaming: this verification layer composes with full-pipeline platforms and is

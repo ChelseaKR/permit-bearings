@@ -1,4 +1,4 @@
-.PHONY: install verify lint type test security bundle-check
+.PHONY: install verify lint type test security bundle-check evidence-export-check
 
 install:
 	uv sync --frozen --python 3.12 --group dev
@@ -28,4 +28,23 @@ bundle-check:
 	.venv/bin/python scripts/build_demo_bundle.py --check
 	PYTHONPATH=src .venv/bin/python -m permit_pathways.harness
 
-verify: install lint type test security bundle-check
+evidence-export-check:
+	@set -eu; \
+		evidence_directory=$$(mktemp -d "$${TMPDIR:-/tmp}/permit-pathways-evidence-export.XXXXXX"); \
+		trap 'rm -rf "$$evidence_directory"' EXIT; \
+		repository_commit_sha=$$(git rev-parse HEAD); \
+		archive="$$evidence_directory/public-synthetic-evidence.zip"; \
+		restored="$$evidence_directory/restored"; \
+		PYTHONPATH=src .venv/bin/python -m permit_pathways.evidence_export_cli build \
+			--output "$$archive" \
+			--freeze-id public-synthetic-evidence-freeze-2026-08-09 \
+			--frozen-on 2026-08-09 \
+			--repository-commit-sha "$$repository_commit_sha" >/dev/null; \
+		PYTHONPATH=src .venv/bin/python -m permit_pathways.evidence_export_cli verify \
+			--archive "$$archive" >/dev/null; \
+		PYTHONPATH=src .venv/bin/python -m permit_pathways.evidence_export_cli restore \
+			--archive "$$archive" \
+			--destination "$$restored" >/dev/null; \
+		printf '%s\n' 'evidence export round trip: pass'
+
+verify: install lint type test security bundle-check evidence-export-check
