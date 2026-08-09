@@ -52,12 +52,21 @@
   both citation and full-rule fingerprints. Source change, source age, review
   age, or fingerprint drift demotes the effective claim. All 19 current rules
   remain `machine_linked`; the public evidence page records zero named human
-  reviews and zero jurisdiction approvals. Bundle format 4 carries this claim
+  reviews and zero jurisdiction approvals. Bundle format 5 carries this claim
   separately from source state and program availability.
 - **HCD HAU letter refresh:** the public HCD Housing Accountability Unit
   dashboard was re-read on August 3, 2026. The committed derived dataset now
   contains 1,314 letter records: 1,312 mapped across 470 jurisdictions and two
   statewide records, with zero unmatched rows.
+- **Statewide coverage index:** `jurisdictions.py` derives a portable profile
+  index from the committed jurisdiction registry, scoped rule records, and
+  HCD-letter snapshot. It validates the snapshot's non-future ISO retrieval
+  date and records rule IDs and HCD counts rather than interpreting
+  correspondence. The browser applies the separately adopted source-state
+  receipt to hold changed statewide/local inventory records for re-verification.
+  It supports orientation only: no linked HCD record is not a compliance or
+  no-activity finding, and an absent local layer is not a claim that local
+  requirements do not exist.
 - **AI assistance:** rule and readiness encoding, explanation, remedy and
   translation drafts, code, and prose have been machine-assisted. No current
   rule interpretation, checklist mapping, action draft, plain-language

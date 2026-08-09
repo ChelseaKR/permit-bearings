@@ -28,6 +28,7 @@ from permit_pathways.journey import (  # noqa: E402
     load_journey_config,
     resolve_journey,
 )
+from permit_pathways.jurisdictions import build_coverage_index  # noqa: E402
 from permit_pathways.program_availability import (  # noqa: E402
     load_program_availability,
 )
@@ -61,6 +62,7 @@ JOURNEY_BINDING = Path("data/journeys/woodland-preapproved-detached-adu.json")
 JOURNEY_OUTPUT = ROOT / (
     "data/journeys/generated/woodland-preapproved-detached-adu.json"
 )
+COVERAGE_INDEX_OUTPUT = ROOT / "data/jurisdictions/generated/coverage-index.json"
 SOURCE_STATE = Path("data/source-status/current.json")
 INPUTS = {
     "golden": Path("data/golden/example.json"),
@@ -272,6 +274,28 @@ def encoded_journey(root: Path = ROOT) -> str:
     )
 
 
+def build_coverage_index_payload(root: Path = ROOT) -> dict[str, object]:
+    """Compile the compact statewide/local coverage inventory for the browser."""
+
+    return build_coverage_index(
+        root / INPUTS["registry"],
+        root / "data" / "rules",
+        root / INPUTS["letters"],
+    )
+
+
+def encoded_coverage_index(root: Path = ROOT) -> str:
+    return (
+        json.dumps(
+            build_coverage_index_payload(root),
+            ensure_ascii=True,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
+
+
 def _validate_local_source_copies(root: Path) -> None:
     """Ensure preserved evidence bytes still match the source registry."""
 
@@ -352,6 +376,7 @@ def build_bundle(
     digests.update(rule_digests)
     payload["rules"] = aggregate_rules
     payload["rule_manifest"] = rule_manifest(root)
+    payload["coverage_index"] = build_coverage_index_payload(root)
     canonical_records = records or _canonical_readiness_records(root)
     readiness, readiness_digests = build_readiness_payload(
         root,
@@ -383,7 +408,7 @@ def build_bundle(
         digests[relative_path.as_posix()] = hashlib.sha256(raw).hexdigest()
 
     payload["_meta"] = {
-        "format_version": 4,
+        "format_version": 5,
         "generated_from": digests,
     }
     encoded = json.dumps(
@@ -409,6 +434,7 @@ def main() -> int:
     records = _canonical_readiness_records(ROOT)
     readiness, _ = build_readiness_payload(ROOT, records=records)
     journey, _ = build_journey_payload(ROOT, records=records)
+    expected_coverage_index = encoded_coverage_index()
     expected = build_bundle(ROOT, records=records)
     expected_manifest = encoded_rule_manifest()
     expected_readiness_evidence = (
@@ -447,11 +473,17 @@ def main() -> int:
             JOURNEY_OUTPUT.exists()
             and JOURNEY_OUTPUT.read_text(encoding="utf-8") == expected_journey
         )
+        coverage_index_current = (
+            COVERAGE_INDEX_OUTPUT.exists()
+            and COVERAGE_INDEX_OUTPUT.read_text(encoding="utf-8")
+            == expected_coverage_index
+        )
         if (
             not bundle_current
             or not manifest_current
             or not readiness_current
             or not journey_current
+            or not coverage_index_current
         ):
             print(
                 "generated demo data is out of date; "
@@ -459,8 +491,8 @@ def main() -> int:
             )
             return 1
         print(
-            "demo bundle, rule manifest, readiness evidence, and journey "
-            "evidence are in sync"
+            "demo bundle, rule manifest, readiness evidence, journey evidence, "
+            "and coverage index are in sync"
         )
         return 0
 
@@ -472,10 +504,13 @@ def main() -> int:
     )
     JOURNEY_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     JOURNEY_OUTPUT.write_text(expected_journey, encoding="utf-8")
+    COVERAGE_INDEX_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    COVERAGE_INDEX_OUTPUT.write_text(expected_coverage_index, encoding="utf-8")
     OUTPUT.write_text(expected, encoding="utf-8")
     print(f"wrote {RULE_MANIFEST_OUTPUT.relative_to(ROOT)}")
     print(f"wrote {READINESS_EVIDENCE_OUTPUT.relative_to(ROOT)}")
     print(f"wrote {JOURNEY_OUTPUT.relative_to(ROOT)}")
+    print(f"wrote {COVERAGE_INDEX_OUTPUT.relative_to(ROOT)}")
     print(f"wrote {OUTPUT.relative_to(ROOT)}")
     return 0
 

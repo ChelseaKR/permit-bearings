@@ -503,6 +503,123 @@ test("statewide orientation handoff works across city, county, and local-layer p
   await expectNoDocumentOverflow(page);
 });
 
+test("jurisdiction coverage profile separates statewide, local, and HCD evidence", async ({
+  page,
+}) => {
+  const profiles = [
+    {
+      display: "Albany (Alameda Co.)",
+      slug: "albany",
+      local: "false",
+      hcd: "0",
+      text: "No linked records in this dataset",
+    },
+    {
+      display: "Alameda (Alameda Co.)",
+      slug: "alameda",
+      local: "false",
+      hcd: "1",
+      text: "1 linked public record",
+    },
+    {
+      display: "Davis (Yolo Co.)",
+      slug: "davis",
+      local: "true",
+      hcd: null,
+      text: "1 limited jurisdiction-scoped source record",
+    },
+    {
+      display: "Los Angeles County",
+      slug: "los-angeles-county",
+      local: "false",
+      hcd: null,
+      text: "Not encoded",
+    },
+  ];
+
+  for (const profile of profiles) {
+    await page.goto("/check.html");
+    await expect(page.locator("#t-submit")).toBeEnabled();
+    await page.locator("#jurisInput").fill(profile.display);
+    const card = page.locator("#jurisdictionProfile");
+    await expect(card).toBeVisible();
+    await expect(card).toHaveAttribute("data-jurisdiction", profile.slug);
+    await expect(card).toHaveAttribute("data-local-layer", profile.local);
+    await expect(card).toContainText("17 bounded candidate-rule records");
+    await expect(card).toContainText(profile.text);
+    if (profile.hcd !== null) {
+      await expect(card).toHaveAttribute("data-hcd-record-count", profile.hcd);
+    }
+    await expectBrowserStorageEmpty(page);
+  }
+
+  const zeroProfile = page.locator("#jurisdictionProfile");
+  await page.locator("#jurisInput").fill("Albany (Alameda Co.)");
+  await expect(zeroProfile).toContainText("This is not evidence of compliance");
+  await page.locator("#jurisInput").fill("Alameda (Alameda Co.)");
+  await zeroProfile.locator("summary").click();
+  await expect(zeroProfile.locator(".jurisdiction-profile-letter-list")).toBeVisible();
+  const hcdLink = zeroProfile.locator(
+    ".jurisdiction-profile-letter-list a",
+  ).first();
+  await expect(hcdLink).toHaveAccessibleName(
+    /HCD record for Alameda \(Alameda Co\.\); Technical Assistance Letter; 2021-11-29; Housing Element Law; HAU21-014/,
+  );
+  const summaryHeight = await zeroProfile.locator("summary").evaluate(
+    summary => summary.getBoundingClientRect().height,
+  );
+  expect(summaryHeight).toBeGreaterThanOrEqual(44);
+  await page.locator("#langToggle").click();
+  await expect(zeroProfile).toHaveAttribute("lang", "es");
+  await expect(zeroProfile).toContainText("Perfil de cobertura estatal");
+  await expect(zeroProfile.locator(".jurisdiction-profile-letter-list [lang='en']"))
+    .not.toHaveCount(0);
+  await page.locator("#jurisInput").fill("");
+  await expect(zeroProfile).toBeHidden();
+  expect(await zeroProfile.evaluate(profile => ({...profile.dataset}))).toEqual({});
+  await page.locator("#jurisInput").fill("Not a California jurisdiction");
+  await expect(zeroProfile).toBeHidden();
+  expect(await zeroProfile.evaluate(profile => ({...profile.dataset}))).toEqual({});
+  await expectNoDocumentOverflow(page);
+  await expectNoAutomatedWcagViolations(page);
+});
+
+test("coverage profile holds statewide inventory when a source changes", async ({
+  page,
+}) => {
+  await serveSourceStateFixture(page, "changed", "ca-gov-66321");
+  await page.goto("/check.html");
+  await page.locator("#jurisInput").fill("Albany (Alameda Co.)");
+
+  const profile = page.locator("#jurisdictionProfile");
+  await expect(profile).toHaveAttribute("data-statewide-review-hold", "5");
+  await expect(profile).toContainText(
+    "5 of 17 candidate-rule records need a new source check",
+  );
+  await expect(profile).toContainText("This inventory is on a source-review hold");
+  await expect(profile).toContainText("Do not treat it as ready to screen");
+  await expectBrowserStorageEmpty(page);
+  await expectNoAutomatedWcagViolations(page);
+});
+
+test("coverage profile holds an affected local source record", async ({ page }) => {
+  await serveSourceStateFixture(page, "changed", "davis-adu-handout-2026");
+  await page.goto("/check.html");
+  await page.locator("#jurisInput").fill("Davis (Yolo Co.)");
+
+  const profile = page.locator("#jurisdictionProfile");
+  const localRecord = profile.locator(
+    ".jurisdiction-profile-local-records li[data-rule-id='davis-local-adu-process']",
+  );
+  await expect(profile).toHaveAttribute("data-local-review-hold", "1");
+  await expect(profile).toContainText("1 local source record needs a new check");
+  await expect(profile).toContainText("local inventory is on a source-review hold");
+  await expect(localRecord).toHaveAttribute("data-source-status", "stale");
+  await expect(localRecord).toContainText("Source evidence needs a new check");
+  await expectBrowserStorageEmpty(page);
+  await expectNoAutomatedWcagViolations(page);
+});
+
 test("mobile evidence tables render as labeled records without page overflow", async ({
   page,
 }) => {

@@ -469,8 +469,8 @@ def page(title, body, lang="en"):
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <title>{html.escape(title)}</title>
-<link rel="stylesheet" href="/assets/california-design-system.css?v=20260809a">
-<link rel="stylesheet" href="/assets/site.css?v=20260809a">
+<link rel="stylesheet" href="/assets/california-design-system.css?v=20260809b">
+<link rel="stylesheet" href="/assets/site.css?v=20260809b">
 <style>{CSS}</style></head><body class="python-reference">
 <div id="skip-to-content"><a class="skip-link" href="#main">{skip_label}</a></div>
 <header class="site-header"><div class="header-inner">

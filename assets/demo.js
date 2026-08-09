@@ -65,6 +65,31 @@ const STRINGS = {
     viewScan: "view scan findings (JSON)",
     letterCount: count => `${count} letter${count === 1 ? "" : "s"} on record.`,
     moreLetters: count => `and ${count} more`,
+    profileKicker: "Statewide coverage profile",
+    profileTitle: "What is recorded for this jurisdiction",
+    profileIntro: jurisdiction => `This profile shows the bounded source records committed to this prototype build for ${jurisdiction}. It is decision support, not a finding about a property, current local requirements, or permit approval.`,
+    profileAvailable: "Review the coverage profile below.",
+    profileStatewideLabel: "Statewide candidate-rule set",
+    profileStatewideTitle: count => `${count} bounded candidate-rule records`,
+    profileStatewideCopy: "The same limited California ADU, JADU, and SB 9 rule set can be screened after you enter project facts. It can identify candidate pathways to discuss; it does not verify parcel facts, establish eligibility, reproduce local requirements, determine completeness, or predict approval.",
+    profileStatewideReviewHoldTitle: (affected, total) => `${affected} of ${total} candidate-rule records need a new source check`,
+    profileStatewideReviewHoldCopy: "This inventory is on a source-review hold. Do not treat it as ready to screen until the affected source records are re-verified; see Sources & limits for the source state.",
+    profileLocalLabel: "Local requirements",
+    profileLocalMissingTitle: "Not encoded",
+    profileLocalMissingCopy: jurisdiction => `No jurisdiction-specific rules, forms, fees, or complete checklist are recorded here. Confirm the current ordinance, application materials, fees, process, and parcel-specific conditions with ${jurisdiction} staff.`,
+    profileLocalPresentTitle: count => `${count} limited jurisdiction-scoped source record${count === 1 ? "" : "s"}`,
+    profileLocalPresentCopy: "These records are not a complete local code or checklist, and do not decide which requirements apply to a project. Review each cited source and confirm current forms, fees, process, and parcel-specific conditions with staff.",
+    profileLocalReviewHoldTitle: count => `${count} local source record${count === 1 ? "" : "s"} need${count === 1 ? "s" : ""} a new check`,
+    profileLocalReviewHoldCopy: "The raw citation remains visible below, but this local inventory is on a source-review hold. Do not rely on it for coverage until its source is re-verified.",
+    profileHcdLabel: "Public HCD record history",
+    profileHcdPresentTitle: count => `${count} linked public record${count === 1 ? "" : "s"}`,
+    profileHcdPresentCopy: date => `These are public Housing Accountability Unit records linked to this jurisdiction in a dataset retrieved ${date}. They may include technical assistance, inquiries, findings, or other correspondence. They do not establish the current local ordinance, a compliance status, or what applies to a project.`,
+    profileHcdNoneTitle: "No linked records in this dataset",
+    profileHcdNoneCopy: date => `No HCD record was linked to this jurisdiction in the dataset retrieved ${date}. This is not evidence of compliance, no HCD activity, or complete data coverage.`,
+    profileHcdDetails: count => `Show ${count} linked public HCD record${count === 1 ? "" : "s"}`,
+    profileHcdReference: "HCD reference",
+    profileOnboardingTitle: "What is needed to add a local layer",
+    profileOnboarding: "An authorized local maintainer can start with the operative ordinance sections and effective dates; current forms, checklist, fee, and process pages; official URLs plus a source-check date and content fingerprint; project and parcel scope, exceptions, and unresolved questions; and a named review owner with a re-verification cadence. A source link alone does not create a local rule.",
     project: "What are you proposing?",
     types: [["adu","Accessory dwelling unit (backyard cottage, garage conversion)"],
             ["jadu","Junior ADU (small unit inside my house)"],
@@ -235,6 +260,31 @@ const STRINGS = {
     viewScan: "ver los resultados de la evaluación (JSON)",
     letterCount: count => `${count} carta${count === 1 ? "" : "s"} registrada${count === 1 ? "" : "s"}.`,
     moreLetters: count => `y ${count} más`,
+    profileKicker: "Perfil de cobertura estatal",
+    profileTitle: "Lo que está registrado para esta jurisdicción",
+    profileIntro: jurisdiction => `Este perfil muestra los registros de fuentes limitados incluidos en esta versión del prototipo para ${jurisdiction}. Es apoyo para decisiones, no una conclusión sobre una propiedad, requisitos locales vigentes ni la aprobación de un permiso.`,
+    profileAvailable: "Revise el perfil de cobertura a continuación.",
+    profileStatewideLabel: "Conjunto estatal de reglas posibles",
+    profileStatewideTitle: count => `${count} registros limitados de reglas posibles`,
+    profileStatewideCopy: "El mismo conjunto limitado de reglas de California para ADU, JADU y SB 9 se puede evaluar después de ingresar los datos del proyecto. Puede identificar posibles vías para consultar; no verifica datos de parcela, no establece elegibilidad, no reproduce requisitos locales, no determina integridad ni predice aprobación.",
+    profileStatewideReviewHoldTitle: (affected, total) => `${affected} de ${total} registros de reglas posibles necesitan una nueva comprobación de fuente`,
+    profileStatewideReviewHoldCopy: "Este inventario está retenido para revisión de fuentes. No lo trate como listo para evaluar hasta que se vuelvan a verificar las fuentes afectadas; vea Fuentes y límites para conocer el estado de la fuente.",
+    profileLocalLabel: "Requisitos locales",
+    profileLocalMissingTitle: "No codificados",
+    profileLocalMissingCopy: jurisdiction => `Aquí no se registran reglas, formularios, tarifas ni una lista de documentos completa específicos de la jurisdicción. Confirme la ordenanza, los materiales de solicitud, las tarifas, el proceso y las condiciones específicas de la parcela con el personal de ${jurisdiction}.`,
+    profileLocalPresentTitle: count => `${count} registro${count === 1 ? "" : "s"} limitado${count === 1 ? "" : "s"} de fuente específica de la jurisdicción`,
+    profileLocalPresentCopy: "Estos registros no son un código local ni una lista de documentos completa, y no deciden qué requisitos se aplican a un proyecto. Revise cada fuente citada y confirme con el personal los formularios, las tarifas, el proceso y las condiciones específicas de la parcela vigentes.",
+    profileLocalReviewHoldTitle: count => `${count} registro${count === 1 ? "" : "s"} local${count === 1 ? "" : "es"} de fuente necesita${count === 1 ? "" : "n"} una nueva comprobación`,
+    profileLocalReviewHoldCopy: "La cita original sigue visible abajo, pero este inventario local está retenido para revisión de fuentes. No lo use para determinar cobertura hasta que se vuelva a verificar su fuente.",
+    profileHcdLabel: "Historial de registros públicos de HCD",
+    profileHcdPresentTitle: count => `${count} registro${count === 1 ? "" : "s"} público${count === 1 ? "" : "s"} vinculado${count === 1 ? "" : "s"}`,
+    profileHcdPresentCopy: date => `Estos son registros públicos de la Unidad de Responsabilidad de Vivienda vinculados a esta jurisdicción en un conjunto de datos recuperado el ${date}. Pueden incluir asistencia técnica, consultas, hallazgos u otra correspondencia. No establecen la ordenanza local actual, un estado de cumplimiento ni lo que se aplica a un proyecto.`,
+    profileHcdNoneTitle: "No hay registros vinculados en este conjunto de datos",
+    profileHcdNoneCopy: date => `No se vinculó ningún registro de HCD a esta jurisdicción en el conjunto de datos recuperado el ${date}. Esto no es evidencia de cumplimiento, de ausencia de actividad de HCD ni de cobertura completa de datos.`,
+    profileHcdDetails: count => `Mostrar ${count} registro${count === 1 ? "" : "s"} público${count === 1 ? "" : "s"} vinculado${count === 1 ? "" : "s"} de HCD`,
+    profileHcdReference: "Referencia de HCD",
+    profileOnboardingTitle: "Qué se necesita para agregar una capa local",
+    profileOnboarding: "Un responsable local autorizado puede empezar con las secciones vigentes de la ordenanza y sus fechas de vigencia; las páginas actuales de formularios, lista de documentos, tarifas y proceso; las URL oficiales más una fecha de comprobación y una huella de contenido; el alcance del proyecto y de la parcela, las excepciones y las preguntas sin resolver; y una persona responsable de la revisión con una cadencia de nueva comprobación. Un enlace de fuente por sí solo no crea una regla local.",
     project: "¿Qué propone construir?",
     types: [["adu","Vivienda accesoria (casita de patio, conversión de garaje)"],
             ["jadu","ADU júnior (unidad pequeña dentro de mi casa)"],
@@ -368,6 +418,7 @@ let READINESS = null;
 let JOURNEY = null;
 let SOURCE_STATE = null;
 let PROGRAM_AVAILABILITY = null;
+let COVERAGE_INDEX = null;
 const NORMALIZED_READINESS_DATA = new WeakSet();
 const NORMALIZED_PROGRAM_AVAILABILITY = new WeakSet();
 let jurisByName = new Map();
@@ -3001,27 +3052,209 @@ function resolveJurisdiction() {
   const raw = document.getElementById("jurisInput").value.trim();
   return jurisByName.get(raw.toLowerCase()) || null;
 }
+
+function coverageRuleRecords(ruleIds) {
+  const rulesById = new Map(RULES.map(rule => [rule.rule_id, rule]));
+  return ruleIds.map(ruleId => rulesById.get(ruleId) || null);
+}
+
+function coverageRuleStatus(rule) {
+  return rule ? ruleStatus(rule, activeChangedSourceIds()) : "unverified";
+}
+
+function profileSourceStatusMarkup(status) {
+  if (status === "verified") return "";
+  const s = STRINGS[lang];
+  const stale = status === "stale";
+  const label = stale ? s.stale : s.unverified;
+  return `<span class="badge ${stale ? "bad" : "warn"}" lang="${lang}">
+    <span class="status-ico" aria-hidden="true">${stale ? "✕" : "⚠"}</span>${esc(label)}</span>`;
+}
+
+function localCoverageRecordMarkup(ruleIds) {
+  return `<ul class="jurisdiction-profile-local-records">${coverageRuleRecords(
+    ruleIds,
+  ).map((rule, index) => {
+    const ruleId = rule?.rule_id || ruleIds[index];
+    const sourceUrl = safeExternalUrl(rule?.citation?.url);
+    const pathway = rule?.pathway || ruleId;
+    const source = rule?.citation?.source || ruleId;
+    const sourceStatus = coverageRuleStatus(rule);
+    const sourceLink = sourceUrl
+      ? `<a lang="en" href="${esc(sourceUrl)}" rel="noopener">${esc(pathway)}</a>`
+      : `<strong lang="en">${esc(pathway)}</strong>`;
+    const checked = rule?.citation?.verified_on
+      ? formatSourceDate(rule.citation.verified_on) : "";
+    return `<li data-rule-id="${esc(ruleId)}" data-source-status="${sourceStatus}">
+      ${sourceLink}<span lang="en">${esc(source)}</span>${checked
+      ? `<span lang="${lang}">${esc(checked)}</span>` : ""}
+      ${profileSourceStatusMarkup(sourceStatus)}</li>`;
+  }).join("")}</ul>`;
+}
+
+function hcdCoverageRecordMarkup(records, jurisdiction) {
+  const s = STRINGS[lang];
+  const jurisdictionLabel = jurisDisplay(jurisdiction);
+  return `<details>
+    <summary>${esc(s.profileHcdDetails(records.length))}</summary>
+    <ul class="jurisdiction-profile-letter-list">${records.map(record => {
+      const item = record && typeof record === "object" ? record : {};
+      const date = formatSourceDate(item.date || "");
+      const hasKind = nonBlank(item.kind);
+      const kind = hasKind ? item.kind : s.profileHcdReference;
+      const authority = nonBlank(item.authority) ? item.authority : "";
+      const hauNumber = nonBlank(item.hau_number) ? item.hau_number : "";
+      const recordUrl = safeExternalUrl(item.url);
+      const label = kind;
+      const accessibleLabel = [
+        `HCD record for ${jurisdictionLabel}`,
+        kind,
+        item.date || "recorded date unavailable",
+        authority,
+        hauNumber,
+      ].filter(Boolean).join("; ");
+      const title = recordUrl
+        ? `<a lang="${hasKind ? "en" : lang}" aria-label="${esc(accessibleLabel)}"
+            href="${esc(recordUrl)}" rel="noopener">${esc(label)}</a>`
+        : `<strong lang="${hasKind ? "en" : lang}">${esc(label)}</strong>`;
+      const metadata = [authority, hauNumber].filter(Boolean).join(" · ");
+      return `<li>${date ? `<span lang="${lang}">${esc(date)} · </span>` : ""}${title}${metadata
+        ? `<span class="small" lang="en">${esc(metadata)}</span>` : ""}</li>`;
+    }).join("")}</ul>
+  </details>`;
+}
+
+function renderJurisdictionProfile(jurisdiction) {
+  const output = document.getElementById("jurisdictionProfile");
+  if (!output) return;
+  if (!jurisdiction || !COVERAGE_INDEX) {
+    output.hidden = true;
+    output.innerHTML = "";
+    delete output.dataset.jurisdiction;
+    delete output.dataset.localLayer;
+    delete output.dataset.hcdRecordCount;
+    delete output.dataset.statewideReviewHold;
+    delete output.dataset.localReviewHold;
+    return;
+  }
+  const profile = COVERAGE_INDEX.profiles[jurisdiction.slug];
+  if (!profile) {
+    output.hidden = true;
+    output.innerHTML = "";
+    delete output.dataset.jurisdiction;
+    delete output.dataset.localLayer;
+    delete output.dataset.hcdRecordCount;
+    delete output.dataset.statewideReviewHold;
+    delete output.dataset.localReviewHold;
+    return;
+  }
+
+  const s = STRINGS[lang];
+  const localRuleIds = profile.local_rule_ids;
+  const statewideRules = coverageRuleRecords(COVERAGE_INDEX.statewide_rule_ids);
+  const statewideReviewHoldCount = statewideRules.filter(rule =>
+    coverageRuleStatus(rule) !== "verified",
+  ).length;
+  const localReviewHoldCount = coverageRuleRecords(localRuleIds).filter(rule =>
+    coverageRuleStatus(rule) !== "verified",
+  ).length;
+  const hcdRecords = LETTERS[jurisdiction.slug] || [];
+  const hasLocalRecords = localRuleIds.length > 0;
+  const hcdTitle = hcdRecords.length
+    ? s.profileHcdPresentTitle(hcdRecords.length) : s.profileHcdNoneTitle;
+  const hcdCopy = hcdRecords.length
+    ? s.profileHcdPresentCopy(
+      formatSourceDate(COVERAGE_INDEX.hcd_dataset.retrieved_on),
+    )
+    : s.profileHcdNoneCopy(
+      formatSourceDate(COVERAGE_INDEX.hcd_dataset.retrieved_on),
+    );
+  const location = jurisdiction.kind === "county"
+    ? jurisdiction.name : jurisdiction.county;
+  const localTitle = hasLocalRecords
+    ? localReviewHoldCount
+      ? s.profileLocalReviewHoldTitle(localReviewHoldCount)
+      : s.profileLocalPresentTitle(localRuleIds.length)
+    : s.profileLocalMissingTitle;
+  const localCopy = hasLocalRecords
+    ? localReviewHoldCount
+      ? s.profileLocalReviewHoldCopy
+      : s.profileLocalPresentCopy
+    : s.profileLocalMissingCopy(jurisDisplay(jurisdiction));
+  const statewideTitle = statewideReviewHoldCount
+    ? s.profileStatewideReviewHoldTitle(
+      statewideReviewHoldCount,
+      COVERAGE_INDEX.statewide_rule_ids.length,
+    )
+    : s.profileStatewideTitle(COVERAGE_INDEX.statewide_rule_ids.length);
+  const statewideCopy = statewideReviewHoldCount
+    ? s.profileStatewideReviewHoldCopy : s.profileStatewideCopy;
+
+  output.lang = lang;
+  output.dataset.jurisdiction = jurisdiction.slug;
+  output.dataset.localLayer = hasLocalRecords ? "true" : "false";
+  output.dataset.hcdRecordCount = String(hcdRecords.length);
+  output.dataset.statewideReviewHold = String(statewideReviewHoldCount);
+  output.dataset.localReviewHold = String(localReviewHoldCount);
+  output.innerHTML = `<div class="jurisdiction-profile-header">
+      <div>
+        <p class="jurisdiction-profile-kicker">${esc(s.profileKicker)}</p>
+        <h3 id="jurisdictionProfileHeading">${esc(s.profileTitle)}</h3>
+      </div>
+      <p class="jurisdiction-profile-location">${esc(location)}</p>
+    </div>
+    <p class="jurisdiction-profile-intro">${esc(s.profileIntro(
+      jurisDisplay(jurisdiction),
+    ))}</p>
+    <dl class="jurisdiction-profile-ledger">
+      <div>
+        <dt>${esc(s.profileStatewideLabel)}</dt>
+        <dd><strong>${esc(statewideTitle)}</strong><span class="small">${esc(statewideCopy)}</span></dd>
+      </div>
+      <div>
+        <dt>${esc(s.profileLocalLabel)}</dt>
+        <dd><strong>${esc(localTitle)}</strong><span class="small">${esc(localCopy)}</span>
+          ${hasLocalRecords ? localCoverageRecordMarkup(localRuleIds) : ""}</dd>
+      </div>
+      <div>
+        <dt>${esc(s.profileHcdLabel)}</dt>
+        <dd><strong>${esc(hcdTitle)}</strong><span class="small">${esc(hcdCopy)}</span>
+          ${hcdRecords.length
+            ? hcdCoverageRecordMarkup(hcdRecords, jurisdiction) : ""}</dd>
+      </div>
+    </dl>
+    <aside class="jurisdiction-profile-onboarding" role="note">
+      <strong>${esc(s.profileOnboardingTitle)}</strong><br>
+      ${esc(s.profileOnboarding)}
+    </aside>`;
+  output.hidden = false;
+}
+
 function renderJurisStatus(showError = false) {
   const s = STRINGS[lang];
   const el = document.getElementById("jurisStatus");
   const input = document.getElementById("jurisInput");
   const raw = document.getElementById("jurisInput").value.trim();
   if (!raw) {
+    renderJurisdictionProfile(null);
     if (el.textContent) el.textContent = "";
     input.removeAttribute("aria-invalid");
     return;
   }
   const j = resolveJurisdiction();
   if (!j) {
+    renderJurisdictionProfile(null);
     if (el.textContent !== s.statusUnknown) el.textContent = s.statusUnknown;
     if (showError) input.setAttribute("aria-invalid", "true");
     return;
   }
   input.removeAttribute("aria-invalid");
+  renderJurisdictionProfile(j);
   const localCount = JURIS.filter(x => x.has_local_layer).length;
   let html = j.has_local_layer
     ? `<strong>${esc(s.localMetadata)}.</strong> ${esc(s.statusLocal)}`
     : `${esc(s.statusBaseline)} (${esc(s.localCoverage(localCount, JURIS.length))})`;
+  html += ` ${esc(s.profileAvailable)}`;
   const scanRec = SCANS[j.slug];
   if (scanRec) {
     const scanPath = safeLocalJsonPath(j.slug);
@@ -3030,22 +3263,6 @@ function renderJurisStatus(showError = false) {
       : "";
     html += `<br><span class="badge info">${esc(s.scanned)}</span> ` +
       `${esc(s.scanRecord(scanRec.scanned_on, scanRec.findings))}${scanLink}.`;
-  }
-  const history = LETTERS[j.slug] || [];
-  if (history.length) {
-    html += `<br><span class="badge warn"><span class="status-ico" aria-hidden="true">⚠</span>HCD</span> ` +
-      `${esc(s.hcdHistory)}: ${esc(s.letterCount(history.length))}`;
-    for (const letter of history.slice(0, 3)) {
-      const label = `${esc(letter.kind)}, ${esc(letter.date)}` +
-        (letter.authority ? `: ${esc(letter.authority)}` : "");
-      const letterUrl = safeExternalUrl(letter.url);
-      html += `<br>&nbsp;&nbsp;· ` +
-        (letterUrl
-          ? `<a lang="en" href="${esc(letterUrl)}" rel="noopener">${label}</a>`
-          : `<span lang="en">${label}</span>`);
-    }
-    if (history.length > 3)
-      html += `<br>&nbsp;&nbsp;· …${esc(s.moreLetters(history.length - 3))}`;
   }
   if (el.innerHTML !== html) el.innerHTML = html;
 }
@@ -4100,6 +4317,116 @@ function validRuleManifest(manifest) {
     );
 }
 
+function sameStringArray(left, right) {
+  return Array.isArray(left) && Array.isArray(right)
+    && left.length === right.length
+    && left.every((value, index) => value === right[index]);
+}
+
+function countLetterContainer(value) {
+  if (Array.isArray(value)) return value.length;
+  if (!value || typeof value !== "object") return null;
+  let total = 0;
+  for (const records of Object.values(value)) {
+    if (!Array.isArray(records)) return null;
+    total += records.length;
+  }
+  return total;
+}
+
+function normalizeCoverageIndex(data, rules, jurisdictions, letterData) {
+  const required = [
+    "schema_version", "statewide_rule_ids", "hcd_dataset", "profiles",
+  ];
+  if (!hasExactKeys(data, required, required) || data.schema_version !== 1
+      || !Array.isArray(data.statewide_rule_ids)
+      || !data.statewide_rule_ids.every(validStableId)
+      || new Set(data.statewide_rule_ids).size !== data.statewide_rule_ids.length
+      || !sameStringArray(
+        data.statewide_rule_ids,
+        [...data.statewide_rule_ids].sort(),
+      )
+      || !data.profiles || typeof data.profiles !== "object"
+      || Array.isArray(data.profiles)) {
+    throw new Error("statewide coverage index failed validation");
+  }
+
+  const expectedStatewideRuleIds = rules
+    .filter(rule => rule.jurisdiction_scope === "statewide")
+    .map(rule => rule.rule_id)
+    .sort();
+  if (!sameStringArray(data.statewide_rule_ids, expectedStatewideRuleIds))
+    throw new Error("statewide coverage index disagrees with the rule inventory");
+
+  const hcdDatasetKeys = [
+    "retrieved_on", "letter_count", "source", "statewide_record_count",
+    "unmatched_record_count",
+  ];
+  const hcdDataset = data.hcd_dataset;
+  if (!hasExactKeys(hcdDataset, hcdDatasetKeys, hcdDatasetKeys)
+      || !dateIsNotFuture(hcdDataset.retrieved_on)
+      || !nonBlank(hcdDataset.source)
+      || ![
+        hcdDataset.letter_count,
+        hcdDataset.statewide_record_count,
+        hcdDataset.unmatched_record_count,
+      ].every(value => isRuleInteger(value) && value >= 0)) {
+    throw new Error("statewide coverage index has invalid HCD metadata");
+  }
+
+  if (!letterData || typeof letterData !== "object"
+      || !letterData.letters || typeof letterData.letters !== "object"
+      || Array.isArray(letterData.letters)) {
+    throw new Error("HCD letter data failed validation");
+  }
+  const letterMap = letterData.letters;
+  const profiledRecordCount = countLetterContainer(letterMap);
+  const statewideRecordCount = countLetterContainer(letterData._statewide);
+  const unmatchedRecordCount = countLetterContainer(letterData._unmatched);
+  if (profiledRecordCount == null || statewideRecordCount == null
+      || unmatchedRecordCount == null
+      || hcdDataset.letter_count !== (
+        profiledRecordCount + statewideRecordCount + unmatchedRecordCount
+      )
+      || hcdDataset.statewide_record_count !== statewideRecordCount
+      || hcdDataset.unmatched_record_count !== unmatchedRecordCount
+      || hcdDataset.retrieved_on !== letterData.retrieved_on
+      || hcdDataset.source !== letterData.source) {
+    throw new Error("statewide coverage index disagrees with HCD letter data");
+  }
+
+  const expectedSlugs = jurisdictions.map(jurisdiction => jurisdiction.slug).sort();
+  const suppliedSlugs = Object.keys(data.profiles).sort();
+  if (!sameStringArray(suppliedSlugs, expectedSlugs))
+    throw new Error("statewide coverage index does not cover the registry");
+
+  for (const jurisdiction of jurisdictions) {
+    const profile = data.profiles[jurisdiction.slug];
+    const profileKeys = ["local_rule_ids", "hcd_record_count"];
+    if (!hasExactKeys(profile, profileKeys, profileKeys)
+        || !Array.isArray(profile.local_rule_ids)
+        || !profile.local_rule_ids.every(validStableId)
+        || new Set(profile.local_rule_ids).size !== profile.local_rule_ids.length
+        || !sameStringArray(
+          profile.local_rule_ids,
+          [...profile.local_rule_ids].sort(),
+        )
+        || !isRuleInteger(profile.hcd_record_count)
+        || profile.hcd_record_count < 0) {
+      throw new Error("statewide coverage index has an invalid profile");
+    }
+    const expectedLocalRuleIds = rules
+      .filter(rule => rule.jurisdiction_scope === jurisdiction.slug)
+      .map(rule => rule.rule_id)
+      .sort();
+    if (!sameStringArray(profile.local_rule_ids, expectedLocalRuleIds)
+        || profile.hcd_record_count !== (letterMap[jurisdiction.slug] || []).length) {
+      throw new Error("statewide coverage index profile drifted from its sources");
+    }
+  }
+  return data;
+}
+
 async function fetchRuleData() {
   const manifest = await fetchJson("data/rules/index.json");
   if (!validRuleManifest(manifest))
@@ -4115,10 +4442,10 @@ async function fetchRuleData() {
 function loadDemoData() {
   if (globalThis.PERMIT_PATHWAYS_DEMO_DATA) {
     const data = globalThis.PERMIT_PATHWAYS_DEMO_DATA;
-    if (data?._meta?.format_version !== 4
+    if (data?._meta?.format_version !== 5
         || !Array.isArray(data.rules)
         || !validRuleManifest(data.rule_manifest)
-        || !data.source_state)
+        || !data.source_state || !data.coverage_index)
       return Promise.reject(new Error("generated demo bundle has invalid rule data"));
     return Promise.resolve(data);
   }
@@ -4129,6 +4456,7 @@ function loadDemoData() {
     fetchOptionalJson("data/conformance/checks.json", []),
     fetchJson("data/jurisdictions/registry.json"),
     fetchOptionalJson("data/jurisdictions/hcd-letters.json", {letters: {}}),
+    fetchJson("data/jurisdictions/generated/coverage-index.json"),
     fetchOptionalJson("data/conformance/results/index.json", {}),
     fetchOptionalJson("data/explanations/plain-language.json",
                       {schema_version: 1, entries: []}),
@@ -4142,11 +4470,12 @@ function loadDemoData() {
       null,
     ),
   ]).then(([ruleData, golden, sources,
-            checks, registry, letters, scans, plainLanguage, sourceState,
-            programAvailability, ruleVerification]) => ({
+            checks, registry, letters, coverageIndex, scans, plainLanguage,
+            sourceState, programAvailability, ruleVerification]) => ({
     rules: ruleData.rules,
     rule_manifest: ruleData.rule_manifest,
-    golden, sources, checks, registry, letters, scans,
+    golden, sources, checks, registry, letters, coverage_index: coverageIndex,
+    scans,
     plain_language: plainLanguage,
     source_state: sourceState,
     program_availability: programAvailability,
@@ -4248,6 +4577,12 @@ async function initializeDemo() {
       ...jurisdiction,
       has_local_layer: localSlugs.has(jurisdiction.slug),
     }));
+    COVERAGE_INDEX = normalizeCoverageIndex(
+      data.coverage_index,
+      RULES,
+      JURIS,
+      data.letters,
+    );
     for (const jurisdiction of JURIS) {
       jurisByName.set(
         jurisDisplay(jurisdiction).toLowerCase(),

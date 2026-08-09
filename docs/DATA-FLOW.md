@@ -18,6 +18,59 @@ would require a separate data inventory, purpose and authority analysis,
 access controls, retention and deletion rules, public-records workflow,
 security review, and jurisdiction approval.
 
+## Statewide jurisdiction-coverage path
+
+```text
+Portable California jurisdiction registry
++ bounded statewide/local rule records
++ dated public HCD Housing Accountability Unit history
+    |
+    v
+Strict coverage-index builder in jurisdictions.py
+    |
+    v
+data/jurisdictions/generated/coverage-index.json
+    |
+    v
+Static bundle key: coverage_index
+    |
+    v
+Recognized jurisdiction selection in check.html
+    |
+    +--> bounded statewide candidate-rule inventory
+    +--> limited local-layer status or not encoded
+    +--> dated linked HCD-history reference or no linked record in snapshot
+    +--> local-onboarding checklist
+```
+
+The builder joins committed repository inputs; neither it nor the browser
+scrapes a jurisdiction site, calls an HCD service, retrieves a parcel, or
+stores an applicant selection. A profile's statewide inventory is the same
+bounded ADU/JADU/SB 9 candidate-rule set already screenable for every registry
+entry. Its local status says only what the repository encodes: `not encoded`
+does not mean a jurisdiction has no requirements, and a limited record is not
+a complete code, forms set, fee schedule, checklist, or project finding.
+
+Coverage-index schema version 1 deliberately contains only the 17 statewide
+rule IDs, each registry slug's `local_rule_ids` and `hcd_record_count`, and
+the HCD dataset's source/date/count metadata. It does not duplicate,
+classify, or interpret HCD rows; the linked public correspondence remains in
+`data/jurisdictions/hcd-letters.json`. The build rejects a local rule scope
+that has no registry entry, an HCD slug that has no registry entry, or a
+declared HCD total that does not match the contained rows.
+
+HCD correspondence in a profile is a date-stamped reference from the committed
+public dataset. It may include inquiries, technical assistance, findings, or
+other correspondence, but it cannot establish the current ordinance, a
+compliance status, a permit outcome, or what applies to a project. Likewise,
+the absence of a linked record in the snapshot does not prove no HCD activity,
+compliance, or complete data coverage. The local-onboarding checklist identifies
+the evidence a maintainer should assemble before a deeper layer can exist:
+operative provisions/effective dates; current forms, checklist, fees, and
+process pages; official URLs, source-check dates, and content fingerprints;
+project/parcel scope, exceptions, and unresolved questions; and a named review
+owner/re-verification cadence. A URL by itself cannot create a local rule.
+
 ## Source-state receipt path
 
 ```text
@@ -44,8 +97,8 @@ Strict loader re-binds source registry and re-derives
 affected/unaffected rule and Golden-case IDs
     |
     v
-Bundle format 4 embeds historical records, current overlay, rule-review
-coverage, and program availability separately
+Generated static bundle: historical records, current overlay, rule-review
+coverage, program availability, and the separate coverage index
     |
     +--> changed dependency: stale exact rule/output or block bound handoff
     +--> unverifiable dependency: visible warning, no automatic staleness
@@ -89,7 +142,7 @@ Effective-status evaluation
     +--> all bindings current: retain recorded effective level
              |
              v
-Harness summary + bundle-format-4 evidence-page disclosure
+Harness summary + bundle-format-5 evidence-page disclosure
 ```
 
 `data/validation/rule-verification.json` cannot change deterministic rule
@@ -277,6 +330,15 @@ output creates a local file outside the CLI's storage behavior.
 
 ### Build and browser rendering
 
+`src/permit_pathways/jurisdictions.py` validates the registry shape, scoped
+rules, and HCD-history input while building
+`data/jurisdictions/generated/coverage-index.json`. The result is a portable
+read-only index, not a source of deterministic matching logic. The static
+builder embeds it under `coverage_index`; `check.html` only renders a profile
+when the currently selected jurisdiction resolves to that registry index.
+Changing or clearing the selection hides the profile. No profile data is
+included in the route-to-packet URL.
+
 `scripts/build_demo_bundle.py` runs the Python evaluator against the canonical
 synthetic sample. It writes the derived evidence record to
 `data/readiness/generated/woodland-preapproved-adu-evidence.json` and embeds
@@ -288,7 +350,8 @@ that same envelope in the bundle. It also strictly loads the repository-adopted
 `reviewed`, re-derives its dependency impacts, and embeds it as a separate
 overlay. The build strictly loads schema-v2 rule-verification data and the
 date-bound Woodland program-availability record as separate inputs. Bundle
-format 4 exposes all three claims independently, and the generated-input
+format 5 exposes those claims and the separate jurisdiction-coverage index,
+and the generated-input
 manifest binds their canonical inputs.
 
 `check.html` consumes the journey envelope only for the active, unedited

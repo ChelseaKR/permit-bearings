@@ -3,6 +3,10 @@
 Scope: the five-page public static site (`index.html`, `check.html`,
 `prepare.html`, `review.html`, and `evidence.html`) and the separate applicant
 flow in `demo/app.py`. **Target: WCAG 2.2 Level AAA.**
+On `check.html`, a recognized jurisdiction selection also reveals the
+Statewide Coverage Navigator. It is included in the static/code review below;
+an automated browser profile flow covers its bounded evidence states.
+Dedicated assistive-technology validation remains pending.
 The static site loads a locally maintained California Design System version-0
 preview compatibility layer on all five pages. It combines selected semantic
 `ca-*` structures with published California token vocabulary, locally served
@@ -56,6 +60,22 @@ deadlines or thresholds use a semantic heading and list rather than
 visual-only layout. All interactive elements remain native controls, so
 keyboard operability and focus order come from the platform.
 
+The Statewide Coverage Navigator is a native `<section>` hidden until a
+recognized jurisdiction value resolves. It has an `aria-labelledby` heading,
+a visible location label, and a three-row definition list for the bounded
+statewide candidate-rule set, local requirements status, and public HCD record
+history. A limited local layer renders source links in a list; linked HCD
+records are behind a native `<details>`/`<summary>` disclosure and retain
+English source metadata with `lang="en"`; each HCD link's programmatic name
+also identifies its jurisdiction, date, authority, and HAU number where
+recorded. The native disclosure has a 44px minimum target. The local-onboarding boundary is a
+visible `role="note"`. These labels make `Not encoded`, limited local records,
+and no linked HCD record readable as different states rather than relying on
+color. The section is not a live region; the existing polite jurisdiction
+status announces whether a selected value resolved. Screen-reader reading
+order, the timing of the newly revealed section, and disclosure behavior
+remain manual checks.
+
 The evidence page exposes rule-review coverage as text, not color alone: all
 19 current rules are labeled `machine_linked`, and the zero named-human and
 zero jurisdiction-approval counts remain visible. This is a status disclosure,
@@ -102,7 +122,7 @@ behavior, or conformance for the other four static pages.
 
 On 2026-08-09, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
 AAA violations on `index.html`, `check.html`, `prepare.html`, `review.html`,
-or `evidence.html` in a Playwright-managed Chromium build. Thirty-five browser
+or `evidence.html` in a Playwright-managed Chromium build. Thirty-eight browser
 checks also exercise each page at 320px and 390px, open the compact navigation,
 check document-level overflow, scan a populated applicant result, verify that
 mobile evidence tables render as labeled records, and cover valid/invalid
@@ -186,6 +206,20 @@ jurisdiction or a named project fact removes the rendered result, temporary
 answers-used cover sheet, and remembered disclosure state. This prevents a
 result from remaining visible beside facts that no longer produced it.
 
+Selecting or clearing a recognized jurisdiction renders or hides the coverage
+profile before project submission. That render only reads bundled data and does
+not move the selection into the packet URL, create a browser record, or add a
+new asynchronous busy state. Static/code review covers the profile's generated
+heading, definition list, native disclosure, links, and boundary note. The
+automated browser test `jurisdiction coverage profile separates statewide,
+local, and HCD evidence` exercises Albany's zero-record state, Alameda's
+linked-record disclosure, Davis's limited local layer, and Los Angeles
+County's `Not encoded` state. It checks the 17-record statewide baseline,
+profile data attributes, the HCD link name and target height, clear/unknown
+selection cleanup, changed-statewide and changed-local source holds, empty
+browser storage, no document overflow, and an automated axe scan. That is not a screen-reader, keyboard-only, or
+physical-device test.
+
 Every resolved jurisdiction result also includes an orientation receipt built
 with native headings, definition lists, and lists. Its print action calls the
 browser's print dialog, and print media isolates the receipt from navigation,
@@ -259,7 +293,8 @@ staff-facing trust, ordinance, and clock tools remain English.
 - Execute and sign every row in `docs/MANUAL-VALIDATION.md`. Preparing that
   record did not complete any human or assistive-technology test.
 - Screen-reader walkthrough (VoiceOver/NVDA): reading order, datalist
-  combobox behavior, packet-result reading order, and live-region verbosity.
+  combobox behavior, Statewide Coverage Navigator reveal/disclosure behavior,
+  packet-result reading order, and live-region verbosity.
 - 200% and 400% zoom checks on real devices. Automated Chromium reflow passes
   at 320px and 390px, but that is not a physical-device, browser-zoom, or
   virtual-keyboard test.

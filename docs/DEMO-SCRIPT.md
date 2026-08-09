@@ -51,13 +51,24 @@ Start at `/` for the product boundary, then use `/review.html`,
   State that the cover sheet exists only in the current page. It is not a
   stored applicant record, verified parcel record, completeness finding, or
   exportable evidence manifest.
-- Change the jurisdiction to Alameda or Los Angeles County and submit the same
-  made-up facts. Show the statewide orientation receipt: selected facts,
-  candidate-route source status, an explicit "local requirements not encoded"
-  boundary, and questions for the local counter. Print or save the receipt,
-  then state that the browser owns that operation and the app stores nothing.
-  This is the useful statewide handoff; it does not make Woodland's deeper
-  checklist workflow statewide.
+- Before submitting a new result, show the **Statewide Coverage Navigator**
+  that appears for a recognized jurisdiction. It always starts with the same
+  17 bounded statewide candidate-rule records—not a local-code conclusion.
+  Type Albany to show `Not encoded` and no linked HCD record; say that neither
+  means Albany lacks local requirements, has no HCD activity, or is compliant.
+  Type Alameda to open its dated public HCD-record disclosure; it is a source
+  reference, not a current ordinance or compliance determination. Type Davis
+  to show its one limited jurisdiction-scoped source record and repeat that it
+  is not a complete local code or checklist. The profile is bundled data, not
+  a live search, parcel lookup, or applicant record. Its onboarding note names
+  the material a maintainer should assemble before adding a local layer.
+- Change the jurisdiction to Los Angeles County and submit the same made-up
+  facts. Show the statewide orientation receipt: selected facts, candidate-
+  route source status, an explicit "local requirements not encoded" boundary,
+  and questions for the local counter. Print or save the receipt, then state
+  that the browser owns that operation and the app stores nothing. This is the
+  useful statewide handoff; it does not make Woodland's deeper checklist
+  workflow statewide.
 - Read the generated result sentence and use the jump links. Show candidate
   routes first, relevant standards second, and the bounded Woodland local
   information record last. State that Woodland is not a comprehensive local

@@ -17,10 +17,13 @@ from demo.app import (
     STRINGS as DEMO_STRINGS,
 )
 from scripts.build_demo_bundle import (
+    COVERAGE_INDEX_OUTPUT,
     OUTPUT,
     build_bundle,
+    build_coverage_index_payload,
     build_journey_payload,
     build_readiness_payload,
+    encoded_coverage_index,
 )
 
 
@@ -39,10 +42,24 @@ def test_committed_demo_bundle_matches_canonical_json():
     bundle = build_bundle()
 
     assert OUTPUT.read_text(encoding="utf-8") == bundle
-    assert '"format_version":4' in bundle
+    assert '"format_version":5' in bundle
+    assert '"coverage_index":' in bundle
     assert '"source_state":' in bundle
     assert '"program_availability":' in bundle
     assert '"rule_verification":' in bundle
+
+
+def test_generated_coverage_index_matches_canonical_records():
+    index = build_coverage_index_payload()
+
+    assert COVERAGE_INDEX_OUTPUT.read_text(encoding="utf-8") == (
+        encoded_coverage_index()
+    )
+    assert index["schema_version"] == 1
+    assert len(index["statewide_rule_ids"]) == 17
+    assert len(index["profiles"]) == 541
+    assert index["profiles"]["davis"]["local_rule_ids"] == ["davis-local-adu-process"]
+    assert index["profiles"]["alameda"]["local_rule_ids"] == []
 
 
 def test_generated_woodland_journey_binds_one_route_and_packet_envelope():
@@ -152,7 +169,19 @@ def test_static_pages_load_only_the_assets_they_need():
 
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in application
-    assert "data?._meta?.format_version !== 4" in application
+    assert "data?._meta?.format_version !== 5" in application
+    assert "normalizeCoverageIndex" in application
+
+
+def test_check_page_has_a_hidden_until_recognized_coverage_profile_region():
+    check = (ROOT / "check.html").read_text(encoding="utf-8")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+
+    assert 'id="jurisdictionProfile"' in check
+    assert 'aria-labelledby="jurisdictionProfileHeading"' in check
+    assert "renderJurisdictionProfile" in application
+    assert "No linked records in this dataset" in application
+    assert "This is not evidence of compliance" in application
 
 
 def test_static_pages_have_consistent_navigation_and_resolvable_links():
