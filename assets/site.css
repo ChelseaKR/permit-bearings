@@ -724,6 +724,154 @@ ca-mesh.service-link-list {
   margin-top: 0.2rem;
 }
 
+.jurisdiction-profile {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 0.35rem solid var(--teal);
+  margin: 0.9rem 0 1.7rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.jurisdiction-profile-header {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  justify-content: space-between;
+}
+
+.jurisdiction-profile-kicker {
+  color: var(--primary-900);
+  font-family: var(--utility);
+  font-size: var(--font-size-0);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin: 0 0 var(--s-1);
+  text-transform: uppercase;
+}
+
+.jurisdiction-profile h3 {
+  font-size: var(--font-size-6);
+  margin: 0;
+}
+
+.jurisdiction-profile-location {
+  color: var(--ink-soft);
+  font-size: var(--font-size-1);
+  margin: var(--s-1) 0 0;
+}
+
+.jurisdiction-profile-intro {
+  margin: var(--s-3) 0;
+  max-width: 50rem;
+}
+
+.jurisdiction-profile-ledger {
+  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  margin: 0;
+}
+
+.jurisdiction-profile-ledger > div {
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: var(--s-1) var(--s-3);
+  grid-template-columns: minmax(10rem, 0.7fr) minmax(0, 1.7fr);
+  padding: var(--s-2) 0;
+}
+
+.jurisdiction-profile-ledger > div:last-child {
+  border-bottom: 0;
+}
+
+.jurisdiction-profile dt {
+  font-weight: 800;
+}
+
+.jurisdiction-profile dd {
+  margin: 0;
+}
+
+.jurisdiction-profile dd > strong {
+  display: block;
+  font-size: var(--font-size-1);
+  margin-bottom: 0.2rem;
+}
+
+.jurisdiction-profile .small {
+  margin-bottom: 0;
+}
+
+.jurisdiction-profile details {
+  margin-top: var(--s-3);
+}
+
+.jurisdiction-profile summary {
+  color: var(--primary-900);
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 44px;
+  padding: 0.35rem 0;
+}
+
+.jurisdiction-profile summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 0.2rem;
+}
+
+.jurisdiction-profile-letter-list {
+  list-style: none;
+  margin: var(--s-2) 0 0;
+  padding: 0;
+}
+
+.jurisdiction-profile-letter-list li {
+  border-left: 0.25rem solid var(--blue);
+  margin-top: var(--s-2);
+  padding-left: var(--s-2);
+}
+
+.jurisdiction-profile-local-records {
+  list-style: none;
+  margin: var(--s-2) 0 0;
+  padding: 0;
+}
+
+.jurisdiction-profile-local-records li + li {
+  margin-top: var(--s-2);
+}
+
+.jurisdiction-profile-local-records a {
+  font-weight: 700;
+}
+
+.jurisdiction-profile-local-records span {
+  color: var(--ink-soft);
+  display: block;
+  font-size: var(--font-size-0);
+  margin-top: 0.15rem;
+}
+
+.jurisdiction-profile-local-records .badge {
+  display: inline-block;
+  margin-top: var(--s-1);
+}
+
+.jurisdiction-profile-local-records .badge.bad {
+  color: var(--red);
+}
+
+.jurisdiction-profile-local-records .badge.warn {
+  color: var(--warning-900);
+}
+
+.jurisdiction-profile-onboarding {
+  border-left: 0.25rem solid var(--yellow);
+  font-size: var(--font-size-1);
+  margin: var(--s-3) 0 0;
+  padding-left: var(--s-2);
+}
+
 .sample-notice {
   border-left-color: var(--cagov-primary);
   margin-bottom: 1.5rem;
@@ -2797,6 +2945,7 @@ tr:last-child td {
 
   .result-fields > div,
   .result-facts > div,
+  .jurisdiction-profile-ledger > div,
   .statewide-orientation-coverage dl > div,
   .statewide-orientation-facts > div,
   .method-list > div,

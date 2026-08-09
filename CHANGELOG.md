@@ -20,6 +20,23 @@ published a versioned release.
 
 ### Changed
 
+- Added the Statewide Coverage Navigator to the applicant guide. Selecting a
+  recognized California city or county now renders a generated coverage profile
+  from the committed registry, bounded rule records, and dated public HCD
+  Housing Accountability Unit history. The profile keeps the statewide
+  candidate-rule inventory, limited-local-layer status, and HCD history
+  separate, shows an explicit `Not encoded` state where the repository has no
+  jurisdiction-specific rule/form/fee/checklist layer, and lists the local
+  source, scope, review-owner, and re-verification inputs a maintainer should
+  assemble before adding a local layer. It makes no browser request or applicant-data
+  store. HCD correspondence is historical reference material, not a current
+  compliance or permit finding; no linked record in the dated snapshot does
+  not establish no activity, compliance, or complete coverage.
+- The navigator now consumes the adopted source-state overlay: a changed
+  dependency visibly holds the affected statewide inventory or local source
+  record for re-verification, while an unreachable source remains a separate
+  warning. HCD disclosure targets now meet the 44px minimum and their links
+  carry programmatic jurisdiction/date/authority context.
 - Added a locally maintained California Design System version-0 preview
   compatibility layer across all five public static pages. The shared asset
   provides selected semantic `ca-*` structures for native actions and fields,

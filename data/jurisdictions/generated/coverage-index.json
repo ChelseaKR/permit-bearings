@@ -1,0 +1,2199 @@
+{
+  "hcd_dataset": {
+    "letter_count": 1314,
+    "retrieved_on": "2026-08-03",
+    "source": "HCD Housing Accountability Unit letter dashboard (hcd.ca.gov/hau/enforcement-letters), full public dataset retrieved 2026-08-03; raw rows preserved at corpus/hcd/hau-letters-raw.json. Letters addressed to no single jurisdiction are under _statewide; rows whose jurisdiction could not be matched to the Census registry are under _unmatched.",
+    "statewide_record_count": 2,
+    "unmatched_record_count": 0
+  },
+  "profiles": {
+    "adelanto": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "agoura-hills": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "alameda": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "alameda-county": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "albany": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "alhambra": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "aliso-viejo": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "alpine-county": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "alturas": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "amador-city": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "amador-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "american-canyon": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "anaheim": {
+      "hcd_record_count": 8,
+      "local_rule_ids": []
+    },
+    "anderson": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "angels": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "antioch": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "apple-valley": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "arcadia": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "arcata": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "arroyo-grande": {
+      "hcd_record_count": 7,
+      "local_rule_ids": []
+    },
+    "artesia": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "arvin": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "atascadero": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "atherton": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "atwater": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "auburn": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "avalon": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "avenal": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "azusa": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "bakersfield": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "baldwin-park": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "banning": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "barstow": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "beaumont": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "bell": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "bell-gardens": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "bellflower": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "belmont": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "belvedere": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "benicia": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "berkeley": {
+      "hcd_record_count": 10,
+      "local_rule_ids": []
+    },
+    "beverly-hills": {
+      "hcd_record_count": 8,
+      "local_rule_ids": []
+    },
+    "big-bear-lake": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "biggs": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "bishop": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "blue-lake": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "blythe": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "bradbury": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "brawley": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "brea": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "brentwood": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "brisbane": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "buellton": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "buena-park": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "burbank": {
+      "hcd_record_count": 7,
+      "local_rule_ids": []
+    },
+    "burlingame": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "butte-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "calabasas": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "calaveras-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "calexico": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "california-city": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "calimesa": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "calipatria": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "calistoga": {
+      "hcd_record_count": 7,
+      "local_rule_ids": []
+    },
+    "camarillo": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "campbell": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "canyon-lake": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "capitola": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "carlsbad": {
+      "hcd_record_count": 9,
+      "local_rule_ids": []
+    },
+    "carmel-by-the-sea": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "carpinteria": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "carson": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "cathedral-city": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "ceres": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "cerritos": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "chico": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "chino": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "chino-hills": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "chowchilla": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "chula-vista": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "citrus-heights": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "claremont": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "clayton": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "clearlake": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "cloverdale": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "clovis": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "coachella": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "coalinga": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "colfax": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "colma": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "colton": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "colusa": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "colusa-county": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "commerce": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "compton": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "concord": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "contra-costa-county": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "corcoran": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "corning": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "corona": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "coronado": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "corte-madera": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "costa-mesa": {
+      "hcd_record_count": 8,
+      "local_rule_ids": []
+    },
+    "cotati": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "covina": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "crescent-city": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "cudahy": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "culver-city": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "cupertino": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "cypress": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "daly-city": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "dana-point": {
+      "hcd_record_count": 10,
+      "local_rule_ids": []
+    },
+    "danville": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "davis": {
+      "hcd_record_count": 4,
+      "local_rule_ids": [
+        "davis-local-adu-process"
+      ]
+    },
+    "del-mar": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "del-norte-county": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "del-rey-oaks": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "delano": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "desert-hot-springs": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "diamond-bar": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "dinuba": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "dixon": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "dorris": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "dos-palos": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "downey": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "duarte": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "dublin": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "dunsmuir": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "east-palo-alto": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "eastvale": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "el-cajon": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "el-centro": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "el-cerrito": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "el-dorado-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "el-monte": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "el-paso-de-robles-paso-robles": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "el-segundo": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "elk-grove": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "emeryville": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "encinitas": {
+      "hcd_record_count": 9,
+      "local_rule_ids": []
+    },
+    "escalon": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "escondido": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "etna": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "eureka": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "exeter": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "fairfax": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "fairfield": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "farmersville": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "ferndale": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "fillmore": {
+      "hcd_record_count": 15,
+      "local_rule_ids": []
+    },
+    "firebaugh": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "folsom": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "fontana": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "fort-bragg": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "fort-jones": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "fortuna": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "foster-city": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "fountain-valley": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "fowler": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "fremont": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "fresno": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "fresno-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "fullerton": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "galt": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "garden-grove": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "gardena": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "gilroy": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "glendale": {
+      "hcd_record_count": 10,
+      "local_rule_ids": []
+    },
+    "glendora": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "glenn-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "goleta": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "gonzales": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "grand-terrace": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "grass-valley": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "greenfield": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "gridley": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "grover-beach": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "guadalupe": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "gustine": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "half-moon-bay": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "hanford": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "hawaiian-gardens": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "hawthorne": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "hayward": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "healdsburg": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "hemet": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "hercules": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "hermosa-beach": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "hesperia": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "hidden-hills": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "highland": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "hillsborough": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "hollister": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "holtville": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "hughson": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "humboldt-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "huntington-beach": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "huntington-park": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "huron": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "imperial": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "imperial-beach": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "imperial-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "indian-wells": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "indio": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "industry": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "inglewood": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "inyo-county": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "ione": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "irvine": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "irwindale": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "isleton": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "jackson": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "jurupa-valley": {
+      "hcd_record_count": 8,
+      "local_rule_ids": []
+    },
+    "kerman": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "kern-county": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "king-city": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "kings-county": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "kingsburg": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "la-canada-flintridge": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "la-habra": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "la-habra-heights": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "la-mesa": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "la-mirada": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "la-palma": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "la-puente": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "la-quinta": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "la-verne": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "lafayette": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "laguna-beach": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "laguna-hills": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "laguna-niguel": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "laguna-woods": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "lake-county": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "lake-elsinore": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "lake-forest": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "lakeport": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "lakewood": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "lancaster": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "larkspur": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "lassen-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "lathrop": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "lawndale": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "lemon-grove": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "lemoore": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "lincoln": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "lindsay": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "live-oak": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "livermore": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "livingston": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "lodi": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "loma-linda": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "lomita": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "lompoc": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "long-beach": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "loomis": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "los-alamitos": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "los-altos": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "los-altos-hills": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "los-angeles": {
+      "hcd_record_count": 37,
+      "local_rule_ids": []
+    },
+    "los-angeles-county": {
+      "hcd_record_count": 8,
+      "local_rule_ids": []
+    },
+    "los-banos": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "los-gatos": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "loyalton": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "lynwood": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "madera": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "madera-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "malibu": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "mammoth-lakes": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "manhattan-beach": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "manteca": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "maricopa": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "marin-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "marina": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "mariposa-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "martinez": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "marysville": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "maywood": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "mcfarland": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "mendocino-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "mendota": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "menifee": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "menlo-park": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "merced": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "merced-county": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "mill-valley": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "millbrae": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "milpitas": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "mission-viejo": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "modesto": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "modoc-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "mono-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "monrovia": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "montague": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "montclair": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "monte-sereno": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "montebello": {
+      "hcd_record_count": 8,
+      "local_rule_ids": []
+    },
+    "monterey": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "monterey-county": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "monterey-park": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "moorpark": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "moraga": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "moreno-valley": {
+      "hcd_record_count": 7,
+      "local_rule_ids": []
+    },
+    "morgan-hill": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "morro-bay": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "mount-shasta": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "mountain-house": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "mountain-view": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "murrieta": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "napa": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "napa-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "national-city": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "needles": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "nevada-city": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "nevada-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "newark": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "newman": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "newport-beach": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "norco": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "norwalk": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "novato": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "oakdale": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "oakland": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "oakley": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "oceanside": {
+      "hcd_record_count": 7,
+      "local_rule_ids": []
+    },
+    "ojai": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "ontario": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "orange": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "orange-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "orange-cove": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "orinda": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "orland": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "oroville": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "oxnard": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "pacific-grove": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "pacifica": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "palm-desert": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "palm-springs": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "palmdale": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "palo-alto": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "palos-verdes-estates": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "paradise": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "paramount": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "parlier": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "pasadena": {
+      "hcd_record_count": 8,
+      "local_rule_ids": []
+    },
+    "patterson": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "perris": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "petaluma": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "pico-rivera": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "piedmont": {
+      "hcd_record_count": 9,
+      "local_rule_ids": []
+    },
+    "pinole": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "pismo-beach": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "pittsburg": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "placentia": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "placer-county": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "placerville": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "pleasant-hill": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "pleasanton": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "plumas-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "plymouth": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "point-arena": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "pomona": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "port-hueneme": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "porterville": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "portola": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "portola-valley": {
+      "hcd_record_count": 7,
+      "local_rule_ids": []
+    },
+    "poway": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "rancho-cordova": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "rancho-cucamonga": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "rancho-mirage": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "rancho-palos-verdes": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "rancho-santa-margarita": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "red-bluff": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "redding": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "redlands": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "redondo-beach": {
+      "hcd_record_count": 7,
+      "local_rule_ids": []
+    },
+    "redwood-city": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "reedley": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "rialto": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "richmond": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "ridgecrest": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "rio-dell": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "rio-vista": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "ripon": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "riverbank": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "riverside": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "riverside-county": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "rocklin": {
+      "hcd_record_count": 9,
+      "local_rule_ids": []
+    },
+    "rohnert-park": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "rolling-hills": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "rolling-hills-estates": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "rosemead": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "roseville": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "ross": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "sacramento": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "sacramento-county": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "salinas": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "san-anselmo": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "san-benito-county": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "san-bernardino": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "san-bernardino-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "san-bruno": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "san-buenaventura-ventura": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "san-carlos": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "san-clemente": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "san-diego": {
+      "hcd_record_count": 10,
+      "local_rule_ids": []
+    },
+    "san-diego-county": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "san-dimas": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "san-fernando": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "san-francisco": {
+      "hcd_record_count": 17,
+      "local_rule_ids": []
+    },
+    "san-francisco-county": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "san-gabriel": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "san-jacinto": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "san-joaquin": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "san-joaquin-county": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "san-jose": {
+      "hcd_record_count": 10,
+      "local_rule_ids": []
+    },
+    "san-juan-bautista": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "san-juan-capistrano": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "san-leandro": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "san-luis-obispo": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "san-luis-obispo-county": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "san-marcos": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "san-marino": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "san-mateo": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "san-mateo-county": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "san-pablo": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "san-rafael": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "san-ramon": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "sand-city": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "sanger": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "santa-ana": {
+      "hcd_record_count": 11,
+      "local_rule_ids": []
+    },
+    "santa-barbara": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "santa-barbara-county": {
+      "hcd_record_count": 11,
+      "local_rule_ids": []
+    },
+    "santa-clara": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "santa-clara-county": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "santa-clarita": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "santa-cruz": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "santa-cruz-county": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "santa-fe-springs": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "santa-maria": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "santa-monica": {
+      "hcd_record_count": 7,
+      "local_rule_ids": []
+    },
+    "santa-paula": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "santa-rosa": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "santee": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "saratoga": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "sausalito": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "scotts-valley": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "seal-beach": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "seaside": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "sebastopol": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "selma": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "shafter": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "shasta-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "shasta-lake": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "sierra-county": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "sierra-madre": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "signal-hill": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "simi-valley": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "siskiyou-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "solana-beach": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "solano-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "soledad": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "solvang": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "sonoma": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "sonoma-county": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "sonora": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "south-el-monte": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "south-gate": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "south-lake-tahoe": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "south-pasadena": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "south-san-francisco": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "st-helena": {
+      "hcd_record_count": 7,
+      "local_rule_ids": []
+    },
+    "stanislaus-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "stanton": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "stockton": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "suisun-city": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "sunnyvale": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "susanville": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "sutter-county": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "sutter-creek": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "taft": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "tehachapi": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "tehama": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "tehama-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "temecula": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "temple-city": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "thousand-oaks": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "tiburon": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "torrance": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "tracy": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "trinidad": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "trinity-county": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "truckee": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "tulare": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "tulare-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "tulelake": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "tuolumne-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "turlock": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "tustin": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "twentynine-palms": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "ukiah": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "union-city": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "upland": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "vacaville": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "vallejo": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "ventura-county": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "vernon": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "victorville": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "villa-park": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "visalia": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "vista": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "walnut": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "walnut-creek": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "wasco": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "waterford": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "watsonville": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "weed": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "west-covina": {
+      "hcd_record_count": 6,
+      "local_rule_ids": []
+    },
+    "west-hollywood": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "west-sacramento": {
+      "hcd_record_count": 5,
+      "local_rule_ids": []
+    },
+    "westlake-village": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "westminster": {
+      "hcd_record_count": 3,
+      "local_rule_ids": []
+    },
+    "westmorland": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "wheatland": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "whittier": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "wildomar": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "williams": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "willits": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "willows": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "windsor": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "winters": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "woodlake": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "woodland": {
+      "hcd_record_count": 0,
+      "local_rule_ids": [
+        "woodland-adu-ordinance-2026"
+      ]
+    },
+    "woodside": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "yolo-county": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "yorba-linda": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "yountville": {
+      "hcd_record_count": 2,
+      "local_rule_ids": []
+    },
+    "yreka": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "yuba-city": {
+      "hcd_record_count": 4,
+      "local_rule_ids": []
+    },
+    "yuba-county": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    },
+    "yucaipa": {
+      "hcd_record_count": 1,
+      "local_rule_ids": []
+    },
+    "yucca-valley": {
+      "hcd_record_count": 0,
+      "local_rule_ids": []
+    }
+  },
+  "schema_version": 1,
+  "statewide_rule_ids": [
+    "adu-conversion-exemptions",
+    "adu-height-standards",
+    "adu-ministerial-review",
+    "adu-multifamily-66323",
+    "adu-multifamily-proposed-66323",
+    "adu-no-owner-occupancy-rental",
+    "adu-parking-limits",
+    "adu-protected-minimum",
+    "adu-size-allowances",
+    "adu-unpermitted-legalization",
+    "jadu-ministerial-review",
+    "jadu-standards",
+    "jadu-unpermitted-legalization",
+    "sb9-adu-interaction",
+    "sb9-lot-split-adu-interaction",
+    "sb9-two-unit-ministerial",
+    "sb9-urban-lot-split"
+  ]
+}

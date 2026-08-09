@@ -58,6 +58,54 @@ its integrity-checked synthetic route and packet evidence. A real
 permit-readiness record that separates submission completeness, consistency
 standards, and unresolved staff questions remains planned.
 
+#### Statewide Coverage Navigator (implemented surface for prototype data)
+
+At a recognized jurisdiction selection, before the applicant supplies or
+submits project facts, `check.html` presents a static coverage profile. The
+profile is generated at build time by `src/permit_pathways/jurisdictions.py`
+into `data/jurisdictions/generated/coverage-index.json`, then carried in the
+browser bundle as `coverage_index`. It joins the portable jurisdiction
+registry, the bounded rule corpus, and the dated public HCD Housing
+Accountability Unit history without making a browser request or retaining a
+selection as an applicant record.
+
+The compact schema-version-1 index contains only the 17 statewide rule IDs,
+per-jurisdiction local rule IDs and HCD-record counts, and HCD source/date/
+count metadata. It leaves the source HCD rows in their canonical dataset and
+does not classify or interpret them. Build validation rejects rule scopes or
+HCD slugs that do not resolve to a registry entry, malformed or future HCD
+retrieval dates, and HCD-count drift.
+
+Each profile makes three independent boundaries visible:
+
+- the same bounded statewide ADU/JADU/SB 9 candidate-rule inventory is
+  screenable for every registry entry;
+- a local layer is either `not encoded` or a limited set of existing
+  jurisdiction-scoped source records, neither of which is comprehensive
+  local-code or packet coverage; and
+- public HCD correspondence linked in the committed, dated dataset is
+  historical reference material, not a current ordinance, compliance,
+  eligibility, or approval conclusion. The absence of linked correspondence does not
+  establish no HCD activity, compliance, or complete data coverage.
+
+The profile also consumes the repository-adopted source-state overlay. A
+changed dependency puts the affected statewide inventory count or individual
+local source record on a visible review hold; the raw local citation remains
+available as evidence but the profile does not present it as ready for
+screening or coverage. An unverifiable source is kept distinct and does not
+create a stale hold.
+
+The profile also displays a local-onboarding checklist rather than silently
+filling gaps: operative ordinance sections and effective dates;
+current forms, checklist, fee, and process pages; official URLs, source-check
+dates, and content fingerprints; project/parcel scope, exceptions, and open
+questions; and a named review owner with a re-verification cadence. A source
+link alone cannot create a local rule. The checklist is not an uploader,
+authoring workflow, or validation of those future inputs. The navigator is
+therefore a bounded statewide routing aid, not an ordinance scraper,
+local-code finder, parcel lookup, local compliance determination, or statewide
+permit service.
+
 One bounded browser continuation is implemented for the canonical made-up
 Woodland sample as a **source-bound future-state simulation**. The City's
 official program page, checked 2026-08-09, says **“Preapproved ADU List: Coming
@@ -150,7 +198,7 @@ official program URL, 2026-08-09 check date, exact excerpt and fingerprint,
 `plans_not_listed` status, future-state boundary, and recheck deadline.
 `src/permit_pathways/program_availability.py` validates that schema but is
 isolated from deterministic screening and readiness evaluation, so it cannot
-create a match or make the workflow applicable. Bundle format 4 carries the
+create a match or make the workflow applicable. Bundle format 5 carries the
 record to the browser, which blocks route-to-packet access when it is missing,
 malformed, or expired. A passing availability check authorizes only display of
 the labeled simulation.
@@ -280,7 +328,7 @@ abstention path is a structured intake with no matching encoded rule.
   `machine_linked`. The ledger never changes which rules match an intake.
   `python -m permit_pathways.harness` prints effective-level counts and the
   exact bounded automation phrase `automated source/regression checks: pass`
-  when those checks pass. Bundle format 4 exposes the same effective coverage
+  when those checks pass. Bundle format 5 exposes the same effective coverage
   on `evidence.html`: all 19 rules are currently `machine_linked`, with zero
   named human reviews and zero jurisdiction approvals.
 - **Currency watcher:** monitors the source corpus (statute text, HCD guidance,
@@ -303,7 +351,7 @@ abstention path is a structured intake with no matching encoded rule.
   `reviewed` means selected by repository maintenance for publication; it is
   not legal, jurisdiction, counsel, or substantive content approval and does
   not identify a human reviewer.
-- **Public trust surface:** bundle format 4 carries the adopted overlay, rule
+- **Public trust surface:** bundle format 5 carries the adopted overlay, rule
   verification ledger, and strict program-availability record to the browser
   as distinct claims. Exact changed dependencies stale statewide rule cards and
   orientation receipts. A changed candidate-route source blocks the Woodland
@@ -347,16 +395,17 @@ the queue remain planned.
 
 The browser showcase remains dependency-free and static-host friendly.
 Canonical rules, explanations, registries, fixtures, checks, source metadata,
-the program-availability record, rule-verification ledger, and adopted
-source-state receipt stay in JSON.
+the generated jurisdiction-coverage index, the program-availability record,
+rule-verification ledger, and adopted source-state receipt stay in JSON.
 `scripts/build_demo_bundle.py` deterministically compiles those files, the
 generated readiness record, the generated journey envelope, and the strict
-source-state overlay into bundle format 4 at `data/demo-data.js`. The static
-surface is split by user job:
+source-state overlay into `data/demo-data.js`. The static surface is split by
+user job:
 
 - `index.html`: lightweight orientation and scope; it loads no data bundle;
-- `check.html`: applicant intake, a temporary grouped result packet, a
-  statewide orientation receipt, a labeled shareable sample that reuses a
+- `check.html`: a generated Statewide Coverage Navigator after a recognized
+  jurisdiction selection, applicant intake, a temporary grouped result packet,
+  a statewide orientation receipt, a labeled shareable sample that reuses a
   canonical golden fixture, its explicit applicability gate, and the separate
   clock;
 - `prepare.html`: a fail-closed versioned and availability-gated entry to the
@@ -368,10 +417,12 @@ surface is split by user job:
   rehearsal.
 
 The four data-driven pages load the generated bundle before shared,
-page-gated `assets/demo.js`. Relative URLs let all five pages work from disk
-and under a project subpath. The stdlib server exposes the same pages, keeps
-`/showcase` as an alias for `/check.html`, and limits static-file access to
-those five HTML files plus `assets/` and `data/`.
+page-gated `assets/demo.js`. The applicant page resolves a coverage profile
+only for a recognized registry value; it does not infer an unlisted local
+source or carry a profile selection into the packet URL. Relative URLs let all
+five pages work from disk and under a project subpath. The stdlib server
+exposes the same pages, keeps `/showcase` as an alias for `/check.html`, and
+limits static-file access to those five HTML files plus `assets/` and `data/`.
 
 At phone widths, the full primary link row is replaced by a native
 `details`/`summary` section menu while preserving current-page semantics and
@@ -381,11 +432,20 @@ the evidence tables render as labeled source/rule records instead of requiring
 horizontal page scrolling. Browser checks exercise every page at 320px and
 390px plus populated applicant and evidence states. They also exercise the
 statewide handoff across an ordinary city, a county, post-2020 Mountain House,
-and Davis's bounded local layer. Separate print-media checks confirm that each
-print-focused summary remains visible while navigation, task chrome, detailed
-results, and print controls are withheld without horizontal document overflow.
-Physical-device, printed-output, and assistive-technology validation remain
-separate manual work.
+and Davis's bounded local layer. The generated coverage index separately
+represents normal-city, county, post-2020 Mountain House, limited-local-layer,
+and linked/no-linked-HCD-history states without conflating any of them with
+local-code coverage. An automated navigator test also exercises Albany's
+zero-HCD state, Alameda's linked HCD disclosure, Davis's limited local layer,
+and Los Angeles County's `Not encoded` state; it verifies the 17-record
+baseline, storage boundary, no document overflow, and an axe scan. Dedicated
+assistive-technology, keyboard-only, and physical-device coverage remains
+pending.
+Separate print-media checks confirm that each print-focused summary remains
+visible while navigation, task chrome, detailed results, and print controls
+are withheld without horizontal document overflow. Physical-device,
+printed-output, and assistive-technology validation remain separate manual
+work.
 
 The generated bundle must never become a second hand-edited source of truth;
 the test suite compares it byte-for-byte with the canonical JSON inputs and

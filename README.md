@@ -120,12 +120,23 @@ still needs a person.
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 404 Python tests, 87.49% branch-aware coverage, 29/29 golden cases, 35 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.97 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes 410 Python tests, 86.97% branch-aware coverage, 29/29 golden cases, 38 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.97 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage profiles. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
 
 1. The applicant selects a jurisdiction and supplies structured project facts.
+   When the selection matches the registry, the browser also shows a generated
+   statewide coverage profile for that jurisdiction. It separates the bounded
+   statewide candidate-rule inventory from any limited local record, shows the
+   dated public HCD history linked in the committed dataset, and lists a
+   local-onboarding checklist for a maintainer considering a local layer.
+   If a changed source dependency affects the statewide or local inventory,
+   that part of the profile is visibly held for source review; an
+   unverifiable source remains a warning rather than a change finding.
+   The profile is a static orientation aid: it does not look up a parcel,
+   retrieve current local materials, determine compliance, or make an approval
+   finding.
 2. Deterministic criteria match those facts to the bounded rule set. No live
    model and no free-text answer determine eligibility.
 3. The browser creates a temporary "answers used" cover sheet, summarizes the
@@ -166,12 +177,13 @@ still needs a person.
     question. The link contains only the public journey ID and version, not
     project facts, and does not represent a currently listed City plan.
 
-The current app covers statewide ADU, JADU, and SB 9 screening and provides a
-bounded orientation handoff for all 541 registry entries, while only two
-jurisdictions have local rule records. Parcel retrieval, application-file
-inspection, packet-level completeness, reviewed remedies, SB 35, AB 2011,
-reviewed translation, and comprehensive local rules are planned rather than
-implemented. The temporary result packet does not change those boundaries.
+The current app covers statewide ADU, JADU, and SB 9 screening; a generated
+coverage profile and bounded orientation handoff are available for all 541
+registry entries, while only two jurisdictions have local rule records.
+Parcel retrieval, application-file inspection, packet-level completeness,
+reviewed remedies, SB 35, AB 2011, reviewed translation, and comprehensive
+local rules are planned rather than implemented. The temporary result packet
+and coverage profile do not change those boundaries.
 
 ## How the bounded packet sample works
 
@@ -266,7 +278,7 @@ observations, or derived rule/Golden impacts drift.
 
 For this receipt, `reviewed` means selected for publication after checking the
 run binding. It is not legal, jurisdiction, counsel, or substantive content
-approval, and it does not identify a human reviewer. Bundle format 4 carries
+approval, and it does not identify a human reviewer. Bundle format 5 carries
 the adopted overlay, strict program-availability record, and rule-verification
 ledger into the browser. A fetched changed source stales only
 exact dependent statewide records and blocks a Woodland route or packet only
@@ -418,6 +430,31 @@ facts, forms, or exceptions are encoded. The two local metadata records
 (Davis and Woodland) are labeled separately, and neither represents
 comprehensive local-code coverage.
 
+**Statewide Coverage Navigator:** selecting a recognized registry entry shows
+a generated profile from
+[`data/jurisdictions/generated/coverage-index.json`](data/jurisdictions/generated/coverage-index.json).
+It keeps three facts separate: the same bounded statewide candidate-rule set
+is available for every registry entry; only the limited local records already
+encoded in the repository are local coverage; and the linked public HCD
+Housing Accountability Unit history is a dated dataset reference, not a
+current compliance result. A profile with no local record means Permit
+Bearings has not encoded one — it does not mean local requirements do not
+exist. A profile with no linked HCD record means none was linked in the
+committed dataset — it does not prove no HCD activity, compliance, or complete
+coverage. The profile also lists a local-onboarding checklist for a maintainer
+considering a local layer: operative ordinance sections and effective dates;
+current forms, checklists, fees, and process pages; official URLs with
+source-check dates and content fingerprints; project/parcel scope, exceptions,
+and unresolved questions; plus a named review owner and re-verification
+cadence. A source link alone never creates a local rule.
+
+A changed dependency in the adopted source-state receipt visibly places its
+affected statewide inventory and any affected local source record on a
+source-review hold. The raw citation remains available as evidence, but the
+profile does not describe that inventory as ready to screen or use for
+coverage until it is re-verified. An unreachable source remains a distinct
+warning and does not create that hold.
+
 The rule base currently covers, statewide: ADU ministerial review and the
 15-business-day/60-day clocks, protected minimum unit, size allowances,
 height allowances, parking limits and exemptions, the owner-occupancy
@@ -443,11 +480,14 @@ snapshot, not a live per-page check or an automatic legal update.
 The full static showcase has five task-focused pages: an applicant-first
 landing page; an English/Spanish applicant guide with review clocks; the
 gated generated synthetic packet-presence sample; a bounded ordinance screen;
-and an evidence-and-updates page. The applicant guide renders a temporary
-answers-used cover sheet, a dynamic grouped summary with jump links, one
-candidate route open by default when the configured route matches, and compact
-supporting records. Citations and source-status badges stay visible outside
-the disclosures. Ordinary answer edits clear the old result until the
+and an evidence-and-updates page. On a recognized jurisdiction selection, the
+applicant guide first renders the Statewide Coverage Navigator: a static
+profile of the bounded statewide inventory, limited-local-layer status, dated
+public HCD history, and local-onboarding requirements. It then renders a
+temporary answers-used cover sheet, a dynamic grouped summary with jump links,
+one candidate route open by default when the configured route matches, and
+compact supporting records. Citations and source-status badges stay visible
+outside the disclosures. Ordinary answer edits clear the old result until the
 applicant submits again. Every recognized jurisdiction also receives a
 bilingual print-focused orientation receipt derived from the current page:
 facts used, candidate-route sources and currency, local-coverage status, and
@@ -500,6 +540,9 @@ explanation sidecar and keeps a separate `/trust` route.
   generated fingerprinted envelope
 - `data/source-status/current.json`: repository-adopted completed-run receipt
   used as the public source-state overlay
+- `data/jurisdictions/generated/coverage-index.json`: generated statewide
+  coverage profiles that keep the statewide inventory, limited local records,
+  dated HCD history, and local-onboarding boundary distinct
 - `data/demo-data.js`: generated offline bundle for the static showcase
 - `index.html`, `check.html`, `prepare.html`, `review.html`,
   `evidence.html`: task-focused static pages; `assets/`: shared browser
@@ -507,6 +550,8 @@ explanation sidecar and keeps a separate `/trust` route.
 - `corpus/hcd/`: HCD source documents recorded by rule citations
 - `demo/app.py`: stdlib reference demo and safe static-file server
 - `scripts/build_demo_bundle.py`: rebuild/check the static data bundle
+- `src/permit_pathways/jurisdictions.py`: validates and builds the portable
+  jurisdiction-coverage index used by the browser profile
 - `docs/DESIGN.md`: architecture and demo plan
 - `docs/DATA-FLOW.md`: current build-time and browser data boundaries
 - `docs/DESIGN-SYSTEM.md`: California Web Standards alignment and local
