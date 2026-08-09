@@ -1,0 +1,404 @@
+{
+  "schema_version": 1,
+  "package": {
+    "archive_root": "permit-bearings-evidence-v1",
+    "package_id": "permit-bearings-public-synthetic-evidence-v1"
+  },
+  "scope": {
+    "classification": [
+      "public",
+      "synthetic"
+    ],
+    "claim_boundary": "This package preserves the current public and synthetic repository evidence as hash-checked files. It can be restored into a clean directory and verified with standard-library tooling, but it does not establish a production deployment, a jurisdiction agreement, legal or content approval, a completed beta gate, or a permitting outcome.",
+    "exclusions": [
+      "Applicant submissions, project files, accounts, uploads, telemetry, and runtime model-provider payloads are excluded.",
+      "Private review receipts, participant identities, contact details, Authorium or showcase-submission material, credentials, and local machine files are excluded.",
+      "Git metadata, caches, virtual environments, dependency directories, and unlisted repository files are excluded."
+    ],
+    "known_absences": [
+      "There is no staff-adjudicated held-out conformance corpus or measured precision, recall, false-positive, false-negative, or abstention result.",
+      "The Woodland flagship ledgers remain prepared, pending, or not_run; this export does not complete content review, participant sessions, manual accessibility testing, Spanish semantic review, a partner gate, or a source-change rehearsal.",
+      "There is no production applicant-data lifecycle, contractual jurisdiction ownership or offboarding agreement, CPRA records-export workflow, retention or deletion policy, security approval, or partner acceptance."
+    ]
+  },
+  "entries": [
+    {
+      "path": "LICENSE",
+      "role": "license",
+      "raw_sha256": "sha256:9cfe0bbab53d16f10eb697ff45cf00c0b406934f2d9d8c270a9f138372998d54"
+    },
+    {
+      "path": "PROVENANCE.md",
+      "role": "provenance",
+      "raw_sha256": "sha256:c59e283f729275a10dad4dc85309a3ffd0493bac2e2772895261e3fa0d942edc"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "role": "third_party_notices",
+      "raw_sha256": "sha256:c50177429895fe66ec7b0df17dcd299c4cffa543ca520f630f1859e777b5d47a"
+    },
+    {
+      "path": "corpus/ceqa/woodland-2026020683.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:8e1ffe17c652f6d125ea6a21b94dd6246cb13bef5016bf7dbea971dbee9f64ee"
+    },
+    {
+      "path": "corpus/davis/adu-handout-2026.pdf",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:f8b63d11646edc778e710bc1431f37919c64b1945d52c496d48aa985f41f9a5b"
+    },
+    {
+      "path": "corpus/davis/hcd-adu-ta-2025.pdf",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:e1a9fe73c60605c3d332b4ef4810557daa388c67972ac312099999cc38193dbb"
+    },
+    {
+      "path": "corpus/gtfs/unitrans.zip",
+      "role": "public_transit_source",
+      "raw_sha256": "sha256:35fcb4446426949b9ca32b740007267e328434302213306e7196dd6cbe2bcbdb"
+    },
+    {
+      "path": "corpus/hcd/adu-handbook.pdf",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:ec499e12c08974d8e25af352539b23afc8c26bc7dd200453bd35796de3188e6a"
+    },
+    {
+      "path": "corpus/hcd/hau-letters-raw.json",
+      "role": "public_source_dataset",
+      "raw_sha256": "sha256:6c3324ab2484dd3e396dc6bb16389e119e87af85410beb6d2b61f271cad99f0d"
+    },
+    {
+      "path": "corpus/hcd/letters/santa-clara-county-findings-2025-06.pdf",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:d9808cdff77f79d191bf5c04d557c0d545d0c4bdf2b4f0b68dbd99b30b8a2a5e"
+    },
+    {
+      "path": "corpus/hcd/sb9-fact-sheet.pdf",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:91a6d75d99e1afeeb96d05d970fa53356597085f621d8fc500bea816d51d71e3"
+    },
+    {
+      "path": "corpus/leginfo/gov-65852.21.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:819e96b9442ea95aa2299b0acfdc62e9afce9a5ffe5057cc8a8019e37b3789ec"
+    },
+    {
+      "path": "corpus/leginfo/gov-66311.7.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:4d313b0cdafc07c3dfbb47a27de155ae0a527dd121188c41ef7cd557c6059867"
+    },
+    {
+      "path": "corpus/leginfo/gov-66313.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:c6f6cbd40e61ba311dc75244ab12bfefbb94216796e87c76a51507432ad7b31d"
+    },
+    {
+      "path": "corpus/leginfo/gov-66314.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:198ce26c6a2e2dca7da97429570401ddb44494c5e64973a3bbfcf51f66028499"
+    },
+    {
+      "path": "corpus/leginfo/gov-66315.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:1fa63ce6902a2da53f5f22f5e633b4ee9d83601ba9de33d43f15b377231cad4d"
+    },
+    {
+      "path": "corpus/leginfo/gov-66317.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:95edfb30427ef1514e1b4357bcc2c3d8cc311f57f256c409bafa9e5d9e043c6a"
+    },
+    {
+      "path": "corpus/leginfo/gov-66321.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:4279b548ad56a8d976751586e0ee8784e0e95041518566c31cc82349479dcab6"
+    },
+    {
+      "path": "corpus/leginfo/gov-66322.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:b9b182be9517baa3ecb73eb5294bb6de0b367cecd08c6eb272dd994ad35cb4a7"
+    },
+    {
+      "path": "corpus/leginfo/gov-66323.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:666be575595a5a1289d33eb430461c8899e5ffab1de189351e8a244271d92127"
+    },
+    {
+      "path": "corpus/leginfo/gov-66333.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:21e3cd7dac4cc24715698dc06c3720a92f52938e011eb0589918c94fccdd3ab2"
+    },
+    {
+      "path": "corpus/leginfo/gov-66335.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:aa821afbf745c0d2ee514b34115d2dd01a812e67798df5e9db52ba4cda9832a9"
+    },
+    {
+      "path": "corpus/leginfo/gov-66411.7.html",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:34df1c289905de25675fe7b9cc3310a5b7cfa6ca99ca2c956836b23708c31435"
+    },
+    {
+      "path": "corpus/ordinances/SOURCES.json",
+      "role": "public_source_index",
+      "raw_sha256": "sha256:c94925487ca856548d6eddc27f4c2c1351d3077661aa69886104dea4571db76a"
+    },
+    {
+      "path": "corpus/ordinances/san-diego.txt",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:f0170dcda45555662641df1690dbc94e7e6f52c629da571f14d85e2960f49cb7"
+    },
+    {
+      "path": "corpus/transit/ca-hq-transit-stops.json",
+      "role": "public_transit_source",
+      "raw_sha256": "sha256:b0e252825b728883b4c40dca6ddd3d6b062106baf9824c201f6f6a8c3f22a0be"
+    },
+    {
+      "path": "corpus/woodland/preapproved-adu-permit-checklist.pdf",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:59ebf082a59ff257f104a13f75d63faa869565bfdecc33a6e1eba306b4796d62"
+    },
+    {
+      "path": "corpus/yolo/public-parcels-layer.json",
+      "role": "public_source_copy",
+      "raw_sha256": "sha256:5f99beaf208dc10d8794df0ce1cd3d66f7414ac062d81cbdc018403ef01badb5"
+    },
+    {
+      "path": "data/availability/woodland-preapproved-adu-program.json",
+      "role": "availability_record",
+      "raw_sha256": "sha256:8aec6b24ffcfb520a2a51a06092dc81d1f7626c18ab78848f3083d1c5bd8a159"
+    },
+    {
+      "path": "data/conformance/checks.json",
+      "role": "conformance_checks",
+      "raw_sha256": "sha256:bc4fc081f0cde1cb6c503cc5e44bb374077002d23fdc982f3f76e54828fe69d0"
+    },
+    {
+      "path": "data/conformance/hcd-validation-santa-clara.json",
+      "role": "conformance_development_fixture",
+      "raw_sha256": "sha256:97945a34262ea86b2e325daefa7a8b033b04a37bcd9ac9210c1c56c903fddf69"
+    },
+    {
+      "path": "data/conformance/results/index.json",
+      "role": "conformance_results",
+      "raw_sha256": "sha256:36b31972a3bc58cf7a95cf2fc54e7b0ddc361d3b853fb809b8f8c140d5d6efad"
+    },
+    {
+      "path": "data/conformance/results/san-diego.json",
+      "role": "conformance_result",
+      "raw_sha256": "sha256:0011b54024198971febd682d136850be425411e03419242c524fd67aa71b5845"
+    },
+    {
+      "path": "data/demo-data.js",
+      "role": "derived_browser_bundle",
+      "raw_sha256": "sha256:ddba2d2eab0c89f46635eb3d4845fe1cd3bda926b2d7a3286197d4cffeafe572"
+    },
+    {
+      "path": "data/explanations/plain-language.json",
+      "role": "plain_language_drafts",
+      "raw_sha256": "sha256:2411d6e3bf38cc21ad4a00dc370d2c56651218a9db437361d6e0f435af1a3ccb"
+    },
+    {
+      "path": "data/export/public-synthetic-evidence-v1.json",
+      "role": "export_profile",
+      "raw_sha256": null,
+      "self_reference": true
+    },
+    {
+      "path": "data/golden/example.json",
+      "role": "golden_fixtures",
+      "raw_sha256": "sha256:d6f0b9995653752df5aff469308c3e21d836e029c8c9e58742caafcc2047c89a"
+    },
+    {
+      "path": "data/journeys/generated/woodland-preapproved-detached-adu.json",
+      "role": "journey_evidence",
+      "raw_sha256": "sha256:44d437a6cc40f83b07b570cd236b7a9f798482cb7a3b4b2471154c3c7c87911e"
+    },
+    {
+      "path": "data/journeys/woodland-preapproved-detached-adu.json",
+      "role": "journey_definition",
+      "raw_sha256": "sha256:02980fa08010c2f568e42e24ace9c480c016cbb8aa320b7f68a5a11edf2bed8f"
+    },
+    {
+      "path": "data/jurisdictions/generated/coverage-index.json",
+      "role": "derived_coverage_index",
+      "raw_sha256": "sha256:b4327c95d0f717d4352b912b807751042ad58f26a55d1cc0adf32cda15dff35d"
+    },
+    {
+      "path": "data/jurisdictions/hcd-letters.json",
+      "role": "hcd_letter_snapshot",
+      "raw_sha256": "sha256:e8c0c512b8fe286fe2690ec0d2162a91f1c2e16d08924ef79ef59c29c659dc65"
+    },
+    {
+      "path": "data/jurisdictions/registry.json",
+      "role": "jurisdiction_registry",
+      "raw_sha256": "sha256:0ee8024793d40a4b49f1e7f5db53806b1220137f691ee7ab0baa36078a45669a"
+    },
+    {
+      "path": "data/readiness/generated/woodland-preapproved-adu-evidence.json",
+      "role": "readiness_evidence",
+      "raw_sha256": "sha256:d631a8b97fa4253dec6b7f38099deb541d278b0ec745e5be19ccc280716b9c1d"
+    },
+    {
+      "path": "data/readiness/remedies/woodland-preapproved-detached-adu.json",
+      "role": "readiness_remedies",
+      "raw_sha256": "sha256:e319d283fa07a653cf3a13106cf790a88b19bb0a14791bccf67b2c1672bdcc36"
+    },
+    {
+      "path": "data/readiness/samples/woodland-preapproved-adu.json",
+      "role": "readiness_packet",
+      "raw_sha256": "sha256:9fad4ee4a2b616cb4a8c93d0dff2b70e91921d520c1f798e51b8a2ec123d1e5b"
+    },
+    {
+      "path": "data/readiness/workflows/woodland-preapproved-detached-adu.json",
+      "role": "readiness_workflow",
+      "raw_sha256": "sha256:12b802bb7fc76a23d873f1d553f1edbad6b00974ca332bfc2f32ded1a35781a4"
+    },
+    {
+      "path": "data/rules/davis.json",
+      "role": "rule_records",
+      "raw_sha256": "sha256:613941c52b256e9f1b47d5295d39199d024819772bd3ed09b8e9ae5ff6e0e628"
+    },
+    {
+      "path": "data/rules/index.json",
+      "role": "rule_index",
+      "raw_sha256": "sha256:470df6d02248acc1d286ba8ed00a23a7dc0aaa309eda1d9dfd023cd7640bac1f"
+    },
+    {
+      "path": "data/rules/statewide.json",
+      "role": "rule_records",
+      "raw_sha256": "sha256:c39b5a9962de9fc3c9778843827cb9f36f085be44ed76f7cf0490b66980f09d9"
+    },
+    {
+      "path": "data/rules/woodland.json",
+      "role": "rule_records",
+      "raw_sha256": "sha256:ca11e2cb5b8d904492a6f3d34390b9aa962d9066cd8016d5649716f77c6d8a1e"
+    },
+    {
+      "path": "data/source-status/current.json",
+      "role": "source_state_receipt",
+      "raw_sha256": "sha256:4a95957be45dddef306bb4f648e0491251124fb4c0ba1b492deee8b08445893a"
+    },
+    {
+      "path": "data/sources.json",
+      "role": "source_registry",
+      "raw_sha256": "sha256:8cb44c50a79e1e42d73335284e6b2c7b9b72f884b2745552d6cc85b93a0ee472"
+    },
+    {
+      "path": "data/validation/rule-verification.json",
+      "role": "rule_verification_ledger",
+      "raw_sha256": "sha256:389c8169130248d40f3429feba5205af4c403f6974eb50dccd8fee344d7f5e70"
+    },
+    {
+      "path": "data/validation/woodland-content-review.json",
+      "role": "content_review_ledger",
+      "raw_sha256": "sha256:7110471ca09e6919dad42ef47990286f5530ba993d8840214a4f6e432b9d6abe"
+    },
+    {
+      "path": "data/validation/woodland-flagship-gate.json",
+      "role": "flagship_gate",
+      "raw_sha256": "sha256:88f43375a80b0a0e02177e3605706c4e5251854cd00c94a0b18e42c773a33a7f"
+    },
+    {
+      "path": "data/validation/woodland-manual-evidence.json",
+      "role": "manual_evidence_ledger",
+      "raw_sha256": "sha256:db1c41cf2752f1517a608e2ae6523cc5cf5b53099bd0413458aee1da0004d8d9"
+    },
+    {
+      "path": "data/validation/woodland-participant-sessions.json",
+      "role": "participant_ledger",
+      "raw_sha256": "sha256:28e564adf81ec942f7a74a5cb849972f9607c4701ce8921673e644924028ab0f"
+    },
+    {
+      "path": "data/validation/woodland-source-change-rehearsal.json",
+      "role": "source_change_rehearsal_ledger",
+      "raw_sha256": "sha256:f28de3e2d86022ec61e6c73bbc98b64a658543886d98344e69063cd3d3c7d1f1"
+    }
+  ],
+  "public_state_assertions": [
+    {
+      "path": "data/validation/woodland-content-review.json",
+      "pointer": "/status",
+      "equals": "prepared_not_executed"
+    },
+    {
+      "path": "data/validation/woodland-content-review.json",
+      "pointer": "/artifact_lock/execution_commit",
+      "equals": null
+    },
+    {
+      "path": "data/validation/woodland-flagship-gate.json",
+      "pointer": "/status",
+      "equals": "pending"
+    },
+    {
+      "path": "data/validation/woodland-flagship-gate.json",
+      "pointer": "/artifact_lock/status",
+      "equals": "not_run"
+    },
+    {
+      "path": "data/validation/woodland-flagship-gate.json",
+      "pointer": "/artifact_lock/commit_sha",
+      "equals": null
+    },
+    {
+      "path": "data/validation/woodland-flagship-gate.json",
+      "pointer": "/decision/status",
+      "equals": "pending"
+    },
+    {
+      "path": "data/validation/woodland-flagship-gate.json",
+      "pointer": "/decision/evaluation_receipt_id",
+      "equals": null
+    },
+    {
+      "path": "data/validation/woodland-flagship-gate.json",
+      "pointer": "/external_evidence/partner_gate/private_evidence_receipt_id",
+      "equals": null
+    },
+    {
+      "path": "data/validation/woodland-manual-evidence.json",
+      "pointer": "/status",
+      "equals": "prepared_not_executed"
+    },
+    {
+      "path": "data/validation/woodland-manual-evidence.json",
+      "pointer": "/artifact_lock/execution_status",
+      "equals": "not_run"
+    },
+    {
+      "path": "data/validation/woodland-participant-sessions.json",
+      "pointer": "/status",
+      "equals": "prepared_not_executed"
+    },
+    {
+      "path": "data/validation/woodland-participant-sessions.json",
+      "pointer": "/artifact_lock/commit_sha",
+      "equals": null
+    },
+    {
+      "path": "data/validation/woodland-source-change-rehearsal.json",
+      "pointer": "/status",
+      "equals": "prepared_not_executed"
+    },
+    {
+      "path": "data/validation/woodland-source-change-rehearsal.json",
+      "pointer": "/artifact_lock/status",
+      "equals": "not_run"
+    },
+    {
+      "path": "data/validation/woodland-source-change-rehearsal.json",
+      "pointer": "/execution/maintainer_code",
+      "equals": null
+    },
+    {
+      "path": "data/validation/woodland-source-change-rehearsal.json",
+      "pointer": "/publication_receipt/approval_receipt_id",
+      "equals": null
+    },
+    {
+      "path": "data/validation/woodland-source-change-rehearsal.json",
+      "pointer": "/partner_burden_decision/status",
+      "equals": "pending"
+    }
+  ]
+}

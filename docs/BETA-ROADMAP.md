@@ -78,7 +78,7 @@ versions are never combined.
 | Human access | All 21 version-bound manual checks pass, including keyboard, VoiceOver/Safari, NVDA, physical iOS and Android, zoom/reflow, forced colors, three print browsers, and PDF/assistive-technology review. Automated axe and Lighthouse results remain separate. | All manual rows are `not_run`. | Human and assistive-technology testers |
 | Language | If Spanish is presented as applicant-ready within the beta, every reachable Spanish source-derived record has exact-version semantic-parity approval and `ES-USABILITY-JOURNEY` passes. Otherwise Spanish stays explicitly review-pending and outside the beta claim. | Nineteen semantic-review rows and Spanish usability are `not_run`. | Qualified Spanish reviewers and participants |
 | Maintainability | One controlled source change completes detection, affected/unaffected mapping, review, approval, republication, and rollback. The receipt records named human owners, elapsed and active-role time, defects, and the prospective partner's maintenance-burden decision. | Rehearsal is prepared and `not_run`; no human owner or burden decision is recorded. | External reviewer and partner |
-| Ownership and export | A jurisdiction-owned export of sources, rules, requirements, review receipts, fixtures, dependencies, and checksums opens and restores without vendor-only tooling. | Portable files exist; tested full export/offboarding does not. | Autonomous implementation; partner acceptance |
+| Ownership and export | A jurisdiction-owned export of sources, rules, requirements, review receipts, fixtures, dependencies, and checksums opens and restores without vendor-only tooling. | A deterministic, Git-bound package now builds, verifies, and restores the exact public/synthetic evidence set. Its pinned profile excludes known sensitive records but is not a privacy classifier, and it does not establish contractual ownership, a production offboarding test, or partner acceptance. | Implemented mechanism; external partner acceptance and any sensitive-data design |
 | Privacy, records, and security | The first beta remains public/synthetic/redacted with no accounts, uploads, applicant store, telemetry, external model call, or write-back. Any expanded flow first records fields and purpose, access, retention/deletion, subprocessors, CPRA search/export and legal-hold behavior, threat model, control mapping, incident path, and deployment-specific approvals. | The static demo has a documented no-storage boundary; production controls are not approved. | Autonomous drafts; external approvals if scope expands |
 | Partner and decision | A credible partner supplies a written next step with an owner role and date, accepts the maintenance plan, and signs a `proceed`, `extend`, `pivot`, or `stop` decision after every supporting receipt. | Partner gate and aggregate decision are pending. | External partner |
 
@@ -99,7 +99,7 @@ or permitting-outcome claims.
 
 ### Now — autonomous foundations
 
-This roadmap tranche completes four machine-testable foundations without
+This roadmap tranche completes five machine-testable foundations without
 changing the product's maturity claim:
 
 - the Statewide Coverage Navigator is deployed as orientation, not statewide
@@ -109,7 +109,12 @@ changing the product's maturity claim:
 - source changes can produce exact fingerprint-bound rule, Golden, readiness,
   remedy, packet, and journey work plus a separate blank decision ledger; and
 - a repeatable deployment smoke command checks the five public routes and the
-  generated 541-profile/17-rule artifact contract.
+  generated 541-profile/17-rule artifact contract; and
+- a pinned canonical ZIP can package, verify, and inertly restore the current
+  public/synthetic evidence set while rejecting uncommitted selected files,
+  asserted validation-state drift, unsafe members, and existing destinations;
+  its allowlist excludes known sensitive material but is not a privacy
+  classifier.
 
 The remaining autonomous work is:
 
@@ -128,12 +133,10 @@ The remaining autonomous work is:
 5. Add held-out evaluation support with frozen answer keys, category coverage,
    raw confusion and abstention counts, and explicit separation from
    development fixtures.
-6. Generate and restore-test a jurisdiction-owned export/offboarding package
-   with a manifest and checksums.
-7. Draft the no-storage beta data flow, threat model, control map, records/CPRA
+6. Draft the no-storage beta data flow, threat model, control map, records/CPRA
    workflow, incident path, support runbook, and release/rollback checklist.
    Keep approval fields pending.
-8. Add applicant-copy catalog parity, placeholder checks, and
+7. Add applicant-copy catalog parity, placeholder checks, and
    pseudolocalization tests without promoting Spanish review status.
 
 These tasks can make the product pilot-ready, but they cannot supply a sponsor,

@@ -412,6 +412,46 @@ browser Print or Save as PDF can create a
 user-controlled artifact outside the app; the app does not create, name,
 upload, retain, or later retrieve it.
 
+## Public/synthetic evidence export path
+
+The evidence exporter is an offline repository-maintenance command, not a
+browser or applicant flow. Its schema-v1 path is:
+
+```text
+Pinned 58-file profile + pending/not_run state assertions
+    |
+    +--> verify every selected byte against Git HEAD and its profile digest
+    +--> recheck normalized official-source digests separately from raw bytes
+    |
+    v
+Canonical manifest: commit/freeze, roles, byte counts, raw hashes, tree hash,
+claim boundary, exclusions, known absences, and sources without retained copies
+    |
+    v
+Single deterministic ZIP_STORED representation outside the repository
+    |
+    +--> verify exact member set, paths, metadata, limits, hashes, and bytes
+    +--> reject prefixes, trailers, compression, encryption, and tampering
+    |
+    v
+Private sibling staging directory -> canonical loader replay -> exclusive
+destination publication only after every check passes
+```
+
+The selected evidence includes public source copies and portable prototype
+records; it does not include browser answers, applicant files, accounts,
+uploads, identity mappings, credentials, private receipts, portal/submission
+material, or unlisted working-tree files. Mutable validation ledgers may be
+included only while their profile-pinned bytes and public-state assertions
+remain pending, prepared, or `not_run`.
+
+Restore is inert. It does not change the adopted source snapshot, clear a
+source-review hold, promote a verification level, update the originating
+repository, or publish guidance. The archive and tree hashes are integrity and
+reproducibility records, not signatures, copyright ownership, partner
+acceptance, a backup, or a CPRA/sensitive-data export. The exact operational
+contract is in [`EXPORT-RESTORE.md`](EXPORT-RESTORE.md).
+
 ## AI boundary
 
 The repository records that AI assisted the checklist-to-requirement mapping

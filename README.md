@@ -99,6 +99,11 @@ PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
 PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-30
 PYTHONPATH=src python3 -m permit_pathways.review_queue_cli  # read-only source-change worklist
 PYTHONPATH=src python3 -m permit_pathways.deployment_smoke # live static-route/artifact smoke check
+PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli build \
+  --output /tmp/permit-bearings-evidence.zip \
+  --freeze-id public-synthetic-evidence-2026-08-09 \
+  --frozen-on 2026-08-09                       # committed public/synthetic data only
+make evidence-export-check                     # disposable build/verify/restore round trip
 python3 -m http.server 8765                         # full static showcase
 PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
 # The Python server exposes the landing at /index.html and tools at
@@ -111,6 +116,16 @@ queue with human work remaining, and `2` for invalid input or output. Neither
 its worklist nor its separate decision ledger changes the adopted source state
 or publishes anything. The deployment-smoke command returns only an
 availability/artifact-shape result.
+
+The evidence-export `build` command returns `0` only after its selected files
+are verified against Git `HEAD`, packaged in the single canonical ZIP
+representation, and checked against the pinned public/synthetic profile.
+Archive-only `verify` and `restore` validate the recorded commit identifier,
+profile, hashes, bytes, and canonical structure; they do not retrieve or
+authenticate the originating Git commit. Both are inert and do not adopt,
+approve, or publish records. The exact format, operator commands, privacy
+boundary, and limitations are in
+[docs/EXPORT-RESTORE.md](docs/EXPORT-RESTORE.md).
 
 ## Standards Conformance
 
@@ -130,7 +145,7 @@ still needs a person.
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 467 public Python tests, 86.71% branch-aware coverage, 29/29 Golden cases, 41 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, and the deployment-smoke contract. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes 489 public Python tests, 85.11% branch-aware coverage, 29/29 Golden cases, 41 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, and the deterministic evidence-export round trip. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -331,10 +346,12 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 ## Design commitments (from the challenge statement's cross-cutting requirements)
 
 - Decision support, never a legal agent; abstention over confabulation.
-- Rules, sources, cases, and review artifacts use portable files that can be
-  copied and inspected without vendor-only tooling. Operational export and
-  ownership terms remain deployment work. This prototype has no accounts,
-  uploads, or applicant-data store.
+- Rules, sources, cases, and review artifacts use portable files. A pinned,
+  deterministic ZIP can export and restore-verify the current public and
+  synthetic evidence set without vendor-only storage. This is not a
+  production applicant-data export, contractual ownership/offboarding,
+  partner acceptance, backup, or CPRA workflow. This prototype has no
+  accounts, uploads, or applicant-data store.
 - A production applicant-data flow would require deployment-specific privacy,
   retention, access-control, deletion, and public-records export review. This
   prototype does not claim CPRA or Information Practices Act compliance.
@@ -553,6 +570,9 @@ explanation sidecar and keeps a separate `/trust` route.
   ledgers that cannot clear holds or republish output
 - `src/permit_pathways/deployment_smoke.py`: read-only public-route and
   generated-coverage-index deployment check
+- `src/permit_pathways/evidence_export.py` and `evidence_export_cli.py`:
+  deterministic, Git-bound public/synthetic evidence packaging, verification,
+  and inert restore
 - `src/permit_pathways/rule_verification.py`: schema-v2
   machine-linked/human-reviewed/jurisdiction-approved claim evaluation for
   rule citations and full-rule records
@@ -570,6 +590,9 @@ explanation sidecar and keeps a separate `/trust` route.
   generated fingerprinted envelope
 - `data/source-status/current.json`: repository-adopted completed-run receipt
   used as the public source-state overlay
+- `data/export/public-synthetic-evidence-v1.json`: exact artifact membership,
+  raw digest pins, public-state assertions, exclusions, and known absences for
+  the schema-v1 evidence handoff
 - `data/jurisdictions/generated/coverage-index.json`: generated statewide
   coverage profiles that keep the statewide inventory, limited local records,
   dated HCD history, and local-onboarding boundary distinct
@@ -589,6 +612,8 @@ explanation sidecar and keeps a separate `/trust` route.
 - `docs/PRODUCT-CONTEXT.md`: capability truth and opportunity priorities
 - `docs/BETA-ROADMAP.md`: evidence-gated path from tested prototype to one
   active-jurisdiction limited beta
+- `docs/EXPORT-RESTORE.md`: package contract, commands, integrity model,
+  privacy boundary, and maintenance rules
 - `docs/SHOWCASE-REMEDIATION-PLAN.md`: capability status, evidence, and known
   limitations
 - `docs/SHOWCASE-PILOT-BRIEF.md`: bounded small-jurisdiction deployment
