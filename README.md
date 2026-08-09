@@ -9,6 +9,14 @@ relevant standards, cited official sources, and questions for local staff. The
 matcher is deterministic. Separate English and Spanish explanations are
 AI-assisted, review-pending drafts.
 
+## Quickstart
+
+Open `index.html` directly, or run
+`python3 -m http.server 8765` and visit `http://localhost:8765/`. The landing,
+applicant guide, packet sample, ordinance screen, and evidence page use
+relative links and work without network requests. Only the four data-driven
+pages load the generated `data/demo-data.js` bundle.
+
 A separate bounded sample compares a made-up Woodland packet inventory with
 25 source-bound items from one City preapproved ADU checklist. The City's
 [official program page](https://www.cityofwoodland.gov/1616/Preapproved-ADU-Plan-Program),
@@ -58,14 +66,6 @@ claimed. Inspect the current status on the live **Sources & limits** page or in
 **Made-up Woodland future-state route-to-packet simulation** (answer the
 applicability question to continue only if the availability record passes):
 https://chelseakr.github.io/permit-pathways/check.html?sample=adu
-
-## Quickstart
-
-Open `index.html` directly, or run
-`python3 -m http.server 8765` and visit `http://localhost:8765/`. The landing,
-applicant guide, packet sample, ordinance screen, and evidence page use
-relative links and work without network requests. Only the four data-driven
-pages load the generated `data/demo-data.js` bundle.
 
 See [docs/PRODUCT-CONTEXT.md](docs/PRODUCT-CONTEXT.md) for the capability
 truth, challenge fit, and prioritized opportunity map. Repository-specific
