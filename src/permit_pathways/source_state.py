@@ -160,12 +160,12 @@ def _impact(
     unaffected_rules = tuple(
         sorted(rule.rule_id for rule in rules if rule.rule_id not in affected_rule_set)
     )
-    golden = load_golden(golden_path)
+    golden = load_golden(golden_path, rules)
     affected_cases = tuple(
         sorted(
             case.case_id
             for case in golden
-            if affected_rule_set.intersection(case.expected_rule_ids)
+            if affected_rule_set.intersection(case.rule_dependency_ids)
         )
     )
     affected_case_set = set(affected_cases)

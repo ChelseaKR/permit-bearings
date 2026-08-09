@@ -102,6 +102,23 @@ def test_changed_source_derives_only_exact_rule_and_case_dependencies():
     assert "sb9-two-unit-ministerial" in snapshot.unaffected_rule_ids
 
 
+def test_changed_source_replays_expected_empty_negative_cases():
+    watch = _unchanged_watch()
+    watch.unchanged.remove("ca-gov-65852-21")
+    watch.changed.append("ca-gov-65852-21")
+    watch.observed_digests["ca-gov-65852-21"] = "0" * 64
+
+    snapshot = _build(watch)
+
+    assert set(snapshot.affected_golden_case_ids) == {
+        "sb9-duplex-clean",
+        "sb9-duplex-tenant-occupied",
+        "sb9-ellis-unknown",
+        "sb9-two-unit-historic-location-unknown",
+        "sb9-two-unit-individually-listed-historic-property",
+    }
+
+
 def test_unverifiable_source_remains_warning_and_stales_no_dependents():
     watch = _unchanged_watch()
     watch.unchanged.remove("ca-gov-66321")

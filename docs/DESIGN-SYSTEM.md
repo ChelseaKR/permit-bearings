@@ -90,6 +90,10 @@ result presents submitted facts, grouped candidate records, citations, source
 currency, and uncertainty routing as service records rather than a dashboard.
 The evidence rail uses a gold structural rule to connect a decision-support
 result with the source record that constrains it.
+The result decision boundary composes the local `<ca-box>` hook with a native
+`<aside role="note">` and definition list, using only the shared token aliases;
+its candidate, unresolved, no-route, and source-review meanings remain in text
+rather than depending on the colored border.
 
 The header is a product-specific service header. It deliberately omits the
 State logo, official-site banner, wordmark, and agency identity because this

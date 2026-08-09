@@ -72,6 +72,8 @@ truth, challenge fit, and prioritized opportunity map. Repository-specific
 contributor and agent guardrails live in [AGENTS.md](AGENTS.md). The visual
 and interaction alignment with California Web Standards is recorded in
 [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md).
+The measurable path from this automated-tested prototype to one bounded,
+active-jurisdiction beta is in [docs/BETA-ROADMAP.md](docs/BETA-ROADMAP.md).
 The execution, privacy, scoring, and claim rules for the external evidence
 gate are in [docs/VALIDATION-EVIDENCE.md](docs/VALIDATION-EVIDENCE.md).
 
@@ -95,12 +97,20 @@ PYTHONPATH=src python3 -m permit_pathways.harness --fetch \
   --commit-sha 8d841409dc5fd16fe56b52a8b57c826c07f176a6
 PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
 PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-30
+PYTHONPATH=src python3 -m permit_pathways.review_queue_cli  # read-only source-change worklist
+PYTHONPATH=src python3 -m permit_pathways.deployment_smoke # live static-route/artifact smoke check
 python3 -m http.server 8765                         # full static showcase
 PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
 # The Python server exposes the landing at /index.html and tools at
 # /check.html, /prepare.html, /review.html, and /evidence.html.
 python3 scripts/build_demo_bundle.py                # after canonical JSON changes
 ```
+
+The review-worklist CLI returns `0` for a valid clear queue, `1` for a valid
+queue with human work remaining, and `2` for invalid input or output. Neither
+its worklist nor its separate decision ledger changes the adopted source state
+or publishes anything. The deployment-smoke command returns only an
+availability/artifact-shape result.
 
 ## Standards Conformance
 
@@ -120,7 +130,7 @@ still needs a person.
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 410 Python tests, 86.97% branch-aware coverage, 29/29 golden cases, 38 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.97 performance, and at least 0.90 SEO, plus dependency audits and source-currency output. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage profiles. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes 467 public Python tests, 86.71% branch-aware coverage, 29/29 Golden cases, 41 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, and the deployment-smoke contract. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -316,7 +326,7 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 |---|---|
 | Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, a temporary grouped result packet, citations, uncertainty routing, and one generated synthetic Woodland packet-presence future-state simulation are implemented. The official program page currently says its preapproved plan list is coming soon, so this is not an applicant-ready workflow. The sample uses 25 source-bound checklist requirements, two fabricated values tied to official parcel-layer fields, and review-pending AI-assisted action drafts. Live parcel retrieval, file inspection, parcel-specific packet completeness, reviewed remedies, and reviewed translation are planned. |
 | Scenario 2 (B): supporting internal review | Not targeted in v1. |
-| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, proposed run receipts, deliberate snapshot adoption, exact rule/Golden impact derivation, applicant-output invalidation, and an HCD-letter dataset are implemented in bounded form. Search, new-law discovery, automatic adoption, comparable-jurisdiction research, staffed ownership, and substantive approval history are planned. |
+| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, proposed run receipts, deliberate snapshot adoption, exact rule/Golden and bounded packet-context worklists, applicant-output invalidation, separate fingerprint-bound decision templates, and an HCD-letter dataset are implemented in bounded form. Search, new-law discovery, automatic adoption/publication, completed staffed assignments, comparable-jurisdiction research, and substantive approval history are planned. |
 
 ## Design commitments (from the challenge statement's cross-cutting requirements)
 
@@ -476,6 +486,17 @@ applies. Comprehensive local-source and newly enacted-law discovery are not
 implemented. Each scheduled run also retains a proposed source-state receipt.
 The public build uses only the separately adopted receipt; it is a dated
 snapshot, not a live per-page check or an automatic legal update.
+When a review-needed watcher receipt includes at least one fetched source whose
+content changed, the same job also retains a 30-day `source-review-package`
+artifact containing the proposed receipt, an exact schema-v2 worklist, and a
+blank fingerprint-bound decision template. Stale-rule-only and Golden-
+regression-only runs still open the currency-review issue, but do not produce a
+misleading source-change package. Changed checklist, parcel-field, rule,
+Golden-case, remedy, packet, and configured journey effects follow explicit
+IDs. Golden fixtures carry explicit `rule_dependency_ids`, including negative
+and ambiguous expected-empty cases. Unverifiable sources create no work. The
+artifact does not select an owner, complete review, adopt the proposal, clear
+a hold, promote verification, or publish a replacement.
 
 The full static showcase has five task-focused pages: an applicant-first
 landing page; an English/Spanish applicant guide with review clocks; the
@@ -485,8 +506,11 @@ applicant guide first renders the Statewide Coverage Navigator: a static
 profile of the bounded statewide inventory, limited-local-layer status, dated
 public HCD history, and local-onboarding requirements. It then renders a
 temporary answers-used cover sheet, a dynamic grouped summary with jump links,
-one candidate route open by default when the configured route matches, and
-compact supporting records. Citations and source-status badges stay visible
+an always-visible three-line decision boundary, one candidate route open by
+default when the configured route matches, and compact supporting records.
+The boundary distinguishes candidate, unresolved-fact, no-route-in-the-bounded
+corpus, and source-review-hold states; every candidate card also retains the
+exact route-record name. Citations and source-status badges stay visible
 outside the disclosures. Ordinary answer edits clear the old result until the
 applicant submits again. Every recognized jurisdiction also receives a
 bilingual print-focused orientation receipt derived from the current page:
@@ -524,11 +548,17 @@ explanation sidecar and keeps a separate `/trust` route.
   program-availability record validation isolated from screening/readiness
 - `src/permit_pathways/source_state.py`: strict watcher-receipt validation and
   exact rule/Golden dependency impact
+- `src/permit_pathways/review_queue.py` and `review_queue_cli.py`: portable,
+  fingerprint-bound source-change worklists and separate human decision
+  ledgers that cannot clear holds or republish output
+- `src/permit_pathways/deployment_smoke.py`: read-only public-route and
+  generated-coverage-index deployment check
 - `src/permit_pathways/rule_verification.py`: schema-v2
   machine-linked/human-reviewed/jurisdiction-approved claim evaluation for
   rule citations and full-rule records
 - `src/permit_pathways/harness/`: verification runner and CLI
-- `data/rules/`: the cited rule base; `data/golden/`: golden cases
+- `data/rules/`: the cited rule base; `data/golden/`: Golden cases with
+  explicit positive and negative rule-dependency IDs
 - `data/explanations/plain-language.json`: English/Spanish explanation drafts
 - `data/validation/rule-verification.json`: the rule verification-level
   ledger; every current entry is `machine_linked`
@@ -557,6 +587,8 @@ explanation sidecar and keeps a separate `/trust` route.
 - `docs/DESIGN-SYSTEM.md`: California Web Standards alignment and local
   extensions
 - `docs/PRODUCT-CONTEXT.md`: capability truth and opportunity priorities
+- `docs/BETA-ROADMAP.md`: evidence-gated path from tested prototype to one
+  active-jurisdiction limited beta
 - `docs/SHOWCASE-REMEDIATION-PLAN.md`: capability status, evidence, and known
   limitations
 - `docs/SHOWCASE-PILOT-BRIEF.md`: bounded small-jurisdiction deployment

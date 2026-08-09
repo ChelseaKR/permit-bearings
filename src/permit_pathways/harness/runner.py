@@ -8,15 +8,25 @@ the structured golden scenarios still produce the expected pathways.
 from __future__ import annotations
 
 import json
+import re
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from typing import Any
 
 from ..dates import resolve_today
-from ..screening import load_rules, screen
+from ..screening import Rule, load_rules, screen
 
 DEFAULT_MAX_AGE_DAYS = 180  # roughly one legislative cycle between re-checks
+_IDENTIFIER = re.compile(r"^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$")
+_GOLDEN_KEYS = {
+    "case_id",
+    "question",
+    "intake",
+    "expected_rule_ids",
+    "rule_dependency_ids",
+}
 
 
 @dataclass
@@ -25,6 +35,7 @@ class GoldenCase:
     question: str
     intake: dict[str, Any]
     expected_rule_ids: list[str]
+    rule_dependency_ids: list[str]
 
 
 @dataclass
@@ -60,8 +71,101 @@ class VerificationReport:
         return "\n".join(lines)
 
 
-def load_golden(path: Path) -> list[GoldenCase]:
-    return [GoldenCase(**record) for record in json.loads(path.read_text())]
+def _golden_rule_ids(
+    value: Any,
+    field: str,
+    *,
+    known_rule_ids: set[str],
+    sorted_unique: bool,
+) -> list[str]:
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and _IDENTIFIER.fullmatch(item) for item in value
+    ):
+        raise ValueError(f"{field}: expected stable rule IDs")
+    if len(value) != len(set(value)):
+        raise ValueError(f"{field}: duplicate rule IDs are not allowed")
+    if sorted_unique and (not value or value != sorted(value)):
+        raise ValueError(f"{field}: expected a non-empty sorted unique list")
+    unknown = sorted(set(value) - known_rule_ids)
+    if unknown:
+        raise ValueError(f"{field}: unknown rule IDs: {', '.join(unknown)}")
+    return list(value)
+
+
+def _golden_case(
+    value: Any,
+    field: str,
+    *,
+    known_rule_ids: set[str],
+    seen_case_ids: set[str],
+) -> GoldenCase:
+    if not isinstance(value, dict) or set(value) != _GOLDEN_KEYS:
+        raise ValueError(f"{field}: expected exactly the Golden case fields")
+    case_id = value["case_id"]
+    if not isinstance(case_id, str) or not _IDENTIFIER.fullmatch(case_id):
+        raise ValueError(f"{field}.case_id: expected a stable identifier")
+    if case_id in seen_case_ids:
+        raise ValueError(f"{field}.case_id: duplicate Golden case ID")
+    seen_case_ids.add(case_id)
+    question = value["question"]
+    if not isinstance(question, str) or not question.strip():
+        raise ValueError(f"{field}.question: expected non-blank text")
+    intake = value["intake"]
+    if not isinstance(intake, dict):
+        raise ValueError(f"{field}.intake: expected an object")
+    expected = _golden_rule_ids(
+        value["expected_rule_ids"],
+        f"{field}.expected_rule_ids",
+        known_rule_ids=known_rule_ids,
+        sorted_unique=False,
+    )
+    dependencies = _golden_rule_ids(
+        value["rule_dependency_ids"],
+        f"{field}.rule_dependency_ids",
+        known_rule_ids=known_rule_ids,
+        sorted_unique=True,
+    )
+    missing_dependencies = sorted(set(expected) - set(dependencies))
+    if missing_dependencies:
+        raise ValueError(
+            f"{field}.rule_dependency_ids: must include expected rule IDs: "
+            + ", ".join(missing_dependencies)
+        )
+    return GoldenCase(
+        case_id=case_id,
+        question=question.strip(),
+        intake=dict(intake),
+        expected_rule_ids=expected,
+        rule_dependency_ids=dependencies,
+    )
+
+
+def load_golden(path: Path, rules: Sequence[Rule]) -> list[GoldenCase]:
+    """Load cases with explicit positive and negative rule dependencies."""
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"{path}: Golden cases could not be loaded") from error
+    if not isinstance(payload, list):
+        raise ValueError(f"{path}: expected a list of Golden cases")
+    known_rule_ids = {rule.rule_id for rule in rules}
+    if len(known_rule_ids) != len(rules):
+        raise ValueError("canonical rules contain duplicate rule IDs")
+
+    cases: list[GoldenCase] = []
+    seen_case_ids: set[str] = set()
+    for index, value in enumerate(payload):
+        field = f"{path}[{index}]"
+        cases.append(
+            _golden_case(
+                value,
+                field,
+                known_rule_ids=known_rule_ids,
+                seen_case_ids=seen_case_ids,
+            )
+        )
+    return cases
 
 
 def verify_rules(
@@ -82,7 +186,7 @@ def verify_rules(
         raise ValueError("pass changed_source_ids or changed_sources, not both")
     as_of = resolve_today(today)
     rules = load_rules(rules_path, today=as_of)
-    golden = load_golden(golden_path)
+    golden = load_golden(golden_path, rules)
     report = VerificationReport(checked_on=as_of.isoformat())
     changed = set(
         changed_source_ids

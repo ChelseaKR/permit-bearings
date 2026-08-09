@@ -31,12 +31,48 @@ jobs:
             --receipt-method github_actions_source_currency_watch \
             --run-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
             --commit-sha "$GITHUB_SHA" | tee report.txt
-          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+          watch_exit="$?"
+          has_changed_sources="$(
+            python -c \
+              'import json; from pathlib import Path; payload = json.loads(Path("source-state-proposed.json").read_text(encoding="utf-8")); changed = payload.get("changed_source_ids"); print("true" if isinstance(changed, list) and changed else "false")' \
+              2>/dev/null || printf 'false'
+          )"
+          echo "exit_code=$watch_exit" >> "$GITHUB_OUTPUT"
+          echo "has_changed_sources=$has_changed_sources" >> "$GITHUB_OUTPUT"
+      - name: Build the exact re-verification review package
+        if: steps.watch.outputs.has_changed_sources == 'true'
+        run: |
+          set +e
+          PYTHONPATH=src python -m permit_pathways.review_queue_cli \
+            --source-state source-state-proposed.json \
+            --out source-review-worklist.json \
+            --decisions-template-out source-review-decisions-template.json
+          queue_exit="$?"
+          set -e
+          case "$queue_exit" in
+            0|1)
+              test -s source-review-worklist.json
+              test -s source-review-decisions-template.json
+              echo "review package generated (queue exit $queue_exit)"
+              ;;
+            *) exit "$queue_exit" ;;
+          esac
+      - name: Retain the exact re-verification review package
+        if: steps.watch.outputs.has_changed_sources == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: source-review-package
+          path: |
+            source-state-proposed.json
+            source-review-worklist.json
+            source-review-decisions-template.json
+          if-no-files-found: error
+          retention-days: 30
       # Exit 1 means a source was fetched and its content hash moved, a rule
       # aged out, or a golden case regressed. Exit 2 means only that some
       # sources could not be downloaded — never escalated as a change.
-      - name: Open an issue if a watched source changed
-        if: steps.watch.outputs.exit_code == '1'
+      - name: Open an issue when currency review is needed
+        if: ${{ always() && steps.watch.outputs.exit_code == '1' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

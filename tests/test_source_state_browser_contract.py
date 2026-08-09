@@ -190,6 +190,19 @@ check(
   normalizedChanged.unaffected_rule_ids.includes("sb9-two-unit-ministerial"),
   "unrelated statewide rule missing from unaffected controls",
 );
+const changedSb9 = normalize(changedReceipt("ca-gov-65852-21"));
+check(changedSb9 !== null, "valid SB 9 changed-source receipt rejected");
+for (const caseId of [
+  "sb9-duplex-tenant-occupied",
+  "sb9-ellis-unknown",
+  "sb9-two-unit-historic-location-unknown",
+  "sb9-two-unit-individually-listed-historic-property",
+]) {
+  check(
+    changedSb9.affected_golden_case_ids.includes(caseId),
+    `negative Golden dependency missing from changed-source impact: ${caseId}`,
+  );
+}
 RULES = bundle.rules;
 SOURCE_STATE = normalizedChanged;
 const journey = bundle.journeys[0];

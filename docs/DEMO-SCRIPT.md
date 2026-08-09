@@ -73,6 +73,13 @@ Start at `/` for the product boundary, then use `/review.html`,
   routes first, relevant standards second, and the bounded Woodland local
   information record last. State that Woodland is not a comprehensive local
   code or checklist.
+- Read the three-line **Decision boundary** before opening a result. It says
+  what the candidate result shows, what property/local/checklist facts remain
+  unconfirmed, and which questions go to jurisdiction staff. Show that the
+  candidate heading says it is for discussion—not approval—while the separate
+  route-record line preserves the exact matched route. Mention that unresolved,
+  no-route, and source-review states replace this copy rather than implying a
+  favorable answer.
 - The explicitly configured ADU candidate route starts open. Point to its
   citation and source-status label, which remain visible even when the
   disclosure is closed. Walk through the separate 15-business-day and

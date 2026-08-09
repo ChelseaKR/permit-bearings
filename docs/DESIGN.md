@@ -41,7 +41,12 @@ explicitly configured candidate route for the selected project type starts
 open when it is among the matches. This default is a presentation choice, not
 a ranking, recommendation, final route, or eligibility finding. Supporting
 records use compact disclosures. Each citation and source-status label remains
-visible when its disclosure is closed.
+visible when its disclosure is closed. Directly below the result heading, a
+semantic decision-boundary note states what the result shows, what is still
+unconfirmed, and the next jurisdiction-staff step. Its state is derived from
+the same result and source overlay: candidate, unresolved material fact,
+no route in the bounded rule set, or source review required. Candidate cards
+use a non-approval heading and separately retain the exact rule pathway name.
 
 The submitted facts, grouped summary, jump links, and disclosure state exist
 only in current browser page memory. Changing the jurisdiction or any named
@@ -341,8 +346,13 @@ abstention path is a structured intake with no matching encoded rule.
   `unverifiable`, carries the last successful verification date, and marks no
   rule stale. When requested, the watcher also emits a complete proposed
   source-state receipt with observed digests, the run/commit binding, and
-  exact affected and unaffected rule/Golden IDs. The scheduled workflow keeps
-  that proposal as a 30-day artifact and never adopts it automatically.
+  exact affected and unaffected rule/Golden IDs. Every Golden fixture declares
+  sorted `rule_dependency_ids`, so expected-empty negative and ambiguous cases
+  are replayed when a rule they exercise changes. The scheduled workflow keeps
+  every proposal as a 30-day artifact and never adopts it automatically. It
+  adds the exact worklist package only when the receipt contains changed source
+  IDs; stale-only and Golden-regression-only alerts remain independent of that
+  package step.
 - **Reviewed publication overlay:** `src/permit_pathways/source_state.py`
   validates one deliberately adopted receipt in
   `data/source-status/current.json`. A public bundle requires receipt status
@@ -351,6 +361,18 @@ abstention path is a structured intake with no matching encoded rule.
   `reviewed` means selected by repository maintenance for publication; it is
   not legal, jurisdiction, counsel, or substantive content approval and does
   not identify a human reviewer.
+- **Portable re-verification worklist:**
+  `src/permit_pathways/review_queue.py` derives a schema-v2 worklist from the
+  validated receipt and explicit source IDs. It re-derives source/rule/Golden
+  impact and, for supplied readiness contexts, binds the exact workflow,
+  packet, remedies, and configured journeys even when the queue is clear. A
+  changed checklist creates exact requirement and linked-remedy tasks; a
+  changed parcel schema creates only its source-backed fact/field tasks;
+  affected contexts add packet and journey revalidation. A route source adds a
+  journey task only when that journey explicitly names the affected candidate
+  route. The separate decision ledger binds every entry to both worklist and
+  item fingerprints. Assignment or resolution never changes source state,
+  matching, verification level, or publication.
 - **Public trust surface:** bundle format 5 carries the adopted overlay, rule
   verification ledger, and strict program-availability record to the browser
   as distinct claims. Exact changed dependencies stale statewide rule cards and
@@ -364,8 +386,10 @@ abstention path is a structured intake with no matching encoded rule.
   review. The § 66321 amendment control is a separate temporary layer and
   never rewrites the committed receipt.
 
-New-law discovery, automatic receipt adoption/publication, a named reviewer
-record, and a staffed re-verification assignment workflow are not implemented.
+The scheduled watcher retains a generated worklist and blank decision template
+when its review-needed exit fires, but new-law discovery, automatic receipt
+adoption/publication, authorized reviewer selection, completed assignments,
+and approval history are not implemented.
 
 The implemented bounded dependency model is:
 
@@ -491,7 +515,7 @@ The current build-time and browser boundaries are documented in
 | Jurisdiction data ownership | Rules, corpus, fixtures, and source metadata use open repository formats. | Tested full export/offboarding once any hosted or case data exists. |
 | CPRA (Gov C § 7920.000 et seq.) | No applicant record store exists. | Deployment-specific retention, search/export, legal-hold, exemption handling, and audit design; no blanket compliance claim. |
 | Low-capacity affordability | Dependency-light Python core and static-friendly browser demo. | Pilot deployment/TCO evidence and an integration contract beside existing systems. |
-| Keep pace with legislative change | Selected-source hash watcher, proposed run artifacts, a strict repository-adopted source-state overlay, exact rule/Golden impact, applicant-output holds, date aging, and a separate staleness rehearsal. | New-law discovery, automatic adoption/publication, staffed assignment, packet-field queue records, broader local-source coverage, and human approval history. |
+| Keep pace with legislative change | Selected-source hash watcher, proposed run artifacts, a strict repository-adopted source-state overlay, exact rule/Golden and bounded packet-context worklists, separate decision templates, applicant-output holds, date aging, and a separate staleness rehearsal. | New-law discovery, automatic adoption/publication, completed staffed assignments and dispositions, broader local-source coverage, and human approval history. |
 | Decision support, not legal agent | Candidate labels, source links, disclaimers, visible unverified state, and abstention. | Ensure stale and unverified rules cannot appear as actionable green results. |
 | SAM 5300 / SIMM / accessibility | Static WCAG 2.2 AAA-target audit and a versioned `not_run` human-validation matrix; no-storage demo reduces the current data boundary. | Execute the human/AT matrix, then complete the threat model, control mapping, incident path, and deployment security review. |
 

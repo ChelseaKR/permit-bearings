@@ -53,7 +53,16 @@ captions and `<th>` headers.
 The applicant result cover sheet uses a `<dl>`, its group index is a labeled
 `<nav>`, and each nonempty group has a focusable heading that serves as a
 jump-link target. Each decision record is an `<article>` labeled by its unique
-title. One explicitly configured candidate route uses an open native
+title. Candidate-route cards keep the same visible non-approval heading while
+including the exact route-record identity in that heading's accessible name,
+so a multi-route result does not produce duplicate article names. The
+separately visible route-record line is hidden from assistive technology to
+avoid repeating the identity. The always-visible decision boundary is an `<aside role="note">`
+labeled by its heading; its four states are expressed as definition-list rows
+for what is shown, what remains unconfirmed, and the next step rather than by
+border color alone. Automated browser contracts exercise candidate,
+unresolved-fact, no-route, and source-review-hold variants. One explicitly
+configured candidate route uses an open native
 `<details>` element when it matches; compact supporting records start closed.
 Citations and source-status text remain outside those disclosures. Multiple
 deadlines or thresholds use a semantic heading and list rather than
