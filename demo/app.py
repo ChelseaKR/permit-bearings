@@ -27,9 +27,9 @@ from urllib.parse import parse_qs, unquote, urlparse
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from permit_pathways.dates import utc_today  # noqa: E402
 from permit_pathways.explanations import load_explanations  # noqa: E402
 from permit_pathways.harness import verify_rules  # noqa: E402
-from permit_pathways.dates import utc_today  # noqa: E402
 from permit_pathways.screening import load_rules, screen  # noqa: E402
 
 RULES_PATH = ROOT / "data" / "rules"
@@ -407,63 +407,38 @@ STRINGS = {
 }
 
 CSS = """
-*{box-sizing:border-box}
-body{font-family:system-ui,sans-serif;margin:0;line-height:1.55;
-     color:#1a1a2e;background:#fafafa}
-main{max-width:44rem;margin:0 auto;padding:1.5rem 1rem 3rem}
-h1{font-size:1.4rem} .tag{color:#555}
-nav{display:flex;flex-wrap:wrap;align-items:center;gap:.2rem .6rem}
-nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 .2rem}
-.skip-link{position:absolute;left:.75rem;top:.5rem;transform:translateY(-180%);
-           background:#fff;padding:.6rem;z-index:2}.skip-link:focus{transform:none}
-:focus-visible{outline:3px solid #1a4a8a;outline-offset:2px}
-fieldset{border:1px solid #ccd;border-radius:8px;margin:1rem 0;padding:1rem;
-         min-width:0}
-legend{font-weight:650}
-label{display:flex;align-items:flex-start;gap:.55rem;min-height:44px;
-      padding:.3rem 0}
-label>input[type=radio],label>input[type=checkbox]{width:1.25rem;height:1.25rem;
-      flex:none;margin-top:.15rem}
-select{width:100%;min-height:44px;border:2px solid #6f6f70;border-radius:6px;
-       background:#fff;color:#1a1a2e;font-size:1rem;padding:.45rem}
-button{background:#1a4a8a;color:#fff;border:0;border-radius:6px;
-       min-height:44px;padding:.6rem 1.2rem;font-size:1rem;cursor:pointer}
-.choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-             gap:.2rem .8rem}.conditional[hidden]{display:none}
-.card{border:1px solid #ccd;border-left:6px solid #2a7;border-radius:8px;
-      padding:1rem;margin:1rem 0}
-.card.unverified{border-left-color:#d80}
-.result-card{border-left-color:#ccd}.result-card.unverified{border-left-color:#d80}
-.result-group{margin:1.5rem 0}.result-group>h2{font-size:1.08rem}
-.result-card h3{margin:.15rem 0 .4rem}.result-card h4{font-size:.92rem;
-      margin:1rem 0 .25rem}.result-card ol,.result-card ul{margin-top:.3rem}
-.result-head{display:flex;align-items:flex-start;justify-content:space-between;
-      gap:.75rem;flex-wrap:wrap}.review-note{font-size:.82rem;font-weight:600;
-      color:#555}.confirmation{background:#f5f7fb;border-radius:6px;
-      padding:.15rem .75rem;margin-top:.8rem}.source-basis{font-size:.88rem}
-.key-points{border-left:4px solid #ccd;padding:.05rem .75rem .15rem;
-      margin:.8rem 0}.key-points strong{display:inline}
-details{border-top:1px solid #dde;margin-top:1rem;padding-top:.35rem}
-summary{color:#1a4a8a;cursor:pointer;font-weight:600;min-height:44px;
-      display:list-item;padding:.55rem 0}
-.badge{font-size:.8rem;padding:.15rem .5rem;border-radius:999px;
-       background:#e6f6ee;color:#166534}
-.badge.info{background:#fff;color:#555;border:1px solid #ccd}
-.badge.warn{background:#fef3e2;color:#92400e}
-.badge.stale{background:#fee2e2;color:#991b1b}
-blockquote{font-size:.85rem;color:#444;border-left:3px solid #ddd;
-           margin:0.5rem 0;padding-left:.8rem}
-.small{font-size:.85rem;color:#555} a{color:#1a4a8a}
-.bar{height:1rem;border-radius:6px;background:#eee;overflow:hidden;margin:.3rem 0}
-.bar>div{height:100%;background:#2a7;float:left}
-.bar>div.stale{background:#d33}
-table{border-collapse:collapse;width:100%} td,th{border-bottom:1px solid #eee;
-      padding:.4rem;text-align:left;font-size:.9rem}
-.notice{background:#f5f7fb;border-radius:8px;padding:.8rem;font-size:.85rem}
-.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;
-                 margin:-1px;overflow:hidden;clip:rect(0,0,0,0);
-                 white-space:nowrap;border:0}
-@media(max-width:30rem){.choice-grid{grid-template-columns:1fr}}
+.python-reference-main{padding-bottom:var(--s-6);padding-top:var(--s-5)}
+.python-reference-main>h1{max-width:22ch}
+.python-reference-main .tag{color:var(--ink-soft);font-size:var(--font-size-4)}
+.python-reference-main form{background:var(--surface);border:1px solid var(--line);
+  margin-top:var(--s-4);padding:clamp(var(--s-2),4vw,var(--s-4))}
+.python-reference-main .conditional[hidden]{display:none}
+.python-reference-main .result-group{margin:var(--s-5) 0}
+.python-reference-main .result-group>h2{font-size:var(--font-size-6)}
+.python-reference-main .result-card h3{margin:.15rem 0 .4rem}
+.python-reference-main .result-card h4{font-size:var(--font-size-2);
+  margin:var(--s-3) 0 var(--s-sm)}
+.python-reference-main .result-card ol,
+.python-reference-main .result-card ul{margin-top:var(--s-sm)}
+.python-reference-main .result-head{align-items:flex-start;display:flex;
+  flex-wrap:wrap;gap:.75rem;justify-content:space-between}
+.python-reference-main .review-note{color:var(--ink-soft);font-size:.82rem;
+  font-weight:600}
+.python-reference-main .confirmation{background:var(--primary-100);
+  margin-top:var(--s-2);padding:.15rem .75rem}
+.python-reference-main .source-basis{font-size:.88rem}
+.python-reference-main .key-points{border-left:4px solid var(--line);
+  margin:.8rem 0;padding:.05rem .75rem .15rem}
+.python-reference-main details{border-top:1px solid var(--line-light);
+  margin-top:var(--s-2);padding-top:.35rem}
+.python-reference-main summary{color:var(--blue);font-weight:600;min-height:44px;
+  padding:.55rem 0}
+.python-reference-main .bar{background:var(--line-light);height:1rem;
+  margin:.3rem 0;overflow:hidden}
+.python-reference-main .bar>div{background:var(--teal);float:left;height:100%}
+.python-reference-main .bar>div.stale{background:var(--red)}
+.python-reference-main .trust-table{margin-block:var(--s-3)}
+@media(max-width:30rem){.python-reference-main .choice-grid{grid-template-columns:1fr}}
 """
 
 
@@ -488,20 +463,36 @@ def page(title, body, lang="en"):
     )
     skip_label = "Saltar al contenido" if lang == "es" else "Skip to content"
     nav_label = "Navegación" if lang == "es" else "Navigation"
+    sections_label = "Secciones" if lang == "es" else "Sections"
+    start_label = "Inicio" if lang == "es" else "Start"
     return f"""<!doctype html><html lang="{lang}"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{html.escape(title)}</title><style>{CSS}</style></head><body>
-<a class="skip-link" href="#main">{skip_label}</a>
-<main id="main">
-<nav aria-label="{nav_label}">
-<a href="/?lang={lang}">Permit Bearings</a>
-<a href="/trust?lang=en" lang="en">Trust dashboard (English)</a>
+<meta name="referrer" content="no-referrer">
+<title>{html.escape(title)}</title>
+<link rel="stylesheet" href="/assets/california-design-system.css?v=20260809a">
+<link rel="stylesheet" href="/assets/site.css?v=20260809a">
+<style>{CSS}</style></head><body class="python-reference">
+<div id="skip-to-content"><a class="skip-link" href="#main">{skip_label}</a></div>
+<header class="site-header"><div class="header-inner">
+<div class="site-identity"><a class="brand" href="/?lang={lang}">Permit Bearings</a>
+<span class="prototype-label">Prototype</span></div>
+<nav class="site-nav" aria-label="{nav_label}">
+<a href="/?lang={lang}">{start_label}</a>
+<a href="/trust?lang=en" lang="en">Evidence (English)</a>
+<a href="/?lang={other}" lang="{other}">{html.escape(other_label)}</a></nav>
+<details class="mobile-menu"><summary>{sections_label}</summary>
+<nav class="mobile-nav" aria-label="{nav_label}">
+<a href="/?lang={lang}">{start_label}</a>
+<a href="/trust?lang=en" lang="en">Evidence (English)</a>
 <a href="/?lang={other}" lang="{other}">{html.escape(other_label)}</a>
-</nav>
+</nav></details></div></header>
+<main class="page-shell reading-shell python-reference-main" id="main">
 {body}
-<p class="small">{html.escape(STRINGS[lang]['scope'])}</p>
-<p class="small">{html.escape(STRINGS[lang]['disclaimer'])}</p>
-</main></body></html>"""
+</main><footer class="site-footer"><div class="footer-inner">
+<p>{html.escape(STRINGS[lang]['scope'])} {html.escape(STRINGS[lang]['disclaimer'])}</p>
+<div class="footer-links"><a href="/index.html">Public showcase</a>
+<a href="/evidence.html">Methods and limits</a></div>
+</div></footer></body></html>"""
 
 
 def _radio_question(name, legend, options, *, projects, help_text=None):
@@ -520,7 +511,7 @@ def _radio_question(name, legend, options, *, projects, help_text=None):
         f' aria-describedby="{html.escape(name)}-help"' if help_text else ""
     )
     return (
-        f'<fieldset class="conditional" data-projects="{projects}"'
+        f'<fieldset class="conditional ca-field" data-projects="{projects}"'
         f"{described_by}>"
         f"<legend>{html.escape(legend)}</legend>{help_markup}"
         f'<div class="choice-grid">{labels}</div></fieldset>'
@@ -597,14 +588,14 @@ def intake_form(lang):
 <h1>{html.escape(s['title'])}</h1>
 <p class="tag">{html.escape(s['tagline'])}</p>
 <form method="post" action="/screen?lang={lang}">
-<fieldset><legend>{html.escape(s['jurisdiction'])}</legend>
-<select name="jurisdiction" required>
-<option value="" selected disabled>Seleccione</option>{juris}</select></fieldset>
-<fieldset><legend>{html.escape(s['project_type'])}</legend>
+<ca-field><label for="python-jurisdiction"><strong>{html.escape(s['jurisdiction'])}</strong></label>
+<select id="python-jurisdiction" name="jurisdiction" required>
+<option value="" selected disabled>Seleccione</option>{juris}</select></ca-field>
+<fieldset class="ca-field"><legend>{html.escape(s['project_type'])}</legend>
 <div class="choice-grid">{radios}</div></fieldset>
 <p class="small">{html.escape(s['question_intro'])}</p>
 <div id="project-questions">{conditional_markup}</div>
-<button type="submit">{html.escape(s['submit'])}</button>
+<button class="ca-button" type="submit">{html.escape(s['submit'])}</button>
 </form>
 <script>
 (() => {{
@@ -775,12 +766,12 @@ def render_result_card(
             else s["withheld_stale"]
         )
         plain_language = (
-            f"<div class='notice small' lang='{lang}'>{message}</div>"
+            f"<div class='notice ca-shout small' lang='{lang}'>{message}</div>"
         )
         review_note = ""
     elif explanation is None:
         plain_language = (
-            f"<div class='notice small' lang='{lang}'>{s['unavailable']}</div>"
+            f"<div class='notice ca-shout small' lang='{lang}'>{s['unavailable']}</div>"
         )
         review_note = ""
     else:
@@ -847,7 +838,7 @@ def render_result_card(
             f"{html.escape(explanation.updated_on)}</span></p></details>",
         )
 
-    return f"""<article class="card result-card{'' if status == 'verified' else ' unverified'}"
+    return f"""<article class="card result-card ca-card{'' if status == 'verified' else ' unverified'}"
   data-rule-id="{html.escape(rule.rule_id)}" aria-labelledby="{card_id}">
 <div class="result-head">
   <h3 id="{card_id}" lang="{display_title_lang}">{_ui_escape(display_title)}</h3>
@@ -891,7 +882,7 @@ def result_page(form, lang):
     if project_type not in PROJECT_FIELDS or jurisdiction not in allowed_jurisdictions:
         body = (
             f"<h1>{html.escape(s['unknown_heading'])}</h1>"
-            f"<div class='notice'>{html.escape(s['unknown_intro'])}</div>"
+            f"<div class='notice ca-shout'>{html.escape(s['unknown_intro'])}</div>"
             f"<p><a href='/?lang={lang}'>{html.escape(s['back'])}</a></p>"
         )
         return page(s["results"], body, lang)
@@ -915,7 +906,7 @@ def result_page(form, lang):
         )
         body = (
             f"<h1>{html.escape(s['unknown_heading'])}</h1>"
-            f"<div class='notice'><p>{html.escape(s['unknown_intro'])}</p>"
+            f"<div class='notice ca-shout'><p>{html.escape(s['unknown_intro'])}</p>"
             f"<ul>{questions}</ul></div>"
             f"<p><a href='/?lang={lang}'>{html.escape(s['back'])}</a></p>"
         )
@@ -935,7 +926,7 @@ def result_page(form, lang):
     if not results:
         body = (
             f"<h1>{html.escape(s['results'])}</h1>"
-            f"<div class='notice'>{html.escape(s['none'])}</div>"
+            f"<div class='notice ca-shout'>{html.escape(s['none'])}</div>"
         )
     else:
         has_route = any(
@@ -985,7 +976,7 @@ def result_page(form, lang):
             if cards
         )
         draft_banner = (
-            f"<div class='notice small' lang='{lang}'>"
+            f"<div class='notice ca-shout small' lang='{lang}'>"
             f"{html.escape(s['explanation_banner'])}</div>"
             if shared_draft
             else ""
@@ -994,7 +985,7 @@ def result_page(form, lang):
             ""
             if has_route
             else (
-                f"<div class='notice' lang='{lang}'>"
+                f"<div class='notice ca-shout' lang='{lang}'>"
                 f"<p>{html.escape(s['none'])}</p>"
                 f"<p>{html.escape(s['supporting_only'])}</p></div>"
             )
@@ -1032,7 +1023,7 @@ def trust_page(query, lang):
         if changed and changed[0] == "ca-gov-66321"
         else f"source {changed[0]}" if changed else ""
     )
-    sim = ("<p class='notice'>Rehearsing an amendment to "
+    sim = ("<p class='notice ca-shout'>Rehearsing an amendment to "
            f"{html.escape(changed_label)}: dependent guidance is stale until staff "
            f"re-verify it. <a href='/trust?lang={lang}'>Reset</a></p>" if changed else
            f"<p class='small'>Rehearse a legislative change: "
@@ -1045,7 +1036,8 @@ def trust_page(query, lang):
 180-day review window · {golden} · checked {report.checked_on}</p>
 <div class="bar"><div style="width:{pct}%"></div><div class="stale" style="width:{100 - pct}%"></div></div>
 {sim}
-<table><tr><th>Rule</th><th>Status</th></tr>{rows}</table>"""
+<div class="table-scroll trust-table" role="region" aria-label="Rule source status" tabindex="0">
+<table class="ca-inner-border ca-outer-border ca-stripes"><tr><th>Rule</th><th>Status</th></tr>{rows}</table></div>"""
     return page(STRINGS[lang]["dashboard"], body, lang)
 
 

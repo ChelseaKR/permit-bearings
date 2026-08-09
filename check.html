@@ -11,10 +11,13 @@
 <meta property="og:description" content="See candidate housing-permit routes from a bounded prototype rule set.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20260803a">
+<link rel="stylesheet" href="assets/california-design-system.css?v=20260809a">
+<link rel="stylesheet" href="assets/site.css?v=20260809a">
 </head>
 <body data-page="project">
-<a class="skip-link" href="#mainContent">Skip to main content</a>
+<div id="skip-to-content">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
+</div>
 
 <header class="site-header">
   <div class="header-inner">
@@ -49,10 +52,11 @@
         <p class="lede" id="t-tagline">Find a candidate route. See the sources
           behind it. Take open questions to staff.</p>
       </div>
-      <p class="boundary-note"><strong>This checks a limited encoded rule
-        set.</strong> It does not retrieve parcel data, verify your answers,
-        reproduce a jurisdiction’s complete checklist, or decide whether the
-        project will be approved.</p>
+      <ca-shout class="boundary-note" color="yellow" role="note">
+        <p><strong>This checks a limited encoded rule set.</strong> It does not
+          retrieve parcel data, verify your answers, reproduce a jurisdiction’s
+          complete checklist, or decide whether the project will be approved.</p>
+      </ca-shout>
     </div>
   </header>
 
@@ -60,7 +64,8 @@
     <section class="tool-section" id="screen" aria-labelledby="screenHeading">
       <div class="tool-shell">
         <div class="tool-meta">
-          <button class="nav-button ghost" id="langToggle" type="button">
+          <button class="nav-button ghost ca-button ca-button-outline"
+            id="langToggle" type="button">
             Español
           </button>
         </div>
@@ -74,35 +79,38 @@
           <span id="sampleSummary">Made-up project facts run through the
             same screening logic as any other answers.</span>
         </p>
-        <div class="notice hidden" id="projectRehearsal">
+        <ca-shout class="notice hidden" color="yellow" id="projectRehearsal">
           <strong>Source-change rehearsal applied:</strong> records linked to
           Gov. Code § 66321 will appear stale and withhold action-oriented
           explanation copy. <a href="check.html">Return to recorded source
           status</a>.
-        </div>
+        </ca-shout>
 
-        <aside class="notice sample-notice hidden" id="projectSampleNotice"
-          aria-labelledby="sampleLabel" tabindex="-1">
+        <ca-shout class="notice sample-notice hidden"
+          id="projectSampleNotice" role="note" aria-labelledby="sampleLabel"
+          tabindex="-1">
           <p><strong id="sampleLabel">Example project.</strong>
             <span id="sampleNotice">These made-up Woodland ADU facts were
               screened with the same rules as your answers. They do not
               describe a real property.</span></p>
           <p><a id="sampleClear" href="check.html">Clear the example and check
             another project</a></p>
-        </aside>
+        </ca-shout>
 
         <form id="intake" novalidate>
           <fieldset>
             <legend id="t-juris">Where is the property?</legend>
-            <input id="jurisInput" name="jurisdiction_name" list="jurisList"
-              autocomplete="off" aria-labelledby="t-juris"
-              aria-describedby="jurisHelp jurisStatus" required
-              placeholder="Type any California city or county…">
-            <datalist id="jurisList"></datalist>
-            <p class="small" id="jurisHelp">Choose a suggestion, or enter the
-              exact city or county name.</p>
-            <p class="small" id="jurisStatus" role="status" aria-live="polite"
-              aria-atomic="true"></p>
+            <ca-field>
+              <input id="jurisInput" name="jurisdiction_name" list="jurisList"
+                autocomplete="off" aria-labelledby="t-juris"
+                aria-describedby="jurisHelp jurisStatus" required
+                placeholder="Type any California city or county…">
+              <datalist id="jurisList"></datalist>
+              <p class="small" id="jurisHelp">Choose a suggestion, or enter the
+                exact city or county name.</p>
+              <p class="small" id="jurisStatus" role="status" aria-live="polite"
+                aria-atomic="true"></p>
+            </ca-field>
           </fieldset>
 
           <fieldset>
@@ -111,7 +119,7 @@
           </fieldset>
 
           <div id="projectQuestions" class="conditional-intake" hidden></div>
-          <button type="submit" id="t-submit" disabled>Check candidate pathways</button>
+          <button class="ca-button" type="submit" id="t-submit" disabled>Check candidate pathways</button>
         </form>
 
         <p id="resultStatus" class="visually-hidden" role="status"
@@ -129,23 +137,25 @@
         conditional 60-day date.</p>
 
       <div class="clock-form">
-        <label class="clock-date" for="recvDate">
-          <span>Date the agency received the application</span>
-          <input type="date" id="recvDate" aria-describedby="clockHelp clockLimit">
-        </label>
+        <ca-field class="clock-date">
+          <label for="recvDate">
+            <span>Date the agency received the application</span>
+            <input type="date" id="recvDate" aria-describedby="clockHelp clockLimit">
+          </label>
+        </ca-field>
         <fieldset class="clock-conditions">
           <legend>For the 60-day date, confirm both statements</legend>
-          <label><input type="checkbox" id="clockComplete">
-            The agency said the application was complete when it was
-            received.</label>
-          <label><input type="checkbox" id="clockExisting">
-            A single-family or multifamily home already existed on the
-            lot.</label>
+          <ca-field><label><input type="checkbox" id="clockComplete">
+              The agency said the application was complete when it was
+              received.</label></ca-field>
+          <ca-field><label><input type="checkbox" id="clockExisting">
+              A single-family or multifamily home already existed on the
+              lot.</label></ca-field>
         </fieldset>
         <p class="clock-limit" id="clockLimit"><strong>15-business-day
           completeness date:</strong> This prototype cannot calculate it
           without the agency’s closure calendar.</p>
-        <button id="clockBtn" type="button">Check dates</button>
+        <button class="ca-button" id="clockBtn" type="button">Check dates</button>
         <p id="clockStatus" class="visually-hidden" role="status"
           aria-live="polite" aria-atomic="true"></p>
         <div id="clockResults"></div>
@@ -166,7 +176,7 @@
   </div>
 </footer>
 
-<script src="data/demo-data.js?v=20260803a" defer></script>
-<script src="assets/demo.js?v=20260803a" defer></script>
+<script src="data/demo-data.js?v=20260809a" defer></script>
+<script src="assets/demo.js?v=20260809a" defer></script>
 </body>
 </html>

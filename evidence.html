@@ -11,10 +11,13 @@
 <meta property="og:description" content="See which sources are dated, which rules depend on them, and what the prototype still cannot verify.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20260803a">
+<link rel="stylesheet" href="assets/california-design-system.css?v=20260809a">
+<link rel="stylesheet" href="assets/site.css?v=20260809a">
 </head>
 <body data-page="evidence">
-<a class="skip-link" href="#mainContent">Skip to main content</a>
+<div id="skip-to-content">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
+</div>
 
 <header class="site-header">
   <div class="header-inner">
@@ -50,10 +53,11 @@
           rule, replay the structured cases, and see which records would need
           review after a source changes.</p>
       </div>
-      <p class="boundary-note"><strong>Source status is not approval.</strong>
-        A date on file means source evidence was recorded. It does not mean a
-        jurisdiction, counsel, or named human reviewer accepted the encoded
-        interpretation.</p>
+      <ca-shout class="boundary-note" color="yellow" role="note">
+        <p><strong>Source status is not approval.</strong> A date on file means
+          source evidence was recorded. It does not mean a jurisdiction,
+          counsel, or named human reviewer accepted the encoded interpretation.</p>
+      </ca-shout>
     </div>
   </header>
 
@@ -65,7 +69,7 @@
         same generated data bundle used by the project guide and applies the
         reviewed source-watch snapshot committed with that bundle.</p>
 
-      <div class="evidence-summary">
+      <ca-mesh class="evidence-summary rule-evidence-summary" gap="2">
         <article class="evidence-stat">
           <p class="utility-label">Within review window</p>
           <p class="hero"><span id="pct">Loading</span><span aria-hidden="true">%</span></p>
@@ -82,18 +86,24 @@
           <p class="hero" id="coverageScore">Loading</p>
           <p class="small" id="covLine">Loading jurisdiction registry…</p>
         </article>
-      </div>
+        <article class="evidence-stat">
+          <p class="utility-label">Named interpretation review</p>
+          <p class="hero" id="verificationScore">Loading</p>
+          <p class="small" id="verificationLine">Loading the strict
+            rule-verification ledger…</p>
+        </article>
+      </ca-mesh>
 
       <div class="meter" id="meter" role="img"
         aria-label="Loading rule-source status"></div>
       <p class="small" id="meterLegend"></p>
 
-      <div class="simulation-box" aria-labelledby="sourceSnapshotHeading">
+      <ca-box class="simulation-box" aria-labelledby="sourceSnapshotHeading">
         <p class="utility-label">Committed source-state receipt</p>
         <h3 id="sourceSnapshotHeading">Snapshot used by this build</h3>
         <p id="sourceSnapshotSummary">Loading the committed source-state
           receipt…</p>
-        <div id="sourceImpactQueue" class="notice hidden"></div>
+        <ca-shout id="sourceImpactQueue" class="notice hidden"></ca-shout>
         <p class="small"><strong>Receipt status “reviewed”</strong> means a
           repository maintainer deliberately adopted this completed-run
           receipt for publication. It does not mean that a named human,
@@ -103,9 +113,9 @@
           Open the exact workflow receipt</a> ·
           <a href="data/source-status/current.json">Inspect the machine-readable
           snapshot</a></p>
-      </div>
+      </ca-box>
 
-      <div class="simulation-box" aria-labelledby="simulationHeading">
+      <ca-box class="simulation-box" aria-labelledby="simulationHeading">
         <p class="utility-label">Dependency rehearsal</p>
         <h3 id="simulationHeading">What happens when § 66321 changes?</h3>
         <p>Temporarily layer a change to one source ID over the committed
@@ -113,34 +123,40 @@
           unchanged. The rehearsal itself is not written back to the committed
           receipt or review queue.</p>
         <p>
-          <button class="ghost" id="simBtn" type="button" disabled>
+          <button class="ghost ca-button ca-button-outline" id="simBtn" type="button" disabled>
             Rehearse the source change
           </button>
-          <button class="ghost hidden" id="resetBtn" type="button" disabled>
+          <button class="ghost hidden ca-button ca-button-outline" id="resetBtn" type="button" disabled>
             Reset the rehearsal
           </button>
         </p>
-        <div class="notice hidden" id="simNote">
+        <ca-shout class="notice hidden" color="yellow" id="simNote">
           Gov. Code § 66321 has been marked changed for this rehearsal. Linked
           rules below are stale until a person checks them against the new
           source text. To see that state on applicant records, open the
           <a href="check.html?changed=ca-gov-66321">project guide with the
           rehearsal applied</a>.
-        </div>
+        </ca-shout>
         <p id="simulationStatus" class="visually-hidden"
           aria-live="polite"></p>
-      </div>
+      </ca-box>
 
       <div id="dataLoadError" class="hidden"></div>
       <div class="table-scroll" role="region"
         aria-label="Rule source status table" tabindex="0">
-        <table id="ruleTable">
+        <table class="ca-inner-border ca-outer-border ca-stripes ca-hover-rows"
+          id="ruleTable">
           <thead>
-            <tr><th>Rule</th><th>Scope</th><th>Status</th></tr>
+            <tr><th>Rule</th><th>Scope</th><th>Source status</th>
+              <th>Interpretation review</th></tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
+      <p class="small">Machine-linked means the rule is connected to its
+        recorded source; it is not named human or jurisdiction review. Inspect
+        the <a href="data/validation/rule-verification.json">machine-readable
+        rule-verification ledger</a>.</p>
     </section>
 
     <section class="source-section flagship-evidence-gate"
@@ -152,14 +168,14 @@
         commit. Preparing the package is not evidence that any external work
         occurred.</p>
 
-      <div class="notice">
+      <ca-shout class="notice" color="yellow">
         <p><strong>No external outcome is claimed.</strong> No qualified content
           review, participant session, manual accessibility signoff, Spanish
           semantic review, complete maintenance rehearsal, or qualifying
           partner commitment is recorded.</p>
-      </div>
+      </ca-shout>
 
-      <div class="evidence-summary" role="group"
+      <ca-mesh class="evidence-summary" gap="2" role="group"
         aria-label="External evidence gate status">
         <article class="evidence-stat" aria-labelledby="contentReviewLabel">
           <h3 class="utility-label" id="contentReviewLabel">25-item content review</h3>
@@ -179,7 +195,7 @@
           <p class="small">No written next step with an owner and date is on
             file. Interest or praise would not satisfy this gate.</p>
         </article>
-      </div>
+      </ca-mesh>
 
       <dl class="method-list">
         <div>
@@ -222,7 +238,8 @@
         review assignment, and new-law discovery remain planned.</p>
       <div class="table-scroll" role="region"
         aria-label="Source monitoring table" tabindex="0">
-        <table id="sourceTable">
+        <table class="ca-inner-border ca-outer-border ca-stripes ca-hover-rows"
+          id="sourceTable">
           <thead>
             <tr><th>Source</th><th>Monitoring</th><th>Recorded</th><th>SHA-256</th></tr>
           </thead>
@@ -281,7 +298,7 @@
   </div>
 </footer>
 
-<script src="data/demo-data.js?v=20260803a" defer></script>
-<script src="assets/demo.js?v=20260803a" defer></script>
+<script src="data/demo-data.js?v=20260809a" defer></script>
+<script src="assets/demo.js?v=20260809a" defer></script>
 </body>
 </html>

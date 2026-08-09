@@ -35,16 +35,16 @@ const STRINGS = {
     sampleUnavailableLabel: "Example unavailable.",
     sampleUnavailableNotice: "The example could not be loaded from its canonical test case. Continue with a blank form.",
     sampleUnavailableClear: "Continue with a blank project check",
-    packetSampleTitle: "Continue from this candidate route to packet preparation",
-    packetSampleText: "First confirm the one applicant-asserted fact that controls whether this bounded Woodland packet example applies.",
-    packetSampleLink: "Continue to packet preparation",
+    packetSampleTitle: "Explore a future-state packet simulation",
+    packetSampleText: "The date-bound City status below does not support a current-plan claim. Confirm the made-up applicability fact only to explore the future-state simulation.",
+    packetSampleLink: "Open the future-state simulation",
     journeyStage: "Stage 3 of 4 · Packet",
     journeyApplicabilityLegend: "Is this made-up project using a City of Woodland preapproved ADU plan?",
     journeyApplicabilityHelp: "The public-record-shaped parcel facts in this example are also made up. No parcel was queried or verified.",
     journeyFixedFactsSummary: "See the other made-up applicability facts",
     journeySyntheticParcelFact: field => `Made-up value shaped like the ${field} field in the linked public parcel data.`,
-    journeyReadyHeading: "The bounded packet example applies to these made-up facts",
-    journeyReadyText: "Continue to see reported checklist gaps and questions for staff. This is not an eligibility, completeness, or approval finding.",
+    journeyReadyHeading: "The future-state simulation is ready for these made-up facts",
+    journeyReadyText: "Continue to see a hypothetical packet workflow. The English City status below is date-bound; this simulation is not evidence that a usable plan exists today.",
     journeyNoHeading: "This packet example does not apply",
     journeyNoText: "The encoded packet workflow is only for a project using a City of Woodland preapproved ADU plan. Ask staff which current checklist applies.",
     journeyUnknownHeading: "Pause and ask Woodland staff",
@@ -205,16 +205,16 @@ const STRINGS = {
     sampleUnavailableLabel: "El ejemplo no está disponible.",
     sampleUnavailableNotice: "No se pudo cargar el ejemplo desde su caso de prueba canónico. Continúe con un formulario en blanco.",
     sampleUnavailableClear: "Continuar con un formulario en blanco",
-    packetSampleTitle: "Continúe de esta posible vía a la preparación del paquete",
-    packetSampleText: "Primero confirme el dato declarado que controla si se aplica este ejemplo limitado de Woodland.",
-    packetSampleLink: "Continuar a la preparación del paquete en inglés",
+    packetSampleTitle: "Explore una simulación futura del paquete",
+    packetSampleText: "El estado oficial del programa aparece abajo en inglés. Confirme el dato inventado solo para explorar la simulación futura.",
+    packetSampleLink: "Abrir la simulación futura en inglés",
     journeyStage: "Etapa 3 de 4 · Paquete",
     journeyApplicabilityLegend: "¿Este proyecto inventado usa un plano de ADU preaprobado por la Ciudad de Woodland?",
     journeyApplicabilityHelp: "Los datos de parcela con formato de registro público también son inventados. No se consultó ni verificó ninguna parcela.",
     journeyFixedFactsSummary: "Ver los demás datos inventados de aplicabilidad",
     journeySyntheticParcelFact: field => `Valor inventado con el formato del campo ${field} en los datos públicos de parcela enlazados.`,
-    journeyReadyHeading: "El ejemplo limitado del paquete se aplica a estos datos inventados",
-    journeyReadyText: "Continúe para ver faltantes declarados y preguntas para el personal. Esto no determina elegibilidad, integridad ni aprobación.",
+    journeyReadyHeading: "La simulación futura está lista para estos datos inventados",
+    journeyReadyText: "Continúe para ver un flujo hipotético. El estado oficial aparece en inglés. No use esta simulación como evidencia de disponibilidad actual.",
     journeyNoHeading: "Este ejemplo de paquete no se aplica",
     journeyNoText: "El flujo codificado solo cubre proyectos que usan un plano de ADU preaprobado por la Ciudad de Woodland. Pregunte al personal qué lista vigente corresponde.",
     journeyUnknownHeading: "Deténgase y pregunte al personal de Woodland",
@@ -363,10 +363,13 @@ const STRINGS = {
 let lang = "en";
 let RULES = [], GOLDEN = [], SOURCES = {}, CHECKS = [], JURIS = [], LETTERS = {}, SCANS = {};
 let EXPLANATIONS = new Map();
+let RULE_VERIFICATIONS = null;
 let READINESS = null;
 let JOURNEY = null;
 let SOURCE_STATE = null;
+let PROGRAM_AVAILABILITY = null;
 const NORMALIZED_READINESS_DATA = new WeakSet();
+const NORMALIZED_PROGRAM_AVAILABILITY = new WeakSet();
 let jurisByName = new Map();
 let intakeDraft = {};
 const SAMPLE_ORDINANCE =
@@ -690,9 +693,14 @@ function stableJson(value) {
 
 async function sha256Fingerprint(value) {
   if (!globalThis.crypto || !globalThis.crypto.subtle) return null;
-  const normalized = stableJson(value);
+  return sha256TextFingerprint(stableJson(value));
+}
+
+async function sha256TextFingerprint(value) {
+  if (!globalThis.crypto || !globalThis.crypto.subtle
+      || typeof value !== "string") return null;
   const digest = await globalThis.crypto.subtle.digest(
-    "SHA-256", new TextEncoder().encode(normalized)
+    "SHA-256", new TextEncoder().encode(value)
   );
   return "sha256:" + Array.from(new Uint8Array(digest))
     .map(byte => byte.toString(16).padStart(2, "0")).join("");
@@ -752,6 +760,197 @@ async function ruleFingerprint(rule) {
     rule_id: rule.rule_id,
     source_dependencies: rule.source_dependencies,
   });
+}
+
+const PROGRAM_AVAILABILITY_URL =
+  "https://www.cityofwoodland.gov/1616/Preapproved-ADU-Plan-Program";
+const PROGRAM_AVAILABILITY_BOUNDARY =
+  "No currently listed City of Woodland preapproved ADU plan was identified "
+  + "on the checked program page. This future-state simulation is not evidence "
+  + "that a plan is available; real workflow applicability must be confirmed "
+  + "with the City before use.";
+const PROGRAM_AVAILABILITY_EXCERPT = "Preapproved ADU List: Coming soon!";
+const PROGRAM_TOP_LEVEL_KEYS = ["availability", "schema_version"];
+const PROGRAM_RECORD_KEYS = [
+  "boundary", "jurisdiction", "mode", "monitoring_status", "program_id",
+  "source", "status", "workflow_id",
+];
+const PROGRAM_SOURCE_KEYS = [
+  "checked_on", "excerpt", "excerpt_sha256", "label", "recheck_due_on",
+  "source_id", "url",
+];
+
+function normalizeProgramExcerpt(value) {
+  return typeof value === "string"
+    ? value.normalize("NFKC").trim().split(/\s+/u).join(" ") : "";
+}
+
+async function normalizeProgramAvailability(payload) {
+  try {
+    if (!hasExactKeys(payload, PROGRAM_TOP_LEVEL_KEYS, PROGRAM_TOP_LEVEL_KEYS)
+        || payload.schema_version !== 1
+        || !hasExactKeys(
+          payload.availability,
+          PROGRAM_RECORD_KEYS,
+          PROGRAM_RECORD_KEYS,
+        )) return null;
+    const record = payload.availability;
+    if (record.program_id !== "woodland-preapproved-adu-plan-program"
+        || record.workflow_id !== "woodland-preapproved-detached-adu"
+        || record.jurisdiction !== "woodland"
+        || record.mode !== "future_state_simulation"
+        || record.status !== "plans_not_listed"
+        || record.monitoring_status !== "manual_date_bound"
+        || record.boundary !== PROGRAM_AVAILABILITY_BOUNDARY
+        || !hasExactKeys(
+          record.source,
+          PROGRAM_SOURCE_KEYS,
+          PROGRAM_SOURCE_KEYS,
+        )) return null;
+    const source = record.source;
+    if (source.source_id !== "woodland-preapproved-adu-program-page"
+        || source.url !== PROGRAM_AVAILABILITY_URL
+        || !validHttpsUrl(source.url)
+        || !nonBlank(source.label)
+        || source.excerpt !== PROGRAM_AVAILABILITY_EXCERPT
+        || !dateIsNotFuture(source.checked_on)
+        || !dateIsNotPast(source.recheck_due_on)
+        || source.recheck_due_on <= source.checked_on
+        || (Date.parse(`${source.recheck_due_on}T00:00:00Z`)
+          - Date.parse(`${source.checked_on}T00:00:00Z`)) / 86400000 > 31
+        || !/^(?:sha256:)[0-9a-f]{64}$/.test(source.excerpt_sha256)) return null;
+    const expected = await sha256TextFingerprint(
+      normalizeProgramExcerpt(source.excerpt),
+    );
+    if (!expected || source.excerpt_sha256 !== expected) return null;
+    deepFreezeGeneratedData(record);
+    if (!generatedDataIsDeeplyFrozen(record)) return null;
+    NORMALIZED_PROGRAM_AVAILABILITY.add(record);
+    return record;
+  } catch {
+    return null;
+  }
+}
+
+function programAvailabilityIsCurrent(
+  availability = PROGRAM_AVAILABILITY,
+  journey = JOURNEY,
+) {
+  return Boolean(
+    availability
+    && NORMALIZED_PROGRAM_AVAILABILITY.has(availability)
+    && availability.mode === "future_state_simulation"
+    && availability.status === "plans_not_listed"
+    && availability.workflow_id === "woodland-preapproved-detached-adu"
+    && (!journey
+      || availability.workflow_id === journey.readiness_workflow_id)
+    && dateIsNotFuture(availability.source.checked_on)
+    && dateIsNotPast(availability.source.recheck_due_on),
+  );
+}
+
+const RULE_VERIFICATION_TOP_LEVEL_KEYS = ["entries", "schema_version"];
+const RULE_VERIFICATION_ENTRY_KEYS = [
+  "level", "method", "reviewed_citation_fingerprint",
+  "reviewed_on", "reviewed_rule_fingerprint", "reviewer", "rule_id",
+];
+const RULE_VERIFICATION_LEVELS = [
+  "machine_linked", "human_reviewed", "jurisdiction_approved",
+];
+
+async function normalizeRuleVerifications(payload, rules) {
+  try {
+    if (!hasExactKeys(
+      payload,
+      RULE_VERIFICATION_TOP_LEVEL_KEYS,
+      RULE_VERIFICATION_TOP_LEVEL_KEYS,
+    ) || payload.schema_version !== 2
+      || !Array.isArray(payload.entries)
+      || payload.entries.length !== rules.length) return null;
+    const rulesById = new Map(rules.map(rule => [rule.rule_id, rule]));
+    if (rulesById.size !== rules.length) return null;
+    const ledger = new Map();
+    for (const entry of payload.entries) {
+      if (!hasExactKeys(
+        entry,
+        RULE_VERIFICATION_ENTRY_KEYS,
+        RULE_VERIFICATION_ENTRY_KEYS,
+      ) || !rulesById.has(entry.rule_id)
+        || ledger.has(entry.rule_id)
+        || !RULE_VERIFICATION_LEVELS.includes(entry.level)) return null;
+      const metadata = [
+        entry.reviewer, entry.method, entry.reviewed_on,
+        entry.reviewed_citation_fingerprint,
+        entry.reviewed_rule_fingerprint,
+      ];
+      if (entry.level === "machine_linked") {
+        if (!metadata.every(value => value === null)) return null;
+      } else {
+        const rule = rulesById.get(entry.rule_id);
+        if (!metadata.every(nonBlank)
+            || !dateIsNotFuture(entry.reviewed_on)
+            || !validIsoDate(rule.citation.verified_on)
+            || entry.reviewed_on < rule.citation.verified_on
+            || !/^(?:sha256:)[0-9a-f]{64}$/.test(
+              entry.reviewed_citation_fingerprint,
+            )
+            || !/^(?:sha256:)[0-9a-f]{64}$/.test(
+              entry.reviewed_rule_fingerprint,
+            )
+            || entry.reviewed_citation_fingerprint
+              !== await citationFingerprint(rule)
+            || entry.reviewed_rule_fingerprint
+              !== await ruleFingerprint(rule)) return null;
+      }
+      const normalized = Object.freeze({...entry});
+      ledger.set(entry.rule_id, normalized);
+    }
+    return ledger.size === rules.length ? ledger : null;
+  } catch {
+    return null;
+  }
+}
+
+function effectiveRuleVerification(rule) {
+  const entry = RULE_VERIFICATIONS?.get(rule.rule_id);
+  const recordedLevel = entry?.level || "machine_linked";
+  const sourceStatus = ruleStatus(rule, activeChangedSourceIds());
+  if (sourceStatus !== "verified") {
+    return {
+      level: "machine_linked",
+      recordedLevel,
+      stale: true,
+      reason: sourceStatus === "stale"
+        ? "Source dependency changed or review window elapsed; re-verify."
+        : "Source evidence has no recorded date; re-verify.",
+    };
+  }
+  if (!RULE_VERIFICATIONS || !entry) {
+    return {
+      level: "machine_linked",
+      recordedLevel,
+      stale: true,
+      reason: "Verification ledger is missing or invalid; named review is not in force.",
+    };
+  }
+  if (entry.level === "machine_linked") {
+    return {level: entry.level, recordedLevel, stale: false, reason: null};
+  }
+  const now = new Date();
+  const todayUtc = Date.UTC(
+    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+  );
+  const reviewedUtc = Date.parse(`${entry.reviewed_on}T00:00:00Z`);
+  const reviewAge = Math.floor((todayUtc - reviewedUtc) / 86400000);
+  if (reviewAge < 0 || reviewAge > MAX_AGE_DAYS) {
+    return {
+      level: "machine_linked",
+      recordedLevel,
+      stale: true,
+      reason: `${recordedLevel} review window elapsed; re-verify.`,
+    };
+  }
+  return {level: recordedLevel, recordedLevel, stale: false, reason: null};
 }
 
 const JOURNEY_KEYS = [
@@ -1114,6 +1313,7 @@ function journeyHandoffState(
   applicabilityValue,
   sampleState,
   rules = RULES,
+  availability = PROGRAM_AVAILABILITY,
 ) {
   if (!journey || !readiness)
     return {status: "unavailable"};
@@ -1129,6 +1329,8 @@ function journeyHandoffState(
   )) return {status: "route_mismatch"};
   if (!journeySourcesAreCurrent(journey, readiness, rules))
     return {status: "source_review_required"};
+  if (!programAvailabilityIsCurrent(availability, journey))
+    return {status: "program_status_review_required"};
   const editableFact = journey.applicability_facts.find(
     fact => fact.editable === true
   );
@@ -1140,13 +1342,19 @@ function journeyHandoffState(
   if (applicabilityValue !== editableFact.expected_value)
     return {status: "does_not_apply"};
   return {
-    status: "ready",
+    status: "simulation_ready",
     href: `prepare.html?journey=${encodeURIComponent(journey.journey_id)}`
       + `&version=${encodeURIComponent(journey.version)}`,
   };
 }
 
-function journeyQueryState(searchParams, journey, readiness, rules = RULES) {
+function journeyQueryState(
+  searchParams,
+  journey,
+  readiness,
+  rules = RULES,
+  availability = PROGRAM_AVAILABILITY,
+) {
   const keys = [...searchParams.keys()];
   if (!keys.length) return {status: "start_required"};
   if (keys.some(key => !["journey", "version"].includes(key))
@@ -1158,12 +1366,14 @@ function journeyQueryState(searchParams, journey, readiness, rules = RULES) {
     return {status: "invalid"};
   if (!journeySourcesAreCurrent(journey, readiness, rules))
     return {status: "source_review_required"};
-  return {status: "ready"};
+  if (!programAvailabilityIsCurrent(availability, journey))
+    return {status: "program_status_review_required"};
+  return {status: "simulation_ready"};
 }
 
 function journeyEntryHoldMarkup(state) {
   if (state.status === "source_review_required") {
-    return `<section class="journey-entry-hold" aria-labelledby="entryHoldHeading">
+    return `<section class="journey-entry-hold ca-shout" aria-labelledby="entryHoldHeading">
       <p class="journey-stage-label">Stage 3 of 4 · Packet</p>
       <h2 id="entryHoldHeading">Source review is required before using this packet example</h2>
       <p>The route or one of the packet’s bound source records changed or is
@@ -1172,8 +1382,20 @@ function journeyEntryHoldMarkup(state) {
       <p><a href="evidence.html">Inspect sources and limits</a></p>
     </section>`;
   }
+  if (state.status === "program_status_review_required") {
+    return `<section class="journey-entry-hold ca-shout" aria-labelledby="entryHoldHeading">
+      <p class="journey-stage-label">Stage 3 of 4 · Packet</p>
+      <h2 id="entryHoldHeading">The City program status needs a new check</h2>
+      <p>The future-state packet simulation stays locked because its strict
+        program-availability record is missing, malformed, or outside its
+        recheck window. This is not evidence that a current plan is available.</p>
+      <p><a href="${PROGRAM_AVAILABILITY_URL}">Check the official City of
+        Woodland program page</a> · <a href="evidence.html">Inspect sources
+        and limits</a></p>
+    </section>`;
+  }
   const invalid = state.status === "invalid";
-  return `<section class="journey-entry-hold" aria-labelledby="entryHoldHeading">
+  return `<section class="journey-entry-hold ca-shout" aria-labelledby="entryHoldHeading">
     <p class="journey-stage-label">Stage 3 of 4 · Packet</p>
     <h2 id="entryHoldHeading">${invalid
       ? "This packet link does not match the current made-up journey"
@@ -1181,7 +1403,7 @@ function journeyEntryHoldMarkup(state) {
     <p>${invalid
       ? "The journey ID or version is missing, duplicated, or different from the generated evidence."
       : "Packet preparation follows the candidate route and its applicability check. No project facts are carried in this URL."}</p>
-    <p><a class="button" href="check.html?sample=adu">
+    <p><a class="button ca-button" href="check.html?sample=adu">
       Open the made-up Woodland example</a></p>
   </section>`;
 }
@@ -1346,7 +1568,21 @@ function journeyEvidenceSourcesMarkup(data) {
         <code>${esc(`sha256:${binding.sha256}`)}</code></dd>
     </div>`;
   }).join("");
-  return `<div>
+  const program = PROGRAM_AVAILABILITY;
+  const programRow = programAvailabilityIsCurrent(program, JOURNEY)
+    ? `<div>
+      <dt>City program availability</dt>
+      <dd><a href="${esc(program.source.url)}">${escVerbatim(
+        program.source.label,
+      )}</a><br>
+        <q>${escVerbatim(program.source.excerpt)}</q><br>
+        Checked ${esc(formatSourceDate(program.source.checked_on))}; recheck
+        due ${esc(formatSourceDate(program.source.recheck_due_on))}. This
+        supports a future-state simulation only; it is not evidence that a
+        current plan is available. Fingerprint:
+        <code>${esc(program.source.excerpt_sha256)}</code></dd>
+    </div>` : "";
+  return `${programRow}<div>
       <dt>Candidate-route evidence</dt>
       <dd>${routeSource}<br>
         Recorded status ${JOURNEY.route_source_status === "current"
@@ -1382,7 +1618,7 @@ function renderJourneyEvidenceSummary(data) {
     JOURNEY,
     data,
   );
-  if (state.status !== "ready"
+  if (state.status !== "simulation_ready"
       || !generatedDataIsDeeplyFrozen(JOURNEY)
       || !NORMALIZED_READINESS_DATA.has(data)
       || !generatedDataIsDeeplyFrozen(data)
@@ -1441,7 +1677,8 @@ function renderReadinessEntry(data) {
   const summary = document.getElementById("journeyEntrySummary");
   const evidenceSummary = document.getElementById("journeyEvidenceSummary");
   const method = document.getElementById("readinessMethod");
-  if (state.status !== "ready") {
+  renderProgramAvailabilityNotice();
+  if (state.status !== "simulation_ready") {
     if (cover) cover.hidden = true;
     if (summary) summary.hidden = true;
     if (evidenceSummary) evidenceSummary.hidden = true;
@@ -1551,7 +1788,7 @@ const INITIAL_OPEN_ROUTE_BY_PROJECT = Object.freeze({
 function radioQuestion(name, legend, options, help = "") {
   const helpId = `${name}-help`;
   const describedBy = help ? ` aria-describedby="${helpId}"` : "";
-  return `<fieldset data-question="${esc(name)}"${describedBy}>
+  return `<fieldset data-question="${esc(name)}"${describedBy} class="ca-field">
     <legend>${esc(legend)}</legend>
     ${help ? `<p class="small question-help" id="${helpId}">${esc(help)}</p>` : ""}
     <div class="choice-grid">
@@ -1826,7 +2063,7 @@ function renderProjectFacts() {
   if (!facts.length) return "";
   const s = STRINGS[lang];
   const isSample = projectSampleState === "active";
-  return `<section class="result-cover-sheet" aria-labelledby="projectFactsHeading"
+  return `<section class="result-cover-sheet ca-box" aria-labelledby="projectFactsHeading"
       lang="${lang}">
     <div class="result-cover-heading">
       <h3 id="projectFactsHeading">
@@ -1872,7 +2109,7 @@ function statewideOrientationMarkup(list = [], unresolved = []) {
   const jurisdiction = jurisDisplay(LAST_JURISDICTION);
   const localCoverage = LAST_JURISDICTION.has_local_layer
     ? s.statewideLocalPresent : s.statewideLocalMissing;
-  return `<section class="statewide-orientation" id="statewideOrientation"
+  return `<section class="statewide-orientation ca-box" id="statewideOrientation"
       aria-labelledby="statewideOrientationHeading" lang="${lang}"
       data-jurisdiction="${esc(LAST_JURISDICTION.slug)}"
       data-local-layer="${LAST_JURISDICTION.has_local_layer ? "true" : "false"}">
@@ -1899,7 +2136,7 @@ function statewideOrientationMarkup(list = [], unresolved = []) {
     <section aria-labelledby="statewideRoutesHeading">
       <h4 id="statewideRoutesHeading">${esc(s.statewideRoutes)}</h4>
       ${routeItems ? `<ul class="statewide-route-list">${routeItems}</ul>`
-        : `<p class="notice">${esc(s.statewideNoRoute)}</p>`}
+        : `<p class="notice ca-shout">${esc(s.statewideNoRoute)}</p>`}
     </section>
     <section aria-labelledby="statewideQuestionsHeading">
       <h4 id="statewideQuestionsHeading">${esc(s.statewideQuestions)}</h4>
@@ -1907,7 +2144,7 @@ function statewideOrientationMarkup(list = [], unresolved = []) {
     </section>
     <p class="statewide-orientation-boundary">${esc(s.statewideBoundary)}</p>
     <div class="statewide-print-action">
-      <button class="button print-statewide-orientation" type="button">
+      <button class="button ca-button print-statewide-orientation" type="button">
         ${esc(s.statewidePrint)}</button>
       <p class="small">${esc(s.statewidePrintHelp)}</p>
     </div>
@@ -1945,10 +2182,10 @@ function renderResultCard(rule, explanation, options = {}) {
     : `<span class="badge warn" lang="${lang}"><span class="status-ico" aria-hidden="true">⚠</span>${esc(s.unverified)}</span>`;
   const localizedRecord = ok ? usableLocalizedExplanation(explanation) : null;
   let consequence = status === "unverified"
-    ? `<div class="notice small" lang="${lang}">${esc(s.withheldUnverified)}</div>`
+    ? `<div class="notice ca-shout small" lang="${lang}">${esc(s.withheldUnverified)}</div>`
     : status === "stale"
-    ? `<div class="notice small" lang="${lang}">${esc(s.withheldStale)}</div>`
-    : `<div class="notice small" lang="${lang}">${esc(s.unavailable)}</div>`;
+    ? `<div class="notice ca-shout small" lang="${lang}">${esc(s.withheldStale)}</div>`
+    : `<div class="notice ca-shout small" lang="${lang}">${esc(s.unavailable)}</div>`;
   let guidance = "";
   let reviewNote = "";
   let copyRecord = "";
@@ -2018,7 +2255,7 @@ function renderResultCard(rule, explanation, options = {}) {
         <a href="#clocks">${esc(s.checkDates)}</a>
       </p>` : "";
   return `<article id="rule-${safeId}"
-      class="card result-card ${isConfiguredRoute ? "result-route" : "result-card-compact"} ${ok ? "" : "unverified"}"
+      class="card result-card ca-card ${isConfiguredRoute ? "result-route" : "result-card-compact"} ${ok ? "" : "unverified"}"
       data-rule-id="${esc(rule.rule_id)}" data-result-group="${group}"
       aria-labelledby="result-title-${safeId}" tabindex="-1">
     <div class="result-head">
@@ -2043,29 +2280,59 @@ function renderResultCard(rule, explanation, options = {}) {
   </article>`;
 }
 
+function programAvailabilityStatusMarkup(availability = PROGRAM_AVAILABILITY) {
+  if (!programAvailabilityIsCurrent(availability)) {
+    return `<div class="program-availability program-availability-hold ca-shout" lang="en">
+      <p class="utility-label">Official program status</p>
+      <p><strong>Program status review required.</strong> The strict City
+        program record is missing, malformed, or outside its recheck window.
+        The future-state packet simulation remains locked.</p>
+      <p><a href="${PROGRAM_AVAILABILITY_URL}">Check the official City of
+        Woodland program page</a>.</p>
+    </div>`;
+  }
+  const source = availability.source;
+  return `<div class="program-availability ca-shout" lang="en">
+    <p class="utility-label">Official program status</p>
+    <p><strong>Future-state simulation only.</strong> The City page says
+      <q>${escVerbatim(source.excerpt)}</q></p>
+    <p>Checked ${esc(formatSourceDate(source.checked_on))}; recheck due
+      ${esc(formatSourceDate(source.recheck_due_on))}.
+      <a href="${esc(source.url)}">Open the official City of Woodland program
+      page</a>.</p>
+    <p>This record is not evidence that a current preapproved plan is
+      available. Confirm program applicability with the City before use.</p>
+  </div>`;
+}
+
+function renderProgramAvailabilityNotice() {
+  const notice = document.getElementById("programAvailabilityNotice");
+  if (notice) notice.innerHTML = programAvailabilityStatusMarkup();
+}
+
 function journeyGateOutcomeMarkup(state) {
   const s = STRINGS[lang];
-  if (state.status === "ready") {
-    return `<div class="journey-outcome">
+  if (state.status === "simulation_ready") {
+    return `<div class="journey-outcome ca-shout">
       <h4>${esc(s.journeyReadyHeading)}</h4>
       <p>${esc(s.journeyReadyText)}</p>
-      <p><a class="button" href="${esc(state.href)}">
+      <p><a class="button ca-button" href="${esc(state.href)}">
         ${esc(s.packetSampleLink)}</a></p>
     </div>`;
   }
   if (state.status === "does_not_apply") {
-    return `<div class="journey-outcome journey-outcome-hold">
+    return `<div class="journey-outcome journey-outcome-hold ca-shout">
       <h4>${esc(s.journeyNoHeading)}</h4>
       <p>${esc(s.journeyNoText)}</p>
     </div>`;
   }
   if (state.status === "unknown") {
-    return `<div class="journey-outcome journey-outcome-hold">
+    return `<div class="journey-outcome journey-outcome-hold ca-shout">
       <h4>${esc(s.journeyUnknownHeading)}</h4>
       <p lang="en">${esc(state.question)}</p>
     </div>`;
   }
-  return `<div class="journey-outcome journey-outcome-hold">
+  return `<div class="journey-outcome journey-outcome-hold ca-shout">
     <h4>${esc(s.journeyUnavailableHeading)}</h4>
     <p>${esc(s.journeyUnavailableText)}</p>
   </div>`;
@@ -2089,7 +2356,7 @@ function journeyHandoffMarkup() {
   if (projectSampleState !== "active") return "";
   const s = STRINGS[lang];
   if (!JOURNEY) {
-    return `<aside class="journey-handoff" lang="${lang}"
+    return `<aside class="journey-handoff ca-box" lang="${lang}"
         aria-labelledby="journeyGateHeading">
       <p class="journey-stage-label">${esc(s.journeyStage)}</p>
       <h3 id="journeyGateHeading">${esc(s.journeyUnavailableHeading)}</h3>
@@ -2102,6 +2369,19 @@ function journeyHandoffMarkup() {
     fact => fact.editable === true
   );
   if (!editableFact) return "";
+  if (!programAvailabilityIsCurrent(PROGRAM_AVAILABILITY, JOURNEY)) {
+    return `<aside class="journey-handoff ca-box" lang="${lang}"
+        aria-labelledby="journeyGateHeading">
+      <p class="journey-stage-label">${esc(s.journeyStage)}</p>
+      <h3 id="journeyGateHeading">${esc(s.journeyUnavailableHeading)}</h3>
+      ${programAvailabilityStatusMarkup()}
+      <div id="journeyGateOutcome" role="status" aria-live="polite">
+        ${journeyGateOutcomeMarkup({
+          status: "program_status_review_required",
+        })}
+      </div>
+    </aside>`;
+  }
   const fixedFacts = JOURNEY.applicability_facts.filter(
     fact => fact.editable !== true
   );
@@ -2112,12 +2392,13 @@ function journeyHandoffMarkup() {
       ${journeyApplicabilityValue === value ? "checked" : ""}>
       ${esc(label)}</label>`
   ).join("");
-  return `<aside class="journey-handoff" lang="${lang}"
+  return `<aside class="journey-handoff ca-box" lang="${lang}"
       aria-labelledby="journeyGateHeading">
     <p class="journey-stage-label">${esc(s.journeyStage)}</p>
     <h3 id="journeyGateHeading">${esc(s.packetSampleTitle)}</h3>
     <p>${esc(s.packetSampleText)}</p>
-    <fieldset aria-describedby="journeyApplicabilityHelp">
+    ${programAvailabilityStatusMarkup()}
+    <fieldset class="ca-field" aria-describedby="journeyApplicabilityHelp">
       <legend>${esc(s.journeyApplicabilityLegend)}</legend>
       <p class="small" id="journeyApplicabilityHelp">
         ${esc(s.journeyApplicabilityHelp)}</p>
@@ -2148,7 +2429,7 @@ function renderResults(list) {
       <h2 class="result-heading" id="resultsHeading" tabindex="-1">${esc(s.results)}</h2>
       ${renderProjectFacts()}
       ${statewideOrientationMarkup()}
-      <div class="notice">${esc(s.none)}</div></div>`;
+      <div class="notice ca-shout">${esc(s.none)}</div></div>`;
     return;
   }
   const grouped = groupResultRecords(list);
@@ -2190,11 +2471,11 @@ function renderResults(list) {
     return section + (group === "route" ? packetSampleLink : "");
   }).join("");
   const draftBanner = oneSharedDraftLabel
-    ? `<div class="result-trust-note small" lang="${lang}">${esc(s.explanationBanner)}</div>`
+    ? `<div class="result-trust-note ca-shout small" lang="${lang}">${esc(s.explanationBanner)}</div>`
     : "";
   const noRouteNotice = hasRoute
     ? ""
-    : `<div class="notice" lang="${lang}">
+    : `<div class="notice ca-shout" lang="${lang}">
         <p>${esc(s.none)}</p>
         <p>${esc(s.supportingOnly)}</p>
       </div>`;
@@ -2234,7 +2515,7 @@ function renderNeedsStaffReview(fieldNames) {
       </h2>
       ${renderProjectFacts()}
       ${statewideOrientationMarkup([], fieldNames)}
-      <div class="notice">
+      <div class="notice ca-shout">
         <p>${esc(s.unknownIntro)}</p>
         <ul>${fieldNames.map(name =>
           `<li>${esc(questionLabel(name, LAST_INTAKE?.project_type))}</li>`
@@ -2349,8 +2630,17 @@ if (pageIs("project") && resultContainerElement) {
 }
 
 function renderDashboard() {
+  document.getElementById("ruleTable")?.classList?.add(
+    "ca-inner-border",
+    "ca-outer-border",
+    "ca-stripes",
+  );
   const changed = activeChangedSourceIds();
-  const statuses = RULES.map(r => ({ rule: r, st: ruleStatus(r, changed) }));
+  const statuses = RULES.map(rule => ({
+    rule,
+    st: ruleStatus(rule, changed),
+    verification: effectiveRuleVerification(rule),
+  }));
   const n = { verified: 0, stale: 0, unverified: 0 };
   statuses.forEach(x => n[x.st]++);
   const total = RULES.length;
@@ -2392,15 +2682,57 @@ function renderDashboard() {
     const coverageScore = document.getElementById("coverageScore");
     if (coverageScore) coverageScore.textContent = JURIS.length;
   }
-  document.querySelector("#ruleTable tbody").innerHTML = statuses.map(({rule, st}) => {
+  const verificationCounts = {
+    machine_linked: 0,
+    human_reviewed: 0,
+    jurisdiction_approved: 0,
+  };
+  statuses.forEach(({verification}) => {
+    verificationCounts[verification.level] += 1;
+  });
+  const namedReview = verificationCounts.human_reviewed
+    + verificationCounts.jurisdiction_approved;
+  const verificationScore = document.getElementById("verificationScore");
+  const verificationLine = document.getElementById("verificationLine");
+  if (verificationScore)
+    verificationScore.textContent = `${namedReview}/${total}`;
+  if (verificationLine) {
+    verificationLine.textContent = RULE_VERIFICATIONS
+      ? `${verificationCounts.machine_linked} machine-linked; `
+        + `${verificationCounts.human_reviewed} human-reviewed; `
+        + `${verificationCounts.jurisdiction_approved} jurisdiction-approved.`
+      : "The ledger is missing or invalid. All rules fail closed to "
+        + "machine-linked; no named review is in force.";
+  }
+  document.querySelector("#ruleTable tbody").innerHTML = statuses.map(({
+    rule,
+    st,
+    verification,
+  }) => {
     const b = st === "verified"
       ? `<span class="badge ok"><span class="status-ico" aria-hidden="true">✓</span>within review window</span>`
       : st === "stale"
       ? `<span class="badge bad"><span class="status-ico" aria-hidden="true">✕</span>STALE: re-verify</span>`
       : `<span class="badge warn"><span class="status-ico" aria-hidden="true">⚠</span>no dated source record</span>`;
+    const verificationLabel = verification.level === "jurisdiction_approved"
+      ? "Jurisdiction-approved"
+      : verification.level === "human_reviewed"
+      ? "Human-reviewed"
+      : verification.stale
+      ? "Machine-linked · source/review hold"
+      : "Machine-linked · no named review";
+    const verificationClass = verification.level === "jurisdiction_approved"
+      ? "ok" : verification.level === "human_reviewed" ? "ok" : "warn";
+    const verificationIcon = verification.level === "machine_linked"
+      ? "⚙" : "✓";
+    const verificationBadge = `<span class="badge ${verificationClass}"
+      ${verification.reason ? `title="${esc(verification.reason)}"` : ""}>
+      <span class="status-ico" aria-hidden="true">${verificationIcon}</span>
+      ${esc(verificationLabel)}</span>`;
     return `<tr><td data-label="Rule">${esc(rule.pathway)}</td>
       <td data-label="Scope" class="mutedtxt">${esc(rule.jurisdiction_scope)}</td>
-      <td data-label="Status">${b}</td></tr>`;
+      <td data-label="Source status">${b}</td>
+      <td data-label="Interpretation review">${verificationBadge}</td></tr>`;
   }).join("");
   document.getElementById("simNote").classList.toggle("hidden", !simulating);
   document.getElementById("simBtn").classList.toggle("hidden", simulating);
@@ -2481,6 +2813,11 @@ function renderSourceState() {
 }
 
 function renderSources() {
+  document.getElementById("sourceTable")?.classList?.add(
+    "ca-inner-border",
+    "ca-outer-border",
+    "ca-stripes",
+  );
   const observations = new Map(
     (SOURCE_STATE?.observations || []).map(item => [item.source_id, item]),
   );
@@ -2609,7 +2946,7 @@ if (pageIs("project") && intakeFormElement) {
     document.getElementById("results").innerHTML =
       `<div lang="${lang}"><h2 class="result-heading" id="resultsHeading"
         tabindex="-1">${esc(s.results)}</h2>
-       <div class="notice">${esc(s.jurisRequired)}</div></div>`;
+       <div class="notice ca-shout">${esc(s.jurisRequired)}</div></div>`;
     renderJurisStatus(true);
     document.getElementById("jurisInput").focus();
     return;
@@ -2758,14 +3095,14 @@ if (pageIs("review") && scanButtonElement) {
   }
   const findings = scanOrdinance(text);
   if (!findings.length) {
-    el.innerHTML = `<div class="notice">No candidate provisions flagged.
+    el.innerHTML = `<div class="notice ca-shout">No candidate provisions flagged.
       Presence-based screen only. This is <b>not</b> a certification of compliance.</div>`;
     status.textContent = "No candidate provisions were flagged. This is only a presence-based screen.";
     return;
   }
   el.innerHTML = findings.map(f => {
     const definite = f.check.severity === "definite";
-    return `<div class="card ${definite ? "" : "unverified"}"
+    return `<div class="card ca-card ${definite ? "" : "unverified"}"
       style="border-left-color:${definite ? "var(--critical)" : "var(--warning)"}">
       <h3>${esc(f.check.title)}
         <span class="badge ${definite ? "bad" : "warn"}">
@@ -2822,7 +3159,7 @@ if (pageIs("project") && clockButtonElement) {
   const decisionReason = canShowDecision
     ? "Shown because both statements above were confirmed."
     : "Confirm both statements above to show this date.";
-  el.innerHTML = `<section class="clock-output" aria-labelledby="clockOutputHeading">
+  el.innerHTML = `<section class="clock-output ca-box" aria-labelledby="clockOutputHeading">
     <h3 id="clockOutputHeading">Review date information</h3>
     <dl class="clock-milestones">
       <div>
@@ -3313,7 +3650,7 @@ function readinessParcelEvidenceMarkup(data, current) {
         ${esc(formatSourceDate(fact.source_checked_on))}.</dd>
     </div>`;
   }).join("");
-  return `<section class="packet-evidence"
+  return `<section class="packet-evidence ca-box"
     aria-labelledby="parcelEvidenceHeading">
     <div>
       <p class="section-kicker">Parcel-aware fixture</p>
@@ -3384,7 +3721,7 @@ function readinessFindingRow(
           Ask Woodland staff which record controls if the conflict remains.</p>
       </div>`
     : "";
-  return `<article class="packet-finding packet-finding-${tone}">
+  return `<article class="packet-finding packet-finding-${tone} ca-card">
     <div class="finding-state">
       <span>${esc(stateLabel)}</span>
     </div>
@@ -3611,7 +3948,7 @@ function renderReadiness(data) {
     )).join("")
     : "";
   const directQuestions = current && data.result.staff_questions.length
-    ? `<div class="staff-question-list">
+    ? `<div class="staff-question-list ca-shout">
         <h3>Questions to take to Woodland staff</h3>
         <ul>${data.result.staff_questions.map(question =>
           `<li>${esc(question)}</li>`
@@ -3624,11 +3961,11 @@ function renderReadiness(data) {
   const reviewLabel = readinessReviewLabel(data.remedies.review);
   const countsMarkup = current
     ? readinessCountMarkup(data)
-    : `<p class="source-review-hold"><strong>Action copy is
+    : `<p class="source-review-hold ca-shout"><strong>Action copy is
         withheld.</strong> The dated source must be checked before this
         result can be used again.</p>`;
   const inventoryMarkup = current
-    ? `<section class="packet-inventory" aria-labelledby="inventoryHeading">
+    ? `<section class="packet-inventory ca-box" aria-labelledby="inventoryHeading">
         <p class="section-kicker">Full bounded record</p>
         <h2 id="inventoryHeading">What happened to every checklist item</h2>
         ${readinessCompactList(present, "Reported present")}
@@ -3658,7 +3995,7 @@ function renderReadiness(data) {
   document.getElementById("readinessDate").textContent =
     formatSourceDate(data.packet.evaluated_on);
   output.innerHTML = `
-    <section class="readiness-verdict ${current ? "is-current" : "needs-source"}"
+    <section class="readiness-verdict ca-shout ${current ? "is-current" : "needs-source"}"
       aria-labelledby="readinessVerdictHeading">
       <div class="verdict-copy">
         <p class="section-kicker">Deterministic packet-presence result</p>
@@ -3670,7 +4007,7 @@ function renderReadiness(data) {
 
     ${readinessParcelEvidenceMarkup(data, current)}
 
-    ${current && missing.length ? `<section class="packet-ledger"
+    ${current && missing.length ? `<section class="packet-ledger ca-box"
       aria-labelledby="missingHeading">
       <div class="ledger-heading">
         <p class="section-kicker">Act before submission</p>
@@ -3680,7 +4017,7 @@ function renderReadiness(data) {
       <div class="finding-list">${missingRows}</div>
     </section>` : ""}
 
-    ${current && conflicts.length ? `<section class="packet-ledger"
+    ${current && conflicts.length ? `<section class="packet-ledger ca-box"
       aria-labelledby="conflictHeading">
       <div class="ledger-heading">
         <p class="section-kicker">Reconcile before submission</p>
@@ -3692,7 +4029,7 @@ function renderReadiness(data) {
     </section>` : ""}
 
     ${current && (questions.length || data.result.staff_questions.length)
-    ? `<section class="packet-ledger" aria-labelledby="questionHeading">
+    ? `<section class="packet-ledger ca-box" aria-labelledby="questionHeading">
       <div class="ledger-heading">
         <p class="section-kicker">Do not guess</p>
         <h2 id="questionHeading">Items and questions to confirm</h2>
@@ -3705,7 +4042,7 @@ function renderReadiness(data) {
 
     ${inventoryMarkup}
 
-    <section class="packet-evidence" aria-labelledby="packetEvidenceHeading">
+    <section class="packet-evidence ca-box" aria-labelledby="packetEvidenceHeading">
       <div>
         <p class="section-kicker">Evidence record</p>
         <h2 id="packetEvidenceHeading">Trace this result to its source</h2>
@@ -3778,7 +4115,7 @@ async function fetchRuleData() {
 function loadDemoData() {
   if (globalThis.PERMIT_PATHWAYS_DEMO_DATA) {
     const data = globalThis.PERMIT_PATHWAYS_DEMO_DATA;
-    if (data?._meta?.format_version !== 3
+    if (data?._meta?.format_version !== 4
         || !Array.isArray(data.rules)
         || !validRuleManifest(data.rule_manifest)
         || !data.source_state)
@@ -3796,13 +4133,24 @@ function loadDemoData() {
     fetchOptionalJson("data/explanations/plain-language.json",
                       {schema_version: 1, entries: []}),
     fetchJson("data/source-status/current.json"),
+    fetchOptionalJson(
+      "data/availability/woodland-preapproved-adu-program.json",
+      null,
+    ),
+    fetchOptionalJson(
+      "data/validation/rule-verification.json",
+      null,
+    ),
   ]).then(([ruleData, golden, sources,
-            checks, registry, letters, scans, plainLanguage, sourceState]) => ({
+            checks, registry, letters, scans, plainLanguage, sourceState,
+            programAvailability, ruleVerification]) => ({
     rules: ruleData.rules,
     rule_manifest: ruleData.rule_manifest,
     golden, sources, checks, registry, letters, scans,
     plain_language: plainLanguage,
     source_state: sourceState,
+    program_availability: programAvailability,
+    rule_verification: ruleVerification,
   }));
 }
 
@@ -3835,7 +4183,7 @@ function showDataLoadError(error) {
   if (output) {
     output.classList.remove("hidden");
     output.innerHTML =
-      `<div class="notice" lang="${lang}">${esc(message)}</div>`;
+      `<div class="notice ca-shout" lang="${lang}">${esc(message)}</div>`;
   }
   const readinessOutput = document.getElementById("readinessOutput");
   if (readinessOutput) {
@@ -3865,6 +4213,13 @@ async function initializeDemo() {
     );
     if (!SOURCE_STATE)
       throw new Error("reviewed source-state snapshot failed validation");
+    PROGRAM_AVAILABILITY = await normalizeProgramAvailability(
+      data.program_availability,
+    );
+    RULE_VERIFICATIONS = await normalizeRuleVerifications(
+      data.rule_verification,
+      RULES,
+    );
     READINESS = await normalizeReadinessData(data.readiness);
     JOURNEY = await normalizeJourney(
       data.journeys,
@@ -3875,6 +4230,7 @@ async function initializeDemo() {
     if (pageIs("readiness")) {
       if (!READINESS)
         throw new Error("generated packet-presence data failed validation");
+      renderProgramAvailabilityNotice();
       renderReadinessEntry(READINESS);
     }
     if (pageIs("project")) {

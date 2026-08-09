@@ -39,8 +39,10 @@ def test_committed_demo_bundle_matches_canonical_json():
     bundle = build_bundle()
 
     assert OUTPUT.read_text(encoding="utf-8") == bundle
-    assert '"format_version":3' in bundle
+    assert '"format_version":4' in bundle
     assert '"source_state":' in bundle
+    assert '"program_availability":' in bundle
+    assert '"rule_verification":' in bundle
 
 
 def test_generated_woodland_journey_binds_one_route_and_packet_envelope():
@@ -150,7 +152,7 @@ def test_static_pages_load_only_the_assets_they_need():
 
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in application
-    assert "data?._meta?.format_version !== 3" in application
+    assert "data?._meta?.format_version !== 4" in application
 
 
 def test_static_pages_have_consistent_navigation_and_resolvable_links():
@@ -275,7 +277,7 @@ def test_public_brand_name_and_tagline_are_consistent():
         },
         "en",
     )
-    assert '<a href="/?lang=en">Permit Bearings</a>' in rendered_page
+    assert '<a class="brand" href="/?lang=en">Permit Bearings</a>' in rendered_page
 
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     assert 'name = "permit-pathways"' in pyproject
@@ -342,7 +344,8 @@ def test_mobile_navigation_and_evidence_records_have_responsive_hooks():
     for label in (
         "Rule",
         "Scope",
-        "Status",
+        "Source status",
+        "Interpretation review",
         "Source",
         "Monitoring",
         "Recorded",
@@ -473,7 +476,7 @@ def test_packet_sample_renders_only_the_generated_python_result():
     assert {fact["source_id"] for fact in parcel_facts} == {"yolo-public-parcels-layer"}
 
     assert '<body data-page="readiness">' in page
-    assert "This is a synthetic packet." in page
+    assert "This is a synthetic future-state" in page
     assert re.search(r"certify\s+completeness", page)
     assert 'id="readinessOutput"' in page
     assert re.search(r"No model\s+runs in the public browser\.", page)
@@ -499,6 +502,11 @@ def test_journey_handoff_uses_public_ids_without_browser_storage():
     assert 'id="readinessMethod"' in packet
     assert "function journeyHandoffState(" in application
     assert "function journeyQueryState(" in application
+    assert "function normalizeProgramAvailability(" in application
+    assert 'status: "simulation_ready"' in application
+    assert 'status: "program_status_review_required"' in application
+    assert "Preapproved ADU List: Coming soon!" in application
+    assert "Future-state simulation" in packet
     assert (
         "href: `prepare.html?journey=${encodeURIComponent(journey.journey_id)}`"
         in application
@@ -512,6 +520,163 @@ def test_journey_handoff_uses_public_ids_without_browser_storage():
         "document.cookie",
     ):
         assert storage_api not in application
+
+
+def test_rule_verification_ledger_is_exposed_without_inflating_review_claims():
+    page = (ROOT / "evidence.html").read_text(encoding="utf-8")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+
+    assert "async function normalizeRuleVerifications(payload, rules)" in application
+    assert "function effectiveRuleVerification(rule)" in application
+    assert "reviewed_citation_fingerprint" in application
+    assert "reviewed_rule_fingerprint" in application
+    assert "Verification ledger is missing or invalid" in application
+    assert 'id="verificationScore"' in page
+    assert 'id="verificationLine"' in page
+    assert "Machine-linked means" in page
+    assert "it is not named human or jurisdiction review" in page
+    assert "data/validation/rule-verification.json" in page
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js unavailable")
+def test_rule_verification_browser_contract_fails_closed():
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+
+    def source_between(start: str, end: str) -> str:
+        start_index = application.index(start)
+        return application[start_index : application.index(end, start_index)]
+
+    matching = source_between("function isJsonNumber", "function uiText")
+    validation = source_between("function safeExternalUrl", "function validTextList")
+    verification = source_between("function stableJson", "const JOURNEY_KEYS")
+    script = "\n".join(
+        [
+            'import {readFileSync} from "node:fs";',
+            'import {webcrypto} from "node:crypto";',
+            'Object.defineProperty(globalThis, "crypto", {',
+            "  value: webcrypto, configurable: true,",
+            "});",
+            "let RULES = [];",
+            "let RULE_VERIFICATIONS = null;",
+            "let SOURCE_STATE = null;",
+            "let simulating = false;",
+            matching,
+            validation,
+            verification,
+            r"""
+const bundleSource = readFileSync("data/demo-data.js", "utf8");
+const assignment = "globalThis.PERMIT_PATHWAYS_DEMO_DATA=";
+const bundle = JSON.parse(
+  bundleSource.slice(bundleSource.indexOf(assignment) + assignment.length)
+    .trim().replace(/;$/, "")
+);
+const NativeDate = Date;
+class FixedDate extends NativeDate {
+  constructor(...args) {
+    super(...(args.length ? args : ["2026-08-09T12:00:00Z"]));
+  }
+  static now() { return NativeDate.parse("2026-08-09T12:00:00Z"); }
+  static parse(value) { return NativeDate.parse(value); }
+  static UTC(...args) { return NativeDate.UTC(...args); }
+}
+globalThis.Date = FixedDate;
+RULES = bundle.rules;
+SOURCE_STATE = bundle.source_state;
+
+function check(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+const canonical = await normalizeRuleVerifications(
+  structuredClone(bundle.rule_verification),
+  RULES,
+);
+check(canonical !== null, "canonical verification ledger rejected");
+check(canonical.size === RULES.length, "canonical ledger coverage changed");
+check(
+  [...canonical.values()].every(entry => entry.level === "machine_linked"),
+  "canonical ledger invented named review",
+);
+
+async function reject(label, mutate, rules = RULES) {
+  const candidate = structuredClone(bundle.rule_verification);
+  await mutate(candidate);
+  check(
+    await normalizeRuleVerifications(candidate, rules) === null,
+    `${label}: invalid ledger accepted`,
+  );
+}
+
+await reject("unknown entry field", candidate => {
+  candidate.entries[0].unexpected = true;
+});
+await reject("incomplete coverage", candidate => {
+  candidate.entries.pop();
+});
+await reject("duplicate coverage", candidate => {
+  candidate.entries[1].rule_id = candidate.entries[0].rule_id;
+});
+await reject("machine-linked reviewer metadata", candidate => {
+  candidate.entries[0].reviewer = "Named reviewer";
+});
+await reject("future review date", candidate => {
+  const entry = candidate.entries[0];
+  entry.level = "human_reviewed";
+  entry.reviewer = "Named reviewer";
+  entry.method = "Compared the full rule with its cited source.";
+  entry.reviewed_on = "2026-08-10";
+  entry.reviewed_citation_fingerprint = `sha256:${"0".repeat(64)}`;
+  entry.reviewed_rule_fingerprint = `sha256:${"0".repeat(64)}`;
+});
+
+const reviewedPayload = structuredClone(bundle.rule_verification);
+const reviewedRule = RULES[0];
+const reviewedEntry = reviewedPayload.entries.find(
+  entry => entry.rule_id === reviewedRule.rule_id,
+);
+reviewedEntry.level = "human_reviewed";
+reviewedEntry.reviewer = "Named reviewer";
+reviewedEntry.method = "Compared the full rule with its cited source.";
+reviewedEntry.reviewed_on = "2026-08-09";
+reviewedEntry.reviewed_citation_fingerprint = await citationFingerprint(
+  reviewedRule,
+);
+reviewedEntry.reviewed_rule_fingerprint = await ruleFingerprint(reviewedRule);
+const reviewedLedger = await normalizeRuleVerifications(reviewedPayload, RULES);
+check(reviewedLedger !== null, "valid named review rejected");
+RULE_VERIFICATIONS = reviewedLedger;
+check(
+  effectiveRuleVerification(reviewedRule).level === "human_reviewed",
+  "current named review did not take effect",
+);
+
+const changedRules = structuredClone(RULES);
+changedRules[0].notes += " semantic drift";
+check(
+  await normalizeRuleVerifications(reviewedPayload, changedRules) === null,
+  "full-rule drift retained a named review",
+);
+
+SOURCE_STATE = {changed_source_ids: [reviewedRule.source_dependencies[0]]};
+const changedEffective = effectiveRuleVerification(reviewedRule);
+check(
+  changedEffective.level === "machine_linked" && changedEffective.stale,
+  "changed source did not demote named review",
+);
+SOURCE_STATE = bundle.source_state;
+
+const undatedRule = structuredClone(reviewedRule);
+undatedRule.citation.verified_on = null;
+const undatedEffective = effectiveRuleVerification(undatedRule);
+check(
+  undatedEffective.level === "machine_linked" && undatedEffective.stale,
+  "undated source did not demote named review",
+);
+globalThis.Date = NativeDate;
+""",
+        ]
+    )
+    run_node_module(script)
 
 
 def test_printable_journey_summary_is_semantic_gated_and_print_scoped():
@@ -533,7 +698,13 @@ def test_printable_journey_summary_is_semantic_gated_and_print_scoped():
     assert '<ul id="journeyEvidenceQuestionsList"></ul>' in page
     assert 'id="journeyEvidenceSourcesList"></dl>' in page
     assert 'id="journeyEvidenceBoundaryText"></p>' in page
-    assert '<button class="button" id="printJourneySummary" type="button">' in page
+    print_button = re.search(
+        r'<button class="(?P<classes>[^"]+)" '
+        r'id="printJourneySummary" type="button">',
+        page,
+    )
+    assert print_button
+    assert {"button", "ca-button"} <= set(print_button.group("classes").split())
 
     assert "function renderJourneyEvidenceSummary(" in application
     assert "journeyEvidenceSummary" in application
@@ -1350,7 +1521,13 @@ def test_demo_server_exposes_only_intended_static_files():
     assert static_path("/review.html") == ROOT / "review.html"
     assert static_path("/evidence.html") == ROOT / "evidence.html"
     assert static_path("/showcase") == ROOT / "check.html"
+    assert static_path("/assets/california-design-system.css") == (
+        ROOT / "assets" / "california-design-system.css"
+    )
     assert static_path("/assets/site.css") == ROOT / "assets" / "site.css"
+    assert static_path("/assets/fonts/publicsans-regular-webfont.woff2") == (
+        ROOT / "assets" / "fonts" / "publicsans-regular-webfont.woff2"
+    )
     assert static_path("/assets/demo.js") == ROOT / "assets" / "demo.js"
     assert static_path("/data/demo-data.js") == OUTPUT
     assert static_path("/data/source-status/current.json") == (

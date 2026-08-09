@@ -15,7 +15,7 @@
     "source_snapshot_id": "woodland-route-to-packet-sources-1",
     "source_snapshot_receipt_id": null,
     "protocol_version": "2.0.0",
-    "answer_key_version": "1.1.0",
+    "answer_key_version": "1.2.0",
     "thresholds_version": "1.0.0",
     "journey_id": "woodland-preapproved-detached-adu-synthetic",
     "journey_version": "1.0.0",

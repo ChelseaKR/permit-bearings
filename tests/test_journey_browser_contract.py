@@ -54,10 +54,11 @@ const canonicalJourneys = bundle.journeys;
 const canonicalReadiness = bundle.readiness;
 const canonicalRules = bundle.rules;
 const canonicalGolden = bundle.golden;
+const canonicalProgramAvailability = bundle.program_availability;
 SOURCE_STATE = bundle.source_state;
 
 const NativeDate = Date;
-let fixedNow = "2026-08-02T12:00:00Z";
+let fixedNow = "2026-08-09T12:00:00Z";
 class FixedDate extends NativeDate {
   constructor(...args) {
     super(...(args.length ? args : [fixedNow]));
@@ -81,6 +82,45 @@ function check(condition, message) {
 function noHref(state, label) {
   check(!Object.prototype.hasOwnProperty.call(state, "href"), `${label}: href leaked`);
 }
+
+async function normalizeAvailability(candidate = canonicalProgramAvailability) {
+  return normalizeProgramAvailability(structuredClone(candidate));
+}
+
+PROGRAM_AVAILABILITY = await normalizeAvailability();
+check(PROGRAM_AVAILABILITY !== null, "canonical program status rejected");
+check(
+  programAvailabilityIsCurrent(PROGRAM_AVAILABILITY),
+  "canonical program status was not current",
+);
+
+async function expectAvailabilityRejection(label, mutate) {
+  const candidate = structuredClone(canonicalProgramAvailability);
+  await mutate(candidate);
+  check(
+    await normalizeProgramAvailability(candidate) === null,
+    `${label}: program mutation accepted`,
+  );
+}
+
+await expectAvailabilityRejection("unknown program field", candidate => {
+  candidate.availability.unexpected = true;
+});
+await expectAvailabilityRejection("program excerpt fingerprint drift", candidate => {
+  candidate.availability.source.excerpt_sha256 = `sha256:${"0".repeat(64)}`;
+});
+await expectAvailabilityRejection(
+  "self-consistent semantic excerpt drift",
+  async candidate => {
+    candidate.availability.source.excerpt = "Preapproved ADU List: Available now!";
+    candidate.availability.source.excerpt_sha256 = await sha256TextFingerprint(
+      normalizeProgramExcerpt(candidate.availability.source.excerpt),
+    );
+  },
+);
+await expectAvailabilityRejection("overlong recheck window", candidate => {
+  candidate.availability.source.recheck_due_on = "2026-10-09";
+});
 
 async function expectJourneyRejection(label, mutate) {
   const journeys = structuredClone(canonicalJourneys);
@@ -406,7 +446,10 @@ check(blank.status === "unknown", "blank applicability did not stay unknown");
 noHref(blank, "blank applicability");
 
 const ready = handoff("yes");
-check(ready.status === "ready", "canonical yes did not unlock handoff");
+check(
+  ready.status === "simulation_ready",
+  "canonical yes did not unlock future-state simulation",
+);
 check(
   ready.href ===
     "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0",
@@ -416,6 +459,25 @@ const readyParams = new URLSearchParams(ready.href.split("?", 2)[1]);
 check([...readyParams.keys()].length === 2, "ready href exposed extra parameters");
 check(readyParams.getAll("journey").length === 1, "journey parameter duplicated");
 check(readyParams.getAll("version").length === 1, "version parameter duplicated");
+
+const canonicalAvailability = PROGRAM_AVAILABILITY;
+PROGRAM_AVAILABILITY = null;
+const missingProgram = handoff("yes");
+check(
+  missingProgram.status === "program_status_review_required",
+  "missing program status unlocked handoff",
+);
+noHref(missingProgram, "missing program status");
+PROGRAM_AVAILABILITY = canonicalAvailability;
+
+fixedNow = "2026-09-09T12:00:00Z";
+const expiredProgram = handoff("yes");
+check(
+  expiredProgram.status === "program_status_review_required",
+  "expired program status unlocked handoff",
+);
+noHref(expiredProgram, "expired program status");
+fixedNow = "2026-08-09T12:00:00Z";
 
 SOURCE_STATE = {...bundle.source_state, changed_source_ids: ["ca-gov-66317"]};
 const committedRouteChange = handoff("yes");
@@ -506,7 +568,16 @@ for (const [label, value] of invalidQueries) {
 }
 const canonicalQuery =
   `journey=${canonicalJourney.journey_id}&version=${canonicalJourney.version}`;
-check(query(canonicalQuery).status === "ready", "canonical query rejected");
+check(
+  query(canonicalQuery).status === "simulation_ready",
+  "canonical future-state query rejected",
+);
+PROGRAM_AVAILABILITY = null;
+check(
+  query(canonicalQuery).status === "program_status_review_required",
+  "missing program status unlocked direct packet query",
+);
+PROGRAM_AVAILABILITY = canonicalAvailability;
 check(
   query(canonicalQuery, null, canonicalReadiness).status === "invalid",
   "missing normalized journey accepted",
@@ -596,8 +667,11 @@ globalThis.Date = NativeDate;
             "});",
             "let RULES = [];",
             "let SOURCE_STATE = null;",
+            "let PROGRAM_AVAILABILITY = null;",
+            "let JOURNEY = null;",
             "let simulating = false;",
             "const NORMALIZED_READINESS_DATA = new WeakSet();",
+            "const NORMALIZED_PROGRAM_AVAILABILITY = new WeakSet();",
             matching_source,
             validation_source,
             journey_source,

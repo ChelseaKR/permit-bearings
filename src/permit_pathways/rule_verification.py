@@ -15,31 +15,32 @@ rules ask for explicit levels on top of that baseline:
 
 This module never changes which rules match an intake: :mod:`screening`
 does not import it, and nothing here filters or reorders screening results.
-A promoted level binds to the exact citation fingerprint it was checked
-against (:func:`permit_pathways.explanations.citation_fingerprint`); editing
-a rule's citation without re-reviewing it is a data-integrity error caught
-at strict load time, the same way explanation copy is bound to its rule.
-Even an unchanged, correctly bound review ages out: :func:`effective_status`
-fails a stale ``human_reviewed`` or ``jurisdiction_approved`` claim closed
-back to ``machine_linked`` once its review window elapses, exactly as
-``Citation.is_stale`` does for the underlying source date.
+A promoted level binds to both the exact citation fingerprint and the full
+rule fingerprint it was checked against. Editing criteria, scope, pathway,
+notes, dependencies, display grouping, or citation without re-reviewing is a
+data-integrity error caught at strict load time. Even an unchanged, correctly
+bound review ages out: :func:`effective_status` fails a stale
+``human_reviewed`` or ``jurisdiction_approved`` claim closed back to
+``machine_linked`` once its review window elapses. A changed, missing, or aged
+source also holds a promoted claim at ``machine_linked`` until re-verification.
 """
 
 from __future__ import annotations
 
 import json
 import re
+from collections.abc import Collection
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any, cast
 
 from .dates import resolve_today
-from .explanations import citation_fingerprint
+from .explanations import citation_fingerprint, rule_fingerprint
 from .harness.runner import DEFAULT_MAX_AGE_DAYS
 from .screening import Rule
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 VERIFICATION_LEVELS = ("machine_linked", "human_reviewed", "jurisdiction_approved")
 _REVIEWED_LEVELS = ("human_reviewed", "jurisdiction_approved")
 _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -51,6 +52,7 @@ _ENTRY_KEYS = {
     "method",
     "reviewed_on",
     "reviewed_citation_fingerprint",
+    "reviewed_rule_fingerprint",
 }
 
 
@@ -64,6 +66,7 @@ class RuleVerification:
     method: str | None
     reviewed_on: str | None
     reviewed_citation_fingerprint: str | None
+    reviewed_rule_fingerprint: str | None
 
 
 @dataclass(frozen=True)
@@ -126,7 +129,13 @@ def _reviewed_metadata(
     record: dict[str, Any],
     field: str,
     today: date,
-) -> tuple[str | None, str | None, str | None, str | None]:
+) -> tuple[
+    str | None,
+    str | None,
+    str | None,
+    str | None,
+    str | None,
+]:
     reviewer = _optional_text(record.get("reviewer"), f"{field}.reviewer")
     method = _optional_text(record.get("method"), f"{field}.method")
     reviewed_on = _iso_date(
@@ -136,20 +145,24 @@ def _reviewed_metadata(
         record.get("reviewed_citation_fingerprint"),
         f"{field}.reviewed_citation_fingerprint",
     )
-    return reviewer, method, reviewed_on, fingerprint
+    full_rule_fingerprint = _optional_text(
+        record.get("reviewed_rule_fingerprint"),
+        f"{field}.reviewed_rule_fingerprint",
+    )
+    return reviewer, method, reviewed_on, fingerprint, full_rule_fingerprint
 
 
 def _validate_reviewed_level(
-    metadata: tuple[str | None, str | None, str | None, str | None],
+    metadata: tuple[str | None, str | None, str | None, str | None, str | None],
     field: str,
     level: str,
     rule: Rule,
 ) -> None:
-    reviewer, method, reviewed_on, fingerprint = metadata
-    if not all((reviewer, method, reviewed_on, fingerprint)):
+    reviewer, method, reviewed_on, fingerprint, full_rule_fingerprint = metadata
+    if not all((reviewer, method, reviewed_on, fingerprint, full_rule_fingerprint)):
         raise ValueError(
             f"{field}: {level} requires reviewer, method, reviewed_on, and "
-            "reviewed_citation_fingerprint"
+            "reviewed citation and full-rule fingerprints"
         )
     if not rule.citation.is_verified:
         raise ValueError(
@@ -170,6 +183,14 @@ def _validate_reviewed_level(
         raise ValueError(
             f"{field}: reviewed_citation_fingerprint does not match the "
             "rule's current citation"
+        )
+    full_rule_fingerprint_value = cast(str, full_rule_fingerprint)
+    if not _FINGERPRINT.fullmatch(full_rule_fingerprint_value):
+        raise ValueError(f"{field}.reviewed_rule_fingerprint: invalid SHA-256")
+    expected_rule = rule_fingerprint(rule)
+    if full_rule_fingerprint_value != expected_rule:
+        raise ValueError(
+            f"{field}: reviewed_rule_fingerprint does not match the current rule"
         )
 
 
@@ -205,8 +226,16 @@ def _entry(
     else:
         _validate_reviewed_level(metadata, field, level, rule)
 
-    reviewer, method, reviewed_on, fingerprint = metadata
-    return RuleVerification(rule_id, level, reviewer, method, reviewed_on, fingerprint)
+    reviewer, method, reviewed_on, fingerprint, full_rule_fingerprint = metadata
+    return RuleVerification(
+        rule_id,
+        level,
+        reviewer,
+        method,
+        reviewed_on,
+        fingerprint,
+        full_rule_fingerprint,
+    )
 
 
 def _records(path: Path, strict: bool) -> list[Any] | None:
@@ -311,7 +340,7 @@ class LevelCoverage:
         if self.reverted_stale:
             line += (
                 f" ({self.reverted_stale} reverted to machine_linked: "
-                "review window elapsed)"
+                "source or review hold)"
             )
         return line
 
@@ -322,6 +351,7 @@ def level_coverage(
     *,
     today: date | None = None,
     max_age_days: int = DEFAULT_MAX_AGE_DAYS,
+    changed_source_ids: Collection[str] = (),
 ) -> LevelCoverage:
     """Summarize the effective verification level in force across ``rules``.
 
@@ -335,10 +365,14 @@ def level_coverage(
     reverted = 0
     for rule in rules:
         effective = effective_status(
-            rule, ledger, today=as_of, max_age_days=max_age_days
+            rule,
+            ledger,
+            today=as_of,
+            max_age_days=max_age_days,
+            changed_source_ids=changed_source_ids,
         )
         counts[effective.level] += 1
-        if effective.stale:
+        if effective.stale and effective.recorded_level != "machine_linked":
             reverted += 1
     return LevelCoverage(
         total=len(rules),
@@ -355,6 +389,7 @@ def effective_status(
     *,
     today: date | None = None,
     max_age_days: int = DEFAULT_MAX_AGE_DAYS,
+    changed_source_ids: Collection[str] = (),
 ) -> EffectiveVerification:
     """Return the verification level actually in force for ``rule`` today.
 
@@ -370,8 +405,23 @@ def effective_status(
         raise ValueError("max_age_days must be non-negative")
     as_of = resolve_today(today)
     entry = ledger.get(rule.rule_id)
+    recorded = entry.level if entry is not None else "machine_linked"
+    changed = set(changed_source_ids)
+    source_reason: str | None = None
+    if changed.intersection(rule.source_dependencies):
+        source_reason = "source dependency changed; re-verify"
+    elif not rule.citation.is_verified:
+        source_reason = "source evidence has no recorded date; re-verify"
+    elif rule.citation.is_stale(max_age_days, as_of):
+        source_reason = "source review window elapsed; re-verify"
+    if source_reason is not None:
+        return EffectiveVerification(
+            "machine_linked",
+            recorded,
+            True,
+            source_reason,
+        )
     if entry is None or entry.level == "machine_linked":
-        recorded = entry.level if entry is not None else "machine_linked"
         return EffectiveVerification("machine_linked", recorded, False, None)
 
     reviewed_on = cast(str, entry.reviewed_on)

@@ -392,7 +392,7 @@ Source snapshot ID:
 Artifact verified on and by code:
 Artifact-verification receipt ID:
 Protocol version: 2.0.0
-Answer-key version: 1.1.0
+Answer-key version: 1.2.0
 Browser and device category:
 Moderator code:
 Recording: none

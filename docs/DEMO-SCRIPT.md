@@ -93,12 +93,21 @@ Start at `/` for the product boundary, then use `/review.html`,
 
 ### 2b. Bounded packet-presence sample (5 min)
 
-- Follow the link from the hypothetical route to `prepare.html`. State first
-  that this is a generated, made-up record, not a real applicant packet,
-  completeness assessment, pilot, or external validation result.
+- Before following the packet link, show the strict program-availability
+  record. The official City of Woodland program page was checked 2026-08-09
+  and says **“Preapproved ADU List: Coming soon!”** No listed City plan was
+  identified. Say plainly: “This flagship is a source-bound future-state
+  simulation, not a currently usable preapproved plan or an applicant-ready
+  workflow.” The browser blocks the link when that record is missing,
+  malformed, or expired; a passing check permits only the labeled simulation.
+- Follow the simulation link to `prepare.html`. State that this is a generated,
+  made-up record, not a real applicant packet, completeness assessment, pilot,
+  or external validation result. **Yes** in the prior applicability gate did
+  not establish that a City plan is available.
 - Show that the Python evaluator compared explicit synthetic facts and
-  inventory statuses with 25 requirements from one dated City of Woodland
-  preapproved ADU checklist. The public browser validates and renders the
+  inventory statuses with 25 requirements from one City of Woodland
+  preapproved ADU checklist, source checked 2026-07-29. The checklist is not
+  presented as inherently dated. The public browser validates and renders the
   generated result; it does not run a second evaluator.
 - Show the parcel-aware fixture panel. Two fabricated values are bound to the
   real `CITY` and `LU_Descr` fields in the dated Yolo County public
@@ -136,6 +145,13 @@ Start at `/` for the product boundary, then use `/review.html`,
   receipt. Say that receipt status `reviewed` means deliberately selected for
   this repository build; it is not legal, jurisdiction, counsel, or named-human
   content approval, and it is not a live per-page source check.
+- Show the separate rule-review coverage. All 19 current rules are
+  `machine_linked`; zero have a named human review or jurisdiction approval.
+  Schema version 2 requires any promotion to bind both citation and full-rule
+  fingerprints. Citation drift, rule drift, a changed dependency, source age,
+  or review age demotes the effective claim. If showing the CLI, read its
+  exact result as `automated source/regression checks: pass`—bounded automation
+  passed; it is not a substantive review or approval claim.
 - Show that every current rule record has dated source evidence inside the
   review window. For Davis, distinguish the watched City handout and HCD letter
   from the blocked, unwatched municipal-code reference, and point out that the
@@ -180,11 +196,12 @@ Start at `/` for the product boundary, then use `/review.html`,
 
 ### 5. What I want from you (3 min)
 - Market-research honesty: the bounded packet-presence manifest is executable,
-  but its checklist mapping, action copy, and usefulness have not been
-  validated. The adopted source-state overlay and browser holds are executable,
-  but the maintenance process has not been exercised as a timed, staffed,
-  end-to-end re-verification and republication workflow.
-- Ask: which one jurisdiction and ADU subtype should be the deep pilot, which
+  but it is a future-state simulation because Woodland currently lists no
+  preapproved plan. Its checklist mapping, action copy, and usefulness have
+  not been validated. The adopted source-state overlay and browser holds are
+  executable, but the maintenance process has not been exercised as a timed,
+  staffed, end-to-end re-verification and republication workflow.
+- Ask: which one jurisdiction and currently active ADU subtype should be the deep pilot, which
   public/redacted packet examples can staff review, and who approves rule and
   translation changes?
 
@@ -206,6 +223,8 @@ Start at `/` for the product boundary, then use `/review.html`,
   decide which category applies. The current `verified_on` field records dated
   source evidence, not jurisdiction or counsel approval. Encoding was
   machine-assisted; a named human review level and held-out evaluation are
-  next. The separate Woodland checklist mapping has automated source, schema,
-  and fingerprint checks, but no applicant, planner, counsel, or jurisdiction
-  validation.
+  next. The public evidence page shows the actual review level: all 19 rules
+  are `machine_linked`, with no named review. The separate Woodland checklist
+  mapping has automated source, schema, and fingerprint checks, but no
+  applicant, planner, counsel, or jurisdiction validation; its official
+  program-page record also says no preapproved plan list is available yet.

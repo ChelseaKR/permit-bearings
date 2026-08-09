@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from permit_pathways.explanations import citation_fingerprint
+from permit_pathways.explanations import citation_fingerprint, rule_fingerprint
 from permit_pathways.harness.runner import DEFAULT_MAX_AGE_DAYS
 from permit_pathways.rule_verification import (
     VERIFICATION_LEVELS,
@@ -54,6 +54,7 @@ def _reviewed_entry(rule, level, *, reviewed_on="2026-08-01"):
         "method": "Compared line by line against the cited source",
         "reviewed_on": reviewed_on,
         "reviewed_citation_fingerprint": citation_fingerprint(rule),
+        "reviewed_rule_fingerprint": rule_fingerprint(rule),
     }
 
 
@@ -75,6 +76,7 @@ def test_committed_pilot_ledger_claims_no_review_yet(ledger):
         assert entry.method is None
         assert entry.reviewed_on is None
         assert entry.reviewed_citation_fingerprint is None
+        assert entry.reviewed_rule_fingerprint is None
 
 
 def test_loading_the_ledger_cannot_change_deterministic_matches(rules, ledger):
@@ -166,7 +168,7 @@ def test_non_strict_schema_mismatch_and_non_list_entries_degrade_to_empty(
     tmp_path, rules
 ):
     wrong_version = _payload()
-    wrong_version["schema_version"] = 2
+    wrong_version["schema_version"] = 999
     assert (
         load_rule_verifications(
             _write(tmp_path, wrong_version), rules, strict=False, today=TODAY
@@ -193,7 +195,7 @@ def test_missing_rule_coverage_is_rejected(tmp_path, rules):
 
 def test_wrong_schema_version_and_malformed_payloads_are_rejected(tmp_path, rules):
     wrong_version = _payload()
-    wrong_version["schema_version"] = 2
+    wrong_version["schema_version"] = 999
     with pytest.raises(ValueError, match="schema_version"):
         load_rule_verifications(_write(tmp_path, wrong_version), rules, today=TODAY)
 
@@ -233,14 +235,15 @@ def test_promotion_requires_reviewer_method_date_and_fingerprint(
         "method": None,
         "reviewed_on": None,
         "reviewed_citation_fingerprint": None,
+        "reviewed_rule_fingerprint": None,
     }
     payload["entries"] = [
         incomplete if e["rule_id"] == rule.rule_id else e for e in payload["entries"]
     ]
     with pytest.raises(
         ValueError,
-        match="requires reviewer, method, reviewed_on, and "
-        "reviewed_citation_fingerprint",
+        match="requires reviewer, method, reviewed_on, and reviewed citation "
+        "and full-rule fingerprints",
     ):
         load_rule_verifications(_write(tmp_path, payload), rules, today=TODAY)
 
@@ -301,6 +304,27 @@ def test_citation_drift_after_review_is_rejected_at_load_time(tmp_path, rules):
         load_rule_verifications(path, changed_rules, today=TODAY)
 
 
+def test_full_rule_drift_after_review_is_rejected_at_load_time(tmp_path, rules):
+    rule = next(r for r in rules if r.rule_id == "adu-ministerial-review")
+    payload = _payload()
+    payload["entries"] = [
+        _reviewed_entry(rule, "human_reviewed") if e["rule_id"] == rule.rule_id else e
+        for e in payload["entries"]
+    ]
+    path = _write(tmp_path, payload)
+    changed_rules = [
+        replace(
+            r, criteria=[{"field": "project_type", "op": "eq", "value": "two_unit"}]
+        )
+        if r.rule_id == rule.rule_id
+        else r
+        for r in rules
+    ]
+
+    with pytest.raises(ValueError, match="does not match the current rule"):
+        load_rule_verifications(path, changed_rules, today=TODAY)
+
+
 def test_reviewed_on_cannot_predate_the_rules_source_date(tmp_path, rules):
     rule = next(r for r in rules if r.rule_id == "adu-ministerial-review")
     payload = _payload()
@@ -354,6 +378,22 @@ def test_reviewed_citation_fingerprint_must_be_valid_sha256(tmp_path, rules):
         entry if e["rule_id"] == rule.rule_id else e for e in payload["entries"]
     ]
     with pytest.raises(ValueError, match="invalid SHA-256"):
+        load_rule_verifications(_write(tmp_path, payload), rules, today=TODAY)
+
+
+def test_reviewed_rule_fingerprint_must_be_valid_and_current(tmp_path, rules):
+    rule = next(r for r in rules if r.rule_id == "adu-ministerial-review")
+    payload = _payload()
+    entry = _reviewed_entry(rule, "human_reviewed")
+    entry["reviewed_rule_fingerprint"] = "not-a-fingerprint"
+    payload["entries"] = [
+        entry if e["rule_id"] == rule.rule_id else e for e in payload["entries"]
+    ]
+    with pytest.raises(ValueError, match="reviewed_rule_fingerprint: invalid"):
+        load_rule_verifications(_write(tmp_path, payload), rules, today=TODAY)
+
+    entry["reviewed_rule_fingerprint"] = "sha256:" + "0" * 64
+    with pytest.raises(ValueError, match="does not match the current rule"):
         load_rule_verifications(_write(tmp_path, payload), rules, today=TODAY)
 
 
@@ -421,12 +461,14 @@ def test_a_rule_absent_from_the_ledger_defaults_to_machine_linked(rules):
     assert status.reason is None
 
 
-def test_machine_linked_ledger_entry_never_goes_stale(rules, ledger):
+def test_machine_linked_entry_reports_an_aged_source_hold(rules, ledger):
     rule = next(r for r in rules if r.rule_id == "adu-ministerial-review")
     far_future = date(2030, 1, 1)
     status = effective_status(rule, ledger, today=far_future)
     assert status.level == "machine_linked"
-    assert status.stale is False
+    assert status.recorded_level == "machine_linked"
+    assert status.stale is True
+    assert status.reason == "source review window elapsed; re-verify"
 
 
 @pytest.mark.parametrize("level", ["human_reviewed", "jurisdiction_approved"])
@@ -441,12 +483,49 @@ def test_a_fresh_review_holds_its_level_within_the_window(tmp_path, rules, level
     ]
     ledger = load_rule_verifications(_write(tmp_path, payload), rules, today=TODAY)
 
-    still_fresh = date(2026, 8, 1) + timedelta(days=DEFAULT_MAX_AGE_DAYS)
+    # Both the interpretation review and its source evidence must be current.
+    still_fresh = TODAY
     status = effective_status(rule, ledger, today=still_fresh)
     assert status.level == level
     assert status.recorded_level == level
     assert status.stale is False
     assert status.reason is None
+
+
+@pytest.mark.parametrize("level", ["human_reviewed", "jurisdiction_approved"])
+def test_a_changed_source_holds_a_promoted_review_at_machine_linked(
+    tmp_path, rules, level
+):
+    rule = next(r for r in rules if r.rule_id == "adu-ministerial-review")
+    payload = _payload()
+    payload["entries"] = [
+        _reviewed_entry(rule, level, reviewed_on="2026-08-01")
+        if e["rule_id"] == rule.rule_id
+        else e
+        for e in payload["entries"]
+    ]
+    ledger = load_rule_verifications(_write(tmp_path, payload), rules, today=TODAY)
+
+    status = effective_status(
+        rule,
+        ledger,
+        today=TODAY,
+        changed_source_ids=rule.source_dependencies[:1],
+    )
+    assert status.level == "machine_linked"
+    assert status.recorded_level == level
+    assert status.stale is True
+    assert status.reason == "source dependency changed; re-verify"
+
+    coverage = level_coverage(
+        rules,
+        ledger,
+        today=TODAY,
+        changed_source_ids=rule.source_dependencies[:1],
+    )
+    assert coverage.machine_linked == len(rules)
+    assert getattr(coverage, level) == 0
+    assert coverage.reverted_stale == 1
 
 
 @pytest.mark.parametrize("level", ["human_reviewed", "jurisdiction_approved"])
@@ -482,6 +561,7 @@ def test_effective_status_rejects_a_future_reviewed_on(rules):
         method="Compared line by line",
         reviewed_on="2026-08-10",
         reviewed_citation_fingerprint=citation_fingerprint(rule),
+        reviewed_rule_fingerprint=rule_fingerprint(rule),
     )
     with pytest.raises(ValueError, match="reviewed_on is in the future"):
         effective_status(rule, {rule.rule_id: entry}, today=TODAY)
@@ -540,7 +620,8 @@ def test_level_coverage_counts_a_fresh_review_under_its_promoted_level(
     ]
     ledger = load_rule_verifications(_write(tmp_path, payload), rules, today=TODAY)
 
-    still_fresh = date(2026, 8, 1) + timedelta(days=DEFAULT_MAX_AGE_DAYS)
+    # Both the interpretation review and its source evidence must be current.
+    still_fresh = TODAY
     cov = level_coverage(rules, ledger, today=still_fresh)
     assert cov.total == len(rules)
     assert getattr(cov, level) == 1
@@ -570,4 +651,4 @@ def test_level_coverage_tallies_an_elapsed_review_as_reverted_stale(
     assert cov.machine_linked == len(rules)
     assert getattr(cov, level) == 0
     assert cov.reverted_stale == 1
-    assert "1 reverted to machine_linked: review window elapsed" in cov.summary()
+    assert "1 reverted to machine_linked: source or review hold" in cov.summary()

@@ -36,6 +36,11 @@ def test_reviewed_source_state_browser_contract_fails_closed_and_is_exact():
         "function stableJson",
         "async function sha256Fingerprint",
     )
+    program_availability = _source_between(
+        application,
+        "const PROGRAM_AVAILABILITY_URL",
+        "const RULE_VERIFICATION_TOP_LEVEL_KEYS",
+    )
     freeze_helpers = _source_between(
         application,
         "function deepFreezeGeneratedData",
@@ -77,7 +82,9 @@ def test_reviewed_source_state_browser_contract_fails_closed_and_is_exact():
             'import {readFileSync} from "node:fs";',
             "let RULES = [];",
             "let SOURCE_STATE = null;",
+            "let PROGRAM_AVAILABILITY = null;",
             "let simulating = false;",
+            "const NORMALIZED_PROGRAM_AVAILABILITY = new WeakSet();",
             "function check(condition, message) {",
             "  if (!condition) throw new Error(message);",
             "}",
@@ -85,6 +92,7 @@ def test_reviewed_source_state_browser_contract_fails_closed_and_is_exact():
             exact_keys,
             browser_validation,
             stable_json,
+            program_availability,
             freeze_helpers,
             rule_state,
             same_string_set,
@@ -104,13 +112,15 @@ const bundle = JSON.parse(
 const NativeDate = Date;
 class FixedDate extends NativeDate {
   constructor(...args) {
-    super(...(args.length ? args : ["2026-08-03T12:00:00Z"]));
+    super(...(args.length ? args : ["2026-08-09T12:00:00Z"]));
   }
-  static now() { return NativeDate.parse("2026-08-03T12:00:00Z"); }
+  static now() { return NativeDate.parse("2026-08-09T12:00:00Z"); }
   static parse(value) { return NativeDate.parse(value); }
   static UTC(...args) { return NativeDate.UTC(...args); }
 }
 globalThis.Date = FixedDate;
+PROGRAM_AVAILABILITY = bundle.program_availability.availability;
+NORMALIZED_PROGRAM_AVAILABILITY.add(PROGRAM_AVAILABILITY);
 
 function normalize(candidate) {
   return normalizeSourceState(

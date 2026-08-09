@@ -1318,6 +1318,9 @@ def test_answer_key_binds_canonical_data_and_browser_fail_closed_states():
         / "woodland-preapproved-detached-adu.json"
     )
     content_review = load_json(CONTENT_PATH)
+    availability = load_json(
+        ROOT / "data" / "availability" / "woodland-preapproved-adu-program.json"
+    )["availability"]
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     bundle = (ROOT / "data" / "demo-data.js").read_text(encoding="utf-8")
 
@@ -1327,6 +1330,16 @@ def test_answer_key_binds_canonical_data_and_browser_fail_closed_states():
         answer["editable_applicability_fact_ids"]
         == journey["editable_applicability_fact_ids"]
     )
+    assert answer["program_availability"] == {
+        "program_id": availability["program_id"],
+        "source_id": availability["source"]["source_id"],
+        "mode": availability["mode"],
+        "status": availability["status"],
+        "checked_on": availability["source"]["checked_on"],
+        "recheck_due_on": availability["source"]["recheck_due_on"],
+        "excerpt": availability["source"]["excerpt"],
+        "excerpt_sha256": availability["source"]["excerpt_sha256"],
+    }
     assert answer["route_source_review_due_on"] == journey["route_source_review_due_on"]
     assert answer["readiness_source_status"] == readiness_manifest["source_status"]
     assert (
@@ -1359,13 +1372,15 @@ def test_answer_key_binds_canonical_data_and_browser_fail_closed_states():
         "start_required",
         "invalid",
         "source_review_required",
-        "ready",
+        "program_status_review_required",
+        "simulation_ready",
     }
     for fragment in (
         'if (!keys.length) return {status: "start_required"}',
         'return {status: "source_review_required"}',
-        'return {status: "ready"}',
-        'if (state.status !== "ready")',
+        'return {status: "program_status_review_required"}',
+        'return {status: "simulation_ready"}',
+        'if (state.status !== "simulation_ready")',
         "if (evidenceSummary) evidenceSummary.hidden = true",
     ):
         assert fragment in application

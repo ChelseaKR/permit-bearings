@@ -24,10 +24,13 @@
 <meta name="twitter:image" content="https://chelseakr.github.io/permit-pathways/assets/social-card.png">
 <meta name="twitter:image:alt" content="Permit Bearings public prototype for California ADU, JADU, and SB 9 permitting">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20260803a">
+<link rel="stylesheet" href="assets/california-design-system.css?v=20260809a">
+<link rel="stylesheet" href="assets/site.css?v=20260809a">
 </head>
 <body data-page="home">
-<a class="skip-link" href="#mainContent">Skip to main content</a>
+<div id="skip-to-content">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
+</div>
 
 <header class="site-header">
   <div class="header-inner">
@@ -62,20 +65,21 @@
         <h1 id="home-title">Get your bearings before you file.</h1>
         <p class="service-lede">Walk through a made-up Woodland detached ADU example to see a candidate route, reported checklist gaps, official sources, and questions to take to staff.</p>
         <div class="home-actions">
-          <a class="button" href="check.html?sample=adu">Open the made-up Woodland example</a>
-          <a class="button button-secondary" href="check.html">Check a different project</a>
+          <a class="button ca-button" href="check.html?sample=adu">Open the made-up Woodland example</a>
+          <a class="button button-secondary ca-button ca-button-outline" href="check.html">Check a different project</a>
         </div>
         <p class="service-privacy">No sign-in. No uploads. Project answers
           stay in your browser and are not sent to or stored by this demo.</p>
       </div>
 
-      <aside class="home-boundary" aria-labelledby="home-boundary-heading">
+      <ca-shout class="home-boundary" color="yellow" role="note"
+        aria-labelledby="home-boundary-heading">
         <p class="section-kicker">Use it to prepare, not to predict</p>
         <h2 id="home-boundary-heading">Prototype, not a permit decision</h2>
         <p>Permit Bearings does not verify parcel facts, reproduce a complete
           local checklist, determine final eligibility, certify completeness,
           or approve a permit.</p>
-      </aside>
+      </ca-shout>
     </div>
   </section>
 
@@ -116,32 +120,35 @@
 
   <section class="page-shell reading-shell before-start"
     aria-labelledby="before-start-heading">
-    <h2 id="before-start-heading">Before you start</h2>
-    <p>Use the information you already have. You will be asked for:</p>
-    <ul>
-      <li>the city or county where the property is located;</li>
-      <li>the type of housing project; and</li>
-      <li>facts about the dwelling and proposed work.</li>
-    </ul>
-    <p>If you do not know an answer, choose “I’m not sure.” The result will
-      tell you what to ask staff instead of filling in the gap.</p>
+    <ca-box color="gray" size="large">
+      <h2 id="before-start-heading">Before you start</h2>
+      <p>Use the information you already have. You will be asked for:</p>
+      <ul>
+        <li>the city or county where the property is located;</li>
+        <li>the type of housing project; and</li>
+        <li>facts about the dwelling and proposed work.</li>
+      </ul>
+      <p>If you do not know an answer, choose “I’m not sure.” The result will
+        tell you what to ask staff instead of filling in the gap.</p>
+    </ca-box>
   </section>
 
   <section class="page-shell reading-shell supporting-tools"
     aria-labelledby="supporting-tools-heading">
     <h2 id="supporting-tools-heading">For staff and reviewers</h2>
-    <ul class="service-link-list">
-      <li>
-        <a href="review.html">Screen local ordinance text</a>
+    <ca-mesh class="service-link-list" cell-size="large" gap="3"
+      role="list">
+      <ca-card role="listitem">
+        <h3><a href="review.html">Screen local ordinance text</a></h3>
         <p>Screen pasted ADU or SB 9 text for a bounded set of provisions that
           may need staff or counsel review.</p>
-      </li>
-      <li>
-        <a href="evidence.html">Inspect sources and prototype limits</a>
+      </ca-card>
+      <ca-card role="listitem">
+        <h3><a href="evidence.html">Inspect sources and prototype limits</a></h3>
         <p>See source dates, dependency links, structured regression cases,
           known gaps, and a source-change rehearsal.</p>
-      </li>
-    </ul>
+      </ca-card>
+    </ca-mesh>
   </section>
 
   <section class="page-shell reading-shell current-scope"
