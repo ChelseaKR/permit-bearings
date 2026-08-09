@@ -1146,6 +1146,52 @@ select[aria-invalid="true"] {
   padding: 1rem 1.15rem 0;
 }
 
+.decision-boundary {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 0.42rem solid var(--blue);
+  margin: 1.15rem 0 1.4rem;
+  max-width: 48rem;
+  padding: 0.9rem 1.15rem 0;
+}
+
+.decision-boundary[data-boundary-state="unknown"],
+.decision-boundary[data-boundary-state="no-route"] {
+  border-left-color: var(--yellow);
+}
+
+.decision-boundary[data-boundary-state="source-review-hold"] {
+  border-left-color: var(--warning-700);
+}
+
+.decision-boundary h3 {
+  font-family: var(--display);
+  font-size: var(--font-size-3);
+  line-height: var(--font-lineheight-3);
+  margin: 0 0 0.55rem;
+}
+
+.decision-boundary dl {
+  border-top: 1px solid var(--line);
+  margin: 0;
+}
+
+.decision-boundary dl > div {
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 0.4rem 1.2rem;
+  grid-template-columns: minmax(10rem, 0.65fr) minmax(0, 1.35fr);
+  padding: 0.62rem 0;
+}
+
+.decision-boundary dt {
+  font-weight: 800;
+}
+
+.decision-boundary dd {
+  margin: 0;
+}
+
 .statewide-orientation {
   background: var(--surface);
   border: 2px solid var(--black);
@@ -2945,6 +2991,7 @@ tr:last-child td {
 
   .result-fields > div,
   .result-facts > div,
+  .decision-boundary dl > div,
   .jurisdiction-profile-ledger > div,
   .statewide-orientation-coverage dl > div,
   .statewide-orientation-facts > div,
@@ -3163,6 +3210,7 @@ tr:last-child td {
   .staff-question-list,
   .journey-evidence-summary,
   .statewide-orientation,
+  .decision-boundary,
   .journey-evidence-questions,
   .journey-evidence-boundary {
     border: 2px solid CanvasText;

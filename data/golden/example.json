@@ -9,6 +9,18 @@
       "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "adu-conversion-exemptions",
+      "adu-height-standards",
+      "adu-ministerial-review",
+      "adu-multifamily-66323",
+      "adu-multifamily-proposed-66323",
+      "adu-no-owner-occupancy-rental",
+      "adu-parking-limits",
+      "adu-protected-minimum",
+      "adu-size-allowances",
+      "adu-unpermitted-legalization"
+    ],
     "expected_rule_ids": [
       "adu-ministerial-review",
       "adu-protected-minimum",
@@ -27,6 +39,11 @@
       "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "jadu-ministerial-review",
+      "jadu-standards",
+      "jadu-unpermitted-legalization"
+    ],
     "expected_rule_ids": [
       "jadu-standards",
       "jadu-ministerial-review"
@@ -47,6 +64,10 @@
       "on_protected_site": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-adu-interaction",
+      "sb9-two-unit-ministerial"
+    ],
     "expected_rule_ids": [
       "sb9-two-unit-ministerial",
       "sb9-adu-interaction"
@@ -67,6 +88,10 @@
       "on_protected_site": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-adu-interaction",
+      "sb9-two-unit-ministerial"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -88,6 +113,10 @@
       "proposed_lot_size_compliant": "yes",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-lot-split-adu-interaction",
+      "sb9-urban-lot-split"
+    ],
     "expected_rule_ids": [
       "sb9-urban-lot-split",
       "sb9-lot-split-adu-interaction"
@@ -103,6 +132,19 @@
       "unpermitted_existing": "no",
       "jurisdiction": "davis"
     },
+    "rule_dependency_ids": [
+      "adu-conversion-exemptions",
+      "adu-height-standards",
+      "adu-ministerial-review",
+      "adu-multifamily-66323",
+      "adu-multifamily-proposed-66323",
+      "adu-no-owner-occupancy-rental",
+      "adu-parking-limits",
+      "adu-protected-minimum",
+      "adu-size-allowances",
+      "adu-unpermitted-legalization",
+      "davis-local-adu-process"
+    ],
     "expected_rule_ids": [
       "adu-ministerial-review",
       "adu-protected-minimum",
@@ -123,6 +165,19 @@
       "unpermitted_existing": "no",
       "jurisdiction": "woodland"
     },
+    "rule_dependency_ids": [
+      "adu-conversion-exemptions",
+      "adu-height-standards",
+      "adu-ministerial-review",
+      "adu-multifamily-66323",
+      "adu-multifamily-proposed-66323",
+      "adu-no-owner-occupancy-rental",
+      "adu-parking-limits",
+      "adu-protected-minimum",
+      "adu-size-allowances",
+      "adu-unpermitted-legalization",
+      "woodland-adu-ordinance-2026"
+    ],
     "expected_rule_ids": [
       "adu-ministerial-review",
       "adu-protected-minimum",
@@ -143,6 +198,18 @@
       "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "adu-conversion-exemptions",
+      "adu-height-standards",
+      "adu-ministerial-review",
+      "adu-multifamily-66323",
+      "adu-multifamily-proposed-66323",
+      "adu-no-owner-occupancy-rental",
+      "adu-parking-limits",
+      "adu-protected-minimum",
+      "adu-size-allowances",
+      "adu-unpermitted-legalization"
+    ],
     "expected_rule_ids": [
       "adu-ministerial-review",
       "adu-protected-minimum",
@@ -162,6 +229,18 @@
       "unpermitted_existing": "yes",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "adu-conversion-exemptions",
+      "adu-height-standards",
+      "adu-ministerial-review",
+      "adu-multifamily-66323",
+      "adu-multifamily-proposed-66323",
+      "adu-no-owner-occupancy-rental",
+      "adu-parking-limits",
+      "adu-protected-minimum",
+      "adu-size-allowances",
+      "adu-unpermitted-legalization"
+    ],
     "expected_rule_ids": [
       "adu-ministerial-review",
       "adu-protected-minimum",
@@ -183,6 +262,18 @@
       "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "adu-conversion-exemptions",
+      "adu-height-standards",
+      "adu-ministerial-review",
+      "adu-multifamily-66323",
+      "adu-multifamily-proposed-66323",
+      "adu-no-owner-occupancy-rental",
+      "adu-parking-limits",
+      "adu-protected-minimum",
+      "adu-size-allowances",
+      "adu-unpermitted-legalization"
+    ],
     "expected_rule_ids": [
       "adu-ministerial-review",
       "adu-protected-minimum",
@@ -203,6 +294,18 @@
       "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "adu-conversion-exemptions",
+      "adu-height-standards",
+      "adu-ministerial-review",
+      "adu-multifamily-66323",
+      "adu-multifamily-proposed-66323",
+      "adu-no-owner-occupancy-rental",
+      "adu-parking-limits",
+      "adu-protected-minimum",
+      "adu-size-allowances",
+      "adu-unpermitted-legalization"
+    ],
     "expected_rule_ids": [
       "adu-ministerial-review",
       "adu-protected-minimum",
@@ -223,6 +326,18 @@
       "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "adu-conversion-exemptions",
+      "adu-height-standards",
+      "adu-ministerial-review",
+      "adu-multifamily-66323",
+      "adu-multifamily-proposed-66323",
+      "adu-no-owner-occupancy-rental",
+      "adu-parking-limits",
+      "adu-protected-minimum",
+      "adu-size-allowances",
+      "adu-unpermitted-legalization"
+    ],
     "expected_rule_ids": [
       "adu-ministerial-review",
       "adu-protected-minimum",
@@ -242,6 +357,18 @@
       "unpermitted_existing": "unknown",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "adu-conversion-exemptions",
+      "adu-height-standards",
+      "adu-ministerial-review",
+      "adu-multifamily-66323",
+      "adu-multifamily-proposed-66323",
+      "adu-no-owner-occupancy-rental",
+      "adu-parking-limits",
+      "adu-protected-minimum",
+      "adu-size-allowances",
+      "adu-unpermitted-legalization"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -254,6 +381,18 @@
       "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "adu-conversion-exemptions",
+      "adu-height-standards",
+      "adu-ministerial-review",
+      "adu-multifamily-66323",
+      "adu-multifamily-proposed-66323",
+      "adu-no-owner-occupancy-rental",
+      "adu-parking-limits",
+      "adu-protected-minimum",
+      "adu-size-allowances",
+      "adu-unpermitted-legalization"
+    ],
     "expected_rule_ids": [
       "adu-ministerial-review",
       "adu-protected-minimum",
@@ -272,6 +411,11 @@
       "unpermitted_existing": "yes",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "jadu-ministerial-review",
+      "jadu-standards",
+      "jadu-unpermitted-legalization"
+    ],
     "expected_rule_ids": [
       "jadu-standards",
       "jadu-ministerial-review",
@@ -287,6 +431,11 @@
       "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "jadu-ministerial-review",
+      "jadu-standards",
+      "jadu-unpermitted-legalization"
+    ],
     "expected_rule_ids": [
       "jadu-standards",
       "jadu-ministerial-review"
@@ -301,6 +450,11 @@
       "unpermitted_existing": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "jadu-ministerial-review",
+      "jadu-standards",
+      "jadu-unpermitted-legalization"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -318,6 +472,10 @@
       "on_protected_site": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-adu-interaction",
+      "sb9-two-unit-ministerial"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -335,6 +493,10 @@
       "on_protected_site": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-adu-interaction",
+      "sb9-two-unit-ministerial"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -352,6 +514,10 @@
       "on_protected_site": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-adu-interaction",
+      "sb9-two-unit-ministerial"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -373,6 +539,10 @@
       "proposed_lot_size_compliant": "yes",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-lot-split-adu-interaction",
+      "sb9-urban-lot-split"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -394,6 +564,10 @@
       "proposed_lot_size_compliant": "no",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-lot-split-adu-interaction",
+      "sb9-urban-lot-split"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -415,6 +589,10 @@
       "proposed_lot_size_compliant": "yes",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-lot-split-adu-interaction",
+      "sb9-urban-lot-split"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -436,6 +614,10 @@
       "proposed_lot_size_compliant": "yes",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-lot-split-adu-interaction",
+      "sb9-urban-lot-split"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -457,6 +639,10 @@
       "proposed_lot_size_compliant": "unknown",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-lot-split-adu-interaction",
+      "sb9-urban-lot-split"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -478,6 +664,10 @@
       "proposed_lot_size_compliant": "yes",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-lot-split-adu-interaction",
+      "sb9-urban-lot-split"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -499,6 +689,10 @@
       "proposed_lot_size_compliant": "yes",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-lot-split-adu-interaction",
+      "sb9-urban-lot-split"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -520,6 +714,10 @@
       "proposed_lot_size_compliant": "yes",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-lot-split-adu-interaction",
+      "sb9-urban-lot-split"
+    ],
     "expected_rule_ids": []
   },
   {
@@ -541,6 +739,10 @@
       "proposed_lot_size_compliant": "yes",
       "jurisdiction": "example-city"
     },
+    "rule_dependency_ids": [
+      "sb9-lot-split-adu-interaction",
+      "sb9-urban-lot-split"
+    ],
     "expected_rule_ids": [
       "sb9-urban-lot-split",
       "sb9-lot-split-adu-interaction"

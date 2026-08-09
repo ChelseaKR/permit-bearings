@@ -58,7 +58,7 @@ function sourceStateFixture(status, sourceId) {
   state.unaffected_rule_ids = data.rules.map(rule => rule.rule_id)
     .filter(ruleId => !affectedRuleSet.has(ruleId)).sort();
   state.affected_golden_case_ids = data.golden.filter(record =>
-    record.expected_rule_ids.some(ruleId => affectedRuleSet.has(ruleId))
+    record.rule_dependency_ids.some(ruleId => affectedRuleSet.has(ruleId))
   ).map(record => record.case_id).sort();
   const affectedCaseSet = new Set(state.affected_golden_case_ids);
   state.unaffected_golden_case_ids = data.golden.map(record => record.case_id)
@@ -461,6 +461,115 @@ test("populated applicant result reflows without automated WCAG violations", asy
   await expectNoAutomatedWcagViolations(page);
 });
 
+test("decision boundary distinguishes candidate, unknown, and no-route results", async ({
+  page,
+}) => {
+  await openCanonicalJourney(page);
+  const boundary = page.locator("#decisionBoundary");
+  await expect(page.locator("#resultsHeading + #decisionBoundary")).toHaveCount(1);
+  await expect(boundary).toHaveAttribute("data-boundary-state", "candidate");
+  await expect(boundary.locator("[data-boundary-part='shows'] dd")).toHaveText(
+    "A candidate route to discuss with staff. It is not an approval.",
+  );
+  await expect(boundary.locator("[data-boundary-part='unconfirmed'] dd")).toHaveText(
+    "Property facts, local rules, and a complete application checklist.",
+  );
+  await expect(page.locator(".result-route .result-title-visible")).toHaveText(
+    "Candidate route to discuss with staff.",
+  );
+  await expect(page.locator(".result-route .candidate-route-record")).toContainText(
+    "ADU — ministerial review and application timelines",
+  );
+  await expect(page.locator("#statewideOrientation .statewide-route-list strong"))
+    .toHaveText("Candidate route to discuss with staff");
+  await expect(page.locator("#statewideOrientation .statewide-route-list li"))
+    .toContainText("ADU — ministerial review and application timelines");
+
+  await page.locator(
+    'input[name="primary_dwelling_status"][value="unknown"]',
+  ).check();
+  await page.locator("#t-submit").click();
+  await expect(boundary).toHaveAttribute("data-boundary-state", "unknown");
+  await expect(boundary.locator("[data-boundary-part='shows'] dd")).toHaveText(
+    "Staff review is needed before this prototype can show a candidate route.",
+  );
+
+  await page.goto("/check.html");
+  await page.locator("#jurisInput").fill("Woodland (Yolo Co.)");
+  await page.locator('input[name="project_type"][value="two_unit"]').check();
+  const noRouteFacts = {
+    in_urbanized_area: "yes",
+    sf_zone: "yes",
+    demolishes_protected_housing: "no",
+    tenant_occupied_last_3_years: "yes",
+    ellis_withdrawal_last_15_years: "no",
+    two_unit_contributing_historic_location: "no",
+    two_unit_individually_listed_historic_property: "no",
+    on_protected_site: "no",
+  };
+  for (const [name, value] of Object.entries(noRouteFacts)) {
+    await page.locator(`input[name="${name}"][value="${value}"]`).check();
+  }
+  await page.locator("#t-submit").click();
+  await expect(boundary).toHaveAttribute("data-boundary-state", "no-route");
+  await expect(boundary.locator("[data-boundary-part='shows'] dd")).toHaveText(
+    "No candidate route was identified in this limited rule set.",
+  );
+  await expect(boundary.locator("[data-boundary-part='next'] dd")).toContainText(
+    "Woodland (Yolo Co.) staff",
+  );
+});
+
+test("decision boundary holds affected candidate guidance for source review", async ({
+  page,
+}) => {
+  await serveSourceStateFixture(page, "changed", "ca-gov-66317");
+  await page.goto("/check.html?sample=adu");
+  const boundary = page.locator("#decisionBoundary");
+  await expect(boundary).toHaveAttribute(
+    "data-boundary-state",
+    "source-review-hold",
+  );
+  await expect(boundary.locator("[data-boundary-part='shows'] dd")).toHaveText(
+    "Source review is needed. Guidance for affected records is withheld.",
+  );
+  await expect(boundary.locator("[data-boundary-part='unconfirmed'] dd")).toHaveText(
+    "One or more matching source records need a source check before they can support guidance.",
+  );
+  await expect(page.locator(".result-route")).toHaveClass(/unverified/);
+});
+
+test("multi-route result headings expose distinct route identities", async ({
+  page,
+}) => {
+  await page.goto("/check.html");
+  await page.locator("#jurisInput").fill("Woodland (Yolo Co.)");
+  await page.locator('input[name="project_type"][value="adu"]').check();
+  const conversionFacts = {
+    primary_dwelling_status: "existing_single_family",
+    adu_project_form: "conversion",
+    unpermitted_existing: "yes",
+  };
+  for (const [name, value] of Object.entries(conversionFacts)) {
+    await page.locator(`input[name="${name}"][value="${value}"]`).check();
+  }
+  await page.locator("#t-submit").click();
+
+  const routeCards = page.locator("[data-result-group='route']");
+  await expect(routeCards).toHaveCount(2);
+  await expect(page.locator(
+    '[data-rule-id="adu-ministerial-review"] .result-title',
+  )).toHaveAccessibleName(
+    "Candidate route to discuss with staff. Route record: ADU — ministerial review and application timelines",
+  );
+  await expect(page.locator(
+    '[data-rule-id="adu-unpermitted-legalization"] .result-title',
+  )).toHaveAccessibleName(
+    "Candidate route to discuss with staff. Route record: ADU — possible legalization of a unit built before 2020",
+  );
+  await expectNoAutomatedWcagViolations(page);
+});
+
 test("statewide orientation handoff works across city, county, and local-layer profiles", async ({
   page,
 }) => {
@@ -703,7 +812,7 @@ test("changed source receipt opens the exact visible review queue", async ({
     "Review queue open.",
   );
   await expect(page.locator("#sourceImpactQueue")).toContainText(
-    "1 rule record and 9 structured scenarios",
+    "1 rule record and 10 structured scenarios",
   );
   await expect(page.locator("#sourceImpactQueue")).toContainText(
     "the Woodland route-to-packet handoff",

@@ -1,7 +1,12 @@
+import json
 from datetime import date
 from pathlib import Path
 
+import pytest
+
 from permit_pathways.harness import verify_rules
+from permit_pathways.harness.runner import load_golden
+from permit_pathways.screening import load_rules
 
 DATA = Path(__file__).parent.parent / "data"
 RULES = DATA / "rules"
@@ -49,3 +54,79 @@ def test_jurisdiction_layers_ride_on_the_statewide_base():
         "davis-new-detached-adu-local-layer",
         "woodland-new-detached-adu-local-layer",
     } <= set(report.golden_passed)
+
+
+def test_golden_rule_dependencies_are_explicit_and_cover_expected_rules():
+    rules = load_rules(RULES, today=AS_OF)
+    cases = load_golden(GOLDEN, rules)
+
+    assert len(cases) == 29
+    assert all(
+        case.rule_dependency_ids == sorted(case.rule_dependency_ids) for case in cases
+    )
+    assert all(case.rule_dependency_ids for case in cases)
+    assert all(
+        set(case.expected_rule_ids) <= set(case.rule_dependency_ids) for case in cases
+    )
+    assert {
+        "sb9-adu-interaction",
+        "sb9-two-unit-ministerial",
+    } == set(
+        next(
+            case.rule_dependency_ids
+            for case in cases
+            if case.case_id == "sb9-duplex-tenant-occupied"
+        )
+    )
+
+
+@pytest.mark.parametrize(
+    ("mutate", "message"),
+    [
+        (
+            lambda record: record.pop("rule_dependency_ids"),
+            "exactly the Golden case fields",
+        ),
+        (
+            lambda record: record.update(
+                {"rule_dependency_ids": list(reversed(record["rule_dependency_ids"]))}
+            ),
+            "sorted unique list",
+        ),
+        (
+            lambda record: record.update(
+                {
+                    "rule_dependency_ids": [
+                        *record["rule_dependency_ids"],
+                        "unknown-rule",
+                    ]
+                }
+            ),
+            "unknown rule IDs",
+        ),
+        (
+            lambda record: record.update(
+                {
+                    "rule_dependency_ids": [
+                        rule_id
+                        for rule_id in record["rule_dependency_ids"]
+                        if rule_id != record["expected_rule_ids"][0]
+                    ]
+                }
+            ),
+            "must include expected rule IDs",
+        ),
+    ],
+)
+def test_golden_loader_rejects_unbound_rule_dependencies(
+    tmp_path,
+    mutate,
+    message,
+):
+    payload = json.loads(GOLDEN.read_text(encoding="utf-8"))
+    mutate(payload[0])
+    path = tmp_path / "golden.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    with pytest.raises(ValueError, match=message):
+        load_golden(path, load_rules(RULES, today=AS_OF))

@@ -139,6 +139,24 @@ const STRINGS = {
     results: "Your result",
     resultIntro: "This is not a complete list of requirements or a decision that the project qualifies. We did not verify the property facts or approve the project.",
     routeOrientation: "The open path is shown first for orientation. The prototype did not rank or recommend it.",
+    candidateResultTitle: "Candidate route to discuss with staff",
+    candidateRouteRecord: "Route record",
+    decisionBoundaryHeading: "Decision boundary",
+    decisionBoundaryShows: "What this shows",
+    decisionBoundaryUnconfirmed: "Still unconfirmed",
+    decisionBoundaryNext: "Next step",
+    decisionBoundaryCandidateShows: "A candidate route to discuss with staff. It is not an approval.",
+    decisionBoundaryCandidateUnconfirmed: "Property facts, local rules, and a complete application checklist.",
+    decisionBoundaryCandidateNext: jurisdiction => `Confirm jurisdiction-specific questions with ${jurisdiction} staff.`,
+    decisionBoundaryUnknownShows: "Staff review is needed before this prototype can show a candidate route.",
+    decisionBoundaryUnknownUnconfirmed: "The facts marked \"I'm not sure.\"",
+    decisionBoundaryUnknownNext: jurisdiction => `Confirm those facts with ${jurisdiction} staff.`,
+    decisionBoundaryNoRouteShows: "No candidate route was identified in this limited rule set.",
+    decisionBoundaryNoRouteUnconfirmed: "Other statewide or local routes may apply.",
+    decisionBoundaryNoRouteNext: jurisdiction => `Ask ${jurisdiction} staff to review the project and current local requirements.`,
+    decisionBoundarySourceReviewShows: "Source review is needed. Guidance for affected records is withheld.",
+    decisionBoundarySourceReviewUnconfirmed: "One or more matching source records need a source check before they can support guidance.",
+    decisionBoundarySourceReviewNext: jurisdiction => `Review the source status below and confirm current requirements with ${jurisdiction} staff.`,
     resultCount: count => count === 1 ? "1 result found." : `${count} results found.`,
     answersHeading: "Answers used for this result",
     sampleAnswersHeading: "Sample answers used for this result",
@@ -334,6 +352,24 @@ const STRINGS = {
     results: "Su resultado",
     resultIntro: "Esta no es una lista completa de requisitos ni una decisión de que el proyecto cumple los requisitos. No verificamos los datos de la propiedad ni aprobamos el proyecto.",
     routeOrientation: "La vía abierta aparece primero para orientar. El prototipo no la clasificó ni la recomendó.",
+    candidateResultTitle: "Posible vía para consultar con el personal",
+    candidateRouteRecord: "Registro de la vía",
+    decisionBoundaryHeading: "Límites de este resultado",
+    decisionBoundaryShows: "Lo que muestra",
+    decisionBoundaryUnconfirmed: "Lo que sigue sin confirmar",
+    decisionBoundaryNext: "Siguiente paso",
+    decisionBoundaryCandidateShows: "Una posible vía para consultar con el personal. No es una aprobación.",
+    decisionBoundaryCandidateUnconfirmed: "Datos de la propiedad, reglas locales y una lista completa de requisitos.",
+    decisionBoundaryCandidateNext: jurisdiction => `Confirme las preguntas específicas de la jurisdicción con el personal de ${jurisdiction}.`,
+    decisionBoundaryUnknownShows: "Se necesita revisión del personal antes de que este prototipo muestre una posible vía.",
+    decisionBoundaryUnknownUnconfirmed: "Los datos marcados como \"No lo sé.\"",
+    decisionBoundaryUnknownNext: jurisdiction => `Confirme esos datos con el personal de ${jurisdiction}.`,
+    decisionBoundaryNoRouteShows: "No se identificó una posible vía en este conjunto limitado de reglas.",
+    decisionBoundaryNoRouteUnconfirmed: "Podrían aplicarse otras vías estatales o locales.",
+    decisionBoundaryNoRouteNext: jurisdiction => `Pida al personal de ${jurisdiction} que revise el proyecto y los requisitos locales vigentes.`,
+    decisionBoundarySourceReviewShows: "Se necesita revisar la fuente. Se ocultan las indicaciones de los registros afectados.",
+    decisionBoundarySourceReviewUnconfirmed: "Uno o más registros de fuentes coincidentes necesitan una comprobación antes de respaldar indicaciones.",
+    decisionBoundarySourceReviewNext: jurisdiction => `Revise el estado de la fuente indicado y confirme los requisitos vigentes con el personal de ${jurisdiction}.`,
     resultCount: count => count === 1 ? "Se encontró 1 resultado." : `Se encontraron ${count} resultados.`,
     answersHeading: "Respuestas usadas para este resultado",
     sampleAnswersHeading: "Respuestas de ejemplo usadas para este resultado",
@@ -1099,7 +1135,7 @@ function sourceImpactLists(changedSourceIds, rules, golden) {
   const unaffectedRules = rules.map(rule => rule.rule_id)
     .filter(ruleId => !affectedRuleSet.has(ruleId)).sort();
   const affectedCases = golden.filter(record =>
-    record.expected_rule_ids.some(ruleId => affectedRuleSet.has(ruleId))
+    record.rule_dependency_ids.some(ruleId => affectedRuleSet.has(ruleId))
   ).map(record => record.case_id).sort();
   const affectedCaseSet = new Set(affectedCases);
   const unaffectedCases = golden.map(record => record.case_id)
@@ -2132,21 +2168,61 @@ function renderProjectFacts() {
   </section>`;
 }
 
+function decisionBoundaryMarkup(state) {
+  const s = STRINGS[lang];
+  const jurisdiction = jurisDisplay(LAST_JURISDICTION);
+  const copy = {
+    candidate: {
+      shows: s.decisionBoundaryCandidateShows,
+      unconfirmed: s.decisionBoundaryCandidateUnconfirmed,
+      next: s.decisionBoundaryCandidateNext(jurisdiction),
+    },
+    unknown: {
+      shows: s.decisionBoundaryUnknownShows,
+      unconfirmed: s.decisionBoundaryUnknownUnconfirmed,
+      next: s.decisionBoundaryUnknownNext(jurisdiction),
+    },
+    "no-route": {
+      shows: s.decisionBoundaryNoRouteShows,
+      unconfirmed: s.decisionBoundaryNoRouteUnconfirmed,
+      next: s.decisionBoundaryNoRouteNext(jurisdiction),
+    },
+    "source-review-hold": {
+      shows: s.decisionBoundarySourceReviewShows,
+      unconfirmed: s.decisionBoundarySourceReviewUnconfirmed,
+      next: s.decisionBoundarySourceReviewNext(jurisdiction),
+    },
+  }[state];
+  if (!copy) return "";
+  const rows = [
+    ["shows", s.decisionBoundaryShows, copy.shows],
+    ["unconfirmed", s.decisionBoundaryUnconfirmed, copy.unconfirmed],
+    ["next", s.decisionBoundaryNext, copy.next],
+  ];
+  return `<aside class="decision-boundary ca-box" id="decisionBoundary"
+      data-boundary-state="${esc(state)}" role="note"
+      aria-labelledby="decisionBoundaryHeading" lang="${lang}">
+    <h3 id="decisionBoundaryHeading">${esc(s.decisionBoundaryHeading)}</h3>
+    <dl>${rows.map(([name, label, value]) => `<div data-boundary-part="${name}">
+      <dt>${esc(label)}</dt><dd>${esc(value)}</dd>
+    </div>`).join("")}</dl>
+  </aside>`;
+}
+
 function statewideOrientationMarkup(list = [], unresolved = []) {
   if (!LAST_INTAKE || !LAST_JURISDICTION) return "";
   const s = STRINGS[lang];
   const facts = projectFactRecords();
   const candidateRoutes = list.filter(rule => resultGroup(rule) === "route");
   const routeItems = candidateRoutes.map(rule => {
-    const localized = usableLocalizedExplanation(EXPLANATIONS.get(rule.rule_id));
-    const title = localized?.localized.title || rule.pathway;
-    const titleLang = localized?.copyLang || "en";
     const status = ruleStatus(rule, activeChangedSourceIds());
     const statusLabel = status === "verified"
       ? s.verifiedOn(formatSourceDate(rule.citation.verified_on))
       : status === "stale" ? s.stale : s.unverified;
     return `<li>
-      <strong lang="${titleLang}">${esc(title)}</strong>
+      <strong lang="${lang}">${esc(s.candidateResultTitle)}</strong>
+      <span class="small"><span lang="${lang}">${esc(s.candidateRouteRecord)}:</span>
+        <span lang="en">${escVerbatim(rule.pathway)}</span></span>
       <span class="small" lang="en">${esc(rule.citation.source)}</span>
       <span class="small" lang="${lang}">${esc(statusLabel)}</span>
     </li>`;
@@ -2279,6 +2355,10 @@ function renderResultCard(rule, explanation, options = {}) {
     copyRecord = `<p class="small"><span lang="${lang}">${esc(s.copyRecord)}:</span>
       <span lang="en">${esc(explanation.source_rule_id)} v${esc(explanation.version)}, ${esc(explanation.updated_on)}</span></p>`;
   }
+  if (group === "route") {
+    displayTitle = s.candidateResultTitle;
+    displayTitleLang = lang;
+  }
   const docs = (rule.required_documents || []).map(d => `<li>${esc(d)}</li>`).join("");
   const evidence = `<section class="evidence-block"
       aria-labelledby="evidence-title-${safeId}">
@@ -2305,15 +2385,24 @@ function renderResultCard(rule, explanation, options = {}) {
     ? `<p class="result-tool-link" lang="${lang}">
         <a href="#clocks">${esc(s.checkDates)}</a>
       </p>` : "";
+  const routeRecord = group === "route"
+    ? `<p class="candidate-route-record small" aria-hidden="true"><span lang="${lang}">${esc(s.candidateRouteRecord)}:</span>
+        <span lang="en">${escVerbatim(rule.pathway)}</span></p>`
+    : "";
+  const routeHeadingIdentity = group === "route"
+    ? `<span class="visually-hidden" lang="${lang}">${esc(s.candidateRouteRecord)}:
+        <span lang="en">${escVerbatim(rule.pathway)}</span></span>`
+    : "";
   return `<article id="rule-${safeId}"
       class="card result-card ca-card ${isConfiguredRoute ? "result-route" : "result-card-compact"} ${ok ? "" : "unverified"}"
       data-rule-id="${esc(rule.rule_id)}" data-result-group="${group}"
       aria-labelledby="result-title-${safeId}" tabindex="-1">
     <div class="result-head">
       <h4 class="result-title" id="result-title-${safeId}"
-        lang="${displayTitleLang}">${esc(displayTitle)}</h4>
+        lang="${displayTitleLang}"><span class="result-title-visible">${esc(displayTitle)}${group === "route" ? "." : ""}</span>${routeHeadingIdentity}</h4>
       ${badge}
     </div>
+    ${routeRecord}
     ${reviewNote}
     ${consequence}
     <p class="source-basis"><b lang="${lang}">${esc(s.source)}:</b>
@@ -2478,6 +2567,7 @@ function renderResults(list) {
     status.textContent = `${s.resultCount(0)} ${s.none}`;
     el.innerHTML = `<div lang="${lang}">
       <h2 class="result-heading" id="resultsHeading" tabindex="-1">${esc(s.results)}</h2>
+      ${decisionBoundaryMarkup("no-route")}
       ${renderProjectFacts()}
       ${statewideOrientationMarkup()}
       <div class="notice ca-shout">${esc(s.none)}</div></div>`;
@@ -2485,6 +2575,11 @@ function renderResults(list) {
   }
   const grouped = groupResultRecords(list);
   const summaryText = resultSummaryText(grouped);
+  const sourceReviewHold = list.some(rule =>
+    ruleStatus(rule, activeChangedSourceIds()) !== "verified"
+  );
+  const boundaryState = sourceReviewHold
+    ? "source-review-hold" : hasRoute ? "candidate" : "no-route";
   status.textContent = hasRoute
     ? `${summaryText} ${s.resultIntro} ${s.routeOrientation}`
     : `${summaryText} ${s.none} ${s.supportingOnly}`;
@@ -2532,6 +2627,7 @@ function renderResults(list) {
       </div>`;
   el.innerHTML = `<h2 class="result-heading" id="resultsHeading"
       tabindex="-1" lang="${lang}">${esc(s.results)}</h2>
+    ${decisionBoundaryMarkup(boundaryState)}
     ${renderProjectFacts()}
     ${statewideOrientationMarkup(list)}
     <p class="result-count" lang="${lang}">${esc(summaryText)}</p>
@@ -2564,6 +2660,7 @@ function renderNeedsStaffReview(fieldNames) {
       <h2 class="result-heading" id="resultsHeading" tabindex="-1">
         ${esc(s.unknownHeading)}
       </h2>
+      ${decisionBoundaryMarkup("unknown")}
       ${renderProjectFacts()}
       ${statewideOrientationMarkup([], fieldNames)}
       <div class="notice ca-shout">

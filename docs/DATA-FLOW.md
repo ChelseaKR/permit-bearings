@@ -87,6 +87,10 @@ Scheduled or local watcher re-fetch
 Proposed JSON receipt + exact run URL/commit
     |
     +--> scheduled workflow retains artifact for 30 days
+    +--> receipt with changed source IDs derives exact worklist + blank
+    |    decision template and retains the three-file package for 30 days
+    +--> stale-only or Golden-regression-only run opens an issue without a
+    |    misleading source-change package
     +--> automation never edits the public snapshot
     |
     v
@@ -94,7 +98,8 @@ Deliberate repository adoption as data/source-status/current.json
     |
     v
 Strict loader re-binds source registry and re-derives
-affected/unaffected rule and Golden-case IDs
+affected/unaffected rule and Golden-case IDs; Golden fixtures use explicit
+rule dependencies for positive, negative, and ambiguous cases
     |
     v
 Generated static bundle: historical records, current overlay, rule-review
@@ -111,9 +116,14 @@ human reviewer or imply legal, jurisdiction, counsel, or substantive content
 approval. `src/permit_pathways/source_state.py` requires one observation per
 watched source, binds the current `data/sources.json` digest, checks the exact
 run receipt fields, and re-derives direct rule/Golden impact. The scheduled
-workflow emits only `proposed` artifacts. New-law discovery, automatic
-adoption/publication, packet-field assignment records, and staffed review
-ownership remain outside this flow.
+workflow emits only `proposed` artifacts. When that workflow reports review
+needed, `src/permit_pathways/review_queue.py` also derives a portable worklist
+and blank decision template. The worklist reaches exact changed source, rule,
+Golden, readiness requirement, source-backed field, linked remedy, packet, and
+configured journey nodes from explicit IDs and fingerprints; an unverifiable
+source creates none. New-law discovery, automatic adoption/publication,
+authorized owner selection, filled dispositions, and approval remain outside
+this flow.
 
 The source-state record is an overlay. It does not rewrite the historical rule,
 Golden, journey, readiness, or evidence-manifest records. The browser derives

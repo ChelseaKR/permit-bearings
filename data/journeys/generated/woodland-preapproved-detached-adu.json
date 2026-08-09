@@ -174,7 +174,7 @@
     "synthetic": true
   },
   "fact_envelope_fingerprint": "sha256:18c9bf3bdf525776352301b3150185fce8cdb0882b621d61f92eabcc25036847",
-  "journey_fingerprint": "sha256:6a7734b8bc920ec13898e2c8c753ce57d27652a5d37c8a41d433798318c4641a",
+  "journey_fingerprint": "sha256:22148b40724c3121fb255288700dcae50cb03175190402801a1fad3fb61724a2",
   "journey_id": "woodland-preapproved-detached-adu-synthetic",
   "label": "Made-up Woodland preapproved detached ADU journey",
   "readiness_evidence_manifest": {
@@ -681,7 +681,7 @@
   "route_source_status": "current",
   "route_source_status_as_of": "2026-07-30",
   "schema_version": 1,
-  "screening_case_fingerprint": "sha256:3171705791a2520132e727c9d39d6f0bc710d7114e6408c0bfd2af6ebb3d754b",
+  "screening_case_fingerprint": "sha256:35ee26aee6d21cc2650807418ea3cc42610e238413274fb4cc2c21d50b9bbfeb",
   "screening_case_id": "woodland-new-detached-adu-local-layer",
   "screening_expected_rule_ids": [
     "adu-ministerial-review",
