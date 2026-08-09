@@ -1,0 +1,326 @@
+/*
+ * Permit Bearings — California Design System alignment layer
+ *
+ * Reference: California Design System version-0 preview, pinned to
+ * Office-of-Digital-Services/California-Design-System@f8775cfac090de08b9e0083eb3008bd585f33e91
+ * (2026-01-27). The preview is pre-Alpha and not production supported.
+ *
+ * This is a project-owned compatibility layer. It does not copy or bundle the
+ * preview package, and it does not imply State certification or endorsement.
+ * The archived cagov/design-system snapshot is MIT-licensed; its bundled
+ * Public Sans files remain under SIL OFL 1.1. See THIRD_PARTY_NOTICES.md.
+ */
+
+@font-face {
+  font-display: swap;
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: url("fonts/publicsans-regular-webfont.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 600;
+  src: url("fonts/publicsans-semibold-webfont.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Public Sans";
+  font-style: normal;
+  font-weight: 700 900;
+  src: url("fonts/publicsans-bold-webfont.woff2") format("woff2");
+}
+
+:root {
+  --ca-font-sans: "Public Sans", "Noto Sans", Arial, sans-serif;
+  --ca-action: #003688;
+  --ca-action-hover: #003484;
+  --ca-focus-fill: #ecb32d;
+  --ca-focus-ring: #003688;
+  --ca-surface: #ffffff;
+  --ca-surface-subtle: #fafafa;
+  --ca-border: #bcbbc1;
+  --ca-text: #000000;
+  --ca-text-soft: #4a4958;
+  --ca-info-surface: #e7eef9;
+  --ca-warning-surface: #ffecc4;
+  --ca-danger-surface: #fce9e8;
+  --ca-success-surface: #e5f1e7;
+  --ca-radius: 0;
+}
+
+/* Published skip-link anatomy, adapted to this independent service shell. */
+#skip-to-content {
+  height: 0;
+  position: relative;
+  z-index: 1000;
+}
+
+#skip-to-content > a {
+  background: var(--ca-surface);
+  border: 2px solid var(--ca-action);
+  color: var(--ca-action);
+  font-family: var(--ca-font-sans);
+  font-weight: 700;
+  left: 1rem;
+  padding: 0.65rem 0.85rem;
+  position: fixed;
+  top: 0.75rem;
+  transform: translateY(-180%);
+}
+
+#skip-to-content > a:focus,
+#skip-to-content > a:focus-visible {
+  outline: 3px solid var(--ca-focus-fill);
+  outline-offset: 2px;
+  transform: translateY(0);
+}
+
+/* Version-0 custom-element vocabulary. These remain useful semantic hooks
+ * when JavaScript is unavailable; no custom-element registration is needed. */
+.ca-field,
+.ca-shout,
+.ca-box,
+.ca-card,
+.ca-mesh,
+ca-field,
+ca-shout,
+ca-box,
+ca-card,
+ca-mesh {
+  box-sizing: border-box;
+  font-family: var(--ca-font-sans);
+}
+
+.ca-field,
+.ca-shout,
+.ca-box,
+.ca-card,
+ca-field,
+ca-shout,
+ca-box,
+ca-card {
+  display: block;
+}
+
+.ca-field,
+ca-field {
+  margin-block: 0.75rem;
+  min-width: 0;
+}
+
+.ca-field[invalid],
+ca-field[invalid] {
+  border-left: 0.35rem solid #721923;
+  padding-left: 0.75rem;
+}
+
+.ca-field > :where(label, .ca-field-label, legend),
+ca-field > :where(label, .ca-field-label, legend) {
+  font-weight: 700;
+}
+
+.ca-field > :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
+ca-field > :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  display: block;
+  margin-top: 0.25rem;
+  width: 100%;
+}
+
+.ca-button {
+  align-items: center;
+  background: var(--ca-action);
+  border: 2px solid var(--ca-action);
+  border-radius: var(--ca-radius);
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--ca-font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  gap: 0.5rem;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.65rem 1.3rem;
+  text-decoration: none;
+}
+
+.ca-button:hover {
+  background: var(--ca-action-hover);
+  color: #ffffff;
+}
+
+.ca-button.ca-button-outline {
+  background: transparent;
+  color: var(--ca-action);
+}
+
+.ca-button.ca-button-outline:hover {
+  background: var(--ca-info-surface);
+  color: var(--ca-action-hover);
+}
+
+.ca-button:disabled,
+.ca-button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.ca-button:focus-visible {
+  box-shadow: 0 0 0 5px var(--ca-focus-ring);
+  outline: 3px solid var(--ca-focus-fill);
+  outline-offset: 2px;
+}
+
+.ca-shout,
+ca-shout {
+  --ca-shout-accent: var(--ca-action);
+  --ca-shout-surface: var(--ca-info-surface);
+  background: var(--ca-shout-surface);
+  border-left: 0.4rem solid var(--ca-shout-accent);
+  color: var(--ca-text);
+  margin-block: 1rem;
+  padding: 1rem 1.1rem;
+}
+
+.ca-shout[color="yellow"],
+ca-shout[color="yellow"] {
+  --ca-shout-accent: #6f5e00;
+  --ca-shout-surface: var(--ca-warning-surface);
+}
+
+.ca-shout[color="red"],
+ca-shout[color="red"] {
+  --ca-shout-accent: #721923;
+  --ca-shout-surface: var(--ca-danger-surface);
+}
+
+.ca-shout[color="green"],
+ca-shout[color="green"] {
+  --ca-shout-accent: #154425;
+  --ca-shout-surface: var(--ca-success-surface);
+}
+
+.ca-shout > :first-child,
+.ca-box > :first-child,
+.ca-card > :first-child,
+ca-shout > :first-child,
+ca-box > :first-child,
+ca-card > :first-child {
+  margin-top: 0;
+}
+
+.ca-shout > :last-child,
+.ca-box > :last-child,
+.ca-card > :last-child,
+ca-shout > :last-child,
+ca-box > :last-child,
+ca-card > :last-child {
+  margin-bottom: 0;
+}
+
+.ca-box,
+ca-box {
+  background: var(--ca-surface);
+  border: 1px solid var(--ca-border);
+  padding: 1.25rem;
+}
+
+.ca-box[size="small"],
+ca-box[size="small"] {
+  padding: 0.75rem;
+}
+
+.ca-box[size="large"],
+ca-box[size="large"] {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.ca-box[color="gray"],
+ca-box[color="gray"] {
+  background: var(--ca-surface-subtle);
+}
+
+.ca-card,
+ca-card {
+  background: var(--ca-surface);
+  border: 1px solid var(--ca-border);
+  border-top: 0.35rem solid var(--ca-action);
+  min-width: 0;
+  padding: 1.2rem;
+}
+
+.ca-mesh,
+ca-mesh {
+  --ca-cell-width: 20rem;
+  --ca-grid-gap: 1rem;
+  display: grid;
+  gap: var(--ca-grid-gap);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--ca-cell-width)), 1fr));
+  min-width: 0;
+}
+
+.ca-mesh[cell-size="large"],
+ca-mesh[cell-size="large"] {
+  --ca-cell-width: 30rem;
+}
+
+.ca-mesh[gap="2"],
+ca-mesh[gap="2"] {
+  --ca-grid-gap: 1rem;
+}
+
+.ca-mesh[gap="3"],
+ca-mesh[gap="3"] {
+  --ca-grid-gap: 1.5rem;
+}
+
+.ca-mesh[gap="4"],
+ca-mesh[gap="4"] {
+  --ca-grid-gap: 2rem;
+}
+
+/* Current preview table utilities, implemented against semantic tables. */
+table.ca-outer-border {
+  border: 1px solid var(--ca-border);
+}
+
+table.ca-inner-border :where(th, td) {
+  border-bottom: 1px solid var(--ca-border);
+}
+
+table.ca-stripes tbody tr:nth-child(even) {
+  background: var(--ca-surface-subtle);
+}
+
+table.ca-hover-rows tbody tr:hover {
+  background: var(--ca-info-surface);
+}
+
+/* The version-0 preview continues to use native details/summary. */
+details summary {
+  cursor: pointer;
+}
+
+@media (forced-colors: active) {
+  .ca-button,
+  .ca-shout,
+  .ca-box,
+  .ca-card,
+  ca-shout,
+  ca-box,
+  ca-card,
+  table.ca-outer-border {
+    border-color: CanvasText;
+  }
+}
+
+@media print {
+  #skip-to-content {
+    display: none;
+  }
+}

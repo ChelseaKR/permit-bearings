@@ -11,10 +11,13 @@
 <meta property="og:description" content="A bounded, presence-based ordinance screen for staff and counsel review, not a compliance verdict.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css?v=20260803a">
+<link rel="stylesheet" href="assets/california-design-system.css?v=20260809a">
+<link rel="stylesheet" href="assets/site.css?v=20260809a">
 </head>
 <body data-page="review">
-<a class="skip-link" href="#mainContent">Skip to main content</a>
+<div id="skip-to-content">
+  <a class="skip-link" href="#mainContent">Skip to main content</a>
+</div>
 
 <header class="site-header">
   <div class="header-inner">
@@ -50,9 +53,11 @@
           bounded set of patterns associated with state-law conflicts documented
           in official sources.</p>
       </div>
-      <p class="boundary-note"><strong>This is a presence-based text
-        screen.</strong> A flag is a review lead, not a legal conclusion.
-        No flag does not prove that an ordinance is complete or compliant.</p>
+      <ca-shout class="boundary-note" color="yellow" role="note">
+        <p><strong>This is a presence-based text screen.</strong> A flag is a
+          review lead, not a legal conclusion. No flag does not prove that an
+          ordinance is complete or compliant.</p>
+      </ca-shout>
     </div>
   </header>
 
@@ -68,12 +73,14 @@
 
       <div class="tool-shell scanner-layout">
         <div>
-          <label for="ordText" class="utility-label">Text to review</label>
-          <textarea id="ordText" rows="11"
-            placeholder="Paste ordinance or handout text here…"></textarea>
+          <ca-field>
+            <label for="ordText" class="utility-label">Text to review</label>
+            <textarea id="ordText" rows="11"
+              placeholder="Paste ordinance or handout text here…"></textarea>
+          </ca-field>
           <div class="scanner-actions">
-            <button id="scanBtn" type="button" disabled>Screen this text</button>
-            <button class="link-button" type="button" id="loadSample">
+            <button class="ca-button" id="scanBtn" type="button" disabled>Screen this text</button>
+            <button class="link-button ca-button" type="button" id="loadSample">
               Load two documented sample provisions
             </button>
           </div>
@@ -81,7 +88,8 @@
             aria-live="polite" aria-atomic="true"></p>
         </div>
 
-        <aside class="scanner-notes" aria-labelledby="scannerNotesHeading">
+        <ca-box class="scanner-notes" size="small" role="note"
+          aria-labelledby="scannerNotesHeading">
           <h3 id="scannerNotesHeading">What to expect</h3>
           <ul>
             <li>Each flag shows the matching passage, state-law basis, and
@@ -91,7 +99,7 @@
             <li>The pasted text is processed locally and is not saved or sent
               by this public demo.</li>
           </ul>
-        </aside>
+        </ca-box>
       </div>
 
       <div id="dataLoadError" class="hidden"></div>
@@ -112,7 +120,7 @@
   </div>
 </footer>
 
-<script src="data/demo-data.js?v=20260803a" defer></script>
-<script src="assets/demo.js?v=20260803a" defer></script>
+<script src="data/demo-data.js?v=20260809a" defer></script>
+<script src="assets/demo.js?v=20260809a" defer></script>
 </body>
 </html>

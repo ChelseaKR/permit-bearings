@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate_id": "woodland-preapproved-detached-adu-flagship-2026-08",
   "status": "pending",
-  "prepared_on": "2026-08-02",
+  "prepared_on": "2026-08-09",
   "claim_boundary": "This record prepares an evidence gate. It is not evidence of outreach, recruitment, review, a participant session, a partner commitment, a source-change rehearsal, accessibility validation, language review, adoption, or a permitting outcome.",
   "artifact_lock": {
     "lock_id": "woodland-route-to-packet-frozen-artifact-1",
@@ -14,7 +14,7 @@
     "protocol_version": "2.0.0",
     "source_snapshot_id": "woodland-route-to-packet-sources-1",
     "source_snapshot_receipt_id": null,
-    "answer_key_version": "1.1.0",
+    "answer_key_version": "1.2.0",
     "thresholds_version": "1.0.0",
     "journey_id": "woodland-preapproved-detached-adu-synthetic",
     "journey_version": "1.0.0",
@@ -130,6 +130,16 @@
     "unknown_expected_behavior": "withhold_packet_handoff_and_ask_staff",
     "unknown_staff_question": "Is this packet using a City of Woodland preapproved ADU plan?",
     "restored_applicability_value": "yes",
+    "program_availability": {
+      "program_id": "woodland-preapproved-adu-plan-program",
+      "source_id": "woodland-preapproved-adu-program-page",
+      "mode": "future_state_simulation",
+      "status": "plans_not_listed",
+      "checked_on": "2026-08-09",
+      "recheck_due_on": "2026-09-08",
+      "excerpt": "Preapproved ADU List: Coming soon!",
+      "excerpt_sha256": "sha256:e516ba67cb8788e229d305708a25478fbaf9974fe423eb630f2117956c94a99b"
+    },
     "valid_handoff_query_keys": [
       "journey",
       "version"
@@ -139,7 +149,8 @@
       "start_required": "withhold_packet_findings_actions_and_printable_summary",
       "invalid": "withhold_packet_findings_actions_and_printable_summary",
       "source_review_required": "withhold_packet_findings_actions_and_printable_summary",
-      "ready": "render_integrity_checked_packet_and_printable_summary"
+      "program_status_review_required": "withhold_packet_findings_actions_and_printable_summary",
+      "simulation_ready": "render_integrity_checked_future_state_packet_and_printable_summary"
     },
     "invalid_entry_examples": [
       "missing_query",
@@ -147,7 +158,8 @@
       "extra_query_parameter",
       "mismatched_journey_id",
       "mismatched_version",
-      "expired_or_changed_source"
+      "expired_or_changed_source",
+      "missing_malformed_or_expired_program_status"
     ],
     "readiness_source_status": "current",
     "readiness_source_status_as_of": "2026-07-30",

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "availability": {
+    "program_id": "woodland-preapproved-adu-plan-program",
+    "workflow_id": "woodland-preapproved-detached-adu",
+    "jurisdiction": "woodland",
+    "mode": "future_state_simulation",
+    "status": "plans_not_listed",
+    "monitoring_status": "manual_date_bound",
+    "source": {
+      "source_id": "woodland-preapproved-adu-program-page",
+      "url": "https://www.cityofwoodland.gov/1616/Preapproved-ADU-Plan-Program",
+      "label": "City of Woodland Preapproved ADU Plan Program",
+      "checked_on": "2026-08-09",
+      "recheck_due_on": "2026-09-08",
+      "excerpt": "Preapproved ADU List: Coming soon!",
+      "excerpt_sha256": "sha256:e516ba67cb8788e229d305708a25478fbaf9974fe423eb630f2117956c94a99b"
+    },
+    "boundary": "No currently listed City of Woodland preapproved ADU plan was identified on the checked program page. This future-state simulation is not evidence that a plan is available; real workflow applicability must be confirmed with the City before use."
+  }
+}

@@ -105,8 +105,7 @@
   --line: var(--gray-300);
   --line-light: var(--gray-200);
   --site-font: "Public Sans", "Noto Sans", Arial, sans-serif;
-  --display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua",
-    Palatino, Georgia, serif;
+  --display: var(--site-font);
   --body: var(--site-font);
   --utility: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono",
     monospace;
@@ -174,7 +173,7 @@ h4,
 h5 {
   color: var(--ink);
   font-family: var(--display);
-  font-weight: 800;
+  font-weight: 700;
   line-height: var(--font-lineheight-1);
   margin-top: 0;
 }
@@ -247,7 +246,7 @@ h5 {
   display: inline-flex;
   font-family: var(--display);
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.01em;
   min-height: 44px;
   text-decoration: none;
@@ -331,6 +330,7 @@ h5 {
 }
 
 .button,
+.ca-button,
 button {
   align-items: center;
   background: var(--blue);
@@ -341,7 +341,7 @@ button {
   display: inline-flex;
   font-family: var(--body);
   font-size: var(--font-size-2);
-  font-weight: 760;
+  font-weight: 700;
   justify-content: center;
   min-height: 48px;
   padding: 0.65rem 1.3rem;
@@ -349,6 +349,7 @@ button {
 }
 
 .button:hover,
+.ca-button:hover,
 button:hover {
   background: var(--blue-deep);
   color: white;
@@ -358,6 +359,7 @@ button:hover {
 }
 
 .button-secondary,
+.ca-button-outline,
 button.ghost {
   background: transparent;
   border-color: var(--blue);
@@ -365,6 +367,7 @@ button.ghost {
 }
 
 .button-secondary:hover,
+.ca-button-outline:hover,
 button.ghost:hover {
   background: var(--blue-pale);
   color: var(--blue-deep);
@@ -576,6 +579,23 @@ button.link-button:hover {
   padding: 0;
 }
 
+ca-mesh.service-link-list {
+  border-bottom: 1px solid var(--line);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: var(--s-3) 0;
+}
+
+.service-link-list ca-card {
+  border-color: var(--line);
+  border-top-color: var(--blue);
+}
+
+.service-link-list ca-card h3 {
+  font-family: var(--display);
+  font-size: var(--font-size-4);
+  margin-bottom: var(--s-1);
+}
+
 .service-link-list li {
   border-bottom: 1px solid var(--line);
   padding: var(--s-3) 0;
@@ -628,6 +648,10 @@ button.link-button:hover {
 
 .boundary-note strong {
   color: var(--ink);
+}
+
+.boundary-note > p {
+  margin: 0;
 }
 
 .tool-main {
@@ -828,6 +852,12 @@ select[aria-invalid="true"] {
   min-height: 0;
   padding: 0;
   width: min(100%, 18rem);
+}
+
+.clock-date > label {
+  display: block;
+  min-height: 0;
+  padding: 0;
 }
 
 .clock-date span {
@@ -1165,6 +1195,31 @@ select[aria-invalid="true"] {
 .journey-handoff fieldset {
   border-top-color: var(--gray-700);
   margin-top: var(--s-3);
+}
+
+.program-availability {
+  background: var(--blue-pale);
+  border-left: 0.45rem solid var(--primary-900);
+  margin: var(--s-3) 0;
+  max-width: var(--reading);
+  padding: var(--s-2) var(--s-3);
+}
+
+.program-availability-hold {
+  background: var(--yellow-pale);
+  border-left-color: var(--warning-700);
+}
+
+.program-availability > :first-child {
+  margin-top: 0;
+}
+
+.program-availability > :last-child {
+  margin-bottom: 0;
+}
+
+.program-availability q {
+  font-weight: 750;
 }
 
 .journey-fixed-facts {
@@ -1547,6 +1602,10 @@ blockquote {
   border-top: 1px solid var(--line);
   grid-template-columns: repeat(3, 1fr);
   margin: 2rem 0 2.8rem;
+}
+
+.rule-evidence-summary {
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .evidence-stat {
@@ -2530,6 +2589,10 @@ tr:last-child td {
 
   .home-boundary {
     max-width: var(--reading);
+  }
+
+  ca-mesh.service-link-list {
+    grid-template-columns: 1fr;
   }
 
   .choice-grid {

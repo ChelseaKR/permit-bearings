@@ -173,6 +173,23 @@ test("canonical journey gates the packet link on the editable applicability fact
   await expect(no).not.toBeChecked();
   await expect(unknown).not.toBeChecked();
   await expect(page.locator("#journeyGateOutcome a")).toHaveCount(0);
+  await expect(page.locator(".program-availability")).toContainText(
+    "Preapproved ADU List: Coming soon!",
+  );
+  await expect(page.locator(".program-availability")).toContainText(
+    "Future-state simulation only",
+  );
+  await expect(page.locator(".program-availability")).toContainText(
+    "Checked August 9, 2026",
+  );
+  await expect(page.locator(".program-availability")).toContainText(
+    "recheck due September 8, 2026",
+  );
+  await expect(
+    page.locator(`.program-availability a[href="${
+      DEMO_DATA.program_availability.availability.source.url
+    }"]`),
+  ).toBeVisible();
   await expect(page.locator("#journeyGateOutcome")).toContainText(
     "Is this packet using a City of Woodland preapproved ADU plan?",
   );
@@ -182,6 +199,9 @@ test("canonical journey gates the packet link on the editable applicability fact
     "#journeyGateOutcome a[href^='prepare.html?journey=']",
   );
   await expect(packetLink).toBeVisible();
+  await expect(page.locator("#journeyGateOutcome")).toContainText(
+    "future-state simulation is ready",
+  );
   const href = await packetLink.getAttribute("href");
   const packetUrl = new URL(href, page.url());
   expect([...packetUrl.searchParams.keys()]).toEqual(["journey", "version"]);
@@ -212,6 +232,12 @@ test("canonical journey gates the packet link on the editable applicability fact
     `/prepare\\.html\\?journey=${JOURNEY_ID}&version=${JOURNEY_VERSION}$`,
   ));
   await expect(page.locator("#journeyEntrySummary")).toBeVisible();
+  await expect(page.getByRole("heading", {
+    name: "Explore a future-state packet workflow",
+  })).toBeVisible();
+  await expect(page.locator("#programAvailabilityNotice")).toContainText(
+    "Preapproved ADU List: Coming soon!",
+  );
   await expect(page.locator("#journeyEntryId")).toHaveText(JOURNEY_ID);
   await expect(page.locator("#journeyEntryVersion")).toHaveText(JOURNEY_VERSION);
   await expect(page.locator("#packetCover")).toBeVisible();
@@ -274,7 +300,10 @@ test("valid journey presents a bounded portable evidence summary and print actio
   await expect(questions.nth(2)).toContainText("flood zone");
 
   const sources = summary.locator("#journeyEvidenceSourcesList > div");
-  await expect(sources).toHaveCount(5);
+  await expect(sources).toHaveCount(6);
+  await expect(summary.locator(".journey-evidence-sources")).toContainText(
+    "future-state simulation only",
+  );
   await expect(summary.locator(".journey-evidence-sources")).toContainText(
     "Gov. Code § 66317",
   );
@@ -347,7 +376,11 @@ test("Spanish journey handoff declares its language and preserves the English st
     "Is this packet using a City of Woodland preapproved ADU plan?",
   );
   await expect(page.locator("#journeyGateHeading")).toHaveText(
-    "Continúe de esta posible vía a la preparación del paquete",
+    "Explore una simulación futura del paquete",
+  );
+  await expect(handoff.locator(".program-availability")).toHaveAttribute(
+    "lang",
+    "en",
   );
 });
 
@@ -481,6 +514,31 @@ test("mobile evidence tables render as labeled records without page overflow", a
     "grid",
   );
   await expectNoDocumentOverflow(page);
+});
+
+test("rule verification ledger distinguishes machine linking from named review", async ({
+  page,
+}) => {
+  await page.goto("/evidence.html");
+  await expect(page.locator("#verificationScore")).toHaveText(
+    `0/${DEMO_DATA.rules.length}`,
+  );
+  await expect(page.locator("#verificationLine")).toHaveText(
+    `${DEMO_DATA.rules.length} machine-linked; 0 human-reviewed; `
+      + "0 jurisdiction-approved.",
+  );
+  const rows = page.locator("#ruleTable tbody tr");
+  await expect(rows).toHaveCount(DEMO_DATA.rules.length);
+  await expect(
+    rows.locator('td[data-label="Interpretation review"]'),
+  ).toHaveCount(DEMO_DATA.rules.length);
+  await expect(
+    rows.locator('td[data-label="Interpretation review"]').first(),
+  ).toContainText("Machine-linked · no named review");
+  await expect(
+    page.locator('a[href="data/validation/rule-verification.json"]'),
+  ).toBeVisible();
+  await expectNoAutomatedWcagViolations(page);
 });
 
 test("reviewed source-state receipt is visible and separate from rehearsal", async ({

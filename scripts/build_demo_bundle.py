@@ -28,6 +28,9 @@ from permit_pathways.journey import (  # noqa: E402
     load_journey_config,
     resolve_journey,
 )
+from permit_pathways.program_availability import (  # noqa: E402
+    load_program_availability,
+)
 from permit_pathways.readiness import (  # noqa: E402
     SOURCE_MAX_AGE_DAYS,
     ReadinessPacket,
@@ -35,6 +38,9 @@ from permit_pathways.readiness import (  # noqa: E402
     ReadinessWorkflow,
     load_and_evaluate_readiness,
     load_readiness_remedies,
+)
+from permit_pathways.rule_verification import (  # noqa: E402
+    load_rule_verifications,
 )
 from permit_pathways.screening import load_rules  # noqa: E402
 from permit_pathways.source_state import load_source_state_snapshot  # noqa: E402
@@ -64,6 +70,10 @@ INPUTS = {
     "letters": Path("data/jurisdictions/hcd-letters.json"),
     "scans": Path("data/conformance/results/index.json"),
     "plain_language": Path("data/explanations/plain-language.json"),
+    "program_availability": Path(
+        "data/availability/woodland-preapproved-adu-program.json"
+    ),
+    "rule_verification": Path("data/validation/rule-verification.json"),
 }
 
 CanonicalReadinessRecords = tuple[
@@ -333,6 +343,8 @@ def build_bundle(
         root / "data" / "explanations" / "plain-language.json",
         rules,
     )
+    load_program_availability(root / INPUTS["program_availability"])
+    load_rule_verifications(root / INPUTS["rule_verification"], rules)
 
     payload: dict[str, object] = {}
     digests: dict[str, str] = {}
@@ -371,7 +383,7 @@ def build_bundle(
         digests[relative_path.as_posix()] = hashlib.sha256(raw).hexdigest()
 
     payload["_meta"] = {
-        "format_version": 3,
+        "format_version": 4,
         "generated_from": digests,
     }
     encoded = json.dumps(

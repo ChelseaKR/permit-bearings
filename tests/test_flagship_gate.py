@@ -40,7 +40,7 @@ def test_gate_records_an_honest_not_run_external_state():
 
     assert gate["schema_version"] == 1
     assert gate["status"] == "pending"
-    assert gate["prepared_on"] == "2026-08-02"
+    assert gate["prepared_on"] == "2026-08-09"
     assert "not evidence of outreach" in gate["claim_boundary"]
 
     lock = gate["artifact_lock"]

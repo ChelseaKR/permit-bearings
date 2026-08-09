@@ -18,7 +18,7 @@ def test_report_accepts_the_bounded_davis_record_with_dated_evidence():
     assert report.stale == []
     assert len(report.verified) == 19
     assert report.golden_failed == []
-    assert report.trustworthy
+    assert report.automated_checks_pass
 
 
 def test_changed_source_flips_dependent_rules_to_stale():
@@ -34,7 +34,7 @@ def test_changed_source_flips_dependent_rules_to_stale():
         "adu-multifamily-proposed-66323",
     }
     assert "sb9-two-unit-ministerial" in report.verified
-    assert not report.trustworthy
+    assert not report.automated_checks_pass
 
 
 def test_verification_goes_stale_after_max_age():

@@ -1,13 +1,23 @@
-# Accessibility audit: static and automated browser pass, updated 2026-08-03
+# Accessibility audit: static and automated browser pass, updated 2026-08-09
 
 Scope: the five-page public static site (`index.html`, `check.html`,
 `prepare.html`, `review.html`, and `evidence.html`) and the separate applicant
 flow in `demo/app.py`. **Target: WCAG 2.2 Level AAA.**
-The static site implements the published California Design System `cagov`
-tokens locally: Public Sans-first typography, 18px body copy, 1.75 line
-height, state color/status tokens, spacing steps, and the 1,176px shell /
-876px reading widths. No State logo, official-site banner, branding, or
-affiliation is claimed. See `docs/DESIGN-SYSTEM.md`.
+The static site loads a locally maintained California Design System version-0
+preview compatibility layer on all five pages. It combines selected semantic
+`ca-*` structures with published California token vocabulary, locally served
+Public Sans 400/600/700, 18px body copy, 1.75 line height, and the 1,176px
+shell / 876px reading widths. Permit Bearings maintains the accessibility
+behavior and AAA-target extensions locally; no production-supported upstream
+component release is being used. This alignment is not California Design
+System or WCAG conformance, certification, State branding, affiliation, or
+endorsement. See `docs/DESIGN-SYSTEM.md`.
+
+The separate Python-rendered reference flow loads the same shared and product
+styles, uses the same bypass-link/header/footer patterns, and applies additive
+component hooks to its native controls and records. It is covered by static
+contracts, but the automated browser matrix below remains scoped to the five
+public task pages and named populated states.
 
 This audit combines static and code-level checks, computed contrast, automated
 axe scans of all five public pages, Lighthouse category budgets, automated
@@ -24,23 +34,39 @@ that ledger does not count as a human check.
 
 ## Static and code checks recorded
 
-**Semantics & structure.** Each page has a skip link, one `<main>`, one
-`<h1>`, a labeled viewport-appropriate primary navigation, and `aria-current`
-on the active page. The phone navigation is a native disclosure with a 48px
-summary target; the full navigation remains the desktop/tablet surface.
-Sections use `<h2>`s. The applicant result cover sheet uses a `<dl>`, its
-group index is a labeled `<nav>`, and each nonempty group has a focusable
-heading that serves as a jump-link target. Each decision record is an
-`<article>` labeled by its unique title. One explicitly configured candidate
-route uses an open native `<details>` element when it matches; compact
-supporting records start closed. Citations and source-status text remain
-outside those disclosures. Tables use `<th>` header rows. Multiple deadlines
-or thresholds use a semantic heading and list rather than visual-only layout.
-All interactive elements are native controls, so keyboard operability and
-focus order come from the platform.
+**Semantics & structure.** Each page begins with the shared
+`#skip-to-content` wrapper and link, then has one `<main>`, one `<h1>`, a
+labeled viewport-appropriate primary navigation, and `aria-current` on the
+active page. The phone navigation is a native disclosure with a 48px summary
+target; the full navigation remains the desktop/tablet surface. Sections use
+`<h2>`s. The local `<ca-field>`, `<ca-shout>`, `<ca-box>`, and `<ca-mesh>`
+elements are semantically neutral grouping and layout wrappers: labels,
+descriptions, headings, status regions, lists, and landmarks remain explicit
+inside them. `.ca-button` styles native buttons and links without replacing
+their native semantics. Table utilities style semantic tables that retain
+captions and `<th>` headers.
 
-The packet sample has one labeled main region and one page heading. Its
-made-up packet cover, finding counts, and source record use definition lists.
+The applicant result cover sheet uses a `<dl>`, its group index is a labeled
+`<nav>`, and each nonempty group has a focusable heading that serves as a
+jump-link target. Each decision record is an `<article>` labeled by its unique
+title. One explicitly configured candidate route uses an open native
+`<details>` element when it matches; compact supporting records start closed.
+Citations and source-status text remain outside those disclosures. Multiple
+deadlines or thresholds use a semantic heading and list rather than
+visual-only layout. All interactive elements remain native controls, so
+keyboard operability and focus order come from the platform.
+
+The evidence page exposes rule-review coverage as text, not color alone: all
+19 current rules are labeled `machine_linked`, and the zero named-human and
+zero jurisdiction-approval counts remain visible. This is a status disclosure,
+not an accessibility or substantive-review approval.
+
+The packet sample is explicitly labeled as a source-bound future-state
+simulation because Woodland's official page checked 2026-08-09 says
+**“Preapproved ADU List: Coming soon!”** It is not presented as a currently
+usable plan or applicant-ready workflow. The page has one labeled main region
+and one page heading. Its made-up packet cover, finding counts, program-status
+boundary, and source record use visible text and definition lists.
 Missing and unresolved findings are labeled articles with headings and
 visible text states. Reported-present, not-applicable, and not-evaluated
 groups use native disclosures. The generated manifest and official checklist
@@ -48,14 +74,18 @@ use descriptive links. These observations come from markup, regression
 checks, and limited visual inspection; browser reading order and
 assistive-technology output remain pending.
 
-The exact valid journey entry adds one labeled evidence-summary section. Its
+The exact valid future-state simulation entry adds one labeled
+evidence-summary section only after entry, integrity, source-currency, and
+program-availability checks pass. Its
 public ID/version and facts use definition lists, preparation actions use an
 ordered list, direct staff questions use an unordered list, and source records
 retain descriptive links and visible status text. A native button opens the
 browser print dialog. The entire section, including that control, remains
-hidden on direct or invalid packet entry. These structures are covered by
-static and browser checks; their screen-reader reading order and printed-page
-usability have not been manually reviewed.
+hidden on direct, invalid, or availability-blocked packet entry. A missing,
+malformed, or expired availability record produces a visible hold instead of
+revealing the handoff or summary. These structures are covered by static and
+browser checks; their screen-reader reading order, status-announcement quality,
+and printed-page usability have not been manually reviewed.
 
 ## Limited local browser checks recorded
 
@@ -70,9 +100,9 @@ behavior, or conformance for the other four static pages.
 
 ## Automated browser checks recorded
 
-On 2026-08-03, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
+On 2026-08-09, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
 AAA violations on `index.html`, `check.html`, `prepare.html`, `review.html`,
-or `evidence.html` in a Playwright-managed Chromium build. Thirty-four browser
+or `evidence.html` in a Playwright-managed Chromium build. Thirty-five browser
 checks also exercise each page at 320px and 390px, open the compact navigation,
 check document-level overflow, scan a populated applicant result, verify that
 mobile evidence tables render as labeled records, and cover valid/invalid
@@ -83,8 +113,8 @@ staling a dependent. A print-media check isolates the summary from the
 site and detailed packet surfaces and checks horizontal overflow at an
 816-by-1056 CSS-pixel viewport. Lighthouse 13.4.1 audits all five initial pages
 plus the populated applicant sample and exact valid journey entry using its
-mobile profile. On 2026-08-03, all seven states met 1.00 accessibility and best
-practices, at least 0.99 performance, and at least 0.90 SEO. CI repeats both
+mobile profile. On 2026-08-09, all seven states met 1.00 accessibility and best
+practices, at least 0.97 performance, and at least 0.90 SEO. CI repeats both
 suites on pull requests, default-branch pushes, and weekly. A first performance
 sample below the 0.90 budget triggers two confirmation samples and evaluates
 their median; the budget itself is unchanged.
@@ -92,6 +122,16 @@ their median; the budget itself is unchanged.
 These automated results cover only rules the tools can evaluate. They do not
 establish WCAG conformance, substitute for the remaining keyboard and
 screen-reader work, or promote the Spanish machine drafts to reviewed copy.
+
+**Component-alignment contract.** Static checks require the local compatibility
+stylesheet to load before product styles on every public page, the shared
+bypass-link structure to remain first, and applicable native controls and
+semantic tables to retain the selected `ca-*` compatibility hooks. The
+successor package contributes no runtime JavaScript or custom-element
+behavior; the neutral `ca-*` wrappers must therefore remain understandable
+from their contained HTML when CSS is absent. These checks guard this
+repository's version-0 contract only. They are not upstream component tests or
+evidence of California Design System approval.
 
 **Focus appearance (2.4.13, AAA-new).** Global `:focus-visible` uses a 3px
 `accent2-300` ring with a 2px offset and a 5px `primary-900` outer ring.
@@ -129,7 +169,9 @@ The packet page marks its generated output `aria-live="polite"` and
 `aria-busy="true"` until rendering completes. Static checks confirm those
 attributes and the visible loading and error containers. Actual announcement
 timing, verbosity, and focus behavior have not been checked with a browser or
-screen reader.
+screen reader. The same visible status path communicates when strict
+program-availability evidence is missing, malformed, or expired; it does not
+silently expose the future-state simulation.
 
 The shareable ADU sample is introduced by descriptive link text and followed
 by a visible disclosure that identifies the facts as hypothetical. It fills
@@ -157,8 +199,11 @@ buttons use the native `disabled` state until their datasets are ready. A
 load failure places a visible explanation in the relevant results area and a
 short message in the result status region instead of leaving empty controls
 that appear operable. The packet page also clears its busy state and presents
-a visible load error. These behaviors are covered by code inspection and
-static tests, not a manual browser failure rehearsal.
+a visible load error. Strict program-availability validation is part of this
+fail-closed boundary: the handoff and printable simulation stay unavailable
+when its canonical record is missing, malformed, or past its recheck date.
+These behaviors are covered by code inspection and static tests, not a manual
+assistive-technology failure rehearsal.
 
 **Link purpose (2.4.9 AAA).** Every link's text alone states its target
 ("view scan findings (JSON)", full source citations, named statutes).
@@ -194,7 +239,9 @@ colors/spacing beyond browser and OS mechanisms are not provided.
 withholds the site header/footer, task hero, detailed packet surfaces, and
 print control while keeping the evidence summary. It uses print-sized type,
 visible black borders/status text, overflow wrapping for IDs and URLs, and
-break avoidance on bounded records. The automated check uses Chromium print
+break avoidance on bounded records. The printed surface remains a labeled
+future-state synthetic record, not a currently available City plan or
+applicant-ready packet. The automated check uses Chromium print
 media; it does not inspect a generated PDF, paper output, pagination across
 printer drivers, or assistive reading of a saved file.
 

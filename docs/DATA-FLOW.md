@@ -1,6 +1,6 @@
 # Current prototype data flow
 
-Status: 2026-08-03. This describes the executable repository and public demo,
+Status: 2026-08-09. This describes the executable repository and public demo,
 not a production deployment or a compliance assessment.
 
 ## Boundary summary
@@ -44,7 +44,8 @@ Strict loader re-binds source registry and re-derives
 affected/unaffected rule and Golden-case IDs
     |
     v
-Bundle format 3 embeds historical records + current overlay separately
+Bundle format 4 embeds historical records, current overlay, rule-review
+coverage, and program availability separately
     |
     +--> changed dependency: stale exact rule/output or block bound handoff
     +--> unverifiable dependency: visible warning, no automatic staleness
@@ -66,10 +67,46 @@ Golden, journey, readiness, or evidence-manifest records. The browser derives
 the Woodland route/checklist/parcel effects from those records' existing
 source bindings.
 
+## Rule-verification claim path
+
+```text
+Rule record + citation + explicit source dependencies
+    |
+    v
+Schema-v2 rule-verification entry
+    |
+    +--> machine_linked: no promotion claim
+    |
+    +--> promoted claim requires named review metadata,
+         exact citation fingerprint, and exact full-rule fingerprint
+             |
+             v
+Effective-status evaluation
+    |
+    +--> fingerprint drift: demote to machine_linked
+    +--> changed source dependency: demote to machine_linked
+    +--> source age or review age: demote to machine_linked
+    +--> all bindings current: retain recorded effective level
+             |
+             v
+Harness summary + bundle-format-4 evidence-page disclosure
+```
+
+`data/validation/rule-verification.json` cannot change deterministic rule
+matching. It describes only the strength of the review claim in force.
+`src/permit_pathways/rule_verification.py` binds any promotion to both the
+normalized citation and full normalized rule record, then applies source-change,
+source-age, and review-age demotion. The harness phrase
+`automated source/regression checks: pass` reports bounded automation only.
+The public evidence page exposes the current effective counts: all 19 rules
+are `machine_linked`, with zero named human reviews and zero jurisdiction
+approvals.
+
 ## Bounded readiness path
 
 ```text
-Official City checklist + public parcel-layer metadata retained
+Official City checklist (source checked 2026-07-29)
++ public parcel-layer metadata retained
     |
     v
 Source registry entry with URL, check date, and digest
@@ -106,40 +143,72 @@ Versioned journey resolver
 Static build bundle
     |
     +--> Includes strict repository-adopted source-state overlay
+    +--> Includes strict rule-verification ledger
+    +--> Includes strict, date-bound program-availability record <---------+
+    |                                                                    |
+    |     Official Woodland program page checked 2026-08-09              |
+    |         |                                                          |
+    |         +--> “Preapproved ADU List: Coming soon!”                  |
+    |                     |                                              |
+    |                     +--> plans_not_listed / future-state boundary --+
     |
     v
 Browser validates the journey, linked route/readiness evidence,
-fingerprints, current source-review windows, and exact changed-source bindings
+fingerprints, current source-review windows, exact changed-source bindings,
+and program availability
     |
-    +--> Active, unedited canonical sample + explicit Yes
+    +--> Missing, malformed, or expired availability record: hold
+    |
+    +--> Current availability record + active, unedited canonical sample
+         + explicit Yes
     |        |
     |        +--> prepare.html?journey=<public-id>&version=<version>
     |                 |
-    |                 +--> Exact current entry: render generated result
+    |                 +--> Exact valid simulation entry: render generated result
     |                 |        |
     |                 |        +--> Derive print-focused journey summary
     |                 |                 |
     |                 |                 +--> Browser Print / Save as PDF
     |                 |                      (no app-side export or storage)
-    |                 +--> Direct, malformed, mismatched, or stale: hold
+    |                 +--> Direct, malformed, mismatched, stale, or
+    |                      availability-blocked: hold
     |                      findings and print summary
     |
     +--> Edited/different sample, No, or I'm not sure: no packet link
 ```
 
+This path exposes a **source-bound future-state simulation**, not a currently
+usable City preapproved plan or applicant-ready workflow. A current
+availability record authorizes only display of that bounded simulation; it
+cannot create a screening match, make the readiness workflow applicable, or
+establish that a plan exists.
+
 ### Source acquisition
 
 The City of Woodland checklist is a public source retained at
 `corpus/woodland/preapproved-adu-permit-checklist.pdf`. Its official URL,
-retrieval date, and digest are recorded in `data/sources.json`.
+source-check date of 2026-07-29, and digest are recorded in
+`data/sources.json`; the document is not described as inherently dated.
 The Yolo County public parcel feature-layer metadata is retained at
 `corpus/yolo/public-parcels-layer.json` with the same URL/date/digest controls.
 The latter describes available fields; it is not a downloaded parcel record.
 Source retrieval and source-watcher execution are repository maintenance
 operations, not browser requests made on behalf of an applicant.
 
+Program availability is separate from the checklist. The official
+[Woodland Preapproved ADU Plan Program page](https://www.cityofwoodland.gov/1616/Preapproved-ADU-Plan-Program)
+was checked 2026-08-09 and says **“Preapproved ADU List: Coming soon!”** That
+manual, date-bound observation is recorded in
+`data/availability/woodland-preapproved-adu-program.json` with its excerpt
+fingerprint and recheck deadline. It is not inferred from the checklist and is
+not represented as a watched-source proof that a plan is available.
+
 ### Canonical readiness inputs
 
+- `data/availability/woodland-preapproved-adu-program.json` contains the
+  official program-page binding, `plans_not_listed` status, future-state
+  simulation boundary, and manual recheck deadline. Its strict schema is
+  isolated from rule matching and readiness evaluation.
 - `data/readiness/workflows/woodland-preapproved-detached-adu.json` contains
   the bounded workflow, nine tri-state facts, 25 requirements, source
   locators, excerpts, conditions, and bindings to the recorded checklist and
@@ -178,6 +247,13 @@ with the current date before presenting an affirmative handoff. It does so at
 runtime together with the route, readiness, fact-envelope, and journey
 fingerprint checks described below.
 
+The journey resolver does not use program availability to manufacture a route
+or readiness result. `src/permit_pathways/program_availability.py` validates
+that independent record at build time, and browser entry validation enforces
+its recheck date. Missing, malformed, or expired program evidence blocks the
+future-state display even when the synthetic journey itself remains internally
+consistent.
+
 ### Deterministic evaluation and CLI
 
 `src/permit_pathways/readiness.py` loads and strictly validates the workflow,
@@ -210,7 +286,10 @@ canonical journey definition, writes
 that same envelope in the bundle. It also strictly loads the repository-adopted
 `data/source-status/current.json`, requires its publication receipt to be
 `reviewed`, re-derives its dependency impacts, and embeds it as a separate
-overlay. The bundle's generated-input manifest includes the snapshot digest.
+overlay. The build strictly loads schema-v2 rule-verification data and the
+date-bound Woodland program-availability record as separate inputs. Bundle
+format 4 exposes all three claims independently, and the generated-input
+manifest binds their canonical inputs.
 
 `check.html` consumes the journey envelope only for the active, unedited
 `sample=adu` fixture after the normal deterministic screening result exactly
@@ -218,23 +297,28 @@ matches the bound golden case and candidate route. `assets/demo.js` checks the
 journey schema and identity; the linked golden intake, route, and readiness
 records; the shared applicability provenance; every recorded fingerprint; and
 the route and readiness source-review windows against the current date. It
-also overlays the adopted changed-source IDs. A changed candidate-route source
-blocks the handoff; a changed checklist or parcel-metadata source blocks the
-packet; unrelated changes do not. An unverifiable fetch is not included in the
-changed set and therefore does not create unsupported staleness. The
-remaining editable applicability fact has no default. **Yes** exposes the
-packet link; **No** withholds it as not applicable; and **I'm not sure**
-withholds it and shows the exact staff question.
+also overlays the adopted changed-source IDs and validates the separate
+program-availability schema and recheck deadline. A changed candidate-route
+source blocks the handoff; a changed checklist or parcel-metadata source
+blocks the packet; unrelated changes do not. A missing, malformed, or expired
+availability record independently blocks the future-state handoff. An
+unverifiable fetch is not included in the changed set and therefore does not
+create unsupported staleness. The remaining editable applicability fact has
+no default. **Yes** exposes the packet simulation link only after these
+checks; **No** withholds it as not applicable; and **I'm not sure** withholds
+it and shows the exact staff question. **Yes** does not establish that a City
+plan is available.
 
 The handoff URL has exactly two fields: the public `journey` ID and its
 `version`. It does not move project facts from `check.html` to `prepare.html`
 or claim authorization. `prepare.html` validates those two fields and repeats
-the journey and source-currency checks. A missing, duplicated, extra,
-malformed, mismatched, or stale entry withholds the packet cover and findings.
-A valid entry renders the Python-generated result; JavaScript does not
-recalculate packet findings.
+the journey, source-currency, and availability checks. A missing, duplicated,
+extra, malformed, mismatched, stale, or expired-availability entry withholds
+the packet cover and findings. A valid simulation entry renders the
+Python-generated result; JavaScript does not recalculate packet findings.
 
-Only after that same exact entry and integrity path succeeds, the browser
+Only after that same exact entry, integrity, source-currency, and availability
+path succeeds, the browser
 derives a print-focused summary from the normalized journey and readiness
 objects already in memory. It includes the candidate route, labeled synthetic
 facts, the three reported-missing preparation actions, direct staff questions,
@@ -243,14 +327,15 @@ ID/version. The action block preserves its AI-assisted, review-pending, and
 not-human-reviewed status. It does not fetch new data or recalculate either the
 route or packet result. The print button invokes `window.print()`; the browser, not the
 application, controls printing or Save as PDF. Print media hides the remaining
-site and detailed packet surfaces. Invalid or direct entry never reveals this
-summary.
+site and detailed packet surfaces. Invalid, direct, or availability-blocked
+entry never reveals this summary.
 
 The browser does not send the synthetic facts to a server or model. It does
 not use local storage, session storage, cookies, or an upload control. A user
 may choose to follow the official checklist or parcel-metadata link. The
-handoff is therefore replay of one public made-up record, not continuity for
-a real applicant case. Choosing browser Print or Save as PDF can create a
+handoff is therefore replay of one public made-up future-state record, not
+continuity for a real applicant case or a currently usable City plan. Choosing
+browser Print or Save as PDF can create a
 user-controlled artifact outside the app; the app does not create, name,
 upload, retain, or later retrieve it.
 
@@ -287,6 +372,8 @@ synthetic inventory against one source-bound manifest. It does not establish
 that:
 
 - the checklist is a complete statement of Woodland requirements;
+- a Woodland preapproved plan is currently listed or usable;
+- the simulated workflow is applicant-ready or applies to a real project;
 - any reported-present file contains the required information;
 - the fabricated parcel values describe any real parcel or that parcel or
   zoning facts are correct;

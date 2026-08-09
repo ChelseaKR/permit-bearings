@@ -37,7 +37,13 @@ class VerificationReport:
     golden_failed: list[str] = field(default_factory=list)
 
     @property
-    def trustworthy(self) -> bool:
+    def automated_checks_pass(self) -> bool:
+        """Whether bounded source-age and structured-regression checks pass.
+
+        This deliberately does not claim legal accuracy, human review, or
+        jurisdiction approval. Those are separate verification levels.
+        """
+
         return not self.stale and not self.unverified and not self.golden_failed
 
     def summary(self) -> str:

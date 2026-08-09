@@ -20,6 +20,23 @@ published a versioned release.
 
 ### Changed
 
+- Added a locally maintained California Design System version-0 preview
+  compatibility layer across all five public static pages. The shared asset
+  provides selected semantic `ca-*` structures for native actions and fields,
+  boundary notices, bounded panels, responsive meshes, and semantic table
+  treatments, plus one consistent skip-to-content pattern. Product styles now
+  compose those structures while retaining local decision/evidence records,
+  status chips, journey rail, print packet, and a service header that
+  deliberately avoids State branding. Public Sans 400/600/700 is served
+  locally from the archived `cagov/design-system` snapshot under the SIL Open
+  Font License 1.1; the snapshot's design-system material is MIT-licensed.
+  Successor-system commit `f8775cf` is a pinned reference
+  only: that system is pre-Alpha with no production-supported release, and no
+  current package, source, or bundle is copied because its licensing metadata
+  is not unambiguous. This is component alignment, not conformance,
+  certification, an official California website, or State endorsement. The
+  optional Python-rendered reference flow now consumes the same shared assets
+  and component hooks instead of maintaining a separate visual system.
 - Added a read-only effective verification-level summary to
   `python -m permit_pathways.harness` (`rule_verification.level_coverage`):
   a one-line count of how many rules are effectively `machine_linked`,

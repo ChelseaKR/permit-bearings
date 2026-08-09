@@ -59,15 +59,21 @@ permit-readiness record that separates submission completeness, consistency
 standards, and unresolved staff questions remains planned.
 
 One bounded browser continuation is implemented for the canonical made-up
-Woodland sample. It appears only while that sample remains active and
-unedited, its results exactly match the bound golden route, every journey and
-readiness fingerprint validates, and the route and readiness sources remain
-inside their review windows. The remaining workflow-applicability fact has no
-default. **Yes** exposes a versioned packet-example link; **No** or **I'm not
-sure** withholds it. This continuation does not turn the temporary route
-result into a stored applicant evidence packet. On an exact valid packet
-entry, it can compose a print-focused synthetic summary without persisting or
-transferring applicant facts.
+Woodland sample as a **source-bound future-state simulation**. The City's
+official program page, checked 2026-08-09, says **“Preapproved ADU List: Coming
+soon!”**; no listed City plan was identified. The continuation is therefore
+not a currently usable preapproved-plan or applicant-ready workflow. It
+appears only while that sample remains active and unedited, its results exactly
+match the bound golden route, every journey and readiness fingerprint
+validates, the route and readiness sources remain inside their review windows,
+and a strict date-bound program-availability record remains valid. The browser
+blocks a missing, malformed, or expired availability record. The remaining
+workflow-applicability fact has no default. **Yes** exposes a versioned
+packet-simulation link; **No** or **I'm not sure** withholds it. **Yes** cannot
+establish that a City plan exists. This continuation does not turn the
+temporary route result into a stored applicant evidence packet. On an exact
+valid simulation entry, it can compose a print-focused synthetic summary
+without persisting or transferring applicant facts.
 
 #### Plain-language explanation layer (prototype)
 
@@ -118,13 +124,16 @@ rules are not compressed into one paragraph.
 ### 2. Bounded packet-presence evaluation (prototype)
 
 `src/permit_pathways/readiness.py` implements a deterministic evaluator for
-one City of Woodland preapproved detached ADU workflow. Its canonical inputs
-are separate portable records:
+one simulated City of Woodland preapproved detached ADU workflow. This is an
+implementation exercise against source-bound prototype data, not evidence
+that Woodland currently lists a plan. Its canonical inputs are separate
+portable records:
 
 - `data/readiness/workflows/woodland-preapproved-detached-adu.json` binds 25
-  requirements and their conditions to one dated City checklist and content
-  digest, and binds two synthetic parcel-fact definitions to exact fields in
-  dated Yolo County public parcel-layer metadata;
+  requirements and their conditions to one City checklist, source checked
+  2026-07-29, and its content digest. The checklist is not represented as
+  inherently dated. The workflow also binds two synthetic parcel-fact
+  definitions to exact fields in Yolo County public parcel-layer metadata;
 - `data/readiness/samples/woodland-preapproved-adu.json` provides one labeled
   synthetic project, explicit applicant-assertion or
   `synthetic_public_record_fixture` provenance, source metadata for the two
@@ -134,6 +143,17 @@ are separate portable records:
   fingerprints, a version, and explicit review metadata. The generated
   browser record adds a content fingerprint for drift detection; that
   fingerprint is not a human-review receipt.
+
+Program availability is a separate, non-matching boundary.
+`data/availability/woodland-preapproved-adu-program.json` strictly records the
+official program URL, 2026-08-09 check date, exact excerpt and fingerprint,
+`plans_not_listed` status, future-state boundary, and recheck deadline.
+`src/permit_pathways/program_availability.py` validates that schema but is
+isolated from deterministic screening and readiness evaluation, so it cannot
+create a match or make the workflow applicable. Bundle format 4 carries the
+record to the browser, which blocks route-to-packet access when it is missing,
+malformed, or expired. A passing availability check authorizes only display of
+the labeled simulation.
 
 The evaluator checks exact schema coverage, stable identifiers, parent-child
 ordering, workflow applicability, conditional requirements, fact-to-source
@@ -156,7 +176,8 @@ commits the generated evidence JSON, and embeds the result in the static
 bundle. `prepare.html` validates and renders that generated result. The
 browser does not contain a second packet evaluator.
 
-After those same entry, integrity, and current-source checks pass,
+After those same entry, integrity, current-source, and program-availability
+checks pass,
 `prepare.html` also derives a print-focused summary from the normalized journey
 and readiness objects. It combines the candidate route and source status,
 labeled synthetic facts, the three reported-missing actions, direct staff
@@ -178,14 +199,14 @@ exact version, and reviewed content fingerprint. No such review is recorded.
 No model runs in the evaluator, CLI, build, or public browser, and no applicant
 data is stored or sent to a model.
 
-This slice compares reported item presence against one checklist. Two
+This future-state slice compares reported item presence against one checklist. Two
 fabricated parcel values demonstrate how exact public dataset fields and
 source dates travel into an evidence manifest. It does not query or verify a
 live parcel, open files, evaluate document contents or consistency, determine
 legal sufficiency, certify completeness, limit staff requests, or predict
 approval. The sample is made up and has not been validated by an applicant,
 planner, Woodland staff member, counsel, or another jurisdiction
-representative.
+representative. It is not currently available to a Woodland applicant.
 
 #### Versioned Woodland journey contract (implemented data and browser contract)
 
@@ -212,19 +233,22 @@ it in `data/demo-data.js`.
 The browser consumes this envelope as a fail-closed transition for the active,
 unedited canonical sample. It independently checks the linked golden result,
 candidate route, applicability provenance, route/readiness evidence,
-fingerprints, and current source-review windows. Only an explicit matching
-applicability answer exposes
+fingerprints, current source-review windows, and the separate strict
+program-availability record. Only a current, well-formed record and an
+explicit matching applicability answer expose
 `prepare.html?journey=<public-id>&version=<version>`; the other answers preserve
 the not-applicable boundary or exact staff question. The URL contains no
 project answers, and the browser uses no local or session storage, cookies, or
-server-side applicant record.
+server-side applicant record. This is a future-state simulation URL, not
+evidence that the City has listed or preapproved a plan.
 
-`prepare.html` accepts exactly the current journey ID and version and reruns
-the contract and source-currency checks before showing packet findings.
-Direct, malformed, duplicated, extra, mismatched, or stale entry fails closed.
-The printable view is one replayable synthetic journey summary, not
-authorization, a real or persisted applicant case, a completeness or
-eligibility finding, an official checklist, or jurisdiction-approved packet.
+`prepare.html` accepts exactly the supported journey ID and version and reruns
+the contract, source-currency, and program-availability checks before showing
+packet findings. Direct, malformed, duplicated, extra, mismatched, stale, or
+expired-availability entry fails closed. The printable view is one replayable
+future-state synthetic journey summary, not authorization, a currently listed
+City plan, a real or persisted applicant case, a completeness or eligibility
+finding, an official checklist, or jurisdiction-approved packet.
 
 ### 3. Citation-grounded Q&A (planned)
 
@@ -244,23 +268,21 @@ abstention path is a structured intake with no matching encoded rule.
   jurisdiction-acceptance evaluations.
 - **Verification runner:** replays the deterministic matcher, checks recorded
   verification dates, and can mark citation-matched sources stale.
-- **Verification-level ledger (prepared scaffold):**
+- **Verification-level ledger (implemented evidence surface, no promoted
+  rules):** schema version 2 in
   `src/permit_pathways/rule_verification.py` and
-  `data/validation/rule-verification.json` add an explicit `machine_linked` /
-  `human_reviewed` / `jurisdiction_approved` level on top of the bare
-  `verified_on` date, as AGENTS.md's evidence rules describe. Every one of
-  the 19 current rules is recorded `machine_linked`; no rule has an actual
-  named review yet, and this file does not claim otherwise. A promoted level
-  binds to the exact citation fingerprint it was checked against and to a
-  180-day review window; `effective_status` fails a drifted or aged-out claim
-  closed back to `machine_linked` instead of silently keeping a stronger
-  claim alive. The ledger never changes which rules match an intake.
-  `python -m permit_pathways.harness` prints a read-only effective-level
-  count (loaded tolerantly with `require_complete=False, strict=False`, the
-  same posture display tooling elsewhere in this module uses, so a `--rules`
-  fixture the ledger was never meant to cover degrades to the
-  `machine_linked` default instead of raising); the ledger is still not
-  wired into the browser demo or public evidence page.
+  `data/validation/rule-verification.json` adds explicit `machine_linked` /
+  `human_reviewed` / `jurisdiction_approved` levels on top of the bare
+  `verified_on` date. A promotion must bind both the exact citation
+  fingerprint and exact full-rule fingerprint, which covers every rule field
+  that affects meaning. Citation drift, full-rule drift, a changed source
+  dependency, source age, or review age demotes the effective claim to
+  `machine_linked`. The ledger never changes which rules match an intake.
+  `python -m permit_pathways.harness` prints effective-level counts and the
+  exact bounded automation phrase `automated source/regression checks: pass`
+  when those checks pass. Bundle format 4 exposes the same effective coverage
+  on `evidence.html`: all 19 rules are currently `machine_linked`, with zero
+  named human reviews and zero jurisdiction approvals.
 - **Currency watcher:** monitors the source corpus (statute text, HCD guidance,
   and selected local-source artifacts) for hash changes. Nineteen sources are
   watched, including the current Davis handout and the HCD letter that records
@@ -281,14 +303,18 @@ abstention path is a structured intake with no matching encoded rule.
   `reviewed` means selected by repository maintenance for publication; it is
   not legal, jurisdiction, counsel, or substantive content approval and does
   not identify a human reviewer.
-- **Public trust surface:** bundle format 3 carries the adopted overlay to the
-  browser. Exact changed dependencies stale statewide rule cards and
+- **Public trust surface:** bundle format 4 carries the adopted overlay, rule
+  verification ledger, and strict program-availability record to the browser
+  as distinct claims. Exact changed dependencies stale statewide rule cards and
   orientation receipts. A changed candidate-route source blocks the Woodland
   handoff; a changed checklist or parcel-metadata binding withholds the
-  Woodland findings, actions, and print summary. An unrelated changed source
-  leaves those local surfaces available. An unverifiable source produces a
-  warning and does not stale a dependent. The § 66321 amendment control is a
-  separate temporary layer and never rewrites the committed receipt.
+  Woodland findings, actions, and print summary. Independently, missing,
+  malformed, or expired official program-availability evidence blocks the
+  future-state simulation. An unrelated changed source leaves those local
+  surfaces available. An unverifiable source produces a warning and does not
+  stale a dependent. The evidence page exposes review levels without implying
+  review. The § 66321 amendment control is a separate temporary layer and
+  never rewrites the committed receipt.
 
 New-law discovery, automatic receipt adoption/publication, a named reviewer
 record, and a staffed re-verification assignment workflow are not implemented.
@@ -305,6 +331,11 @@ The versioned Woodland contract composes the two bounded traces as:
 
 `golden case + candidate route current on the recorded date + applicable readiness evidence → synthetic journey envelope`
 
+The separate availability boundary gates display without entering either
+decision path:
+
+`official program page → strict date-bound availability record → future-state simulation hold/display`
+
 A fetched changed source creates the public review hold described above while
 preserving explicit unaffected controls. The exact persisted impact list
 covers rules and Golden cases; journey and readiness effects are re-derived
@@ -316,23 +347,25 @@ the queue remain planned.
 
 The browser showcase remains dependency-free and static-host friendly.
 Canonical rules, explanations, registries, fixtures, checks, source metadata,
-and the adopted source-state receipt stay in JSON.
+the program-availability record, rule-verification ledger, and adopted
+source-state receipt stay in JSON.
 `scripts/build_demo_bundle.py` deterministically compiles those files, the
 generated readiness record, the generated journey envelope, and the strict
-source-state overlay into `data/demo-data.js`. The static surface is split by
-user job:
+source-state overlay into bundle format 4 at `data/demo-data.js`. The static
+surface is split by user job:
 
 - `index.html`: lightweight orientation and scope; it loads no data bundle;
 - `check.html`: applicant intake, a temporary grouped result packet, a
   statewide orientation receipt, a labeled shareable sample that reuses a
   canonical golden fixture, its explicit applicability gate, and the separate
   clock;
-- `prepare.html`: a fail-closed versioned entry to the generated synthetic
-  Woodland packet-presence result, evidence-manifest link, and print-focused
-  journey evidence summary;
+- `prepare.html`: a fail-closed versioned and availability-gated entry to the
+  generated future-state Woodland packet-presence simulation,
+  evidence-manifest link, and print-focused journey evidence summary;
 - `review.html`: bounded ordinance-text screen; and
 - `evidence.html`: adopted source-state receipt, source status, derived review
-  queue, regression summary, and separate change rehearsal.
+  queue, rule-review coverage, regression summary, and separate change
+  rehearsal.
 
 The four data-driven pages load the generated bundle before shared,
 page-gated `assets/demo.js`. Relative URLs let all five pages work from disk
@@ -358,9 +391,35 @@ The generated bundle must never become a second hand-edited source of truth;
 the test suite compares it byte-for-byte with the canonical JSON inputs and
 checks the committed readiness evidence and journey envelope against fresh
 Python resolution.
-Visual primitives follow the published California Design System token
-vocabulary and California Web Standards principles; the exact adoption and
-product-specific extensions are documented in `docs/DESIGN-SYSTEM.md`.
+All five pages load `assets/california-design-system.css` before
+`assets/site.css`. The first asset is the locally maintained California Design
+System version-0 preview compatibility layer: it provides selected semantic
+`ca-*` structures for buttons, fields, shouts, boxes, meshes, and table
+treatments, plus the shared `#skip-to-content` pattern. The second asset owns
+Permit Bearings composition and the product-specific service header/footer,
+decision and evidence records, status chips, journey rail, and print packet.
+Native disclosures remain native.
+
+The optional Python-rendered `/`, `/screen`, and `/trust` reference routes use
+the same two style assets and additive component classes on native form,
+notice, card, action, and table elements. Their small inline style block is
+scoped to reference-flow composition; it no longer defines a separate visual
+token or component system.
+
+The local layer is compared with successor-system commit
+`f8775cfac090de08b9e0083eb3008bd585f33e91` (2026-01-27), not imported from it.
+The successor is pre-Alpha, has no production-supported release, and its
+repository/package licensing is not yet unambiguous enough for this project to
+redistribute its source or bundle. The static site therefore has no upstream
+runtime dependency. Archived, MIT-licensed `cagov/design-system` material
+remains the documented source for adapted legacy tokens and the local Public
+Sans files; the fonts retain their separate SIL Open Font License 1.1.
+
+This boundary is component alignment, not conformance or certification. The
+product-specific header intentionally omits the State banner, logo, wordmark,
+and agency identity; the prototype does not represent an official California
+site or State endorsement. The exact adoption and extensions are documented
+in `docs/DESIGN-SYSTEM.md`.
 The current build-time and browser boundaries are documented in
 `docs/DATA-FLOW.md`.
 
@@ -386,11 +445,17 @@ The current build-time and browser boundaries are documented in
    always-visible citations and source status. These are prototype candidate
    rules and generic document hints, not a complete application checklist.
    Change one answer to show that the old result is invalidated until the form
-   is submitted again. Restore the canonical sample and show that its
-   applicability question has no default: **No** and **I'm not sure** withhold
-   the packet, while **Yes** exposes the versioned link.
-2. Follow that link to `prepare.html`. Point out that the URL contains only a
-   public journey ID and version. Show the 25 source-bound requirements, three
+   is submitted again. Restore the canonical sample and show the official-page
+   record: checked 2026-08-09, it says **“Preapproved ADU List: Coming soon!”**
+   State that this makes Woodland a source-bound future-state simulation, not
+   a currently usable plan or applicant-ready workflow. A missing, malformed,
+   or expired availability record blocks the handoff. The applicability
+   question has no default: **No** and **I'm not sure** withhold the packet
+   simulation, while **Yes** exposes the versioned link only when the
+   availability record passes.
+2. Follow that simulation link to `prepare.html`. Point out that the URL
+   contains only a public journey ID and version. Show the 25 source-bound
+   requirements from the checklist source checked 2026-07-29, three
    known gaps, five items needing confirmation, the review-pending AI-assisted
    action wording, and the generated evidence manifest. Show the print-focused
    summary's candidate route, labeled made-up facts, three preparation actions,
@@ -398,17 +463,20 @@ The current build-time and browser boundaries are documented in
    portable surface. State that Print/Save is the browser's operation and that
    the app stores no export. The Python evaluator compared explicit synthetic
    inventory statuses and never opened a file or verified a parcel. Direct or
-   invalid entry withholds both findings and summary.
+   invalid or availability-blocked entry withholds both findings and summary.
 3. Select an unsupported fact combination → visible abstention + staff routing
    (current trust moment; free-text Q&A remains planned).
 4. Use the ordinance-review page to flag a documented sample provision.
-5. On Evidence & updates, simulate a statute change → watch dependent answers
-   flip to stale → open the applicant guide in that state (Scenario C
+5. On Evidence & updates, show that all 19 current rules are
+   `machine_linked`, with zero named reviews. Explain that schema-v2 promotion
+   binds citation and full-rule fingerprints and demotes on source change,
+   source age, or review age. Then simulate a statute change → watch dependent
+   answers flip to stale → open the applicant guide in that state (Scenario C
    rehearsal, the differentiator).
 
-The stronger next demo extends the synthetic packet-presence slice with
-reviewed local requirements and remedies, sourced parcel facts, real or
-properly redacted file evidence, and a changed-source impact queue.
+The stronger next demo moves the future-state slice to an active jurisdiction
+workflow with reviewed local requirements and remedies, sourced parcel facts,
+real or properly redacted file evidence, and a changed-source impact queue.
 
 ## Non-goals for v1
 

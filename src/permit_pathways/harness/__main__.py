@@ -9,8 +9,8 @@ rule flips to stale until re-verified.
 
 Exit codes:
 
-* ``0`` — nothing needs a person: no source changed, no rule is stale, and
-  the golden set passes.
+* ``0`` — the bounded automated source-age and structured-regression checks
+  pass. This is not a human-review or legal-accuracy result.
 * ``1`` — review needed: a watched source's content changed, a rule aged
   out of its review window, or a golden case regressed.
 * ``2`` — one or more watched sources could not be re-fetched. Nothing is
@@ -194,14 +194,24 @@ def main(*, today: date | None = None) -> int:
             strict=False,
             today=as_of,
         )
-        print("\n" + level_coverage(verification_rules, ledger, today=as_of).summary())
+        print(
+            "\n"
+            + level_coverage(
+                verification_rules,
+                ledger,
+                today=as_of,
+                changed_source_ids=changed,
+            ).summary()
+        )
     if args.assume_changed:
         print(f"\n(simulating changed sources: {', '.join(args.assume_changed)})")
         for rule_id in report.stale:
             print(f"  STALE until re-verified: {rule_id}")
     print(
-        "\ntrustworthy:",
-        "yes" if report.trustworthy else "NO — review queue is not empty",
+        "\nautomated source/regression checks:",
+        "pass"
+        if report.automated_checks_pass
+        else "REVIEW NEEDED — the automated queue is not empty",
     )
     if unverifiable:
         print(
