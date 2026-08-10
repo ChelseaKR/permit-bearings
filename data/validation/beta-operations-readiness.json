@@ -1,0 +1,398 @@
+{
+  "schema_version": 1,
+  "record_id": "no-storage-beta-operations-v1",
+  "record_version": "1.0.0",
+  "prepared_on": "2026-08-09",
+  "status": "prepared_not_approved",
+  "decision_status": "proposed",
+  "architecture_decision_path": "docs/adr/0002-retain-no-storage-beta-boundary.md",
+  "runbook_path": "docs/BETA-OPERATIONS-RUNBOOK.md",
+  "document_bindings": [
+    {
+      "document_id": "beta-boundary-adr",
+      "path": "docs/adr/0002-retain-no-storage-beta-boundary.md",
+      "sha256": "226dd8b9af2a2ef68c2c941cc260ba3b662514cca34b38d687fdcebbbe13e585"
+    },
+    {
+      "document_id": "beta-operations-runbook",
+      "path": "docs/BETA-OPERATIONS-RUNBOOK.md",
+      "sha256": "d09f9604adb10c2c075604de11f5ad0cbb9d8e37fda3620db3df8642d223b405"
+    }
+  ],
+  "boundary": {
+    "public_static_delivery": true,
+    "accounts": false,
+    "uploads": false,
+    "application_managed_storage": false,
+    "browser_persistence": false,
+    "application_telemetry": false,
+    "runtime_external_model_calls": false,
+    "permitting_system_writeback": false,
+    "applicant_data_network_submission": false,
+    "service_collected_fields": [],
+    "service_collection_purposes": [],
+    "browser_memory_fields": [
+      "adu_project_form",
+      "adjacent_sb9_split_same_actor",
+      "demolishes_protected_housing",
+      "ellis_withdrawal_last_15_years",
+      "in_urbanized_area",
+      "journey_applicability",
+      "jurisdiction",
+      "jurisdiction_name",
+      "lot_split_alters_historic_district_resource",
+      "lot_split_on_historic_landmark_site",
+      "on_protected_site",
+      "parcel_created_by_sb9_split",
+      "primary_dwelling_status",
+      "project_type",
+      "proposed_lot_ratio_compliant",
+      "proposed_lot_size_compliant",
+      "sf_zone",
+      "tenant_occupied_last_3_years",
+      "two_unit_contributing_historic_location",
+      "two_unit_individually_listed_historic_property",
+      "unpermitted_existing"
+    ],
+    "browser_memory_purpose": "Render deterministic candidate guidance, source status, and temporary print-oriented outputs in the current page without persisting or transmitting applicant answers.",
+    "synthetic_packet_boundary": "The packet page replays committed public synthetic records and accepts no applicant document or applicant-data submission.",
+    "hosting_metadata_boundary": "Static hosting, DNS, CDN, and linked third-party sites may process ordinary request metadata outside application code; deployment-specific review remains not_run.",
+    "user_controlled_artifact_boundary": "Browser Print or Save as PDF may create a user-controlled local artifact that the application does not create, upload, retain, or retrieve."
+  },
+  "deployment": {
+    "evidence_scope": "future_limited_beta_deployment_not_current_prototype",
+    "status": "not_run",
+    "commit_sha": null,
+    "https_url": null,
+    "hosting_provider": null,
+    "dns_provider": null,
+    "cdn_provider": null,
+    "host_request_metadata_review_status": "not_run",
+    "host_request_metadata_fields": null,
+    "subprocessor_review_status": "not_run",
+    "approved_subprocessors": null,
+    "access_review_status": "not_run",
+    "release_verification_receipt_id": null,
+    "rollback_verification_receipt_id": null
+  },
+  "records_boundary": {
+    "status": "not_run",
+    "application_applicant_record_store": false,
+    "service_searchable_applicant_fields": [],
+    "potential_external_record_classes": [
+      "deployment and configuration records",
+      "repository and release records",
+      "security and incident records",
+      "support records created outside the application"
+    ],
+    "cpra_routing_role": "records_owner",
+    "search_export_rehearsal_status": "not_run",
+    "search_export_receipt_id": null,
+    "legal_hold_review_status": "not_run",
+    "retention_schedule_status": "not_run"
+  },
+  "export_boundary": {
+    "current_profile_id": "public-synthetic-evidence-v1",
+    "inclusion_status": "excluded_pending_reviewed_future_profile",
+    "future_profile_review_status": "not_run",
+    "approved_future_profile_id": null,
+    "claim": "This operating ledger, ADR, runbook, validator, and tests are outside pinned export profile v1. A reviewed future profile version is required before they are represented as part of an evidence handoff."
+  },
+  "approvals": [
+    {
+      "approval_id": "accessibility-approval",
+      "required_role": "accessibility_owner",
+      "status": "not_run",
+      "decision": null,
+      "decided_by": null,
+      "decided_on": null,
+      "evidence_receipt_id": null
+    },
+    {
+      "approval_id": "beta-scope-approval",
+      "required_role": "product_scope_owner",
+      "status": "not_run",
+      "decision": null,
+      "decided_by": null,
+      "decided_on": null,
+      "evidence_receipt_id": null
+    },
+    {
+      "approval_id": "hosting-approval",
+      "required_role": "deployment_owner",
+      "status": "not_run",
+      "decision": null,
+      "decided_by": null,
+      "decided_on": null,
+      "evidence_receipt_id": null
+    },
+    {
+      "approval_id": "jurisdiction-partner-decision",
+      "required_role": "jurisdiction_authority",
+      "status": "not_run",
+      "decision": null,
+      "decided_by": null,
+      "decided_on": null,
+      "evidence_receipt_id": null
+    },
+    {
+      "approval_id": "language-access-approval",
+      "required_role": "language_access_owner",
+      "status": "not_run",
+      "decision": null,
+      "decided_by": null,
+      "decided_on": null,
+      "evidence_receipt_id": null
+    },
+    {
+      "approval_id": "privacy-approval",
+      "required_role": "privacy_owner",
+      "status": "not_run",
+      "decision": null,
+      "decided_by": null,
+      "decided_on": null,
+      "evidence_receipt_id": null
+    },
+    {
+      "approval_id": "records-approval",
+      "required_role": "records_owner",
+      "status": "not_run",
+      "decision": null,
+      "decided_by": null,
+      "decided_on": null,
+      "evidence_receipt_id": null
+    },
+    {
+      "approval_id": "security-approval",
+      "required_role": "security_owner",
+      "status": "not_run",
+      "decision": null,
+      "decided_by": null,
+      "decided_on": null,
+      "evidence_receipt_id": null
+    },
+    {
+      "approval_id": "support-approval",
+      "required_role": "support_owner",
+      "status": "not_run",
+      "decision": null,
+      "decided_by": null,
+      "decided_on": null,
+      "evidence_receipt_id": null
+    }
+  ],
+  "controls": [
+    {
+      "control_id": "beta-access-001",
+      "domain": "access",
+      "objective": "Define and review least-privilege repository, deployment, DNS, and rollback access before a beta release.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "security-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-accessibility-001",
+      "domain": "accessibility",
+      "objective": "Keep automated accessibility checks separate from pending human and assistive-technology approval.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "accessibility-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md",
+        "docs/BETA-ROADMAP.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-boundary-001",
+      "domain": "architecture",
+      "objective": "Retain public static delivery with no accounts, uploads, application-managed storage, telemetry, runtime external model call, or permitting-system writeback.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "beta-scope-approval",
+      "evidence_paths": [
+        "docs/adr/0002-retain-no-storage-beta-boundary.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-claims-001",
+      "domain": "claims",
+      "objective": "Prevent the operating package from asserting legal advice, compliance, completeness, eligibility, approval, jurisdiction acceptance, or beta approval.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "beta-scope-approval",
+      "evidence_paths": [
+        "data/validation/beta-operations-readiness.json",
+        "src/permit_pathways/beta_operations.py",
+        "tests/test_beta_operations.py"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-data-001",
+      "domain": "data",
+      "objective": "Keep service-collected applicant fields and purposes empty; process the enumerated project facts only in current page memory.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "privacy-approval",
+      "evidence_paths": [
+        "docs/DATA-FLOW.md",
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-deployment-001",
+      "domain": "deployment",
+      "objective": "Require an immutable commit, HTTPS URL, hosting boundary, release verification receipt, and rollback receipt before deployment approval.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "hosting-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-export-001",
+      "domain": "portability",
+      "objective": "Keep the existing evidence export limited to its pinned profile and require review before a future profile includes this operating package.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "records-approval",
+      "evidence_paths": [
+        "docs/EXPORT-RESTORE.md",
+        "data/export/public-synthetic-evidence-v1.json"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-hosting-001",
+      "domain": "subprocessors",
+      "objective": "Inventory the selected host, DNS, CDN, request metadata, subprocessors, retention, and transfer terms before approval.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "hosting-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-incident-001",
+      "domain": "incident",
+      "objective": "Triage integrity, source-currency, privacy, security, accessibility, and availability incidents with role-based escalation and preservation decisions.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "security-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-language-001",
+      "domain": "language_access",
+      "objective": "Keep Spanish source-derived guidance review-pending and outside any applicant-ready beta claim until exact-version semantic and usability review is approved.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "language-access-approval",
+      "evidence_paths": [
+        "docs/BETA-ROADMAP.md",
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-privacy-001",
+      "domain": "privacy",
+      "objective": "Require deployment-specific privacy review while preserving the no-application-storage and no-applicant-network-submission boundary.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "privacy-approval",
+      "evidence_paths": [
+        "docs/DATA-FLOW.md",
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-records-001",
+      "domain": "records",
+      "objective": "Route records requests and legal-hold questions to the records role and rehearse search and export across systems outside the application.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "records-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-release-001",
+      "domain": "release",
+      "objective": "Bind release verification to one commit and HTTPS deployment without treating automated checks as external approval.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "hosting-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-retention-001",
+      "domain": "retention",
+      "objective": "Record that the application has no applicant record to retain or delete while requiring separate schedules for hosting, repository, incident, and support records.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "records-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-rollback-001",
+      "domain": "rollback",
+      "objective": "Restore the last known-good static commit or place the beta on hold without altering evidence state or fabricating a successful verification receipt.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "hosting-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-security-001",
+      "domain": "security",
+      "objective": "Require deployment-specific threat and security review before release and again before any boundary expansion.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "security-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    },
+    {
+      "control_id": "beta-support-001",
+      "domain": "support",
+      "objective": "Define role-based support intake, safe reproduction, evidence capture, response ownership, and escalation without collecting applicant case data in the application.",
+      "preparation_status": "prepared",
+      "verification_status": "not_run",
+      "approval_id": "support-approval",
+      "evidence_paths": [
+        "docs/BETA-OPERATIONS-RUNBOOK.md"
+      ],
+      "execution_receipt_id": null
+    }
+  ],
+  "claim_boundary": "PREPARED / NOT APPROVED. This record validates a proposed no-application-storage operating boundary and pending control checklist. It is not evidence of a beta deployment, partner acceptance, privacy or security approval, CPRA or Information Practices Act compliance, SAM or SIMM compliance, accessibility or language approval, legal advice, application completeness, eligibility, permit approval, or completed operational rehearsal."
+}

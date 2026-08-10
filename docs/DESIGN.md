@@ -572,7 +572,56 @@ in `docs/DESIGN-SYSTEM.md`.
 The current build-time and browser boundaries are documented in
 `docs/DATA-FLOW.md`.
 
-### 6. Public/synthetic evidence handoff (implemented tooling)
+### 6. Proposed no-storage beta operations (implemented planning validator; not approved)
+
+ADR 0002 proposes retaining the static delivery boundary for the first
+limited beta: no accounts, uploads, application-managed applicant storage,
+browser persistence, application telemetry, runtime external model or parcel
+calls, or permitting-system writeback. The service-collected field and purpose
+inventories remain empty. The exact current structured input names are pinned
+as current-page browser-memory fields, and the synthetic packet page continues
+to accept no applicant submission.
+
+This does not mean the deployment has no metadata or records. A static host,
+DNS/CDN, linked third-party site, repository/release system, support system,
+or incident system may process request or operational metadata outside the
+application. Browser Print/Save may create a user-controlled local artifact.
+The selected systems, fields, purposes, access, subprocessors, location,
+retention, deletion, export, and offboarding terms remain deployment-specific
+and unreviewed.
+
+The portable planning record at
+`data/validation/beta-operations-readiness.json` contains 17 stable controls
+and nine role approvals for architecture, data, hosting, access, privacy,
+security, records, retention, export, incident, support, release, rollback,
+accessibility, language access, claims, and deployment. Its only valid state is
+`prepared_not_approved`: deployment identifiers, host/subprocessor details,
+records rehearsals, decisions, approvers, and execution receipts must remain
+null/`not_run`.
+
+`src/permit_pathways/beta_operations.py` strictly validates exact schema,
+duplicate-free finite JSON, record size, the no-storage capability booleans,
+empty service collection, exact browser-memory inventory, exact sorted
+approval/control registries, unchanged claim boundaries, repository-local
+evidence paths, and the ADR/runbook's exact raw-byte SHA-256 bindings. Its CLI
+prints **PREPARED / NOT APPROVED**. Exit 0 proves only
+that the proposed planning package has not been promoted or weakened. The
+schema cannot record an approval; a later deployment/execution record requires
+a separately reviewed schema.
+
+`docs/BETA-OPERATIONS-RUNBOOK.md` provides the role model, exact data/purpose
+inventory, deployment/subprocessor worksheet, release checks, support and
+incident handling, retention/deletion boundaries, CPRA search/export routing,
+rollback, and escalation. No role is assigned and no procedure is represented
+as executed. This package does not establish a beta, partner acceptance,
+privacy/security approval, accessibility/language approval, or CPRA,
+Information Practices Act, SAM, or SIMM compliance.
+
+The ADR, runbook, readiness ledger, validator, and tests are outside the
+pinned 58-file export profile v1. A reviewed future profile version must
+classify and add them before an evidence handoff can claim to include them.
+
+### 7. Public/synthetic evidence handoff (implemented tooling)
 
 `src/permit_pathways/evidence_export.py` packages the exact files named in the
 schema-v1 profile as one deterministic ZIP outside the repository. The
@@ -594,8 +643,9 @@ extraction helpers, merges into a destination, or changes publication state.
 
 This is an evidence-data portability mechanism for the pinned schema-v1 public
 and synthetic repository scope. The later held-out evaluation planning
-artifact and any future cases, answer key, or results are outside profile v1;
-adding them requires a separately reviewed profile version. It is not a
+artifact, beta-operations package, and any future cases, answer key, execution
+receipt, approval, or result are outside profile v1; adding them requires a
+separately reviewed profile version. It is not a
 sensitive-data export, applicant record, proof of authenticity,
 backup/disaster-recovery system, copyright or
 contractual ownership finding, partner acceptance, CPRA workflow, completed
@@ -606,13 +656,13 @@ review, or beta evidence. The operator and maintenance contract is in
 
 | Challenge requirement | Current evidence | Next gap |
 |---|---|---|
-| Privacy (Info Practices Act, Gov C §§ 11015.5/11019.9) | Public demo persists no applicant input. Its handoff URL carries only a public journey ID and version; the packet page uses one committed synthetic record and makes no runtime model call. | Deployment data inventory, flow, purpose, access, retention/deletion, subprocessors, and privacy review. |
+| Privacy (Info Practices Act, Gov C §§ 11015.5/11019.9) | Public demo persists no applicant input. Its handoff URL carries only a public journey ID and version; the packet page uses one committed synthetic record and makes no runtime model call. A proposed beta package pins the empty service collection inventory, exact current-page fields, host-metadata caveat, and privacy/incident procedure. | Select and review the actual host/subprocessors, execute the threat/privacy controls, assign authorized roles, and record approval in a separate execution schema. No compliance claim exists. |
 | Jurisdiction data ownership | Rules, corpus, fixtures, and source metadata use open repository formats. A schema-v1 canonical ZIP builds from 58 exact public/synthetic files verified against Git HEAD; archive-only verification and inert restore check the profile, raw and normalized-source hashes, tree fingerprint, 17 asserted validation states, licensing, and provenance without authenticating that commit. The allowlist excludes known sensitive material but is not a privacy classifier. | Partner acceptance, contractual custody/offboarding, signing, and a separately classified export after any hosted, applicant, reviewer, or participant data exists. |
-| CPRA (Gov C § 7920.000 et seq.) | No applicant record store exists. | Deployment-specific retention, search/export, legal-hold, exemption handling, and audit design; no blanket compliance claim. |
+| CPRA (Gov C § 7920.000 et seq.) | No applicant record store exists. The proposed runbook routes requests and legal holds to an authorized records role and identifies possible repository, deployment, source/review, support, and incident records outside the application. | Assign authority and execute the deployment-specific retention, search/export, legal-hold, exemption/redaction, and audit design. The prepared ledger remains `not_run`; no blanket compliance claim. |
 | Low-capacity affordability | Dependency-light Python core and static-friendly browser demo. | Pilot deployment/TCO evidence and an integration contract beside existing systems. |
 | Keep pace with legislative change | Selected-source hash watcher, proposed run artifacts, a strict repository-adopted source-state overlay, exact rule/Golden and bounded packet-context worklists, separate decision templates, applicant-output holds, date aging, and a separate staleness rehearsal. | New-law discovery, automatic adoption/publication, completed staffed assignments and dispositions, broader local-source coverage, and human approval history. |
 | Decision support, not legal agent | Candidate labels, source links, disclaimers, visible unverified state, and abstention. | Ensure stale and unverified rules cannot appear as actionable green results. |
-| SAM 5300 / SIMM / accessibility | Static WCAG 2.2 AAA-target audit and a versioned `not_run` human-validation matrix; no-storage demo reduces the current data boundary. | Execute the human/AT matrix, then complete the threat model, control mapping, incident path, and deployment security review. |
+| SAM 5300 / SIMM / accessibility | Static WCAG 2.2 AAA-target audit, a versioned `not_run` human-validation matrix, and a proposed incident/release/rollback/security operations package; no-storage delivery reduces but does not eliminate the deployment boundary. | Execute the human/AT matrix, threat model, control mapping, incident/rollback rehearsal, and deployment security review. No conformance or approval is claimed. |
 
 ## Demo plan (for the 40-minute showcase slot, if selected)
 

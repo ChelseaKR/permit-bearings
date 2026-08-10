@@ -28,6 +28,16 @@ evidence remains `not_run` or pending. The held-out scanner manifest is also
 or result hash, or freeze/prediction/scoring receipt. Automated checks cannot
 promote any of those states.
 
+A pilot-neutral beta operations package is now machine-testable but remains
+**PREPARED / NOT APPROVED**. It proposes a public/static boundary with no
+accounts, uploads, application-managed applicant storage, browser persistence,
+application telemetry, runtime external model calls, or permitting-system
+writeback. All nine role approvals, deployment/hosting fields, records
+rehearsals, execution receipts, and partner decisions remain null/`not_run`.
+Host request metadata and every deployment-specific privacy, security,
+records, access, accessibility, language, support, and hosting decision remain
+external work.
+
 Current capability boundaries are canonical in
 [`PRODUCT-CONTEXT.md`](PRODUCT-CONTEXT.md#capability-truth). Current automated
 quality evidence is summarized in the
@@ -81,7 +91,7 @@ versions are never combined.
 | Language | If Spanish is presented as applicant-ready within the beta, every reachable Spanish source-derived record has exact-version semantic-parity approval and `ES-USABILITY-JOURNEY` passes. Otherwise Spanish stays explicitly review-pending and outside the beta claim. | Nineteen semantic-review rows and Spanish usability are `not_run`. | Qualified Spanish reviewers and participants |
 | Maintainability | One controlled source change completes detection, affected/unaffected mapping, review, approval, republication, and rollback. The receipt records named human owners, elapsed and active-role time, defects, and the prospective partner's maintenance-burden decision. | Rehearsal is prepared and `not_run`; no human owner or burden decision is recorded. | External reviewer and partner |
 | Ownership and export | A jurisdiction-owned export of sources, rules, requirements, review receipts, fixtures, dependencies, and checksums opens and restores without vendor-only tooling. | A deterministic, Git-bound package now builds, verifies, and restores the pinned schema-v1 public/synthetic evidence set. Its pinned profile excludes known sensitive records but is not a privacy classifier, and it does not establish contractual ownership, a production offboarding test, or partner acceptance. The later held-out planning artifact and future evaluation inputs/results are outside profile v1 and require a separately reviewed profile version. | Implemented mechanism; external partner acceptance and any sensitive-data design |
-| Privacy, records, and security | The first beta remains public/synthetic/redacted with no accounts, uploads, applicant store, telemetry, external model call, or write-back. Any expanded flow first records fields and purpose, access, retention/deletion, subprocessors, CPRA search/export and legal-hold behavior, threat model, control mapping, incident path, and deployment-specific approvals. | The static demo has a documented no-storage boundary; production controls are not approved. | Autonomous drafts; external approvals if scope expands |
+| Privacy, records, and security | The first beta remains public/synthetic/redacted with no accounts, uploads, applicant store, telemetry, external model call, or write-back. Any expanded flow first records fields and purpose, access, retention/deletion, subprocessors, CPRA search/export and legal-hold behavior, threat model, control mapping, incident path, and deployment-specific approvals. | ADR 0002, a role-based runbook, a 17-control/nine-approval portable ledger, and a strict prepared-state validator now cover the proposed no-application-storage boundary, exact current-page fields, host metadata caveat, records routing, incident/support, release, and rollback. The ADR is proposed; every deployment field, execution receipt, records rehearsal, human approval, and partner decision is null/`not_run`. This is not privacy/security approval or CPRA, Information Practices Act, SAM, or SIMM compliance. | Implemented planning validator; external deployment inventory, rehearsals, role assignment, and approvals |
 | Partner and decision | A credible partner supplies a written next step with an owner role and date, accepts the maintenance plan, and signs a `proceed`, `extend`, `pivot`, or `stop` decision after every supporting receipt. | Partner gate and aggregate decision are pending. | External partner |
 
 Passing these gates permits a bounded statement such as:
@@ -101,7 +111,7 @@ or permitting-outcome claims.
 
 ### Now — autonomous foundations
 
-This roadmap tranche completes six machine-testable foundations without
+This roadmap tranche completes seven machine-testable foundations without
 changing the product's maturity claim:
 
 - the Statewide Coverage Navigator is deployed as orientation, not statewide
@@ -130,7 +140,16 @@ changing the product's maturity claim:
   answer-key argument, and `score` with frozen predictions plus the declared
   reviewer/adjudication key. `validate-result` reloads all frozen inputs and
   recomputes the recorded result before accepting it; the tooling does not
-  supply the external evidence.
+  supply the external evidence; and
+- a proposed no-storage ADR, precise operations runbook, portable 17-control
+  and nine-approval ledger, and strict CLI pin the public/static beta boundary,
+  empty service field/purpose inventory, exact current-page facts, host
+  metadata caveat, retention/deletion, CPRA routing, access, incident,
+  support, release, rollback, and export limits. The ledger and validator bind
+  the ADR/runbook to exact raw-byte SHA-256 digests. The validator accepts only
+  `prepared_not_approved`; all future-beta deployment, rehearsal, approval,
+  receipt, and partner-decision fields remain null/`not_run`, and later
+  execution requires a separately reviewed schema.
 
 The remaining autonomous work is:
 
@@ -153,9 +172,11 @@ The remaining autonomous work is:
    and keep development fixtures and synthetic controls separate. Record the
    freeze, prediction, unblind, and scoring chronology, then retire the
    revealed corpus from use with future scanner versions.
-6. Draft the no-storage beta data flow, threat model, control map, records/CPRA
-   workflow, incident path, support runbook, and release/rollback checklist.
-   Keep approval fields pending.
+6. Execute the deployment-specific host/subprocessor inventory, threat and
+   control review, CPRA search/export and rollback rehearsals, and role
+   approvals described by the prepared operations package. Record them in a
+   separately reviewed execution schema; the prepared ledger cannot be
+   promoted.
 7. Add applicant-copy catalog parity, placeholder checks, and
    pseudolocalization tests without promoting Spanish review status.
 
@@ -216,6 +237,9 @@ language approval, or jurisdiction acceptance.
 | Adopted source-state receipt | [`current.json`](../data/source-status/current.json) |
 | Current Woodland program boundary | [`woodland-preapproved-adu-program.json`](../data/availability/woodland-preapproved-adu-program.json) |
 | Held-out scanner evaluation contract (`not_run`) | [`manifest.json`](../data/conformance/evaluations/heldout-v1/manifest.json) |
+| Proposed no-storage beta decision | [`ADR 0002`](adr/0002-retain-no-storage-beta-boundary.md) |
+| Beta operations procedure | [`BETA-OPERATIONS-RUNBOOK.md`](BETA-OPERATIONS-RUNBOOK.md) |
+| Beta operations control ledger (`prepared_not_approved`) | [`beta-operations-readiness.json`](../data/validation/beta-operations-readiness.json) |
 
 Machine-readable ledgers remain authoritative for activity state. Narrative
 documentation may explain a recorded result, but it cannot turn `not_run`,
