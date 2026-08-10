@@ -437,7 +437,9 @@ explicitly requests a historical `--as-of` replay. The CLI itself does not
 store the result. A person who redirects that output creates a local file
 outside the CLI's storage behavior. `review_queue_cli.py` builds contexts for
 every registered workflow by default and can narrow to one registered ID; it
-cannot infer or activate an unregistered workflow.
+cannot infer or activate an unregistered workflow. `source_release_cli.py`
+uses the same context loader but always binds every registered workflow; it
+cannot create a repository-wide release receipt from a single selected entry.
 
 ### Build and browser rendering
 
