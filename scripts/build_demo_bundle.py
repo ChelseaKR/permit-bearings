@@ -30,6 +30,7 @@ from permit_pathways.journey import (  # noqa: E402
 )
 from permit_pathways.jurisdictions import build_coverage_index  # noqa: E402
 from permit_pathways.program_availability import (  # noqa: E402
+    ProgramAvailability,
     load_program_availability,
 )
 from permit_pathways.readiness import (  # noqa: E402
@@ -45,23 +46,16 @@ from permit_pathways.rule_verification import (  # noqa: E402
 )
 from permit_pathways.screening import load_rules  # noqa: E402
 from permit_pathways.source_state import load_source_state_snapshot  # noqa: E402
+from permit_pathways.workflow_registry import (  # noqa: E402
+    WorkflowRegistry,
+    WorkflowRegistryEntry,
+    load_workflow_registry,
+    registry_digest,
+)
 
 OUTPUT = ROOT / "data" / "demo-data.js"
 RULE_MANIFEST_OUTPUT = ROOT / "data" / "rules" / "index.json"
-READINESS_WORKFLOW = Path(
-    "data/readiness/workflows/woodland-preapproved-detached-adu.json"
-)
-READINESS_SAMPLE = Path("data/readiness/samples/woodland-preapproved-adu.json")
-READINESS_REMEDIES = Path(
-    "data/readiness/remedies/woodland-preapproved-detached-adu.json"
-)
-READINESS_EVIDENCE_OUTPUT = ROOT / (
-    "data/readiness/generated/woodland-preapproved-adu-evidence.json"
-)
-JOURNEY_BINDING = Path("data/journeys/woodland-preapproved-detached-adu.json")
-JOURNEY_OUTPUT = ROOT / (
-    "data/journeys/generated/woodland-preapproved-detached-adu.json"
-)
+WORKFLOW_REGISTRY = Path("data/workflows/registry.json")
 COVERAGE_INDEX_OUTPUT = ROOT / "data/jurisdictions/generated/coverage-index.json"
 SOURCE_STATE = Path("data/source-status/current.json")
 INPUTS = {
@@ -72,9 +66,6 @@ INPUTS = {
     "letters": Path("data/jurisdictions/hcd-letters.json"),
     "scans": Path("data/conformance/results/index.json"),
     "plain_language": Path("data/explanations/plain-language.json"),
-    "program_availability": Path(
-        "data/availability/woodland-preapproved-adu-program.json"
-    ),
     "rule_verification": Path("data/validation/rule-verification.json"),
 }
 
@@ -84,6 +75,59 @@ CanonicalReadinessRecords = tuple[
     ReadinessResult,
     date,
 ]
+
+
+def _workflow_registry(root: Path = ROOT) -> WorkflowRegistry:
+    return load_workflow_registry(
+        root / WORKFLOW_REGISTRY,
+        root=root,
+        validate_inventory=True,
+    )
+
+
+def _workflow_entry(
+    root: Path,
+    workflow_id: str | None = None,
+) -> WorkflowRegistryEntry:
+    return _workflow_registry(root).select(workflow_id)
+
+
+def _validate_readiness_ids(
+    entry: WorkflowRegistryEntry,
+    workflow: ReadinessWorkflow,
+    packet: ReadinessPacket,
+) -> None:
+    if workflow.workflow_id != entry.workflow_id:
+        raise ValueError(f"{entry.workflow_id}: registered workflow ID does not match")
+    if packet.workflow_id != entry.workflow_id:
+        raise ValueError(f"{entry.workflow_id}: registered packet workflow ID does not match")
+    if packet.packet_id != entry.packet_id:
+        raise ValueError(f"{entry.workflow_id}: registered packet ID does not match")
+    if workflow.jurisdiction != entry.jurisdiction:
+        raise ValueError(f"{entry.workflow_id}: registered jurisdiction does not match")
+    if packet.jurisdiction != entry.jurisdiction:
+        raise ValueError(f"{entry.workflow_id}: registered packet jurisdiction does not match")
+
+
+def _registered_program_availability(
+    entry: WorkflowRegistryEntry,
+    root: Path,
+) -> ProgramAvailability:
+    availability = load_program_availability(
+        entry.artifacts.program_availability.resolve(root),
+        policy=entry.availability_policy,
+    )
+    if availability.workflow_id != entry.workflow_id:
+        raise ValueError(
+            f"{entry.workflow_id}: availability workflow ID does not match"
+        )
+    if availability.program_id != entry.program_id:
+        raise ValueError(f"{entry.workflow_id}: registered program ID does not match")
+    if availability.jurisdiction != entry.jurisdiction:
+        raise ValueError(
+            f"{entry.workflow_id}: availability jurisdiction does not match"
+        )
+    return availability
 
 
 def discover_rule_files(root: Path = ROOT) -> list[Path]:
@@ -136,37 +180,52 @@ def aggregate_rule_records(
     return aggregate, digests
 
 
-def _canonical_readiness_records(root: Path) -> CanonicalReadinessRecords:
-    workflow_path = root / READINESS_WORKFLOW
-    sample_path = root / READINESS_SAMPLE
+def _canonical_readiness_records(
+    root: Path,
+    *,
+    entry: WorkflowRegistryEntry | None = None,
+) -> CanonicalReadinessRecords:
+    selected = entry or _workflow_entry(root)
+    workflow_path = selected.artifacts.readiness_workflow.resolve(root)
+    sample_path = selected.artifacts.readiness_packet.resolve(root)
     sample_payload = json.loads(sample_path.read_text(encoding="utf-8"))
     try:
         canonical_evaluated_on = sample_payload["packet"]["evaluated_on"]
         evaluation_date = date.fromisoformat(canonical_evaluated_on)
     except (KeyError, TypeError, ValueError) as error:
-        raise ValueError(f"{READINESS_SAMPLE}: invalid packet.evaluated_on") from error
+        raise ValueError(
+            f"{selected.artifacts.readiness_packet.path}: "
+            "invalid packet.evaluated_on"
+        ) from error
     workflow, packet, result = load_and_evaluate_readiness(
         workflow_path,
         sample_path,
         root / "data" / "sources.json",
         today=evaluation_date,
     )
+    _validate_readiness_ids(selected, workflow, packet)
     if not packet.synthetic:
-        raise ValueError(f"{READINESS_SAMPLE}: public demo packets must be synthetic")
+        raise ValueError(
+            f"{selected.artifacts.readiness_packet.path}: "
+            "public demo packets must be synthetic"
+        )
     return workflow, packet, result, evaluation_date
 
 
 def build_readiness_payload(
     root: Path = ROOT,
     *,
+    workflow_id: str | None = None,
     records: CanonicalReadinessRecords | None = None,
 ) -> tuple[dict[str, object], dict[str, str]]:
-    """Build one deterministic, source-bound synthetic readiness sample."""
+    """Build one registered deterministic synthetic readiness sample."""
 
-    remedies_path = root / READINESS_REMEDIES
-    workflow, packet, result, evaluation_date = records or _canonical_readiness_records(
-        root
+    entry = _workflow_entry(root, workflow_id)
+    remedies_path = entry.artifacts.readiness_remedies.resolve(root)
+    workflow, packet, result, evaluation_date = records or (
+        _canonical_readiness_records(root, entry=entry)
     )
+    _validate_readiness_ids(entry, workflow, packet)
     remedies = load_readiness_remedies(
         remedies_path,
         workflow,
@@ -214,11 +273,11 @@ def build_readiness_payload(
         },
     }
     digests = {
-        relative.as_posix(): hashlib.sha256((root / relative).read_bytes()).hexdigest()
-        for relative in (
-            READINESS_WORKFLOW,
-            READINESS_SAMPLE,
-            READINESS_REMEDIES,
+        artifact.path: hashlib.sha256(artifact.resolve(root).read_bytes()).hexdigest()
+        for artifact in (
+            entry.artifacts.readiness_workflow,
+            entry.artifacts.readiness_packet,
+            entry.artifacts.readiness_remedies,
         )
     }
     return payload, digests
@@ -240,12 +299,27 @@ def encoded_readiness_evidence(root: Path = ROOT) -> str:
 def build_journey_payload(
     root: Path = ROOT,
     *,
+    workflow_id: str | None = None,
     records: CanonicalReadinessRecords | None = None,
 ) -> tuple[dict[str, object], dict[str, str]]:
     """Build the versioned synthetic route-to-packet journey envelope."""
 
-    workflow, packet, result, _ = records or _canonical_readiness_records(root)
-    config = load_journey_config(root / JOURNEY_BINDING)
+    entry = _workflow_entry(root, workflow_id)
+    workflow, packet, result, _ = records or _canonical_readiness_records(
+        root,
+        entry=entry,
+    )
+    _validate_readiness_ids(entry, workflow, packet)
+    journey_path = entry.artifacts.journey.resolve(root)
+    config = load_journey_config(journey_path)
+    if config.journey_id != entry.journey_id:
+        raise ValueError(f"{entry.workflow_id}: registered journey ID does not match")
+    if config.readiness_workflow_id != entry.workflow_id:
+        raise ValueError(
+            f"{entry.workflow_id}: journey readiness workflow ID does not match"
+        )
+    if config.readiness_packet_id != entry.packet_id:
+        raise ValueError(f"{entry.workflow_id}: journey packet ID does not match")
     manifest = resolve_journey(
         config,
         root / INPUTS["golden"],
@@ -255,8 +329,8 @@ def build_journey_payload(
         result,
     )
     return manifest, {
-        JOURNEY_BINDING.as_posix(): hashlib.sha256(
-            (root / JOURNEY_BINDING).read_bytes()
+        entry.artifacts.journey.path: hashlib.sha256(
+            journey_path.read_bytes()
         ).hexdigest()
     }
 
@@ -320,6 +394,45 @@ def _validate_local_source_copies(root: Path) -> None:
             )
 
 
+def _build_registered_payloads(
+    root: Path,
+    registry: WorkflowRegistry,
+    records: CanonicalReadinessRecords | None,
+) -> tuple[dict[str, object], dict[str, object], dict[str, str]]:
+    default_entry = registry.select()
+    default_readiness: dict[str, object] | None = None
+    default_journey: dict[str, object] | None = None
+    digests: dict[str, str] = {}
+    for entry in registry.workflows:
+        entry_records = (
+            records
+            if records is not None and entry.workflow_id == default_entry.workflow_id
+            else _canonical_readiness_records(root, entry=entry)
+        )
+        readiness, readiness_digests = build_readiness_payload(
+            root,
+            workflow_id=entry.workflow_id,
+            records=entry_records,
+        )
+        journey, journey_digests = build_journey_payload(
+            root,
+            workflow_id=entry.workflow_id,
+            records=entry_records,
+        )
+        _registered_program_availability(entry, root)
+        digests.update(readiness_digests)
+        digests.update(journey_digests)
+        digests[entry.artifacts.program_availability.path] = (
+            entry.artifacts.program_availability.sha256
+        )
+        if entry.workflow_id == default_entry.workflow_id:
+            default_readiness = readiness
+            default_journey = journey
+    if default_readiness is None or default_journey is None:
+        raise AssertionError("browser-default workflow was not built")
+    return default_readiness, default_journey, digests
+
+
 def build_bundle(
     root: Path = ROOT,
     *,
@@ -367,29 +480,33 @@ def build_bundle(
         root / "data" / "explanations" / "plain-language.json",
         rules,
     )
-    load_program_availability(root / INPUTS["program_availability"])
     load_rule_verifications(root / INPUTS["rule_verification"], rules)
 
     payload: dict[str, object] = {}
     digests: dict[str, str] = {}
+    registry = _workflow_registry(root)
+    default_entry = registry.select()
     aggregate_rules, rule_digests = aggregate_rule_records(root)
     digests.update(rule_digests)
     payload["rules"] = aggregate_rules
     payload["rule_manifest"] = rule_manifest(root)
     payload["coverage_index"] = build_coverage_index_payload(root)
-    canonical_records = records or _canonical_readiness_records(root)
-    readiness, readiness_digests = build_readiness_payload(
-        root,
-        records=canonical_records,
+    default_readiness, default_journey, workflow_digests = (
+        _build_registered_payloads(root, registry, records)
     )
-    payload["readiness"] = readiness
-    digests.update(readiness_digests)
-    journey, journey_digests = build_journey_payload(
-        root,
-        records=canonical_records,
+    digests.update(workflow_digests)
+    payload["readiness"] = default_readiness
+    payload["journeys"] = [default_journey]
+    registry_path = root / WORKFLOW_REGISTRY
+    registry_raw = registry_path.read_bytes()
+    registry_text = registry_raw.decode("utf-8")
+    payload["workflow_registry"] = json.loads(registry_text)
+    payload["workflow_registry_raw"] = registry_text
+    digests[WORKFLOW_REGISTRY.as_posix()] = registry_digest(registry_path)
+    availability_path = default_entry.artifacts.program_availability.resolve(root)
+    payload["program_availability"] = json.loads(
+        availability_path.read_text(encoding="utf-8")
     )
-    payload["journeys"] = [journey]
-    digests.update(journey_digests)
     source_state = load_source_state_snapshot(
         root / SOURCE_STATE,
         root / INPUTS["sources"],
@@ -408,7 +525,7 @@ def build_bundle(
         digests[relative_path.as_posix()] = hashlib.sha256(raw).hexdigest()
 
     payload["_meta"] = {
-        "format_version": 5,
+        "format_version": 6,
         "generated_from": digests,
     }
     encoded = json.dumps(
@@ -431,30 +548,47 @@ def main() -> int:
         help="fail if the committed bundle differs from the canonical JSON",
     )
     args = parser.parse_args()
-    records = _canonical_readiness_records(ROOT)
-    readiness, _ = build_readiness_payload(ROOT, records=records)
-    journey, _ = build_journey_payload(ROOT, records=records)
+    registry = _workflow_registry(ROOT)
+    default_entry = registry.select()
+    default_records: CanonicalReadinessRecords | None = None
+    generated_outputs: dict[Path, str] = {}
+    for entry in registry.workflows:
+        records = _canonical_readiness_records(ROOT, entry=entry)
+        readiness, _ = build_readiness_payload(
+            ROOT,
+            workflow_id=entry.workflow_id,
+            records=records,
+        )
+        journey, _ = build_journey_payload(
+            ROOT,
+            workflow_id=entry.workflow_id,
+            records=records,
+        )
+        generated_outputs[entry.artifacts.readiness_evidence.resolve(ROOT)] = (
+            json.dumps(
+                readiness["evidence_manifest"],
+                ensure_ascii=True,
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n"
+        )
+        generated_outputs[entry.artifacts.journey_evidence.resolve(ROOT)] = (
+            json.dumps(
+                journey,
+                ensure_ascii=True,
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n"
+        )
+        if entry.workflow_id == default_entry.workflow_id:
+            default_records = records
+    if default_records is None:
+        raise AssertionError("browser-default workflow was not built")
     expected_coverage_index = encoded_coverage_index()
-    expected = build_bundle(ROOT, records=records)
+    expected = build_bundle(ROOT, records=default_records)
     expected_manifest = encoded_rule_manifest()
-    expected_readiness_evidence = (
-        json.dumps(
-            readiness["evidence_manifest"],
-            ensure_ascii=True,
-            indent=2,
-            sort_keys=True,
-        )
-        + "\n"
-    )
-    expected_journey = (
-        json.dumps(
-            journey,
-            ensure_ascii=True,
-            indent=2,
-            sort_keys=True,
-        )
-        + "\n"
-    )
 
     if args.check:
         bundle_current = (
@@ -464,14 +598,9 @@ def main() -> int:
             RULE_MANIFEST_OUTPUT.exists()
             and RULE_MANIFEST_OUTPUT.read_text(encoding="utf-8") == expected_manifest
         )
-        readiness_current = (
-            READINESS_EVIDENCE_OUTPUT.exists()
-            and READINESS_EVIDENCE_OUTPUT.read_text(encoding="utf-8")
-            == expected_readiness_evidence
-        )
-        journey_current = (
-            JOURNEY_OUTPUT.exists()
-            and JOURNEY_OUTPUT.read_text(encoding="utf-8") == expected_journey
+        registered_outputs_current = all(
+            path.exists() and path.read_text(encoding="utf-8") == content
+            for path, content in generated_outputs.items()
         )
         coverage_index_current = (
             COVERAGE_INDEX_OUTPUT.exists()
@@ -481,8 +610,7 @@ def main() -> int:
         if (
             not bundle_current
             or not manifest_current
-            or not readiness_current
-            or not journey_current
+            or not registered_outputs_current
             or not coverage_index_current
         ):
             print(
@@ -491,25 +619,21 @@ def main() -> int:
             )
             return 1
         print(
-            "demo bundle, rule manifest, readiness evidence, journey evidence, "
-            "and coverage index are in sync"
+            "demo bundle, rule manifest, registered workflow evidence, and "
+            "coverage index are in sync"
         )
         return 0
 
     RULE_MANIFEST_OUTPUT.write_text(expected_manifest, encoding="utf-8")
-    READINESS_EVIDENCE_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    READINESS_EVIDENCE_OUTPUT.write_text(
-        expected_readiness_evidence,
-        encoding="utf-8",
-    )
-    JOURNEY_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    JOURNEY_OUTPUT.write_text(expected_journey, encoding="utf-8")
+    for path, content in generated_outputs.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
     COVERAGE_INDEX_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     COVERAGE_INDEX_OUTPUT.write_text(expected_coverage_index, encoding="utf-8")
     OUTPUT.write_text(expected, encoding="utf-8")
     print(f"wrote {RULE_MANIFEST_OUTPUT.relative_to(ROOT)}")
-    print(f"wrote {READINESS_EVIDENCE_OUTPUT.relative_to(ROOT)}")
-    print(f"wrote {JOURNEY_OUTPUT.relative_to(ROOT)}")
+    for path in generated_outputs:
+        print(f"wrote {path.relative_to(ROOT)}")
     print(f"wrote {COVERAGE_INDEX_OUTPUT.relative_to(ROOT)}")
     print(f"wrote {OUTPUT.relative_to(ROOT)}")
     return 0

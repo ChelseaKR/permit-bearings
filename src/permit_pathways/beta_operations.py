@@ -71,12 +71,13 @@ DOCUMENT_BINDINGS = {
     ),
     "beta-operations-runbook": (
         RUNBOOK_PATH,
-        "d09f9604adb10c2c075604de11f5ad0cbb9d8e37fda3620db3df8642d223b405",
+        "a5ffb0ba685f195cf23844ced80be5bd4818060d1c5a1677ccb46f1d3aa3c22b",
     ),
 }
 EXPORT_CLAIM = (
     "This operating ledger, ADR, runbook, validator, and tests are outside "
-    "pinned export profile v1. A reviewed future profile version is required "
+    "pinned export profiles v1 and v2. A reviewed future profile version is "
+    "required "
     "before they are represented as part of an evidence handoff."
 )
 
@@ -180,7 +181,7 @@ CONTROL_CONTRACTS: dict[str, tuple[str, str, str, tuple[str, ...]]] = {
         "records-approval",
         (
             "docs/EXPORT-RESTORE.md",
-            "data/export/public-synthetic-evidence-v1.json",
+            "data/export/public-synthetic-evidence-v2.json",
         ),
     ),
     "beta-hosting-001": (
@@ -643,7 +644,7 @@ def _validate_export_boundary(value: Any) -> None:
     _exact_keys(record, _EXPORT_KEYS, "export_boundary")
     _exact(
         record["current_profile_id"],
-        "public-synthetic-evidence-v1",
+        "public-synthetic-evidence-v2",
         "export_boundary.current_profile_id",
     )
     _exact(

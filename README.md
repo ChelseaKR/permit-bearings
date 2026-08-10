@@ -32,7 +32,18 @@ final eligibility, certify submission completeness, or approve permits.
 At build time, a versioned synthetic journey definition binds the existing
 Woodland golden routing fixture to that readiness workflow and packet. The
 generated, fingerprinted envelope is also the browser's fail-closed handoff
-contract for these prototype inputs. A separate strict availability record at
+contract for these prototype inputs. A strict portable registry at
+`data/workflows/registry.json` selects and raw-byte-pins the workflow, packet,
+remedy, journey, availability, and generated-output paths. Build and CLI code
+resolve those paths through stable IDs and explicit availability policies.
+The Python boundary rejects ambiguous or oversized JSON, linked files,
+cross-platform-unsafe paths, duplicate IDs, orphan files, shared paths,
+fingerprint drift, and mismatched IDs. Bundle format 6 separately hashes the
+exact raw registry against its generation receipt and validates every input
+pin in the browser; browser code cannot inventory files absent from a bundle.
+The registry contains one prototype workflow and names that same entry as the one
+browser default; it is infrastructure for adding a reviewed workflow, not
+evidence that multiple workflows are active. A separate strict availability record at
 `data/availability/woodland-preapproved-adu-program.json` binds that contract
 to the official program-page evidence and a date-bound recheck. The browser
 blocks the handoff when that record is missing, malformed, or expired. Within
@@ -120,7 +131,8 @@ PYTHONPATH=src python3 -m permit_pathways.harness --fetch \
   --run-url https://github.com/ChelseaKR/permit-pathways \
   --commit-sha 8d841409dc5fd16fe56b52a8b57c826c07f176a6
 PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
-PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-30
+PYTHONPATH=src python3 -m permit_pathways.readiness_cli \
+  --workflow-id woodland-preapproved-detached-adu --as-of 2026-07-30
 PYTHONPATH=src python3 -m permit_pathways.review_queue_cli  # read-only source-change worklist
 PYTHONPATH=src python3 -m permit_pathways.local_source_onboarding_cli \
   validate                                      # validates the empty not_run template
@@ -183,7 +195,7 @@ still needs a person.
 | Internationalization | Applies. `make verify` enforces English/Spanish catalog shape, stable option identifiers, formatter arity, static and formatter placeholders, nonblank singular/plural output, and a copy-leaf pseudo-expansion transform. This is structural automation only: it does not generate or render a complete pseudolocale catalog, and mixed-language acceptance and native Spanish semantic review remain pre-pilot work in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 776 public Python tests, 86.97% branch-aware coverage, 29/29 Golden cases, 46 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, the applicant-copy structural contract, local illustration path/format/size/accessibility checks, the deterministic evidence-export round trip, 97 adversarial no-storage operations-package checks, and 77 local-source onboarding contract checks. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, illustration-decoding/tablet-hierarchy, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, local-source intake, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes public Python tests with branch-aware coverage, 29/29 Golden cases, browser checks, and seven Lighthouse page states, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, the applicant-copy structural contract, local illustration path/format/size/accessibility checks, the strict workflow-registry boundary, the deterministic evidence-export round trip, adversarial no-storage operations-package checks, and the local-source onboarding contract. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts; duplicate-ID, portable-path, raw-registry, and input-fingerprint workflow-registry states; and distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, illustration-decoding/tablet-hierarchy, and multi-route accessible-name states. Python registry tests separately inventory canonical directories and reject orphan or linked files. Exact current counts and coverage come from CI rather than this prose. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, local-source intake, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -253,35 +265,40 @@ and coverage profile do not change those boundaries.
 
 ## How the bounded packet sample works
 
-1. `data/readiness/workflows/woodland-preapproved-detached-adu.json` encodes
+1. `data/workflows/registry.json` is the strict path and fingerprint boundary.
+   It currently registers exactly one prototype entry and selects it as the
+   browser default. Registration does not make the workflow active,
+   applicant-ready, reviewed, or jurisdiction-approved.
+2. `data/readiness/workflows/woodland-preapproved-detached-adu.json` encodes
    25 requirements from one City of Woodland checklist, source checked
    2026-07-29, for a simulated project that would use a City preapproved
    detached ADU plan. The checklist itself is not presented as inherently
    dated. The official program page was separately checked 2026-08-09 and
    says **“Preapproved ADU List: Coming soon!”**; the sample is not evidence
    that a plan is currently available.
-2. `data/readiness/samples/woodland-preapproved-adu.json` supplies one made-up
+3. `data/readiness/samples/woodland-preapproved-adu.json` supplies one made-up
    project and an explicit inventory status for every requirement. Two
    concrete parcel-fact fixtures are tied to exact fields in the recorded Yolo
    County parcel-layer metadata; the values themselves are fabricated and the
    evaluator does not query a live parcel or inspect a plan, form, or file.
-3. `src/permit_pathways/readiness.py` deterministically applies the workflow
+4. `src/permit_pathways/readiness.py` deterministically applies the workflow
    conditions. Missing items remain gaps, unknown facts become staff
    questions, and a changed or stale checklist or parcel-schema source
    prevents a favorable packet summary.
-4. `python3 -m permit_pathways.readiness_cli` prints the machine-readable
+5. `python3 -m permit_pathways.readiness_cli` selects the registered workflow
+   by stable ID and prints the machine-readable
    evidence manifest. By default, source age is checked against the current
    UTC date; historical replay requires an explicit `--as-of` date. The build
    uses the same Python evaluator with the sample's recorded date to generate
    `data/readiness/generated/woodland-preapproved-adu-evidence.json` and the
    static bundle.
-5. `data/availability/woodland-preapproved-adu-program.json` strictly binds
+6. `data/availability/woodland-preapproved-adu-program.json` strictly binds
    the future-state simulation to the official program page, its checked date,
    excerpt fingerprint, status, boundary, and recheck deadline. The browser
    withholds the route-to-packet handoff when this record is missing,
    malformed, or expired; it cannot create a match or establish real-world
    applicability.
-6. `data/journeys/woodland-preapproved-detached-adu.json` references the
+7. `data/journeys/woodland-preapproved-detached-adu.json` references the
    golden screening case, candidate route, readiness workflow, packet, and
    applicant-editable applicability fact. `src/permit_pathways/journey.py`
    fails closed unless those records agree, then the build writes
@@ -292,13 +309,13 @@ and coverage profile do not change those boundaries.
    route and readiness evidence, their fingerprints, current source-review
    windows, and program availability before offering a simulation handoff from
    the canonical sample.
-7. The handoff URL contains exactly `journey=<public-id>&version=<version>`.
+8. The handoff URL contains exactly `journey=<public-id>&version=<version>`.
    It carries no project facts and uses no local storage, session storage, or
    cookies. `prepare.html` withholds packet findings on direct, malformed,
    duplicated, mismatched, stale, or expired-availability entry; a valid
    simulation entry replays and renders the generated Python result. It does
    not contain a second packet evaluator.
-8. For that exact valid simulation entry, the page derives a print-focused
+9. For that exact valid simulation entry, the page derives a print-focused
    journey summary from the same integrity-checked records. It combines the
    candidate route,
    labeled synthetic facts, exactly three reported-missing preparation
@@ -307,7 +324,7 @@ and coverage profile do not change those boundaries.
    browser's native print dialog; the app stores no export. The action block
    remains labeled AI-assisted, review-pending, and not human-reviewed.
    Invalid or direct entry leaves the summary hidden.
-9. The checklist mapping and plain-language action copy are AI-assisted
+10. The checklist mapping and plain-language action copy are AI-assisted
    drafts. They are versioned, fingerprint-bound, and marked
    `prototype_review_pending`; no named human, planner, or Woodland reviewer
    has approved them. A generated content fingerprint detects action-copy
@@ -315,7 +332,7 @@ and coverage profile do not change those boundaries.
    metadata binds the exact checklist and
    parcel-schema source digests and records that provider, model, and a
    reproducible run record are unknown or were not retained.
-10. No model runs in the CLI, build evaluator, or public browser. The public
+11. No model runs in the CLI, build evaluator, or public browser. The public
    sample is bundled synthetic data, and the page stores no applicant record.
 
 The sample reports item presence against one checklist and demonstrates
@@ -344,7 +361,7 @@ observations, or derived rule/Golden impacts drift.
 
 For this receipt, `reviewed` means selected for publication after checking the
 run binding. It is not legal, jurisdiction, counsel, or substantive content
-approval, and it does not identify a human reviewer. Bundle format 5 carries
+approval, and it does not identify a human reviewer. Bundle format 6 carries
 the adopted overlay, strict program-availability record, and rule-verification
 ledger into the browser. A fetched changed source stales only
 exact dependent statewide records and blocks a Woodland route or packet only
@@ -438,12 +455,13 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 
 - Decision support, never a legal agent; abstention over confabulation.
 - Rules, sources, cases, and review artifacts use portable files. A pinned,
-  deterministic ZIP can export and restore-verify the pinned schema-v1 public
-  and synthetic evidence set without vendor-only storage. The held-out
+  deterministic ZIP can export and restore-verify either the frozen 58-file
+  schema-v1 compatibility set or the current 59-file, registry-aware schema-v2
+  public and synthetic evidence set without vendor-only storage. The held-out
   evaluation planning artifact, beta-operations ADR/runbook/ledger/tooling,
   and any future cases, answer key, execution receipt, approval, or result are
-  outside export profile v1 and require a separately reviewed future profile
-  version. This is not a production applicant-data export,
+  outside export profiles v1 and v2 and require a separately reviewed future
+  profile version. This is not a production applicant-data export,
   contractual ownership/offboarding,
   partner acceptance, backup, or CPRA workflow. This prototype has no
   accounts, uploads, or applicant-data store.
@@ -682,8 +700,12 @@ explanation sidecar and keeps a separate `/trust` route.
 - `src/permit_pathways/readiness_cli.py`: packet-presence CLI
 - `src/permit_pathways/journey.py`: strict versioned route-to-packet contract
   resolver for the synthetic Woodland fixture
+- `src/permit_pathways/workflow_registry.py`: strict portable workflow,
+  packet, journey, availability, and generated-output path registry with
+  raw-byte pins and complete artifact inventory checks
 - `src/permit_pathways/program_availability.py`: strict, date-bound Woodland
-  program-availability record validation isolated from screening/readiness
+  policy plus a conservative generic prototype availability policy, isolated
+  from screening/readiness
 - `src/permit_pathways/source_state.py`: strict watcher-receipt validation and
   exact rule/Golden dependency impact
 - `src/permit_pathways/review_queue.py` and `review_queue_cli.py`: portable,
@@ -726,6 +748,9 @@ explanation sidecar and keeps a separate `/trust` route.
   review, or approval evidence
 - `data/availability/woodland-preapproved-adu-program.json`: official-page
   evidence and recheck boundary for the future-state Woodland simulation
+- `data/workflows/registry.json`: one registered prototype workflow and the
+  explicit browser-default selection; it does not record multiple active
+  workflows
 - `data/readiness/`: the Woodland workflow, synthetic packet, review-pending
   remedies, and generated evidence manifest
 - `data/journeys/`: the reference-only Woodland journey definition and its
@@ -734,7 +759,9 @@ explanation sidecar and keeps a separate `/trust` route.
   used as the public source-state overlay
 - `data/export/public-synthetic-evidence-v1.json`: exact artifact membership,
   raw digest pins, public-state assertions, exclusions, and known absences for
-  the schema-v1 evidence handoff
+  the frozen 58-file schema-v1 compatibility handoff
+- `data/export/public-synthetic-evidence-v2.json`: current 59-file profile that
+  adds registry-aware closure and advances the existing bundle pin to format 6
 - `data/jurisdictions/generated/coverage-index.json`: generated statewide
   coverage profiles that keep the statewide inventory, limited local records,
   dated HCD history, and local-onboarding boundary distinct

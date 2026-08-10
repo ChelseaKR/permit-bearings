@@ -42,7 +42,7 @@ def test_committed_demo_bundle_matches_canonical_json():
     bundle = build_bundle()
 
     assert OUTPUT.read_text(encoding="utf-8") == bundle
-    assert '"format_version":5' in bundle
+    assert '"format_version":6' in bundle
     assert '"coverage_index":' in bundle
     assert '"source_state":' in bundle
     assert '"program_availability":' in bundle
@@ -169,7 +169,7 @@ def test_static_pages_load_only_the_assets_they_need():
 
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
     assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in application
-    assert "data?._meta?.format_version !== 5" in application
+    assert "data?._meta?.format_version !== 6" in application
     assert "normalizeCoverageIndex" in application
 
 
@@ -958,7 +958,10 @@ function esc(value) {{
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+      .replaceAll("'", "&#39;");
+}}
+function readinessEvidenceHref() {{
+  return "data/readiness/generated/woodland-preapproved-adu-evidence.json";
 }}
 let READINESS = null;
 const NORMALIZED_READINESS_DATA = new WeakSet();

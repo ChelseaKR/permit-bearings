@@ -1,8 +1,8 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "package": {
-    "archive_root": "permit-bearings-evidence-v1",
-    "package_id": "permit-bearings-public-synthetic-evidence-v1"
+    "archive_root": "permit-bearings-evidence-v2",
+    "package_id": "permit-bearings-public-synthetic-evidence-v2"
   },
   "scope": {
     "classification": [
@@ -30,7 +30,7 @@
     {
       "path": "PROVENANCE.md",
       "role": "provenance",
-      "raw_sha256": "sha256:c59e283f729275a10dad4dc85309a3ffd0493bac2e2772895261e3fa0d942edc"
+      "raw_sha256": "sha256:4d97a1d09d6b0a9582136955f09aa866665773df709c963dfe10b5050d66e54e"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -190,7 +190,7 @@
     {
       "path": "data/demo-data.js",
       "role": "derived_browser_bundle",
-      "raw_sha256": "sha256:ddba2d2eab0c89f46635eb3d4845fe1cd3bda926b2d7a3286197d4cffeafe572"
+      "raw_sha256": "sha256:57133db2d4167a960125cf778cb83fca060febc7dd8531c2c1a9e945792edcae"
     },
     {
       "path": "data/explanations/plain-language.json",
@@ -198,7 +198,7 @@
       "raw_sha256": "sha256:2411d6e3bf38cc21ad4a00dc370d2c56651218a9db437361d6e0f435af1a3ccb"
     },
     {
-      "path": "data/export/public-synthetic-evidence-v1.json",
+      "path": "data/export/public-synthetic-evidence-v2.json",
       "role": "export_profile",
       "raw_sha256": null,
       "self_reference": true
@@ -312,6 +312,11 @@
       "path": "data/validation/woodland-source-change-rehearsal.json",
       "role": "source_change_rehearsal_ledger",
       "raw_sha256": "sha256:f28de3e2d86022ec61e6c73bbc98b64a658543886d98344e69063cd3d3c7d1f1"
+    },
+    {
+      "path": "data/workflows/registry.json",
+      "role": "workflow_registry",
+      "raw_sha256": "sha256:bd5607f9dbe11713397d6438cf162fd0f6e296c3c8097fd5b46214745dcf963e"
     }
   ],
   "public_state_assertions": [

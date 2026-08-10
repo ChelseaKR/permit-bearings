@@ -1,0 +1,43 @@
+{
+  "browser_default_workflow_id": "woodland-preapproved-detached-adu",
+  "schema_version": 1,
+  "workflows": [
+    {
+      "artifacts": {
+        "journey": {
+          "path": "data/journeys/woodland-preapproved-detached-adu.json",
+          "sha256": "02980fa08010c2f568e42e24ace9c480c016cbb8aa320b7f68a5a11edf2bed8f"
+        },
+        "journey_evidence": {
+          "path": "data/journeys/generated/woodland-preapproved-detached-adu.json"
+        },
+        "program_availability": {
+          "path": "data/availability/woodland-preapproved-adu-program.json",
+          "sha256": "8aec6b24ffcfb520a2a51a06092dc81d1f7626c18ab78848f3083d1c5bd8a159"
+        },
+        "readiness_evidence": {
+          "path": "data/readiness/generated/woodland-preapproved-adu-evidence.json"
+        },
+        "readiness_packet": {
+          "path": "data/readiness/samples/woodland-preapproved-adu.json",
+          "sha256": "9fad4ee4a2b616cb4a8c93d0dff2b70e91921d520c1f798e51b8a2ec123d1e5b"
+        },
+        "readiness_remedies": {
+          "path": "data/readiness/remedies/woodland-preapproved-detached-adu.json",
+          "sha256": "e319d283fa07a653cf3a13106cf790a88b19bb0a14791bccf67b2c1672bdcc36"
+        },
+        "readiness_workflow": {
+          "path": "data/readiness/workflows/woodland-preapproved-detached-adu.json",
+          "sha256": "12b802bb7fc76a23d873f1d553f1edbad6b00974ca332bfc2f32ded1a35781a4"
+        }
+      },
+      "journey_id": "woodland-preapproved-detached-adu-synthetic",
+      "jurisdiction": "woodland",
+      "packet_id": "woodland-preapproved-adu-hypothetical-001",
+      "program_id": "woodland-preapproved-adu-plan-program",
+      "availability_policy": "woodland-preapproved-adu-plans-not-listed-v1",
+      "status": "prototype",
+      "workflow_id": "woodland-preapproved-detached-adu"
+    }
+  ]
+}

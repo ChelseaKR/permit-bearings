@@ -16,7 +16,7 @@
     {
       "document_id": "beta-operations-runbook",
       "path": "docs/BETA-OPERATIONS-RUNBOOK.md",
-      "sha256": "d09f9604adb10c2c075604de11f5ad0cbb9d8e37fda3620db3df8642d223b405"
+      "sha256": "a5ffb0ba685f195cf23844ced80be5bd4818060d1c5a1677ccb46f1d3aa3c22b"
     }
   ],
   "boundary": {
@@ -92,11 +92,11 @@
     "retention_schedule_status": "not_run"
   },
   "export_boundary": {
-    "current_profile_id": "public-synthetic-evidence-v1",
+    "current_profile_id": "public-synthetic-evidence-v2",
     "inclusion_status": "excluded_pending_reviewed_future_profile",
     "future_profile_review_status": "not_run",
     "approved_future_profile_id": null,
-    "claim": "This operating ledger, ADR, runbook, validator, and tests are outside pinned export profile v1. A reviewed future profile version is required before they are represented as part of an evidence handoff."
+    "claim": "This operating ledger, ADR, runbook, validator, and tests are outside pinned export profiles v1 and v2. A reviewed future profile version is required before they are represented as part of an evidence handoff."
   },
   "approvals": [
     {
@@ -267,7 +267,7 @@
       "approval_id": "records-approval",
       "evidence_paths": [
         "docs/EXPORT-RESTORE.md",
-        "data/export/public-synthetic-evidence-v1.json"
+        "data/export/public-synthetic-evidence-v2.json"
       ],
       "execution_receipt_id": null
     },

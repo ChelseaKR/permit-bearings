@@ -55,6 +55,8 @@ const canonicalReadiness = bundle.readiness;
 const canonicalRules = bundle.rules;
 const canonicalGolden = bundle.golden;
 const canonicalProgramAvailability = bundle.program_availability;
+const canonicalWorkflowRegistry = bundle.workflow_registry;
+const canonicalWorkflowRegistryRaw = bundle.workflow_registry_raw;
 SOURCE_STATE = bundle.source_state;
 
 const NativeDate = Date;
@@ -83,8 +85,124 @@ function noHref(state, label) {
   check(!Object.prototype.hasOwnProperty.call(state, "href"), `${label}: href leaked`);
 }
 
+WORKFLOW_REGISTRY = await normalizeBundledWorkflowRegistry(
+  structuredClone(canonicalWorkflowRegistry),
+  canonicalWorkflowRegistryRaw,
+  bundle._meta.generated_from,
+);
+check(WORKFLOW_REGISTRY !== null, "canonical workflow registry rejected");
+const workflowEntry = browserWorkflowEntry(WORKFLOW_REGISTRY);
+check(workflowEntry !== null, "browser workflow entry was not selected");
+
+function expectRegistryRejection(label, mutate, generatedFrom = bundle._meta.generated_from) {
+  const candidate = structuredClone(canonicalWorkflowRegistry);
+  mutate(candidate);
+  check(
+    normalizeWorkflowRegistry(candidate, generatedFrom) === null,
+    `${label}: workflow registry mutation accepted`,
+  );
+}
+
+expectRegistryRejection("unknown browser default", candidate => {
+  candidate.browser_default_workflow_id = "missing-workflow";
+});
+expectRegistryRejection("duplicate workflow", candidate => {
+  candidate.workflows.push(structuredClone(candidate.workflows[0]));
+});
+expectRegistryRejection("input path traversal", candidate => {
+  candidate.workflows[0].artifacts.readiness_workflow.path = "../outside.json";
+});
+expectRegistryRejection("input fingerprint drift", candidate => {
+  candidate.workflows[0].artifacts.readiness_workflow.sha256 = "0".repeat(64);
+});
+expectRegistryRejection(
+  "bundle digest drift",
+  candidate => {},
+  {...bundle._meta.generated_from,
+    [workflowEntry.artifacts.readiness_workflow.path]: "0".repeat(64)},
+);
+
+async function expectRegistryReceiptRejection(
+  label,
+  rawRegistry,
+  generatedFrom = bundle._meta.generated_from,
+  registry = canonicalWorkflowRegistry,
+) {
+  check(
+    await normalizeBundledWorkflowRegistry(
+      structuredClone(registry),
+      rawRegistry,
+      generatedFrom,
+    ) === null,
+    `${label}: invalid workflow receipt accepted`,
+  );
+}
+
+await expectRegistryReceiptRejection(
+  "raw registry drift",
+  `${canonicalWorkflowRegistryRaw} `,
+);
+const missingRegistryReceipt = {...bundle._meta.generated_from};
+delete missingRegistryReceipt["data/workflows/registry.json"];
+await expectRegistryReceiptRejection(
+  "missing registry receipt",
+  canonicalWorkflowRegistryRaw,
+  missingRegistryReceipt,
+);
+const changedRegistryPayload = structuredClone(canonicalWorkflowRegistry);
+changedRegistryPayload.workflows[0].status = "changed";
+await expectRegistryReceiptRejection(
+  "raw and parsed registry disagreement",
+  canonicalWorkflowRegistryRaw,
+  bundle._meta.generated_from,
+  changedRegistryPayload,
+);
+
+const twoWorkflowRegistry = structuredClone(canonicalWorkflowRegistry);
+const secondWorkflow = structuredClone(twoWorkflowRegistry.workflows[0]);
+secondWorkflow.workflow_id = "second-prototype-workflow";
+secondWorkflow.packet_id = "second-prototype-packet";
+secondWorkflow.journey_id = "second-prototype-journey";
+secondWorkflow.program_id = "second-prototype-program";
+secondWorkflow.availability_policy = "prototype-generic-plans-not-listed-v1";
+const secondGeneratedFrom = {...bundle._meta.generated_from};
+const secondPaths = {
+  journey: "data/journeys/second-prototype-journey.json",
+  journey_evidence: "data/journeys/generated/second-prototype-journey.json",
+  program_availability: "data/availability/second-prototype-program.json",
+  readiness_evidence: "data/readiness/generated/second-prototype-evidence.json",
+  readiness_packet: "data/readiness/samples/second-prototype-packet.json",
+  readiness_remedies: "data/readiness/remedies/second-prototype-workflow.json",
+  readiness_workflow: "data/readiness/workflows/second-prototype-workflow.json",
+};
+for (const [name, path] of Object.entries(secondPaths)) {
+  secondWorkflow.artifacts[name].path = path;
+  if (Object.prototype.hasOwnProperty.call(
+    secondWorkflow.artifacts[name],
+    "sha256",
+  )) {
+    secondWorkflow.artifacts[name].sha256 = "1".repeat(64);
+    secondGeneratedFrom[path] = "1".repeat(64);
+  }
+}
+twoWorkflowRegistry.workflows.push(secondWorkflow);
+check(
+  normalizeWorkflowRegistry(twoWorkflowRegistry, secondGeneratedFrom) !== null,
+  "a distinct non-default prototype workflow was rejected",
+);
+
+for (const unsafeName of [
+  "question?.json", "fragment#.json", "percent%2e.json", "colon:name.json",
+  "Uppercase.json", "caf\u00e9.json", "con.json", "name..json",
+]) {
+  expectRegistryRejection(`unsafe path ${unsafeName}`, candidate => {
+    candidate.workflows[0].artifacts.readiness_workflow.path =
+      `data/readiness/workflows/${unsafeName}`;
+  });
+}
+
 async function normalizeAvailability(candidate = canonicalProgramAvailability) {
-  return normalizeProgramAvailability(structuredClone(candidate));
+  return normalizeProgramAvailability(structuredClone(candidate), workflowEntry);
 }
 
 PROGRAM_AVAILABILITY = await normalizeAvailability();
@@ -98,7 +216,7 @@ async function expectAvailabilityRejection(label, mutate) {
   const candidate = structuredClone(canonicalProgramAvailability);
   await mutate(candidate);
   check(
-    await normalizeProgramAvailability(candidate) === null,
+    await normalizeProgramAvailability(candidate, workflowEntry) === null,
     `${label}: program mutation accepted`,
   );
 }
@@ -669,6 +787,7 @@ globalThis.Date = NativeDate;
             "let SOURCE_STATE = null;",
             "let PROGRAM_AVAILABILITY = null;",
             "let JOURNEY = null;",
+            "let WORKFLOW_REGISTRY = null;",
             "let simulating = false;",
             "const NORMALIZED_READINESS_DATA = new WeakSet();",
             "const NORMALIZED_PROGRAM_AVAILABILITY = new WeakSet();",

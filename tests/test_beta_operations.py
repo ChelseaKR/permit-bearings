@@ -391,14 +391,14 @@ def test_records_work_must_remain_explicitly_not_run(
 @pytest.mark.parametrize(
     ("field", "value"),
     [
-        ("current_profile_id", "public-synthetic-evidence-v2"),
+        ("current_profile_id", "public-synthetic-evidence-v1"),
         ("inclusion_status", "included"),
         ("future_profile_review_status", "approved"),
         ("approved_future_profile_id", "public-synthetic-evidence-v2"),
         ("claim", "The current export includes this package."),
     ],
 )
-def test_export_profile_v1_exclusion_cannot_be_bypassed(
+def test_export_profile_v2_exclusion_cannot_be_bypassed(
     tmp_path: Path,
     field: str,
     value: Any,

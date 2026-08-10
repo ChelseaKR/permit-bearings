@@ -90,7 +90,7 @@ versions are never combined.
 | Human access | All 21 version-bound manual checks pass, including keyboard, VoiceOver/Safari, NVDA, physical iOS and Android, zoom/reflow, forced colors, three print browsers, and PDF/assistive-technology review. Automated axe and Lighthouse results remain separate. | All manual rows are `not_run`. | Human and assistive-technology testers |
 | Language | If Spanish is presented as applicant-ready within the beta, every reachable Spanish source-derived record has exact-version semantic-parity approval and `ES-USABILITY-JOURNEY` passes. Otherwise Spanish stays explicitly review-pending and outside the beta claim. | Nineteen semantic-review rows and Spanish usability are `not_run`. | Qualified Spanish reviewers and participants |
 | Maintainability | One controlled source change completes detection, affected/unaffected mapping, review, approval, republication, and rollback. The receipt records named human owners, elapsed and active-role time, defects, and the prospective partner's maintenance-burden decision. | Rehearsal is prepared and `not_run`; no human owner or burden decision is recorded. | External reviewer and partner |
-| Ownership and export | A jurisdiction-owned export of sources, rules, requirements, review receipts, fixtures, dependencies, and checksums opens and restores without vendor-only tooling. | A deterministic, Git-bound package now builds, verifies, and restores the pinned schema-v1 public/synthetic evidence set. Its pinned profile excludes known sensitive records but is not a privacy classifier, and it does not establish contractual ownership, a production offboarding test, or partner acceptance. The later held-out planning artifact and future evaluation inputs/results are outside profile v1 and require a separately reviewed profile version. | Implemented mechanism; external partner acceptance and any sensitive-data design |
+| Ownership and export | A jurisdiction-owned export of sources, rules, requirements, review receipts, fixtures, dependencies, and checksums opens and restores without vendor-only tooling. | A deterministic, Git-bound package builds, verifies, and restores either the frozen 58-file schema-v1 compatibility set or the current registry-aware 59-file schema-v2 public/synthetic evidence set. Its pinned allowlists exclude known sensitive records but are not privacy classifiers, and the mechanism does not establish contractual ownership, a production offboarding test, or partner acceptance. The later held-out planning artifact and future evaluation inputs/results are outside profiles v1 and v2 and require a separately reviewed profile version. | Implemented mechanism; external partner acceptance and any sensitive-data design |
 | Privacy, records, and security | The first beta remains public/synthetic/redacted with no accounts, uploads, applicant store, telemetry, external model call, or write-back. Any expanded flow first records fields and purpose, access, retention/deletion, subprocessors, CPRA search/export and legal-hold behavior, threat model, control mapping, incident path, and deployment-specific approvals. | ADR 0002, a role-based runbook, a 17-control/nine-approval portable ledger, and a strict prepared-state validator now cover the proposed no-application-storage boundary, exact current-page fields, host metadata caveat, records routing, incident/support, release, and rollback. The ADR is proposed; every deployment field, execution receipt, records rehearsal, human approval, and partner decision is null/`not_run`. This is not privacy/security approval or CPRA, Information Practices Act, SAM, or SIMM compliance. | Implemented planning validator; external deployment inventory, rehearsals, role assignment, and approvals |
 | Partner and decision | A credible partner supplies a written next step with an owner role and date, accepts the maintenance plan, and signs a `proceed`, `extend`, `pivot`, or `stop` decision after every supporting receipt. | Partner gate and aggregate decision are pending. | External partner |
 
@@ -122,8 +122,8 @@ changing the product's maturity claim:
   remedy, packet, and journey work plus a separate blank decision ledger; and
 - a repeatable deployment smoke command checks the five public routes and the
   generated 541-profile/17-rule artifact contract; and
-- a pinned canonical ZIP can package, verify, and inertly restore the pinned
-  schema-v1 public/synthetic evidence set while rejecting uncommitted selected
+- a pinned canonical ZIP can package, verify, and inertly restore the selected
+  versioned public/synthetic evidence set while rejecting uncommitted selected
   files,
   asserted validation-state drift, unsafe members, and existing destinations;
   its allowlist excludes known sensitive material but is not a privacy
@@ -159,29 +159,35 @@ changing the product's maturity claim:
   the five required source roles, source IDs/URLs/fingerprints/check dates,
   operative passages and enactment/effective dates, project/parcel scope,
   candidate exceptions, unresolved conflicts, open questions, and planned
-  accountable owner-role IDs/cadence. The committed template is `not_run` and empty; the
-  maximum accepted state is `prepared_for_review`, never reviewed, approved,
-  encoded, or published.
+  accountable owner-role IDs/cadence. The committed template is `not_run` and
+  empty; the maximum accepted state is `prepared_for_review`, never reviewed,
+  approved, encoded, or published; and
+- a strict portable workflow registry now replaces the builder and CLI's
+  Woodland path constants. It raw-byte-pins and inventories canonical inputs,
+  rejects ambiguous/oversized JSON, linked files, duplicate/orphan/wrong-ID/
+  unsafe-path/fingerprint states, and uses one explicit browser default.
+  Bundle format 6 binds the raw registry to its generation receipt; the
+  browser validates that embedded contract but cannot inventory repository
+  directories. A synthetic two-entry test proves build and review-queue
+  traversal. Only the Woodland future-state simulation is committed; this is
+  not multiple active workflows.
 
 The remaining autonomous work is:
 
-1. Generalize the hard-coded Woodland journey, program-availability, bundle,
-   and CLI paths into a registry-configured multi-workflow boundary while
-   preserving fail-closed behavior.
-2. Derive a pilot-neutral beta gate from the existing specialized ledgers;
+1. Derive a pilot-neutral beta gate from the existing specialized ledgers;
    validate every aggregate and prevent a hand-edited status promotion.
-3. Exercise the new exact affected-output worklist in a controlled rehearsal;
+2. Exercise the new exact affected-output worklist in a controlled rehearsal;
    complete assignments and dispositions with authorized people, and add
    separate approval, publication, and rollback receipts without allowing the
    decision ledger to clear a hold by itself.
-4. After independent source collection, two-reviewer adjudication, and freeze
+3. After independent source collection, two-reviewer adjudication, and freeze
    custody are available, execute the held-out scanner contract with frozen
    cases and answer key; generate blind pair-level predictions before
    unblinding, publish the six recomputable raw confusion/abstention counts,
    and keep development fixtures and synthetic controls separate. Record the
    freeze, prediction, unblind, and scoring chronology, then retire the
    revealed corpus from use with future scanner versions.
-5. Execute the deployment-specific host/subprocessor inventory, threat and
+4. Execute the deployment-specific host/subprocessor inventory, threat and
    control review, CPRA search/export and rollback rehearsals, and role
    approvals described by the prepared operations package. Record them in a
    separately reviewed execution schema; the prepared ledger cannot be

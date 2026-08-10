@@ -26,6 +26,7 @@ from urllib.parse import urlsplit
 from .dates import resolve_today
 
 SCHEMA_VERSION = 1
+MAX_RECORD_BYTES = 256 * 1024
 PROGRAM_ID = "woodland-preapproved-adu-plan-program"
 SOURCE_ID = "woodland-preapproved-adu-program-page"
 WORKFLOW_ID = "woodland-preapproved-detached-adu"
@@ -40,6 +41,18 @@ BOUNDARY = (
     "on the checked program page. This future-state simulation is not evidence "
     "that a plan is available; real workflow applicability must be confirmed "
     "with the City before use."
+)
+WOODLAND_AVAILABILITY_POLICY = "woodland-preapproved-adu-plans-not-listed-v1"
+GENERIC_PROTOTYPE_AVAILABILITY_POLICY = "prototype-generic-plans-not-listed-v1"
+GENERIC_PROTOTYPE_BOUNDARY = (
+    "No currently listed plan was identified on the checked official program "
+    "page. This prototype observation is not evidence that a plan is available "
+    "or that this workflow applies; applicability must be confirmed with the "
+    "responsible jurisdiction before use."
+)
+SUPPORTED_AVAILABILITY_POLICIES = (
+    GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+    WOODLAND_AVAILABILITY_POLICY,
 )
 
 AvailabilityMode = Literal["future_state_simulation"]
@@ -126,9 +139,55 @@ def _exact_keys(record: dict[str, Any], expected: set[str], field: str) -> None:
 
 
 def _required_text(value: Any, field: str) -> str:
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError(f"{field}: expected non-blank text")
-    return value.strip()
+    if not isinstance(value, str) or not value.strip() or value != value.strip():
+        raise ValueError(
+            f"{field}: expected non-blank text without surrounding whitespace"
+        )
+    return value
+
+
+class _DuplicateKeyError(ValueError):
+    """Raised before an ambiguous JSON object can replace an earlier key."""
+
+
+def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    record: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in record:
+            raise _DuplicateKeyError(key)
+        record[key] = value
+    return record
+
+
+def _reject_constant(value: str) -> Any:
+    raise ValueError(f"non-finite JSON constant {value!r} is not allowed")
+
+
+def _load_json(path: Path) -> Any:
+    try:
+        metadata = path.stat()
+        if metadata.st_size > MAX_RECORD_BYTES:
+            raise ValueError(f"file exceeds {MAX_RECORD_BYTES} bytes")
+        with path.open("rb") as stream:
+            raw = stream.read(MAX_RECORD_BYTES + 1)
+        if len(raw) > MAX_RECORD_BYTES:
+            raise ValueError(f"file exceeds {MAX_RECORD_BYTES} bytes")
+        text = raw.decode("utf-8")
+        return json.loads(
+            text,
+            object_pairs_hook=_unique_object,
+            parse_constant=_reject_constant,
+        )
+    except (
+        OSError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+        _DuplicateKeyError,
+        ValueError,
+    ) as error:
+        raise ValueError(
+            f"{path}: program-availability data could not be loaded"
+        ) from error
 
 
 def _stable_id(value: Any, field: str) -> str:
@@ -148,7 +207,7 @@ def _iso_date(value: Any, field: str) -> tuple[str, date]:
     return value, parsed
 
 
-def _official_url(value: Any, field: str) -> str:
+def _safe_https_url(value: Any, field: str) -> str:
     if not isinstance(value, str):
         raise ValueError(f"{field}: expected HTTPS URL")
     parsed = urlsplit(value)
@@ -157,21 +216,25 @@ def _official_url(value: Any, field: str) -> str:
         or not parsed.hostname
         or parsed.username is not None
         or parsed.password is not None
+        or parsed.fragment
     ):
         raise ValueError(f"{field}: expected HTTPS URL")
-    if value != OFFICIAL_PROGRAM_URL:
-        raise ValueError(f"{field}: expected the official Woodland program URL")
     return value
 
 
-def _source(record: Any, *, today: date) -> AvailabilitySource:
+def _source(
+    record: Any,
+    *,
+    today: date,
+    policy: str,
+) -> AvailabilitySource:
     field = "availability.source"
     if not isinstance(record, dict):
         raise ValueError(f"{field}: expected an object")
     _exact_keys(record, _SOURCE_KEYS, field)
 
     source_id = _stable_id(record["source_id"], f"{field}.source_id")
-    if source_id != SOURCE_ID:
+    if policy == WOODLAND_AVAILABILITY_POLICY and source_id != SOURCE_ID:
         raise ValueError(f"{field}.source_id: expected {SOURCE_ID!r}")
 
     checked_on, checked_date = _iso_date(record["checked_on"], f"{field}.checked_on")
@@ -189,7 +252,7 @@ def _source(record: Any, *, today: date) -> AvailabilitySource:
         )
 
     excerpt = _required_text(record["excerpt"], f"{field}.excerpt")
-    if excerpt != OFFICIAL_EXCERPT:
+    if policy == WOODLAND_AVAILABILITY_POLICY and excerpt != OFFICIAL_EXCERPT:
         raise ValueError(
             f"{field}.excerpt: must match the plans_not_listed observation"
         )
@@ -201,9 +264,13 @@ def _source(record: Any, *, today: date) -> AvailabilitySource:
             f"{field}.excerpt_sha256: does not match the normalized excerpt"
         )
 
+    url = _safe_https_url(record["url"], f"{field}.url")
+    if policy == WOODLAND_AVAILABILITY_POLICY and url != OFFICIAL_PROGRAM_URL:
+        raise ValueError(f"{field}.url: expected the official Woodland program URL")
+
     return AvailabilitySource(
         source_id=source_id,
-        url=_official_url(record["url"], f"{field}.url"),
+        url=url,
         label=_required_text(record["label"], f"{field}.label"),
         checked_on=checked_on,
         recheck_due_on=recheck_due_on,
@@ -212,20 +279,25 @@ def _source(record: Any, *, today: date) -> AvailabilitySource:
     )
 
 
-def _availability(record: Any, *, today: date) -> ProgramAvailability:
+def _availability(
+    record: Any,
+    *,
+    today: date,
+    policy: str,
+) -> ProgramAvailability:
     field = "availability"
     if not isinstance(record, dict):
         raise ValueError(f"{field}: expected an object")
     _exact_keys(record, _AVAILABILITY_KEYS, field)
 
     program_id = _stable_id(record["program_id"], f"{field}.program_id")
-    if program_id != PROGRAM_ID:
+    if policy == WOODLAND_AVAILABILITY_POLICY and program_id != PROGRAM_ID:
         raise ValueError(f"{field}.program_id: expected {PROGRAM_ID!r}")
     workflow_id = _stable_id(record["workflow_id"], f"{field}.workflow_id")
-    if workflow_id != WORKFLOW_ID:
+    if policy == WOODLAND_AVAILABILITY_POLICY and workflow_id != WORKFLOW_ID:
         raise ValueError(f"{field}.workflow_id: expected {WORKFLOW_ID!r}")
     jurisdiction = _stable_id(record["jurisdiction"], f"{field}.jurisdiction")
-    if jurisdiction != JURISDICTION:
+    if policy == WOODLAND_AVAILABILITY_POLICY and jurisdiction != JURISDICTION:
         raise ValueError(f"{field}.jurisdiction: expected {JURISDICTION!r}")
 
     mode = _required_text(record["mode"], f"{field}.mode")
@@ -240,10 +312,15 @@ def _availability(record: Any, *, today: date) -> ProgramAvailability:
     if monitoring != "manual_date_bound":
         raise ValueError(f"{field}.monitoring_status: unsupported value {monitoring!r}")
     boundary = _required_text(record["boundary"], f"{field}.boundary")
-    if boundary != BOUNDARY:
+    expected_boundary = (
+        BOUNDARY
+        if policy == WOODLAND_AVAILABILITY_POLICY
+        else GENERIC_PROTOTYPE_BOUNDARY
+    )
+    if boundary != expected_boundary:
         raise ValueError(
-            f"{field}.boundary: must preserve the no-listed-plan and "
-            "applicability-confirmation boundary"
+            f"{field}.boundary: must preserve the {policy!r} "
+            "no-listed-plan and applicability-confirmation boundary"
         )
 
     return ProgramAvailability(
@@ -253,7 +330,7 @@ def _availability(record: Any, *, today: date) -> ProgramAvailability:
         mode=cast(AvailabilityMode, mode),
         status=cast(AvailabilityStatus, status),
         monitoring_status=cast(MonitoringStatus, monitoring),
-        source=_source(record["source"], today=today),
+        source=_source(record["source"], today=today, policy=policy),
         boundary=boundary,
     )
 
@@ -262,15 +339,19 @@ def load_program_availability(
     path: Path,
     *,
     today: date | None = None,
+    policy: str = WOODLAND_AVAILABILITY_POLICY,
 ) -> ProgramAvailability:
-    """Load one strict, source-bound program-availability record."""
+    """Load one strict, source-bound program-availability record.
 
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
-        raise ValueError(
-            f"{path}: program-availability data could not be loaded"
-        ) from error
+    The default policy retains the exact Woodland source and wording checks.
+    The generic policy exists only to exercise registered prototype workflows;
+    it still requires the same conservative status, monitoring window, excerpt
+    fingerprint, and a fixed non-applicability boundary.
+    """
+
+    if policy not in SUPPORTED_AVAILABILITY_POLICIES:
+        raise ValueError(f"availability policy: unsupported value {policy!r}")
+    payload = _load_json(path)
     if not isinstance(payload, dict):
         raise ValueError(f"{path}: expected an object")
     _exact_keys(payload, _TOP_LEVEL_KEYS, "program-availability record")
@@ -279,4 +360,8 @@ def load_program_availability(
         raise ValueError(
             f"schema_version must be {SCHEMA_VERSION}; got {schema_version!r}"
         )
-    return _availability(payload["availability"], today=resolve_today(today))
+    return _availability(
+        payload["availability"],
+        today=resolve_today(today),
+        policy=policy,
+    )

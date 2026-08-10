@@ -215,8 +215,9 @@ evidence.
   schedule are versioned evidence."
 
 ### 4. Fit and posture (4 min)
-- Rules, sources, and the golden set are portable files. A schema-v1 command
-  packages the exact Git-tracked public/synthetic evidence profile into a
+- Rules, sources, and the golden set are portable files. A versioned command
+  packages either the frozen 58-file schema-v1 compatibility profile or the
+  current registry-aware 59-file schema-v2 public/synthetic profile into a
   deterministic ZIP, verifies its hashes and source digests, and restores it
   inertly without vendor-only tooling. This is prototype-data portability,
   not applicant-data or CPRA export, contractual ownership or offboarding,

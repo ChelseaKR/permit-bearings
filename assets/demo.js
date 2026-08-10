@@ -462,6 +462,7 @@ let EXPLANATIONS = new Map();
 let RULE_VERIFICATIONS = null;
 let READINESS = null;
 let JOURNEY = null;
+let WORKFLOW_REGISTRY = null;
 let SOURCE_STATE = null;
 let PROGRAM_AVAILABILITY = null;
 let COVERAGE_INDEX = null;
@@ -867,6 +868,12 @@ const PROGRAM_AVAILABILITY_BOUNDARY =
   + "that a plan is available; real workflow applicability must be confirmed "
   + "with the City before use.";
 const PROGRAM_AVAILABILITY_EXCERPT = "Preapproved ADU List: Coming soon!";
+const WOODLAND_AVAILABILITY_POLICY =
+  "woodland-preapproved-adu-plans-not-listed-v1";
+const GENERIC_PROTOTYPE_AVAILABILITY_POLICY =
+  "prototype-generic-plans-not-listed-v1";
+const BROWSER_DEFAULT_WORKFLOW_ID = "woodland-preapproved-detached-adu";
+const WORKFLOW_REGISTRY_PATH = "data/workflows/registry.json";
 const PROGRAM_TOP_LEVEL_KEYS = ["availability", "schema_version"];
 const PROGRAM_RECORD_KEYS = [
   "boundary", "jurisdiction", "mode", "monitoring_status", "program_id",
@@ -877,13 +884,158 @@ const PROGRAM_SOURCE_KEYS = [
   "source_id", "url",
 ];
 
+const WORKFLOW_REGISTRY_KEYS = [
+  "browser_default_workflow_id", "schema_version", "workflows",
+];
+const WORKFLOW_REGISTRY_ENTRY_KEYS = [
+  "artifacts", "availability_policy", "journey_id", "jurisdiction",
+  "packet_id", "program_id", "status", "workflow_id",
+];
+const WORKFLOW_REGISTRY_ARTIFACT_KEYS = [
+  "journey", "journey_evidence", "program_availability",
+  "readiness_evidence", "readiness_packet", "readiness_remedies",
+  "readiness_workflow",
+];
+const WORKFLOW_INPUT_PATHS = {
+  journey: "data/journeys/",
+  program_availability: "data/availability/",
+  readiness_packet: "data/readiness/samples/",
+  readiness_remedies: "data/readiness/remedies/",
+  readiness_workflow: "data/readiness/workflows/",
+};
+const WORKFLOW_OUTPUT_PATHS = {
+  journey_evidence: "data/journeys/generated/",
+  readiness_evidence: "data/readiness/generated/",
+};
+
+function validWorkflowArtifactPath(path, prefix) {
+  if (typeof path !== "string" || !path.startsWith(prefix)
+      || path.length > 240 || !/^[\x00-\x7f]+$/.test(path)) return false;
+  const name = path.slice(prefix.length);
+  if (name.length > 100
+      || !/^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?\.json$/.test(name)
+      || name.includes("..") || name.includes("/")) return false;
+  const stem = name.split(".", 1)[0];
+  return !/^(?:aux|con|nul|prn|com[1-9]|lpt[1-9])$/.test(stem);
+}
+
+function validWorkflowInputArtifact(record, prefix, generatedFrom) {
+  return hasExactKeys(record, ["path", "sha256"], ["path", "sha256"])
+    && validWorkflowArtifactPath(record.path, prefix)
+    && validSha256(record.sha256)
+    && (!generatedFrom
+      || generatedFrom[record.path] === record.sha256);
+}
+
+function validWorkflowOutputArtifact(record, prefix) {
+  return hasExactKeys(record, ["path"], ["path"])
+    && validWorkflowArtifactPath(record.path, prefix);
+}
+
+function normalizeWorkflowRegistry(payload, generatedFrom = null) {
+  try {
+    if (!hasExactKeys(payload, WORKFLOW_REGISTRY_KEYS, WORKFLOW_REGISTRY_KEYS)
+        || payload.schema_version !== 1
+        || !validStableId(payload.browser_default_workflow_id)
+        || !Array.isArray(payload.workflows)
+        || !payload.workflows.length) return null;
+    const ids = new Set();
+    const packetIds = new Set();
+    const journeyIds = new Set();
+    const programIds = new Set();
+    const paths = new Set();
+    for (const entry of payload.workflows) {
+      if (!hasExactKeys(
+        entry,
+        WORKFLOW_REGISTRY_ENTRY_KEYS,
+        WORKFLOW_REGISTRY_ENTRY_KEYS,
+      ) || !hasExactKeys(
+        entry.artifacts,
+        WORKFLOW_REGISTRY_ARTIFACT_KEYS,
+        WORKFLOW_REGISTRY_ARTIFACT_KEYS,
+      ) || !validStableId(entry.workflow_id)
+        || !validStableId(entry.packet_id)
+        || !validStableId(entry.journey_id)
+        || !validStableId(entry.program_id)
+        || !validStableId(entry.jurisdiction)
+        || entry.status !== "prototype"
+        || ![
+          GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+          WOODLAND_AVAILABILITY_POLICY,
+        ].includes(entry.availability_policy)
+        || (entry.workflow_id === BROWSER_DEFAULT_WORKFLOW_ID
+          && entry.availability_policy !== WOODLAND_AVAILABILITY_POLICY)
+        || (entry.workflow_id !== BROWSER_DEFAULT_WORKFLOW_ID
+          && entry.availability_policy === WOODLAND_AVAILABILITY_POLICY)
+        || ids.has(entry.workflow_id)
+        || packetIds.has(entry.packet_id)
+        || journeyIds.has(entry.journey_id)
+        || programIds.has(entry.program_id)) return null;
+      ids.add(entry.workflow_id);
+      packetIds.add(entry.packet_id);
+      journeyIds.add(entry.journey_id);
+      programIds.add(entry.program_id);
+      for (const [name, prefix] of Object.entries(WORKFLOW_INPUT_PATHS)) {
+        const artifact = entry.artifacts[name];
+        if (!validWorkflowInputArtifact(artifact, prefix, generatedFrom)
+            || paths.has(artifact.path)) return null;
+        paths.add(artifact.path);
+      }
+      for (const [name, prefix] of Object.entries(WORKFLOW_OUTPUT_PATHS)) {
+        const artifact = entry.artifacts[name];
+        if (!validWorkflowOutputArtifact(artifact, prefix)
+            || paths.has(artifact.path)) return null;
+        paths.add(artifact.path);
+      }
+    }
+    if (!ids.has(payload.browser_default_workflow_id)
+        || payload.browser_default_workflow_id !== BROWSER_DEFAULT_WORKFLOW_ID)
+      return null;
+    deepFreezeGeneratedData(payload);
+    return generatedDataIsDeeplyFrozen(payload) ? payload : null;
+  } catch {
+    return null;
+  }
+}
+
+async function normalizeBundledWorkflowRegistry(
+  payload,
+  rawRegistry,
+  generatedFrom,
+) {
+  try {
+    if (typeof rawRegistry !== "string" || rawRegistry.length > 262144
+        || !generatedFrom || typeof generatedFrom !== "object"
+        || Array.isArray(generatedFrom)
+        || !validSha256(generatedFrom[WORKFLOW_REGISTRY_PATH])) return null;
+    const fingerprint = await sha256TextFingerprint(rawRegistry);
+    if (!fingerprint
+        || fingerprint.slice("sha256:".length)
+          !== generatedFrom[WORKFLOW_REGISTRY_PATH]) return null;
+    const parsed = JSON.parse(rawRegistry);
+    if (stableJson(parsed) !== stableJson(payload)) return null;
+    return normalizeWorkflowRegistry(payload, generatedFrom);
+  } catch {
+    return null;
+  }
+}
+
+function browserWorkflowEntry(registry = WORKFLOW_REGISTRY) {
+  if (!registry || !Array.isArray(registry.workflows)) return null;
+  const matches = registry.workflows.filter(
+    entry => entry.workflow_id === registry.browser_default_workflow_id
+  );
+  return matches.length === 1 ? matches[0] : null;
+}
+
 function normalizeProgramExcerpt(value) {
   return typeof value === "string"
     ? value.normalize("NFKC").trim().split(/\s+/u).join(" ") : "";
 }
 
-async function normalizeProgramAvailability(payload) {
+async function normalizeProgramAvailability(payload, workflowEntry) {
   try {
+    if (!workflowEntry) return null;
     if (!hasExactKeys(payload, PROGRAM_TOP_LEVEL_KEYS, PROGRAM_TOP_LEVEL_KEYS)
         || payload.schema_version !== 1
         || !hasExactKeys(
@@ -892,9 +1044,9 @@ async function normalizeProgramAvailability(payload) {
           PROGRAM_RECORD_KEYS,
         )) return null;
     const record = payload.availability;
-    if (record.program_id !== "woodland-preapproved-adu-plan-program"
-        || record.workflow_id !== "woodland-preapproved-detached-adu"
-        || record.jurisdiction !== "woodland"
+    if (record.program_id !== workflowEntry.program_id
+        || record.workflow_id !== workflowEntry.workflow_id
+        || record.jurisdiction !== workflowEntry.jurisdiction
         || record.mode !== "future_state_simulation"
         || record.status !== "plans_not_listed"
         || record.monitoring_status !== "manual_date_bound"
@@ -938,7 +1090,6 @@ function programAvailabilityIsCurrent(
     && NORMALIZED_PROGRAM_AVAILABILITY.has(availability)
     && availability.mode === "future_state_simulation"
     && availability.status === "plans_not_listed"
-    && availability.workflow_id === "woodland-preapproved-detached-adu"
     && (!journey
       || availability.workflow_id === journey.readiness_workflow_id)
     && dateIsNotFuture(availability.source.checked_on)
@@ -1384,6 +1535,38 @@ async function normalizeJourney(journeys, readiness, rules, golden) {
   }
 }
 
+function registeredBrowserWorkflowIsBound(
+  entry,
+  readiness,
+  journey,
+  availability,
+) {
+  return Boolean(
+    entry
+    && (!readiness || (
+      readiness.workflow.workflow_id === entry.workflow_id
+      && readiness.packet.workflow_id === entry.workflow_id
+      && readiness.packet.packet_id === entry.packet_id
+      && readiness.workflow.jurisdiction === entry.jurisdiction
+      && readiness.packet.jurisdiction === entry.jurisdiction
+    ))
+    && (!journey || (
+      journey.journey_id === entry.journey_id
+      && journey.readiness_workflow_id === entry.workflow_id
+      && journey.readiness_packet_id === entry.packet_id
+    ))
+    && (!availability || (
+      availability.workflow_id === entry.workflow_id
+      && availability.program_id === entry.program_id
+      && availability.jurisdiction === entry.jurisdiction
+    ))
+  );
+}
+
+function readinessEvidenceHref() {
+  return browserWorkflowEntry()?.artifacts?.readiness_evidence?.path || null;
+}
+
 function journeySourcesAreCurrent(
   journey,
   readiness,
@@ -1666,6 +1849,7 @@ function journeyEvidenceSourcesMarkup(data) {
     </div>`;
   }).join("");
   const program = PROGRAM_AVAILABILITY;
+  const evidenceHref = readinessEvidenceHref();
   const programRow = programAvailabilityIsCurrent(program, JOURNEY)
     ? `<div>
       <dt>City program availability</dt>
@@ -1697,13 +1881,13 @@ function journeyEvidenceSourcesMarkup(data) {
         through ${esc(formatSourceDate(readinessReviewDueOn(data)))}.</dd>
     </div>
     ${bindingRows}
-    <div>
+    ${evidenceHref ? `<div>
       <dt>Generated evidence record</dt>
-      <dd><a href="data/readiness/generated/woodland-preapproved-adu-evidence.json">Open
+      <dd><a href="${esc(evidenceHref)}">Open
         the generated source-bound JSON manifest</a>. Packet
         <code>${esc(data.packet.packet_id)}</code>; evaluated
         ${esc(formatSourceDate(data.result.evaluated_on))}.</dd>
-    </div>`;
+    </div>` : ""}`;
 }
 
 function renderJourneyEvidenceSummary(data) {
@@ -4326,9 +4510,12 @@ function renderReadiness(data) {
   const sourceStatusAsOf = readinessSourceStatusAsOf(data);
   const recordedSourceStatus = data.evidence_manifest.source_status
     || data.result.source_status;
+  const evidenceHref = readinessEvidenceHref();
+  if (!evidenceHref)
+    throw new Error("registered readiness evidence path is unavailable");
   const manifestLink = current
-    ? `<a href="data/readiness/generated/woodland-preapproved-adu-evidence.json">Open the generated evidence manifest</a>`
-    : `<a href="data/readiness/generated/woodland-preapproved-adu-evidence.json">Open the historical generated evidence manifest</a>
+    ? `<a href="${esc(evidenceHref)}">Open the generated evidence manifest</a>`
+    : `<a href="${esc(evidenceHref)}">Open the historical generated evidence manifest</a>
       <span class="evidence-record-note">This record captured source status
         “${esc(recordedSourceStatus)}” as of
         ${esc(formatSourceDate(sourceStatusAsOf))}. It is not a current source
@@ -4431,6 +4618,13 @@ function fetchJson(path) {
   return fetch(path).then(response => {
     if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
     return response.json();
+  });
+}
+
+function fetchText(path) {
+  return fetch(path).then(response => {
+    if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+    return response.text();
   });
 }
 
@@ -4572,16 +4766,14 @@ async function fetchRuleData() {
   return {rules: files.flat(), rule_manifest: manifest};
 }
 
-function loadDemoData() {
-  if (globalThis.PERMIT_PATHWAYS_DEMO_DATA) {
-    const data = globalThis.PERMIT_PATHWAYS_DEMO_DATA;
-    if (data?._meta?.format_version !== 5
-        || !Array.isArray(data.rules)
-        || !validRuleManifest(data.rule_manifest)
-        || !data.source_state || !data.coverage_index)
-      return Promise.reject(new Error("generated demo bundle has invalid rule data"));
-    return Promise.resolve(data);
-  }
+async function loadUnbundledDemoData() {
+  const workflowRegistryRaw = await fetchText(WORKFLOW_REGISTRY_PATH);
+  const workflowRegistry = normalizeWorkflowRegistry(
+    JSON.parse(workflowRegistryRaw),
+  );
+  const workflowEntry = browserWorkflowEntry(workflowRegistry);
+  if (!workflowEntry)
+    throw new Error("workflow registry has no browser-default workflow");
   return Promise.all([
     fetchRuleData(),
     fetchOptionalJson("data/golden/example.json", []),
@@ -4595,7 +4787,7 @@ function loadDemoData() {
                       {schema_version: 1, entries: []}),
     fetchJson("data/source-status/current.json"),
     fetchOptionalJson(
-      "data/availability/woodland-preapproved-adu-program.json",
+      workflowEntry.artifacts.program_availability.path,
       null,
     ),
     fetchOptionalJson(
@@ -4613,7 +4805,32 @@ function loadDemoData() {
     source_state: sourceState,
     program_availability: programAvailability,
     rule_verification: ruleVerification,
+    workflow_registry: workflowRegistry,
+    workflow_registry_raw: workflowRegistryRaw,
   }));
+}
+
+function loadDemoData() {
+  if (globalThis.PERMIT_PATHWAYS_DEMO_DATA) {
+    const data = globalThis.PERMIT_PATHWAYS_DEMO_DATA;
+    if (data?._meta?.format_version !== 6
+        || !Array.isArray(data.rules)
+        || !validRuleManifest(data.rule_manifest)
+        || !data.source_state || !data.coverage_index
+        || !data.workflow_registry
+        || typeof data.workflow_registry_raw !== "string")
+      return Promise.reject(new Error("generated demo bundle has invalid rule data"));
+    return normalizeBundledWorkflowRegistry(
+      data.workflow_registry,
+      data.workflow_registry_raw,
+      data._meta.generated_from,
+    ).then(registry => {
+      if (!registry)
+        throw new Error("generated demo bundle has an invalid workflow receipt");
+      return data;
+    });
+  }
+  return loadUnbundledDemoData();
 }
 
 function syncDataControls() {
@@ -4666,6 +4883,16 @@ async function initializeDemo() {
     CHECKS = data.checks;
     LETTERS = data.letters.letters || {};
     SCANS = data.scans;
+    WORKFLOW_REGISTRY = data._meta
+      ? await normalizeBundledWorkflowRegistry(
+        data.workflow_registry,
+        data.workflow_registry_raw,
+        data._meta.generated_from,
+      )
+      : normalizeWorkflowRegistry(data.workflow_registry);
+    const workflowEntry = browserWorkflowEntry(WORKFLOW_REGISTRY);
+    if (!workflowEntry)
+      throw new Error("workflow registry failed validation");
     SOURCE_STATE = normalizeSourceState(
       data.source_state,
       SOURCES,
@@ -4677,6 +4904,7 @@ async function initializeDemo() {
       throw new Error("reviewed source-state snapshot failed validation");
     PROGRAM_AVAILABILITY = await normalizeProgramAvailability(
       data.program_availability,
+      workflowEntry,
     );
     RULE_VERIFICATIONS = await normalizeRuleVerifications(
       data.rule_verification,
@@ -4689,6 +4917,12 @@ async function initializeDemo() {
       RULES,
       GOLDEN,
     );
+    if (!registeredBrowserWorkflowIsBound(
+      workflowEntry,
+      READINESS,
+      JOURNEY,
+      PROGRAM_AVAILABILITY,
+    )) throw new Error("browser workflow artifacts do not match the registry");
     if (pageIs("readiness")) {
       if (!READINESS)
         throw new Error("generated packet-presence data failed validation");

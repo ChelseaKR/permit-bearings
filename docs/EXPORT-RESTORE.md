@@ -1,25 +1,34 @@
 # Public/synthetic evidence export and restore
 
-Status: implemented tooling for one pinned 58-file schema-v1 public/synthetic
-evidence profile. It is not an exhaustive export of later repository
-artifacts. This is not a production applicant-data export, a backup system, a
-contractual offboarding procedure, partner acceptance, or a beta result.
+Status: implemented tooling for a frozen 58-file schema-v1 compatibility
+profile and a registry-aware 59-file schema-v2 public/synthetic profile. These
+are not exhaustive exports of later repository artifacts. This is not a
+production applicant-data export, a backup system, a contractual offboarding
+procedure, partner acceptance, or a beta result.
 
 ## What the package proves
 
-The schema-v1 package is a deterministic, standard ZIP containing only the 58
-files named by
+Each package is a deterministic, standard ZIP containing only the files named
+by its versioned profile. Schema v1 retains the exact pre-workflow-registry
+58-file identity in
 [`public-synthetic-evidence-v1.json`](../data/export/public-synthetic-evidence-v1.json).
-Its manifest binds the exact Git commit, freeze ID and date, artifact roles,
+Schema v2 has 59 files, replaces the self-referential profile member with
+[`public-synthetic-evidence-v2.json`](../data/export/public-synthetic-evidence-v2.json),
+and adds the raw-byte-pinned workflow registry; its other artifact membership
+matches v1.
+The manifest binds the exact Git commit, freeze ID and date, artifact roles,
 raw byte counts and SHA-256 digests, the profile digest, a tree fingerprint,
 the public/synthetic claim boundary, known absences, and official source
 records that do not have a retained local copy.
 
 Build and restore also replay the repository's strict source, rule, Golden,
 readiness, journey, program-availability, rule-review, conformance, and
-jurisdiction loaders. The readiness and journey artifacts are replayed using
-their recorded evaluation date; the package freeze date does not rewrite the
-historical evaluation.
+jurisdiction loaders. Schema v1 retains its original fixed Woodland artifact
+paths. Schema v2 loads the versioned registry and rejects a profile unless it
+exports every input and generated output referenced by every registry entry.
+The readiness and journey artifacts are replayed using their recorded
+evaluation date; the package freeze date does not rewrite the historical
+evaluation.
 
 A successful result proves that the named public/synthetic bytes can be
 packaged, independently checked, and restored without a vendor database. It
@@ -39,6 +48,7 @@ commit.
 
 ```bash
 PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli build \
+  --profile-version 2 \
   --output /absolute/new/path/permit-bearings-evidence.zip \
   --freeze-id public-synthetic-evidence-2026-08-09 \
   --frozen-on 2026-08-09
@@ -51,14 +61,20 @@ PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli restore \
   --destination /absolute/new/path/restored-evidence
 ```
 
-The optional `--repository-commit-sha` argument is accepted only when it is
-the full lowercase SHA of the verified `HEAD`. The destination must not exist;
-there is no merge or force mode. Each successful command prints the validated
-manifest as JSON. `make evidence-export-check` performs a disposable
-build/verify/restore round trip for the pinned schema-v1 committed profile.
+The build command auto-selects the newest profile present (schema v2 in the
+current repository and schema v1 in a legacy v1-only root) and accepts an
+explicit `--profile-version 1` or `--profile-version 2`. The frozen v1 profile
+is kept for archive compatibility; a new v1 build correctly fails when any
+current selected byte no longer matches its historical pin. Verify and restore
+infer the version from the archive manifest and do not need a selector. The
+optional `--repository-commit-sha` argument is accepted only when it is the full
+lowercase SHA of the verified `HEAD`. The destination must not exist; there is
+no merge or force mode. Each successful command prints the validated manifest
+as JSON. `make evidence-export-check` performs a disposable schema-v2
+build/verify/restore round trip.
 
-Build and verify use cross-platform Python standard-library formats. Schema-v1
-restore currently publishes with the operating system's no-replace directory
+Build and verify use cross-platform Python standard-library formats. Restore
+currently publishes with the operating system's no-replace directory
 rename on macOS or Linux and fails closed elsewhere; the restored evidence
 bytes remain ordinary files in either case.
 
@@ -69,7 +85,7 @@ Signing and partner acceptance remain separate future controls.
 
 ## Canonical and fail-closed format
 
-Schema v1 intentionally has one representation:
+Each supported schema intentionally has one representation:
 
 - stored, uncompressed members only, with ZIP64 disabled;
 - one fixed archive root and one canonical `MANIFEST.json`;
@@ -96,19 +112,22 @@ publish guidance.
 
 ## Privacy and evidence boundary
 
-The pinned 58-file profile includes its selected official/public source copies,
+The frozen v1 profile includes its selected official/public source copies,
 portable rules and sources, Golden and conformance development fixtures,
 synthetic Woodland readiness and journey records, jurisdiction/HCD snapshots,
-generated evidence, and the prepared validation ledgers. It also includes the
-repository license, third-party notices, and provenance record.
+generated evidence, prepared validation ledgers, the repository license,
+third-party notices, and provenance record. V2 adds only the raw-byte-pinned
+workflow registry and requires closure over that registry's referenced
+workflow inputs and outputs. This is a portable membership guarantee, not
+evidence that another jurisdiction is implemented, reviewed, or approved.
 
 The later `data/conformance/evaluations/heldout-v1/manifest.json`, its evaluator
 and CLI, the beta-operations ADR/runbook/ledger/validator/tests, and any future
 frozen cases, answer key, blind predictions, execution or approval receipts,
-or results are outside export profile v1. Exporting those artifacts requires a
+or results are outside export profiles v1 and v2. Exporting those artifacts requires a
 separately reviewed future profile/version with an updated membership,
 classification, and claim boundary; their presence elsewhere in the repository
-does not make the v1 package incomplete against its own pinned contract.
+does not make either package incomplete against its own pinned contract.
 
 Every payload except the self-referential profile is pinned by its raw digest.
 Public-state assertions additionally require the mutable validation records

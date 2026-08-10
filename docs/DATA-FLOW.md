@@ -227,7 +227,7 @@ Effective-status evaluation
     +--> all bindings current: retain recorded effective level
              |
              v
-Harness summary + bundle-format-5 evidence-page disclosure
+Harness summary + bundle-format-6 evidence-page disclosure
 ```
 
 `data/validation/rule-verification.json` cannot change deterministic rule
@@ -343,6 +343,15 @@ not represented as a watched-source proof that a plan is available.
 
 ### Canonical readiness inputs
 
+- `data/workflows/registry.json` declares the repository-relative workflow,
+  packet, remedy, journey, availability-policy, and generated-output paths.
+  Every canonical input is raw-byte pinned. The strict Python loader rejects
+  duplicate JSON keys, non-finite or oversized records, symlinks/hard links,
+  cross-platform-unsafe names, duplicate or orphan IDs/files, shared paths,
+  traversal, wrong-directory paths, fingerprint drift, and IDs that disagree
+  with their referenced records. It currently contains one prototype entry
+  and selects that same Woodland entry as the browser default; a synthetic
+  two-entry test does not represent multiple active workflows.
 - `data/availability/woodland-preapproved-adu-program.json` contains the
   official program-page binding, `plans_not_listed` status, future-state
   simulation boundary, and manual recheck deadline. Its strict schema is
@@ -407,11 +416,15 @@ the evaluator from publishing a favorable packet summary. The result uses
 `no_known_gaps_in_bounded_manifest` when every applicable item is reported
 present; it never calls the packet complete.
 
-`src/permit_pathways/readiness_cli.py` reads local paths and prints the
-evidence manifest to standard output. It checks source currency against the
-current UTC date unless a person explicitly requests a historical `--as-of`
-replay. The CLI itself does not store the result. A person who redirects that
-output creates a local file outside the CLI's storage behavior.
+`src/permit_pathways/readiness_cli.py` selects a registry entry by stable
+workflow ID and prints the evidence manifest to standard output. Its legacy
+path options are exact assertions against that entry, not an unregistered path
+bypass. It checks source currency against the current UTC date unless a person
+explicitly requests a historical `--as-of` replay. The CLI itself does not
+store the result. A person who redirects that output creates a local file
+outside the CLI's storage behavior. `review_queue_cli.py` builds contexts for
+every registered workflow by default and can narrow to one registered ID; it
+cannot infer or activate an unregistered workflow.
 
 ### Build and browser rendering
 
@@ -424,20 +437,37 @@ when the currently selected jurisdiction resolves to that registry index.
 Changing or clearing the selection hides the profile. No profile data is
 included in the route-to-packet URL.
 
-`scripts/build_demo_bundle.py` runs the Python evaluator against the canonical
-synthetic sample. It writes the derived evidence record to
+`scripts/build_demo_bundle.py` loads and validates every registry entry, then
+runs the Python evaluator against each configured canonical synthetic sample.
+It writes each derived evidence record to that entry's registered output path;
+for the current sole entry this is
 `data/readiness/generated/woodland-preapproved-adu-evidence.json` and embeds
-the same readiness payload in `data/demo-data.js`. The build also resolves the
-canonical journey definition, writes
+the same readiness payload in `data/demo-data.js`. The build also resolves each
+registered journey definition; for the current entry it writes
 `data/journeys/generated/woodland-preapproved-detached-adu.json`, and embeds
-that same envelope in the bundle. It also strictly loads the repository-adopted
+that same envelope in the bundle. Under the bundle-format-6 browser contract,
+only the explicit `browser_default_workflow_id` is aliased to the
+singular readiness object, program-availability object, and one-element
+journey array. Registration alone does not expose another browser workflow.
+The build also strictly loads the repository-adopted
 `data/source-status/current.json`, requires its publication receipt to be
 `reviewed`, re-derives its dependency impacts, and embeds it as a separate
 overlay. The build strictly loads schema-v2 rule-verification data and the
 date-bound Woodland program-availability record as separate inputs. Bundle
-format 5 exposes those claims and the separate jurisdiction-coverage index,
-and the generated-input
-manifest binds their canonical inputs.
+format 6 exposes those claims, the strict workflow registry, its exact raw
+text, and the separate jurisdiction-coverage index. The generated-input
+manifest binds the raw registry and every registered canonical input.
+
+`assets/demo.js` first hashes the embedded raw registry against the bundle
+receipt, confirms its parsed form matches the embedded registry object, then
+validates exact shape, stable IDs, unique portable paths, availability policy,
+and every registered input fingerprint. The browser cannot enumerate the
+repository, so orphan-file detection belongs to the Python loader/build.
+It derives the availability and generated-evidence paths from the one browser
+default and verifies that the readiness, packet, journey, availability, and
+jurisdiction IDs agree. Invalid registry data fails closed; an invalid
+workflow-specific artifact continues to withhold only its deeper surface when
+the base screening data remains valid.
 
 `check.html` consumes the journey envelope only for the active, unedited
 `sample=adu` fixture after the normal deterministic screening result exactly
@@ -490,10 +520,13 @@ upload, retain, or later retrieve it.
 ## Public/synthetic evidence export path
 
 The evidence exporter is an offline repository-maintenance command, not a
-browser or applicant flow. Its schema-v1 path is:
+browser or applicant flow. Its versioned path is:
 
 ```text
-Pinned 58-file profile + pending/not_run state assertions
+Selected profile + pending/not_run state assertions
+    |
+    +--> v1: frozen 58-file compatibility identity
+    +--> v2: 59 files; registry-aware closure and format-6 bundle pin
     |
     +--> verify every selected byte against Git HEAD and its profile digest
     +--> recheck normalized official-source digests separately from raw bytes
@@ -528,10 +561,11 @@ acceptance, a backup, or a CPRA/sensitive-data export. The exact operational
 contract is in [`EXPORT-RESTORE.md`](EXPORT-RESTORE.md).
 
 The later held-out evaluation contract and the beta-operations ADR, runbook,
-ledger, validator, and tests are outside the pinned 58-file export profile v1.
-Their presence in the repository does not make that fixed package incomplete.
-A reviewed future profile version must classify and add them before an
-evidence handoff can claim to include them.
+ledger, validator, and tests are outside both the pinned 58-file export
+profile v1 and the registry-aware 59-file profile v2. Their presence in the
+repository does not make either fixed package incomplete. A reviewed future
+profile version must classify and add them before an evidence handoff can
+claim to include them.
 
 ## AI boundary
 

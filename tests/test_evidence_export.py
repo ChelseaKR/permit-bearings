@@ -9,6 +9,7 @@ import stat
 import struct
 import subprocess
 import zipfile
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -28,6 +29,11 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 FREEZE_ID = "public-synthetic-evidence-freeze-2026-08-09"
 FREEZE_ON = "2026-08-09"
 AS_OF = date.fromisoformat(FREEZE_ON)
+V1_PROFILE_PATH = Path("data/export/public-synthetic-evidence-v1.json")
+V2_PROFILE_PATH = Path("data/export/public-synthetic-evidence-v2.json")
+FROZEN_V1_PROFILE_SHA256 = (
+    "2e5153f1dae2f7b660dcae156ed2d0f84480eff7a02a163fa8426a5272314e9e"
+)
 
 
 def _git(root: Path, *args: str) -> str:
@@ -69,6 +75,55 @@ def committed_evidence_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
         "commit",
         "-qm",
         "public synthetic evidence",
+    )
+    return root
+
+
+@pytest.fixture()
+def legacy_v1_evidence_root(tmp_path: Path) -> Path:
+    """Build a committed schema-v1-shaped root without the later registry.
+
+    The repository's frozen v1 profile retains every historical digest. This
+    archive-style fixture substitutes current digests in its temporary copy so
+    the compatibility parser, verifier, semantic replay, and restore can be
+    exercised without changing that frozen profile identity.
+    """
+
+    root = tmp_path / "legacy-v1-repository"
+    raw_profile = (REPOSITORY_ROOT / V1_PROFILE_PATH).read_bytes()
+    profile_payload = json.loads(raw_profile)
+    profile = evidence_export._parse_profile(
+        profile_payload,
+        V1_PROFILE_PATH.as_posix(),
+    )
+    for entry in profile.entries:
+        source = REPOSITORY_ROOT / entry.path
+        destination = root / entry.path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
+
+    for entry in profile_payload["entries"]:
+        if entry.get("raw_sha256") is not None:
+            entry["raw_sha256"] = (
+                "sha256:"
+                + hashlib.sha256((root / entry["path"]).read_bytes()).hexdigest()
+            )
+    (root / V1_PROFILE_PATH).write_text(
+        json.dumps(profile_payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    _git(root, "init", "-q")
+    _git(root, "add", ".")
+    _git(
+        root,
+        "-c",
+        "user.name=Codex",
+        "-c",
+        "user.email=codex@example.test",
+        "commit",
+        "-qm",
+        "legacy schema v1 evidence fixture",
     )
     return root
 
@@ -156,6 +211,48 @@ def _set_encrypted_flag(source: Path, output: Path) -> None:
     output.write_bytes(payload)
 
 
+def test_frozen_v1_profile_retains_exact_pre_registry_identity() -> None:
+    raw = (REPOSITORY_ROOT / V1_PROFILE_PATH).read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == FROZEN_V1_PROFILE_SHA256
+    payload = json.loads(raw)
+    assert payload["schema_version"] == 1
+    assert len(payload["entries"]) == 58
+    assert {entry["path"] for entry in payload["entries"]}.isdisjoint(
+        {"data/workflows/registry.json"}
+    )
+    assert payload["package"] == {
+        "archive_root": "permit-bearings-evidence-v1",
+        "package_id": "permit-bearings-public-synthetic-evidence-v1",
+    }
+
+
+def test_legacy_v1_archive_style_fixture_verifies_and_restores(
+    legacy_v1_evidence_root: Path,
+    tmp_path: Path,
+) -> None:
+    assert load_export_profile(legacy_v1_evidence_root).schema_version == 1
+    archive = tmp_path / "legacy-v1.zip"
+    manifest = build_export(
+        legacy_v1_evidence_root,
+        archive,
+        freeze_id=FREEZE_ID,
+        frozen_on=FREEZE_ON,
+        repository_commit_sha=_commit_sha(legacy_v1_evidence_root),
+        today=AS_OF,
+    )
+    assert manifest["schema_version"] == 1
+    assert len(manifest["files"]) == 58
+    assert all(
+        item["path"] != "data/workflows/registry.json" for item in manifest["files"]
+    )
+    assert verify_export(archive, today=AS_OF) == manifest
+
+    restored = tmp_path / "legacy-v1-restored"
+    assert restore_export(archive, restored, today=AS_OF) == manifest
+    assert (restored / V1_PROFILE_PATH).is_file()
+    assert not (restored / "data/workflows/registry.json").exists()
+
+
 def test_build_verify_restore_is_deterministic_and_inert(
     committed_evidence_root: Path,
     tmp_path: Path,
@@ -164,6 +261,7 @@ def test_build_verify_restore_is_deterministic_and_inert(
     second_archive = tmp_path / "second.zip"
 
     manifest = _build(committed_evidence_root, first_archive)
+    assert manifest["schema_version"] == 2
     assert _build(committed_evidence_root, second_archive) == manifest
     assert first_archive.read_bytes() == second_archive.read_bytes()
     assert verify_export(first_archive, today=AS_OF) == manifest
@@ -332,14 +430,14 @@ def test_build_requires_head_pinned_profile_bytes(
     shutil.copytree(committed_evidence_root, altered)
     changed = altered / "data/demo-data.js"
     changed.write_bytes(changed.read_bytes() + b"\n")
-    profile_path = altered / "data/export/public-synthetic-evidence-v1.json"
+    profile_path = altered / V2_PROFILE_PATH
     profile = json.loads(profile_path.read_text(encoding="utf-8"))
     entry = next(
         item for item in profile["entries"] if item["path"] == "data/demo-data.js"
     )
     entry["raw_sha256"] = "sha256:" + hashlib.sha256(changed.read_bytes()).hexdigest()
     profile_path.write_text(json.dumps(profile, indent=2) + "\n", encoding="utf-8")
-    _git(altered, "add", "data/export/public-synthetic-evidence-v1.json")
+    _git(altered, "add", V2_PROFILE_PATH.as_posix())
     _git(
         altered,
         "-c",
@@ -489,6 +587,33 @@ def test_cli_build_verify_restore_round_trip(
     assert (destination / "MANIFEST.json").is_file()
 
 
+def test_cli_build_can_explicitly_select_frozen_v1_contract(
+    legacy_v1_evidence_root: Path,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    archive = tmp_path / "cli-v1-evidence.zip"
+    assert (
+        evidence_export_main(
+            [
+                "build",
+                "--root",
+                str(legacy_v1_evidence_root),
+                "--output",
+                str(archive),
+                "--freeze-id",
+                FREEZE_ID,
+                "--frozen-on",
+                FREEZE_ON,
+                "--profile-version",
+                "1",
+            ]
+        )
+        == 0
+    )
+    assert json.loads(capsys.readouterr().out)["schema_version"] == 1
+
+
 def test_profile_requires_the_source_registry_entry() -> None:
     profile_path = REPOSITORY_ROOT / "data/export/public-synthetic-evidence-v1.json"
     profile = json.loads(profile_path.read_text(encoding="utf-8"))
@@ -511,6 +636,59 @@ def test_profile_requires_the_source_registry_entry() -> None:
             wrong_role,
             profile_path.relative_to(REPOSITORY_ROOT).as_posix(),
         )
+
+
+def test_profile_requires_the_workflow_registry_entry() -> None:
+    profile_path = REPOSITORY_ROOT / V2_PROFILE_PATH
+    profile = json.loads(profile_path.read_text(encoding="utf-8"))
+    missing = dict(profile)
+    missing["entries"] = [
+        entry
+        for entry in profile["entries"]
+        if entry["path"] != "data/workflows/registry.json"
+    ]
+    with pytest.raises(ValueError, match="must be the workflow registry"):
+        evidence_export._parse_profile(
+            missing,
+            profile_path.relative_to(REPOSITORY_ROOT).as_posix(),
+        )
+
+    wrong_role = json.loads(json.dumps(profile))
+    workflow_entry = next(
+        entry
+        for entry in wrong_role["entries"]
+        if entry["path"] == "data/workflows/registry.json"
+    )
+    workflow_entry["role"] = "jurisdiction_registry"
+    with pytest.raises(ValueError, match="must be the workflow registry"):
+        evidence_export._parse_profile(
+            wrong_role,
+            profile_path.relative_to(REPOSITORY_ROOT).as_posix(),
+        )
+
+
+@pytest.mark.parametrize(
+    "missing_path",
+    [
+        "data/readiness/workflows/woodland-preapproved-detached-adu.json",
+        "data/readiness/generated/woodland-preapproved-adu-evidence.json",
+        "data/journeys/generated/woodland-preapproved-detached-adu.json",
+    ],
+)
+def test_v2_profile_requires_registry_input_and_output_closure(
+    missing_path: str,
+) -> None:
+    profile = load_export_profile(REPOSITORY_ROOT, profile_version=2)
+    payloads = evidence_export._entry_payloads(REPOSITORY_ROOT, profile)
+    incomplete = replace(
+        profile,
+        entries=tuple(entry for entry in profile.entries if entry.path != missing_path),
+    )
+    payloads.pop(missing_path)
+    with pytest.raises(
+        ValueError, match="referenced workflow artifact is not exported"
+    ):
+        evidence_export._validate_workflow_registry_closure(incomplete, payloads)
 
 
 def test_profile_and_manifest_require_exact_schema_values(

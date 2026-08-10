@@ -263,7 +263,7 @@ official program URL, 2026-08-09 check date, exact excerpt and fingerprint,
 `plans_not_listed` status, future-state boundary, and recheck deadline.
 `src/permit_pathways/program_availability.py` validates that schema but is
 isolated from deterministic screening and readiness evaluation, so it cannot
-create a match or make the workflow applicable. Bundle format 5 carries the
+create a match or make the workflow applicable. Bundle format 6 carries the
 record to the browser, which blocks route-to-packet access when it is missing,
 malformed, or expired. A passing availability check authorizes only display of
 the labeled simulation.
@@ -363,6 +363,43 @@ future-state synthetic journey summary, not authorization, a currently listed
 City plan, a real or persisted applicant case, a completeness or eligibility
 finding, an official checklist, or jurisdiction-approved packet.
 
+#### Portable workflow registry boundary (implemented infrastructure)
+
+`data/workflows/registry.json` is the canonical selector for readiness,
+packet, remedy, journey, program-availability, and generated-evidence paths.
+Each input path is repository-relative, constrained to a lowercase ASCII JSON
+filename in its expected direct directory, and pinned to the SHA-256 of its
+bounded raw bytes. Stable workflow, packet, journey, program, and jurisdiction
+IDs must agree with the referenced records. An explicit availability policy
+keeps the exact Woodland source contract separate from a conservative generic
+prototype contract used only in tests. The loader rejects duplicate JSON keys,
+non-finite or oversized records, symlinks and hard links, portable-name and
+case collisions, and inventories each canonical input and generated-output
+directory so an unregistered JSON file, duplicate ID/path, shared input/output
+path, traversal, absolute path, wrong-directory path, fingerprint drift, or
+orphan cross-reference fails closed.
+
+The registry is a list boundary, and the build validates every entry.
+`readiness_cli.py` selects one entry by `--workflow-id`; legacy `--workflow`
+and `--packet` flags remain compatibility assertions but cannot bypass the
+registered paths. `review_queue_cli.py` includes all registered contexts by
+default or one explicit registered ID. Its legacy path flags are also
+assertions. Neither command can register, approve, activate, or publish a
+workflow.
+
+Bundle format 6 intentionally changes the generated contract: it embeds the
+exact raw registry text alongside its parsed form. The browser verifies the
+raw registry SHA-256 against `generated_from`, requires the two forms to agree,
+then validates the registry shape, unique portable paths, every registered
+input pin, the exact Woodland default policy, and artifact IDs before using
+the singular `readiness`, one-element `journeys`, and
+`program_availability` aliases. Browser code cannot inventory files that were
+not bundled; orphan detection remains a Python build/loader responsibility.
+This repository has one registered prototype entry—the Woodland future-state
+simulation. A test-only second entry proves build and review-queue traversal,
+but registry infrastructure is not multiple active workflows, broader local
+coverage, external validation, applicant readiness, or jurisdiction approval.
+
 ### 3. Citation-grounded Q&A (planned)
 
 For free-text questions the deterministic core can't answer, a retrieval layer
@@ -448,7 +485,7 @@ abstention path is a structured intake with no matching encoded rule.
   `machine_linked`. The ledger never changes which rules match an intake.
   `python -m permit_pathways.harness` prints effective-level counts and the
   exact bounded automation phrase `automated source/regression checks: pass`
-  when those checks pass. Bundle format 5 exposes the same effective coverage
+  when those checks pass. Bundle format 6 exposes the same effective coverage
   on `evidence.html`: all 19 rules are currently `machine_linked`, with zero
   named human reviews and zero jurisdiction approvals.
 - **Currency watcher:** monitors the source corpus (statute text, HCD guidance,
@@ -488,7 +525,7 @@ abstention path is a structured intake with no matching encoded rule.
   route. The separate decision ledger binds every entry to both worklist and
   item fingerprints. Assignment or resolution never changes source state,
   matching, verification level, or publication.
-- **Public trust surface:** bundle format 5 carries the adopted overlay, rule
+- **Public trust surface:** bundle format 6 carries the adopted overlay, rule
   verification ledger, and strict program-availability record to the browser
   as distinct claims. Exact changed dependencies stale statewide rule cards and
   orientation receipts. A changed candidate-route source blocks the Woodland
@@ -536,10 +573,15 @@ The browser showcase remains dependency-free and static-host friendly.
 Canonical rules, explanations, registries, fixtures, checks, source metadata,
 the generated jurisdiction-coverage index, the program-availability record,
 rule-verification ledger, and adopted source-state receipt stay in JSON.
-`scripts/build_demo_bundle.py` deterministically compiles those files, the
-generated readiness record, the generated journey envelope, and the strict
-source-state overlay into `data/demo-data.js`. The static surface is split by
-user job:
+`scripts/build_demo_bundle.py` first resolves every readiness/journey artifact
+through the raw-byte-pinned workflow registry. It deterministically compiles
+the explicit browser-default entry, the generated readiness record, the
+generated journey envelope, and the strict source-state overlay into
+`data/demo-data.js`. Bundle format 6 also carries the exact raw registry text
+and its receipt digest so the browser can prove that the parsed embedded copy
+came from those bytes. Other registered entries would still be validated and
+have their configured generated records checked or written, but would not
+become browser-active automatically. The static surface is split by user job:
 
 - `index.html`: lightweight orientation and scope; it loads no data bundle;
 - `check.html`: a generated Statewide Coverage Navigator after a recognized
@@ -668,35 +710,41 @@ as executed. This package does not establish a beta, partner acceptance,
 privacy/security approval, accessibility/language approval, or CPRA,
 Information Practices Act, SAM, or SIMM compliance.
 
-The ADR, runbook, readiness ledger, validator, and tests are outside the
-pinned 58-file export profile v1. A reviewed future profile version must
-classify and add them before an evidence handoff can claim to include them.
+The ADR, runbook, readiness ledger, validator, and tests are outside both the
+frozen 58-file export profile v1 and the registry-aware 59-file profile v2.
+Their presence in the repository is not evidence that either profile includes
+them; another reviewed profile version must classify any future additions.
 
 ### 7. Public/synthetic evidence handoff (implemented tooling)
 
-`src/permit_pathways/evidence_export.py` packages the exact files named in the
-schema-v1 profile as one deterministic ZIP outside the repository. The
-profile uses raw byte pins for every ordinary member and a self-reference for
-the profile itself; separate assertions keep mutable validation ledgers in
-their public prepared/pending/`not_run` states. The manifest binds Git `HEAD`,
+`src/permit_pathways/evidence_export.py` packages the exact files named in a
+selected versioned profile as one deterministic ZIP outside the repository.
+Schema v1 is frozen at its original 58 members; schema v2 has 59 members and
+adds the workflow registry as the only substantive artifact delta, with the
+bundle pin advanced to format 6. Each profile uses raw byte pins for every
+ordinary member and a versioned self-reference; separate assertions keep
+mutable validation ledgers in their public prepared/pending/`not_run` states.
+The manifest binds Git `HEAD`,
 the freeze ID/date, artifact roles, raw member hashes and sizes, a tree
 fingerprint, scope/exclusions, and official source records without retained
 copies. Normalized source-content hashes remain distinct from archive-member
 hashes and are rechecked against `data/sources.json`.
 
-Schema v1 has one canonical uncompressed ZIP representation with fixed member
-metadata and strict size/path/member limits. Verification reconstructs and
+Each schema has one canonical uncompressed ZIP representation with fixed
+member metadata and strict size/path/member limits. Verification reconstructs and
 compares the complete archive, so alternate ordering, compression, metadata,
 prefixes, trailers, unknown files, and tampering fail. Restore streams into a
 private sibling staging directory, replays the canonical loaders, and exposes
 a new destination only after every check succeeds. It never uses ZIP
 extraction helpers, merges into a destination, or changes publication state.
 
-This is an evidence-data portability mechanism for the pinned schema-v1 public
-and synthetic repository scope. The later held-out evaluation planning
-artifact, beta-operations package, and any future cases, answer key, execution
-receipt, approval, or result are outside profile v1; adding them requires a
-separately reviewed profile version. It is not a
+This is an evidence-data portability mechanism for the selected versioned
+public and synthetic repository scope. Schema v1 is the frozen 58-file
+compatibility contract. Schema v2 adds registry-aware closure at 59 files.
+The later held-out evaluation planning artifact, beta-operations package, and
+any future cases, answer key, execution receipt, approval, or result are
+outside profiles v1 and v2; adding them requires a separately reviewed profile
+version. It is not a
 sensitive-data export, applicant record, proof of authenticity,
 backup/disaster-recovery system, copyright or
 contractual ownership finding, partner acceptance, CPRA workflow, completed
@@ -708,7 +756,7 @@ review, or beta evidence. The operator and maintenance contract is in
 | Challenge requirement | Current evidence | Next gap |
 |---|---|---|
 | Privacy (Info Practices Act, Gov C §§ 11015.5/11019.9) | Public demo persists no applicant input. Its handoff URL carries only a public journey ID and version; the packet page uses one committed synthetic record and makes no runtime model call. A proposed beta package pins the empty service collection inventory, exact current-page fields, host-metadata caveat, and privacy/incident procedure. | Select and review the actual host/subprocessors, execute the threat/privacy controls, assign authorized roles, and record approval in a separate execution schema. No compliance claim exists. |
-| Jurisdiction data ownership | Rules, corpus, fixtures, and source metadata use open repository formats. A schema-v1 canonical ZIP builds from 58 exact public/synthetic files verified against Git HEAD; archive-only verification and inert restore check the profile, raw and normalized-source hashes, tree fingerprint, 17 asserted validation states, licensing, and provenance without authenticating that commit. The allowlist excludes known sensitive material but is not a privacy classifier. | Partner acceptance, contractual custody/offboarding, signing, and a separately classified export after any hosted, applicant, reviewer, or participant data exists. |
+| Jurisdiction data ownership | Rules, corpus, fixtures, workflow registry, and source metadata use open repository formats. The current schema-v2 canonical ZIP builds from 59 exact public/synthetic files verified against Git HEAD and adds registry-aware closure; the frozen schema-v1 compatibility profile remains exactly 58 files. Archive-only verification and inert restore check the selected profile, raw and normalized-source hashes, tree fingerprint, asserted validation states, licensing, and provenance without authenticating that commit. The allowlist excludes known sensitive material but is not a privacy classifier. | Partner acceptance, contractual custody/offboarding, signing, and a separately classified export after any hosted, applicant, reviewer, or participant data exists. |
 | CPRA (Gov C § 7920.000 et seq.) | No applicant record store exists. The proposed runbook routes requests and legal holds to an authorized records role and identifies possible repository, deployment, source/review, support, and incident records outside the application. | Assign authority and execute the deployment-specific retention, search/export, legal-hold, exemption/redaction, and audit design. The prepared ledger remains `not_run`; no blanket compliance claim. |
 | Low-capacity affordability | Dependency-light Python core and static-friendly browser demo. | Pilot deployment/TCO evidence and an integration contract beside existing systems. |
 | Keep pace with legislative change | Selected-source hash watcher, proposed run artifacts, a strict repository-adopted source-state overlay, exact rule/Golden and bounded packet-context worklists, separate decision templates, applicant-output holds, date aging, and a separate staleness rehearsal. | New-law discovery, automatic adoption/publication, completed staffed assignments and dispositions, broader local-source coverage, and human approval history. |
