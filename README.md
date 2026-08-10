@@ -33,9 +33,10 @@ At build time, a versioned synthetic journey definition binds the existing
 Woodland golden routing fixture to that readiness workflow and packet. The
 generated, fingerprinted envelope is also the browser's fail-closed handoff
 contract for these prototype inputs. A strict portable registry at
-`data/workflows/registry.json` selects and raw-byte-pins the workflow, packet,
-remedy, journey, availability, and generated-output paths. Build and CLI code
-resolve those paths through stable IDs and explicit availability policies.
+`data/workflows/registry.json` selects the workflow, packet, remedy, journey,
+availability, and generated-output paths. It raw-byte-pins every canonical
+input; generated destinations are path-bound and rebuilt before use. Build and
+CLI code resolve those paths through stable IDs and explicit availability policies.
 The Python boundary rejects ambiguous or oversized JSON, linked files,
 cross-platform-unsafe paths, duplicate IDs, orphan files, shared paths,
 fingerprint drift, and mismatched IDs. Bundle format 6 separately hashes the
@@ -702,10 +703,11 @@ explanation sidecar and keeps a separate `/trust` route.
   resolver for the synthetic Woodland fixture
 - `src/permit_pathways/workflow_registry.py`: strict portable workflow,
   packet, journey, availability, and generated-output path registry with
-  raw-byte pins and complete artifact inventory checks
+  canonical-input raw-byte pins and complete artifact inventory checks
 - `src/permit_pathways/program_availability.py`: strict, date-bound Woodland
-  policy plus a conservative generic prototype availability policy, isolated
-  from screening/readiness
+  policy plus a conservative generic prototype policy whose exact negative
+  excerpt, source/program IDs, canonical HTTPS program path, and fingerprint
+  must agree; both are isolated from screening/readiness
 - `src/permit_pathways/source_state.py`: strict watcher-receipt validation and
   exact rule/Golden dependency impact
 - `src/permit_pathways/review_queue.py` and `review_queue_cli.py`: portable,

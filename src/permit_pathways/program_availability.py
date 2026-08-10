@@ -50,6 +50,7 @@ GENERIC_PROTOTYPE_BOUNDARY = (
     "or that this workflow applies; applicability must be confirmed with the "
     "responsible jurisdiction before use."
 )
+GENERIC_PROTOTYPE_EXCERPT = "No plans are listed on this prototype page."
 SUPPORTED_AVAILABILITY_POLICIES = (
     GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
     WOODLAND_AVAILABILITY_POLICY,
@@ -183,6 +184,7 @@ def _load_json(path: Path) -> Any:
         UnicodeDecodeError,
         json.JSONDecodeError,
         _DuplicateKeyError,
+        RecursionError,
         ValueError,
     ) as error:
         raise ValueError(
@@ -208,18 +210,84 @@ def _iso_date(value: Any, field: str) -> tuple[str, date]:
 
 
 def _safe_https_url(value: Any, field: str) -> str:
-    if not isinstance(value, str):
+    if (
+        not isinstance(value, str)
+        or value != value.strip()
+        or any(ord(character) <= 32 or ord(character) == 127 for character in value)
+    ):
         raise ValueError(f"{field}: expected HTTPS URL")
-    parsed = urlsplit(value)
+    try:
+        parsed = urlsplit(value)
+        hostname = parsed.hostname
+        port = parsed.port
+    except ValueError as error:
+        raise ValueError(f"{field}: expected HTTPS URL") from error
+    if not hostname:
+        raise ValueError(f"{field}: expected HTTPS URL")
+    labels = hostname.split(".")
+    canonical_hostname = bool(
+        hostname.isascii()
+        and hostname == hostname.lower()
+        and len(labels) >= 2
+        and labels[-1].isalpha()
+        and all(
+            label
+            and len(label) <= 63
+            and re.fullmatch(r"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", label)
+            for label in labels
+        )
+    )
     if (
         parsed.scheme != "https"
-        or not parsed.hostname
+        or not canonical_hostname
+        or parsed.netloc != hostname
+        or port is not None
         or parsed.username is not None
         or parsed.password is not None
+        or parsed.query
         or parsed.fragment
+        or not parsed.path.startswith("/")
+        or parsed.path.startswith("//")
+        or parsed.path == "/"
+        or "\\" in parsed.path
+        or f"https://{hostname}{parsed.path}" != value
     ):
         raise ValueError(f"{field}: expected HTTPS URL")
     return value
+
+
+def _validate_policy_source_binding(
+    *,
+    policy: str,
+    program_id: str,
+    source_id: str,
+    url: str,
+    excerpt: str,
+) -> None:
+    field = "availability.source"
+    if policy == WOODLAND_AVAILABILITY_POLICY:
+        if source_id != SOURCE_ID:
+            raise ValueError(f"{field}.source_id: expected {SOURCE_ID!r}")
+        if excerpt != OFFICIAL_EXCERPT:
+            raise ValueError(
+                f"{field}.excerpt: must match the plans_not_listed observation"
+            )
+        if url != OFFICIAL_PROGRAM_URL:
+            raise ValueError(f"{field}.url: expected the official Woodland program URL")
+        return
+
+    if source_id != f"{program_id}-page":
+        raise ValueError(
+            f"{field}.source_id: generic policy requires {program_id!r} source binding"
+        )
+    if excerpt != GENERIC_PROTOTYPE_EXCERPT:
+        raise ValueError(
+            f"{field}.excerpt: must match the generic plans_not_listed observation"
+        )
+    if urlsplit(url).path != f"/{program_id}":
+        raise ValueError(
+            f"{field}.url: generic policy requires the exact program-ID path"
+        )
 
 
 def _source(
@@ -227,6 +295,7 @@ def _source(
     *,
     today: date,
     policy: str,
+    program_id: str,
 ) -> AvailabilitySource:
     field = "availability.source"
     if not isinstance(record, dict):
@@ -234,8 +303,6 @@ def _source(
     _exact_keys(record, _SOURCE_KEYS, field)
 
     source_id = _stable_id(record["source_id"], f"{field}.source_id")
-    if policy == WOODLAND_AVAILABILITY_POLICY and source_id != SOURCE_ID:
-        raise ValueError(f"{field}.source_id: expected {SOURCE_ID!r}")
 
     checked_on, checked_date = _iso_date(record["checked_on"], f"{field}.checked_on")
     if checked_date > today:
@@ -252,10 +319,15 @@ def _source(
         )
 
     excerpt = _required_text(record["excerpt"], f"{field}.excerpt")
-    if policy == WOODLAND_AVAILABILITY_POLICY and excerpt != OFFICIAL_EXCERPT:
-        raise ValueError(
-            f"{field}.excerpt: must match the plans_not_listed observation"
-        )
+    url = _safe_https_url(record["url"], f"{field}.url")
+    _validate_policy_source_binding(
+        policy=policy,
+        program_id=program_id,
+        source_id=source_id,
+        url=url,
+        excerpt=excerpt,
+    )
+
     fingerprint = _required_text(record["excerpt_sha256"], f"{field}.excerpt_sha256")
     if not _FINGERPRINT.fullmatch(fingerprint):
         raise ValueError(f"{field}.excerpt_sha256: invalid SHA-256 fingerprint")
@@ -263,10 +335,6 @@ def _source(
         raise ValueError(
             f"{field}.excerpt_sha256: does not match the normalized excerpt"
         )
-
-    url = _safe_https_url(record["url"], f"{field}.url")
-    if policy == WOODLAND_AVAILABILITY_POLICY and url != OFFICIAL_PROGRAM_URL:
-        raise ValueError(f"{field}.url: expected the official Woodland program URL")
 
     return AvailabilitySource(
         source_id=source_id,
@@ -330,7 +398,12 @@ def _availability(
         mode=cast(AvailabilityMode, mode),
         status=cast(AvailabilityStatus, status),
         monitoring_status=cast(MonitoringStatus, monitoring),
-        source=_source(record["source"], today=today, policy=policy),
+        source=_source(
+            record["source"],
+            today=today,
+            policy=policy,
+            program_id=program_id,
+        ),
         boundary=boundary,
     )
 

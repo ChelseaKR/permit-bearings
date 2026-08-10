@@ -194,7 +194,7 @@ def _strict_json(raw: bytes, field: str) -> Any:
         raise ValueError(f"{field}: expected UTF-8 JSON") from error
     except _DuplicateKeyError as error:
         raise ValueError(f"{field}: duplicate JSON object key {error}") from error
-    except (json.JSONDecodeError, ValueError) as error:
+    except (json.JSONDecodeError, RecursionError, ValueError) as error:
         raise ValueError(f"{field}: invalid JSON") from error
 
 
@@ -614,7 +614,10 @@ def load_workflow_registry(
     if not isinstance(payload, dict):
         raise ValueError(f"{path}: expected an object")
     _exact_keys(payload, _TOP_LEVEL_KEYS, "workflow registry")
-    if payload["schema_version"] != SCHEMA_VERSION:
+    if (
+        type(payload["schema_version"]) is not int
+        or payload["schema_version"] != SCHEMA_VERSION
+    ):
         raise ValueError(f"workflow registry.schema_version: expected {SCHEMA_VERSION}")
     values = payload["workflows"]
     if not isinstance(values, list) or not values:

@@ -10,6 +10,7 @@ from scripts.build_demo_bundle import build_bundle
 from permit_pathways.program_availability import (
     GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
     GENERIC_PROTOTYPE_BOUNDARY,
+    GENERIC_PROTOTYPE_EXCERPT,
     WOODLAND_AVAILABILITY_POLICY,
     excerpt_fingerprint,
 )
@@ -76,7 +77,11 @@ def _bundle_payload() -> dict:
     return json.loads(assignment.removesuffix(";\n"))
 
 
-def _add_second_registered_workflow(root: Path) -> str:
+def _add_second_registered_workflow(
+    root: Path,
+    *,
+    browser_default: bool = False,
+) -> str:
     """Add a distinct synthetic registry entry without publishing it."""
 
     second_workflow_id = "second-prototype-workflow"
@@ -164,7 +169,7 @@ def _add_second_registered_workflow(root: Path) -> str:
             "source_id": "second-prototype-program-page",
             "url": "https://example.gov/second-prototype-program",
             "label": "Second prototype program page",
-            "excerpt": "No plans are listed on this prototype page.",
+            "excerpt": GENERIC_PROTOTYPE_EXCERPT,
         }
     )
     source["excerpt_sha256"] = excerpt_fingerprint(source["excerpt"])
@@ -191,6 +196,8 @@ def _add_second_registered_workflow(root: Path) -> str:
             target.read_bytes()
         ).hexdigest()
     registry["workflows"].append(template)
+    if browser_default:
+        registry["browser_default_workflow_id"] = second_workflow_id
     _write_json(registry_path, registry)
     return second_workflow_id
 
@@ -442,6 +449,23 @@ def test_two_distinct_registered_workflows_build_and_reach_the_review_cli(
     assert second_workflow_id not in captured.err
 
 
+def test_bundle_aliases_follow_a_generic_registry_default(tmp_path: Path) -> None:
+    root = _copy_full_root(tmp_path)
+    second_workflow_id = _add_second_registered_workflow(
+        root,
+        browser_default=True,
+    )
+
+    registry = _registry(root)
+    assert registry.select().workflow_id == second_workflow_id
+    bundle = json.loads(build_bundle(root).split("=", 1)[1].removesuffix(";\n"))
+    assert bundle["readiness"]["workflow"]["workflow_id"] == second_workflow_id
+    assert bundle["journeys"][0]["readiness_workflow_id"] == second_workflow_id
+    assert bundle["program_availability"]["availability"]["workflow_id"] == (
+        second_workflow_id
+    )
+
+
 @pytest.mark.parametrize(
     "unsafe_name",
     [
@@ -535,6 +559,29 @@ def test_registry_rejects_duplicate_keys_and_nonfinite_json(
 def test_registry_rejects_an_oversized_record(tmp_path: Path) -> None:
     root = _copy_registry_root(tmp_path)
     (root / "data/workflows/registry.json").write_bytes(b" " * (MAX_REGISTRY_BYTES + 1))
+    with pytest.raises(ValueError, match="could not be loaded"):
+        _registry(root)
+
+
+def test_registry_rejects_boolean_schema_version(tmp_path: Path) -> None:
+    root = _copy_registry_root(tmp_path)
+    registry_path = root / "data/workflows/registry.json"
+    payload = _json(registry_path)
+    payload["schema_version"] = True
+    _write_json(registry_path, payload)
+
+    with pytest.raises(ValueError, match="schema_version"):
+        _registry(root)
+
+
+def test_registry_rejects_recursively_nested_json(tmp_path: Path) -> None:
+    root = _copy_registry_root(tmp_path)
+    registry_path = root / "data/workflows/registry.json"
+    registry_path.write_text(
+        "[" * 10_000 + "0" + "]" * 10_000,
+        encoding="utf-8",
+    )
+
     with pytest.raises(ValueError, match="could not be loaded"):
         _registry(root)
 

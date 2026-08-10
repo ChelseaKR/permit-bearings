@@ -372,9 +372,12 @@ filename in its expected direct directory, and pinned to the SHA-256 of its
 bounded raw bytes. Stable workflow, packet, journey, program, and jurisdiction
 IDs must agree with the referenced records. An explicit availability policy
 keeps the exact Woodland source contract separate from a conservative generic
-prototype contract used only in tests. The loader rejects duplicate JSON keys,
-non-finite or oversized records, symlinks and hard links, portable-name and
-case collisions, and inventories each canonical input and generated-output
+prototype contract used only in tests. That generic contract requires a fixed
+negative excerpt, a source ID derived from the program ID, a canonical HTTPS
+URL whose path is the program ID, and the matching excerpt fingerprint. The
+loader rejects duplicate JSON keys, non-finite, recursive, or oversized
+records, non-integer schema versions, symlinks and hard links, portable-name
+and case collisions, and inventories each canonical input and generated-output
 directory so an unregistered JSON file, duplicate ID/path, shared input/output
 path, traversal, absolute path, wrong-directory path, fingerprint drift, or
 orphan cross-reference fails closed.
@@ -391,12 +394,14 @@ Bundle format 6 intentionally changes the generated contract: it embeds the
 exact raw registry text alongside its parsed form. The browser verifies the
 raw registry SHA-256 against `generated_from`, requires the two forms to agree,
 then validates the registry shape, unique portable paths, every registered
-input pin, the exact Woodland default policy, and artifact IDs before using
+input pin, the selected default's dispatched availability policy, and artifact
+IDs before using
 the singular `readiness`, one-element `journeys`, and
 `program_availability` aliases. Browser code cannot inventory files that were
 not bundled; orphan detection remains a Python build/loader responsibility.
 This repository has one registered prototype entry—the Woodland future-state
-simulation. A test-only second entry proves build and review-queue traversal,
+simulation. A test-only second entry is selected as a generic browser default
+to prove build, browser-policy, and review-queue traversal,
 but registry infrastructure is not multiple active workflows, broader local
 coverage, external validation, applicant readiness, or jurisdiction approval.
 
@@ -575,13 +580,14 @@ the generated jurisdiction-coverage index, the program-availability record,
 rule-verification ledger, and adopted source-state receipt stay in JSON.
 `scripts/build_demo_bundle.py` first resolves every readiness/journey artifact
 through the raw-byte-pinned workflow registry. It deterministically compiles
-the explicit browser-default entry, the generated readiness record, the
+the registry-declared browser-default entry, the generated readiness record, the
 generated journey envelope, and the strict source-state overlay into
 `data/demo-data.js`. Bundle format 6 also carries the exact raw registry text
 and its receipt digest so the browser can prove that the parsed embedded copy
-came from those bytes. Other registered entries would still be validated and
-have their configured generated records checked or written, but would not
-become browser-active automatically. The static surface is split by user job:
+came from those bytes. Other registered entries are validated and have their
+configured generated records checked or written; changing the explicit default
+makes that entry's singular aliases browser-active only after its declared
+availability policy also passes. The static surface is split by user job:
 
 - `index.html`: lightweight orientation and scope; it loads no data bundle;
 - `check.html`: a generated Statewide Coverage Navigator after a recognized

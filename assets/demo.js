@@ -872,7 +872,14 @@ const WOODLAND_AVAILABILITY_POLICY =
   "woodland-preapproved-adu-plans-not-listed-v1";
 const GENERIC_PROTOTYPE_AVAILABILITY_POLICY =
   "prototype-generic-plans-not-listed-v1";
-const BROWSER_DEFAULT_WORKFLOW_ID = "woodland-preapproved-detached-adu";
+const GENERIC_PROTOTYPE_AVAILABILITY_BOUNDARY =
+  "No currently listed plan was identified on the checked official program "
+  + "page. This prototype observation is not evidence that a plan is available "
+  + "or that this workflow applies; applicability must be confirmed with the "
+  + "responsible jurisdiction before use.";
+const GENERIC_PROTOTYPE_AVAILABILITY_EXCERPT =
+  "No plans are listed on this prototype page.";
+const WOODLAND_WORKFLOW_ID = "woodland-preapproved-detached-adu";
 const WORKFLOW_REGISTRY_PATH = "data/workflows/registry.json";
 const PROGRAM_TOP_LEVEL_KEYS = ["availability", "schema_version"];
 const PROGRAM_RECORD_KEYS = [
@@ -963,9 +970,9 @@ function normalizeWorkflowRegistry(payload, generatedFrom = null) {
           GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
           WOODLAND_AVAILABILITY_POLICY,
         ].includes(entry.availability_policy)
-        || (entry.workflow_id === BROWSER_DEFAULT_WORKFLOW_ID
+        || (entry.workflow_id === WOODLAND_WORKFLOW_ID
           && entry.availability_policy !== WOODLAND_AVAILABILITY_POLICY)
-        || (entry.workflow_id !== BROWSER_DEFAULT_WORKFLOW_ID
+        || (entry.workflow_id !== WOODLAND_WORKFLOW_ID
           && entry.availability_policy === WOODLAND_AVAILABILITY_POLICY)
         || ids.has(entry.workflow_id)
         || packetIds.has(entry.packet_id)
@@ -988,8 +995,7 @@ function normalizeWorkflowRegistry(payload, generatedFrom = null) {
         paths.add(artifact.path);
       }
     }
-    if (!ids.has(payload.browser_default_workflow_id)
-        || payload.browser_default_workflow_id !== BROWSER_DEFAULT_WORKFLOW_ID)
+    if (!ids.has(payload.browser_default_workflow_id))
       return null;
     deepFreezeGeneratedData(payload);
     return generatedDataIsDeeplyFrozen(payload) ? payload : null;
@@ -1033,6 +1039,55 @@ function normalizeProgramExcerpt(value) {
     ? value.normalize("NFKC").trim().split(/\s+/u).join(" ") : "";
 }
 
+function validProgramEvidenceUrl(value) {
+  try {
+    if (typeof value !== "string" || value !== value.trim()
+        || !/^[\x21-\x7e]+$/.test(value)) return false;
+    const parsed = new URL(value);
+    const labels = parsed.hostname.split(".");
+    return parsed.protocol === "https:"
+      && parsed.href === value
+      && !parsed.username
+      && !parsed.password
+      && !parsed.port
+      && !parsed.search
+      && !parsed.hash
+      && parsed.host === parsed.hostname
+      && labels.length >= 2
+      && /^[a-z]+$/.test(labels.at(-1) || "")
+      && labels.every(label =>
+        /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(label)
+      )
+      && parsed.pathname.startsWith("/")
+      && !parsed.pathname.startsWith("//")
+      && parsed.pathname !== "/"
+      && !parsed.pathname.includes("\\");
+  } catch {
+    return false;
+  }
+}
+
+function availabilityPolicyMatches(record, source, workflowEntry) {
+  if (workflowEntry.availability_policy === WOODLAND_AVAILABILITY_POLICY) {
+    return record.boundary === PROGRAM_AVAILABILITY_BOUNDARY
+      && source.source_id === "woodland-preapproved-adu-program-page"
+      && source.url === PROGRAM_AVAILABILITY_URL
+      && source.excerpt === PROGRAM_AVAILABILITY_EXCERPT;
+  }
+  if (workflowEntry.availability_policy
+      !== GENERIC_PROTOTYPE_AVAILABILITY_POLICY) return false;
+  let sourcePath;
+  try {
+    sourcePath = new URL(source.url).pathname;
+  } catch {
+    return false;
+  }
+  return record.boundary === GENERIC_PROTOTYPE_AVAILABILITY_BOUNDARY
+    && source.source_id === `${record.program_id}-page`
+    && sourcePath === `/${record.program_id}`
+    && source.excerpt === GENERIC_PROTOTYPE_AVAILABILITY_EXCERPT;
+}
+
 async function normalizeProgramAvailability(payload, workflowEntry) {
   try {
     if (!workflowEntry) return null;
@@ -1050,18 +1105,15 @@ async function normalizeProgramAvailability(payload, workflowEntry) {
         || record.mode !== "future_state_simulation"
         || record.status !== "plans_not_listed"
         || record.monitoring_status !== "manual_date_bound"
-        || record.boundary !== PROGRAM_AVAILABILITY_BOUNDARY
         || !hasExactKeys(
           record.source,
           PROGRAM_SOURCE_KEYS,
           PROGRAM_SOURCE_KEYS,
         )) return null;
     const source = record.source;
-    if (source.source_id !== "woodland-preapproved-adu-program-page"
-        || source.url !== PROGRAM_AVAILABILITY_URL
-        || !validHttpsUrl(source.url)
+    if (!availabilityPolicyMatches(record, source, workflowEntry)
+        || !validProgramEvidenceUrl(source.url)
         || !nonBlank(source.label)
-        || source.excerpt !== PROGRAM_AVAILABILITY_EXCERPT
         || !dateIsNotFuture(source.checked_on)
         || !dateIsNotPast(source.recheck_due_on)
         || source.recheck_due_on <= source.checked_on
@@ -1665,13 +1717,11 @@ function journeyEntryHoldMarkup(state) {
   if (state.status === "program_status_review_required") {
     return `<section class="journey-entry-hold ca-shout" aria-labelledby="entryHoldHeading">
       <p class="journey-stage-label">Stage 3 of 4 · Packet</p>
-      <h2 id="entryHoldHeading">The City program status needs a new check</h2>
+      <h2 id="entryHoldHeading">The program status needs a new check</h2>
       <p>The future-state packet simulation stays locked because its strict
         program-availability record is missing, malformed, or outside its
         recheck window. This is not evidence that a current plan is available.</p>
-      <p><a href="${PROGRAM_AVAILABILITY_URL}">Check the official City of
-        Woodland program page</a> · <a href="evidence.html">Inspect sources
-        and limits</a></p>
+      <p><a href="evidence.html">Inspect sources and limits</a></p>
     </section>`;
   }
   const invalid = state.status === "invalid";
@@ -2632,24 +2682,23 @@ function programAvailabilityStatusMarkup(availability = PROGRAM_AVAILABILITY) {
   if (!programAvailabilityIsCurrent(availability)) {
     return `<div class="program-availability program-availability-hold ca-shout" lang="en">
       <p class="utility-label">Official program status</p>
-      <p><strong>Program status review required.</strong> The strict City
+      <p><strong>Program status review required.</strong> The strict
         program record is missing, malformed, or outside its recheck window.
-        The future-state packet simulation remains locked.</p>
-      <p><a href="${PROGRAM_AVAILABILITY_URL}">Check the official City of
-        Woodland program page</a>.</p>
+        The future-state packet simulation remains locked. Inspect the source
+        record before using this example.</p>
     </div>`;
   }
   const source = availability.source;
   return `<div class="program-availability ca-shout" lang="en">
     <p class="utility-label">Official program status</p>
-    <p><strong>Future-state simulation only.</strong> The City page says
+    <p><strong>Future-state simulation only.</strong> The recorded page says
       <q>${escVerbatim(source.excerpt)}</q></p>
     <p>Checked ${esc(formatSourceDate(source.checked_on))}; recheck due
       ${esc(formatSourceDate(source.recheck_due_on))}.
-      <a href="${esc(source.url)}">Open the official City of Woodland program
-      page</a>.</p>
+      <a href="${esc(source.url)}">Open ${escVerbatim(source.label)}</a>.</p>
     <p>This record is not evidence that a current preapproved plan is
-      available. Confirm program applicability with the City before use.</p>
+      available. Confirm program applicability with the responsible
+      jurisdiction before use.</p>
   </div>`;
 }
 

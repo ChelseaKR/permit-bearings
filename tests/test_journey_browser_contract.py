@@ -106,6 +106,9 @@ function expectRegistryRejection(label, mutate, generatedFrom = bundle._meta.gen
 expectRegistryRejection("unknown browser default", candidate => {
   candidate.browser_default_workflow_id = "missing-workflow";
 });
+expectRegistryRejection("boolean registry schema", candidate => {
+  candidate.schema_version = true;
+});
 expectRegistryRejection("duplicate workflow", candidate => {
   candidate.workflows.push(structuredClone(candidate.workflows[0]));
 });
@@ -164,6 +167,7 @@ secondWorkflow.workflow_id = "second-prototype-workflow";
 secondWorkflow.packet_id = "second-prototype-packet";
 secondWorkflow.journey_id = "second-prototype-journey";
 secondWorkflow.program_id = "second-prototype-program";
+secondWorkflow.jurisdiction = "davis";
 secondWorkflow.availability_policy = "prototype-generic-plans-not-listed-v1";
 const secondGeneratedFrom = {...bundle._meta.generated_from};
 const secondPaths = {
@@ -190,6 +194,74 @@ check(
   normalizeWorkflowRegistry(twoWorkflowRegistry, secondGeneratedFrom) !== null,
   "a distinct non-default prototype workflow was rejected",
 );
+const genericDefaultRegistry = structuredClone(twoWorkflowRegistry);
+genericDefaultRegistry.browser_default_workflow_id = secondWorkflow.workflow_id;
+const normalizedGenericRegistry = normalizeWorkflowRegistry(
+  genericDefaultRegistry,
+  secondGeneratedFrom,
+);
+check(
+  normalizedGenericRegistry !== null,
+  "a registered generic workflow could not become the browser default",
+);
+const genericWorkflowEntry = browserWorkflowEntry(normalizedGenericRegistry);
+check(
+  genericWorkflowEntry?.workflow_id === secondWorkflow.workflow_id,
+  "the browser did not select the registry-declared generic default",
+);
+
+const genericAvailabilityPayload = structuredClone(canonicalProgramAvailability);
+genericAvailabilityPayload.availability.program_id = secondWorkflow.program_id;
+genericAvailabilityPayload.availability.workflow_id = secondWorkflow.workflow_id;
+genericAvailabilityPayload.availability.jurisdiction = secondWorkflow.jurisdiction;
+genericAvailabilityPayload.availability.boundary =
+  GENERIC_PROTOTYPE_AVAILABILITY_BOUNDARY;
+genericAvailabilityPayload.availability.source = {
+  checked_on: "2026-08-09",
+  excerpt: GENERIC_PROTOTYPE_AVAILABILITY_EXCERPT,
+  excerpt_sha256: await sha256TextFingerprint(
+    GENERIC_PROTOTYPE_AVAILABILITY_EXCERPT,
+  ),
+  label: "City of Davis prototype program page",
+  recheck_due_on: "2026-09-08",
+  source_id: `${secondWorkflow.program_id}-page`,
+  url: `https://www.cityofdavis.org/${secondWorkflow.program_id}`,
+};
+const genericAvailability = await normalizeProgramAvailability(
+  genericAvailabilityPayload,
+  genericWorkflowEntry,
+);
+check(
+  genericAvailability !== null
+    && programAvailabilityIsCurrent(genericAvailability, null),
+  "the selected generic workflow's exact availability record was rejected",
+);
+
+for (const [label, mutate] of [
+  ["generic favorable excerpt", candidate => {
+    candidate.availability.source.excerpt = "Plans are available now.";
+  }],
+  ["generic source ID drift", candidate => {
+    candidate.availability.source.source_id = "unrelated-program-page";
+  }],
+  ["generic URL path drift", candidate => {
+    candidate.availability.source.url =
+      "https://www.cityofdavis.org/unrelated-program";
+  }],
+  ["generic URL query", candidate => {
+    candidate.availability.source.url += "?view=current";
+  }],
+]) {
+  const candidate = structuredClone(genericAvailabilityPayload);
+  mutate(candidate);
+  candidate.availability.source.excerpt_sha256 = await sha256TextFingerprint(
+    normalizeProgramExcerpt(candidate.availability.source.excerpt),
+  );
+  check(
+    await normalizeProgramAvailability(candidate, genericWorkflowEntry) === null,
+    `${label}: invalid generic availability evidence was accepted`,
+  );
+}
 
 for (const unsafeName of [
   "question?.json", "fragment#.json", "percent%2e.json", "colon:name.json",
