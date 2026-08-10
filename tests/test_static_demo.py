@@ -289,6 +289,85 @@ def test_static_pages_have_consistent_navigation_and_resolvable_links():
             assert (ROOT / local_target).is_file(), (path.name, target)
 
 
+def _webp_dimensions(asset):
+    data = asset.read_bytes()
+    assert data[:4] == b"RIFF"
+    assert data[8:12] == b"WEBP"
+    assert int.from_bytes(data[4:8], "little") == len(data) - 8
+
+    dimensions = None
+    offset = 12
+    while offset < len(data):
+        assert offset + 8 <= len(data)
+        chunk_type = data[offset : offset + 4]
+        chunk_size = int.from_bytes(data[offset + 4 : offset + 8], "little")
+        payload_start = offset + 8
+        payload_end = payload_start + chunk_size
+        assert payload_end <= len(data)
+        payload = data[payload_start:payload_end]
+        if chunk_type == b"VP8 ":
+            assert len(payload) >= 10
+            assert payload[3:6] == b"\x9d\x01\x2a"
+            dimensions = (
+                int.from_bytes(payload[6:8], "little") & 0x3FFF,
+                int.from_bytes(payload[8:10], "little") & 0x3FFF,
+            )
+        elif chunk_type == b"VP8L":
+            assert len(payload) >= 5 and payload[0] == 0x2F
+            bits = int.from_bytes(payload[1:5], "little")
+            dimensions = ((bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1)
+        elif chunk_type == b"VP8X":
+            assert len(payload) >= 10
+            dimensions = (
+                int.from_bytes(payload[4:7], "little") + 1,
+                int.from_bytes(payload[7:10], "little") + 1,
+            )
+        offset = payload_end + (chunk_size % 2)
+
+    assert offset == len(data)
+    assert dimensions is not None
+    return dimensions
+
+
+def test_site_illustrations_are_local_bounded_and_decorative():
+    expected_assets = {
+        "assets/illustrations/permit-pathway-hero-768.webp": (768, 512),
+        "assets/illustrations/permit-pathway-hero.webp": (1152, 768),
+        "assets/illustrations/project-check-path.webp": (1152, 768),
+    }
+    for asset_path, dimensions in expected_assets.items():
+        asset = ROOT / asset_path
+        assert asset.is_file()
+        assert asset.stat().st_size < 96 * 1024
+        assert _webp_dimensions(asset) == dimensions
+
+    expected_pages = {
+        "index.html": (
+            "assets/illustrations/permit-pathway-hero.webp",
+            "home-hero-visual",
+        ),
+        "check.html": (
+            "assets/illustrations/project-check-path.webp",
+            "project-hero-visual",
+        ),
+    }
+    for page_name, (asset_path, figure_class) in expected_pages.items():
+        page = (ROOT / page_name).read_text(encoding="utf-8")
+        assert f'<figure class="{figure_class}" aria-hidden="true">' in page
+        assert f'src="{asset_path}" alt=""' in page
+        assert 'width="1152" height="768"' in page
+
+    landing = (ROOT / "index.html").read_text(encoding="utf-8")
+    assert "permit-pathway-hero-768.webp 768w" in landing
+    assert "permit-pathway-hero.webp 1152w" in landing
+    assert 'sizes="(max-width: 58rem) calc(100vw - 2rem), 42vw"' in landing
+
+    styles = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+    assert ".home-hero-visual" in styles
+    assert ".project-hero-visual" in styles
+    assert 'body[data-page="project"] .tool-hero-grid' in styles
+
+
 def test_landing_scope_matches_the_current_bounded_davis_record():
     landing = (ROOT / "index.html").read_text(encoding="utf-8")
 

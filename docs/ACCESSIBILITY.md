@@ -72,6 +72,19 @@ deadlines or thresholds use a semantic heading and list rather than
 visual-only layout. All interactive elements remain native controls, so
 keyboard operability and focus order come from the platform.
 
+**Illustrations.** The landing and project-check introduction images are
+project-specific machine-generated, locally served WebP assets. They restate the nearby pathfinding
+theme but add no instructions, status, evidence, or decision meaning, so each
+uses `alt=""` inside an `aria-hidden` figure. Intrinsic width and height avoid
+layout shift. The project-check image is hidden at the single-column
+breakpoint to preserve the form's visual priority; removing either image does
+not remove content or an interaction. Static tests verify the local paths,
+WebP container integrity, actual encoded dimensions, bounded byte size, empty
+alternatives, and intrinsic-size declarations. Browser coverage verifies image
+decoding plus boundary-first ordering at the 768px and 928px breakpoints.
+This is code-level evidence, not a completed screen-magnification or cognitive
+accessibility review.
+
 The separate ADU date tool is an optional closed native disclosure. A link in
 the configured current ADU route opens that same disclosure before moving to
 its fragment target; the date field, applicability checkboxes, action, status,

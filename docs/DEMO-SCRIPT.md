@@ -8,6 +8,9 @@ repository with `python3 -m http.server 8765`. After changing canonical JSON,
 run `python3 scripts/build_demo_bundle.py` and the static-demo regression test.
 Start at `/` for the product boundary, then use `/review.html`,
 `/check.html`, `/prepare.html`, and `/evidence.html` for the four live jobs.
+The project-specific landing and project-check illustrations are decorative visual
+orientation only; do not describe them as workflow, source, or approval
+evidence.
 
 ## Arc: “Every tool will show you an answer. I’ll show you the evidence and when it needs review.”
 

@@ -38,6 +38,12 @@ California-token bearing rail expose the sequence without hiding later
 questions or creating client-side navigation state. The language toggle stays
 beside the form heading; the shareable sample keeps its made-up-data boundary
 and adds a direct result jump only while the canonical sample is active.
+One project-specific machine-generated local WebP illustration appears beside the project-check
+introduction on wider screens and is omitted at the single-column breakpoint,
+so it adds orientation without competing with the form. The landing uses a
+second project-specific illustration in the same published-token palette. Both are
+decorative, contain no interface copy or approval mark, and make no product or
+legal claim.
 
 The browser result surface is implemented for prototype data as a temporary
 result packet. After a count summary and group links, it renders the candidate

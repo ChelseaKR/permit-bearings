@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/california-design-system.css?v=20260809b">
-<link rel="stylesheet" href="assets/site.css?v=20260809b">
+<link rel="stylesheet" href="assets/site.css?v=20260809c">
 </head>
 <body data-page="project">
 <div id="skip-to-content">
@@ -46,17 +46,21 @@
 <main id="mainContent">
   <header class="tool-hero">
     <div class="page-shell tool-hero-grid">
-      <div>
+      <div class="project-hero-copy">
         <p class="eyebrow">Applicant project guide</p>
         <h1>Check a housing project</h1>
         <p class="lede" id="t-tagline">Find a candidate route. See the sources
           behind it. Take open questions to staff.</p>
+        <ca-shout class="boundary-note" color="yellow" role="note">
+          <p><strong>This checks a limited encoded rule set.</strong> It does not
+            retrieve parcel data, verify your answers, reproduce a jurisdiction’s
+            complete checklist, or decide whether the project will be approved.</p>
+        </ca-shout>
       </div>
-      <ca-shout class="boundary-note" color="yellow" role="note">
-        <p><strong>This checks a limited encoded rule set.</strong> It does not
-          retrieve parcel data, verify your answers, reproduce a jurisdiction’s
-          complete checklist, or decide whether the project will be approved.</p>
-      </ca-shout>
+      <figure class="project-hero-visual" aria-hidden="true">
+        <img src="assets/illustrations/project-check-path.webp" alt=""
+          width="1152" height="768" loading="lazy" decoding="async">
+      </figure>
     </div>
   </header>
 
@@ -192,7 +196,7 @@
   </div>
 </footer>
 
-<script src="data/demo-data.js?v=20260809b" defer></script>
-<script src="assets/demo.js?v=20260809b" defer></script>
+<script src="data/demo-data.js?v=20260809c" defer></script>
+<script src="assets/demo.js?v=20260809c" defer></script>
 </body>
 </html>

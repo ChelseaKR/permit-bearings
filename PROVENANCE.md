@@ -68,7 +68,12 @@
   no-activity finding, and an absent local layer is not a claim that local
   requirements do not exist.
 - **AI assistance:** rule and readiness encoding, explanation, remedy and
-  translation drafts, code, and prose have been machine-assisted. No current
+  translation drafts, code, prose, and the two decorative editorial
+  illustrations have been machine-assisted. The illustrations were generated
+  for this repository with OpenAI's image-generation tool from
+  project-specific prompts, then converted locally to compressed WebP assets;
+  they are not copied from California Design System or agency artwork and do not
+  represent an official mark, workflow, source, or decision. No current
   rule interpretation, checklist mapping, action draft, plain-language
   explanation, or Spanish translation is represented as
   jurisdiction-approved, counsel-approved, or human-reviewed unless its own

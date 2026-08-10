@@ -413,10 +413,39 @@ button.link-button:hover {
 }
 
 .home-hero-grid {
-  align-items: end;
+  align-items: start;
   display: grid;
-  gap: var(--s-6);
-  grid-template-columns: minmax(0, 1.65fr) minmax(17rem, 0.75fr);
+  gap: var(--s-4) var(--s-6);
+  grid-template-areas:
+    "copy visual"
+    "copy boundary";
+  grid-template-columns: minmax(0, 1.05fr) minmax(21rem, 0.95fr);
+}
+
+.home-hero-copy {
+  align-self: center;
+  grid-area: copy;
+}
+
+.home-hero-visual,
+.project-hero-visual {
+  background: var(--gray-50);
+  border: 1px solid var(--line);
+  border-bottom: 0.35rem solid var(--primary-900);
+  margin: 0;
+  overflow: hidden;
+}
+
+.home-hero-visual {
+  grid-area: visual;
+}
+
+.home-hero-visual img,
+.project-hero-visual img {
+  display: block;
+  height: auto;
+  max-width: none;
+  width: 100%;
 }
 
 .home-hero h1 {
@@ -452,6 +481,7 @@ button.link-button:hover {
   border-bottom: 1px solid var(--line);
   border-left: 0.25rem solid var(--blue);
   border-top: 1px solid var(--line);
+  grid-area: boundary;
   padding: var(--s-3);
 }
 
@@ -623,6 +653,20 @@ ca-mesh.service-link-list {
 
 .tool-hero-grid {
   max-width: var(--reading);
+}
+
+body[data-page="project"] .tool-hero-grid {
+  align-items: center;
+  display: grid;
+  gap: var(--s-5);
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.62fr);
+  max-width: var(--shell);
+}
+
+.project-hero-visual img {
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  object-position: center;
 }
 
 .tool-hero h1 {
@@ -2987,7 +3031,30 @@ tr:last-child td {
   .home-hero-grid {
     align-items: start;
     gap: var(--s-4);
+    grid-template-areas:
+      "copy"
+      "boundary"
+      "visual";
     grid-template-columns: 1fr;
+  }
+
+  .home-hero-visual {
+    max-width: var(--reading);
+  }
+
+  .home-hero-visual img {
+    aspect-ratio: 16 / 9;
+    height: min(17rem, 56vw);
+    object-fit: cover;
+    object-position: center 72%;
+  }
+
+  body[data-page="project"] .tool-hero-grid {
+    display: block;
+  }
+
+  .project-hero-visual {
+    display: none;
   }
 
   .home-boundary {
@@ -3141,6 +3208,13 @@ tr:last-child td {
 
   .home-hero h1 {
     font-size: var(--font-size-10);
+  }
+
+  .home-hero-visual img {
+    aspect-ratio: 16 / 9;
+    height: min(17rem, 56vw);
+    object-fit: cover;
+    object-position: center 72%;
   }
 
   .home-actions {
