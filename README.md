@@ -146,14 +146,15 @@ still needs a person.
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 591 public Python tests, 85.83% branch-aware coverage, 29/29 Golden cases, 41 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, and the deterministic evidence-export round trip. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes 592 public Python tests, 85.83% branch-aware coverage, 29/29 Golden cases, 45 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, and the deterministic evidence-export round trip. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
 
 1. The applicant selects a jurisdiction and supplies structured project facts.
-   When the selection matches the registry, the browser also shows a generated
-   statewide coverage profile for that jurisdiction. It separates the bounded
+   When the selection matches the registry, the browser also offers a closed
+   native disclosure for that jurisdiction's generated statewide coverage
+   profile. It separates the bounded
    statewide candidate-rule inventory from any limited local record, shows the
    dated public HCD history linked in the committed dataset, and lists a
    local-onboarding checklist for a maintainer considering a local layer.
@@ -165,14 +166,16 @@ still needs a person.
    finding.
 2. Deterministic criteria match those facts to the bounded rule set. No live
    model and no free-text answer determine eligibility.
-3. The browser creates a temporary "answers used" cover sheet, summarizes the
-   matching records by group, and provides jump links to each nonempty group.
-   The cover sheet exists only in the current page and is not a stored or
-   exportable applicant record.
-4. When present, one explicitly configured candidate route for the selected
-   project type starts open. Supporting standards and local information records
-   use compact disclosures. Their citations and source-status labels remain
-   visible when the disclosures are closed.
+3. The browser puts the candidate route before supporting records, then places
+   the temporary answers-used receipt and statewide staff handoff in closed
+   native disclosures. It also summarizes matching records by group and
+   provides jump links. The answers receipt exists only in the current page;
+   it is not a stored or exportable applicant record.
+4. Result cards keep their consequence, citation, and source-status label
+   visible while every longer explanation, next-step, and evidence body starts
+   closed. The configured candidate route receives the strongest visual
+   treatment; this is hierarchy, not a ranking, recommendation, final route,
+   or eligibility finding.
 5. Every match includes source status and a citation. When the explanation
    record passes the prototype's schema and fingerprint checks and the source
    evidence is inside its review window, the result can also show a candidate
@@ -573,12 +576,14 @@ The full static showcase has five task-focused pages: an applicant-first
 landing page; an English/Spanish applicant guide with review clocks; the
 gated generated synthetic packet-presence sample; a bounded ordinance screen;
 and an evidence-and-updates page. On a recognized jurisdiction selection, the
-applicant guide first renders the Statewide Coverage Navigator: a static
-profile of the bounded statewide inventory, limited-local-layer status, dated
-public HCD history, and local-onboarding requirements. It then renders a
-temporary answers-used cover sheet, a dynamic grouped summary with jump links,
-an always-visible three-line decision boundary, one candidate route open by
-default when the configured route matches, and compact supporting records.
+applicant guide offers the Statewide Coverage Navigator in a closed native
+disclosure: a static profile of the bounded statewide inventory,
+limited-local-layer status, dated public HCD history, and local-onboarding
+requirements. A submitted result renders a dynamic grouped summary with jump
+links, an always-visible decision boundary, and the visually primary candidate
+route before supporting records. Every longer rule body starts closed; the
+temporary answers-used receipt and statewide handoff follow in closed native
+disclosures.
 The boundary distinguishes candidate, unresolved-fact, no-route-in-the-bounded
 corpus, and source-review-hold states; every candidate card also retains the
 exact route-record name. Citations and source-status badges stay visible

@@ -113,6 +113,24 @@ async function openCanonicalJourney(page) {
   await expect(page.locator("#journeyGateHeading")).toBeVisible();
 }
 
+async function expectClosedDisclosure(details, body) {
+  await expect(details).toBeVisible();
+  await expect.poll(() => details.evaluate(element => ({
+    open: element.open,
+    tagName: element.tagName,
+  }))).toEqual({open: false, tagName: "DETAILS"});
+  await expect(body).toBeHidden();
+}
+
+async function expandDisclosureWithKeyboard(details, key = "Enter") {
+  const summary = details.locator(":scope > summary");
+  await summary.focus();
+  await expect(summary).toBeFocused();
+  await summary.press(key);
+  await expect.poll(() => details.evaluate(element => element.open)).toBe(true);
+  return summary;
+}
+
 for (const [path, currentMobileLabel] of Object.entries(pages)) {
   test(`${path} has no automated WCAG violations`, async ({ page }) => {
     await page.goto(path);
@@ -461,6 +479,95 @@ test("populated applicant result reflows without automated WCAG violations", asy
   await expectNoAutomatedWcagViolations(page);
 });
 
+for (const viewport of [
+  { label: "320px", width: 320, height: 720 },
+  { label: "390px", width: 390, height: 844 },
+]) {
+  test(`support disclosures are keyboard-expandable and reflow at ${viewport.label}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({width: viewport.width, height: viewport.height});
+    await page.goto("/check.html");
+
+    const clock = page.locator("#clocks");
+    await expectClosedDisclosure(clock, clock.locator(".optional-tool-body"));
+    await page.locator("#jurisInput").fill("Alameda (Alameda Co.)");
+    const profile = page.locator("#jurisdictionProfile");
+    await expectClosedDisclosure(
+      profile,
+      profile.locator(".jurisdiction-profile-body"),
+    );
+    await expectNoDocumentOverflow(page);
+    await expectNoAutomatedWcagViolations(page);
+
+    await expandDisclosureWithKeyboard(clock, "Enter");
+    await expect(clock.locator(".optional-tool-body")).toBeVisible();
+    await expandDisclosureWithKeyboard(profile, "Space");
+    await expect(profile.locator(".jurisdiction-profile-body")).toBeVisible();
+    await expectNoDocumentOverflow(page);
+    await expectNoAutomatedWcagViolations(page);
+  });
+}
+
+test("candidate route precedes supporting answers and statewide receipt in reading order", async ({
+  page,
+}) => {
+  await openCanonicalJourney(page);
+
+  expect(await page.evaluate(() => {
+    const route = document.querySelector(".result-route");
+    const facts = document.querySelector(".result-cover-sheet");
+    const receipt = document.querySelector("#statewideOrientation");
+    if (!route || !facts || !receipt) return null;
+    return {
+      routeBeforeFacts: Boolean(
+        route.compareDocumentPosition(facts) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ),
+      routeBeforeReceipt: Boolean(
+        route.compareDocumentPosition(receipt) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ),
+      factsBeforeReceipt: Boolean(
+        facts.compareDocumentPosition(receipt) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ),
+    };
+  })).toEqual({
+    routeBeforeFacts: true,
+    routeBeforeReceipt: true,
+    factsBeforeReceipt: true,
+  });
+
+  const ruleDetails = page.locator("#results details.rule-details");
+  await expect(ruleDetails).not.toHaveCount(0);
+  expect(await ruleDetails.evaluateAll(details =>
+    details.every(disclosure => !disclosure.open)
+  )).toBe(true);
+  const route = page.locator(".result-route").first();
+  await expect(route.locator(".result-title-visible")).toBeVisible();
+  await expect(route.locator(".result-consequence")).toBeVisible();
+  await expect(route.locator(".source-basis")).toBeVisible();
+  await expect(route.locator("details.rule-details > summary")).toBeVisible();
+
+  const clock = page.locator("#clocks");
+  await expect.poll(() => clock.evaluate(element => element.open)).toBe(false);
+  await route.locator("details.rule-details > summary").click();
+  await page.locator('#results a[href="#clocks"]').first().click();
+  await expect.poll(() => clock.evaluate(element => element.open)).toBe(true);
+});
+
+test("sample supporting answers stay collapsed until Edit restores intake focus", async ({
+  page,
+}) => {
+  await openCanonicalJourney(page);
+  const facts = page.locator("details.result-cover-sheet");
+  await expectClosedDisclosure(facts, facts.locator(".result-support-body"));
+
+  await expandDisclosureWithKeyboard(facts, "Enter");
+  await expect(facts.locator(".result-support-body")).toBeVisible();
+  await facts.locator(".edit-answers").click();
+  await expect(page.locator("#intake")).toBeVisible();
+  await expect(page.locator("#screenHeading")).toBeFocused();
+});
+
 test("decision boundary distinguishes candidate, unknown, and no-route results", async ({
   page,
 }) => {
@@ -600,6 +707,7 @@ test("statewide orientation handoff works across city, county, and local-layer p
     await expectBrowserStorageEmpty(page);
   }
 
+  await page.locator("#statewideOrientation > summary").click();
   await page.locator(".print-statewide-orientation").click();
   await expect.poll(
     () => page.evaluate(() => window.__permitBearingsPrintCalls),
@@ -666,7 +774,8 @@ test("jurisdiction coverage profile separates statewide, local, and HCD evidence
   await page.locator("#jurisInput").fill("Albany (Alameda Co.)");
   await expect(zeroProfile).toContainText("This is not evidence of compliance");
   await page.locator("#jurisInput").fill("Alameda (Alameda Co.)");
-  await zeroProfile.locator("summary").click();
+  await zeroProfile.locator(":scope > summary").click();
+  await zeroProfile.locator(".jurisdiction-profile-body details > summary").click();
   await expect(zeroProfile.locator(".jurisdiction-profile-letter-list")).toBeVisible();
   const hcdLink = zeroProfile.locator(
     ".jurisdiction-profile-letter-list a",
@@ -674,7 +783,7 @@ test("jurisdiction coverage profile separates statewide, local, and HCD evidence
   await expect(hcdLink).toHaveAccessibleName(
     /HCD record for Alameda \(Alameda Co\.\); Technical Assistance Letter; 2021-11-29; Housing Element Law; HAU21-014/,
   );
-  const summaryHeight = await zeroProfile.locator("summary").evaluate(
+  const summaryHeight = await zeroProfile.locator(":scope > summary").evaluate(
     summary => summary.getBoundingClientRect().height,
   );
   expect(summaryHeight).toBeGreaterThanOrEqual(44);

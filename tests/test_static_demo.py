@@ -177,11 +177,76 @@ def test_check_page_has_a_hidden_until_recognized_coverage_profile_region():
     check = (ROOT / "check.html").read_text(encoding="utf-8")
     application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
 
+    assert '<details class="jurisdiction-profile ca-box"' in check
     assert 'id="jurisdictionProfile"' in check
     assert 'aria-labelledby="jurisdictionProfileHeading"' in check
+    profile_start = check.index('<details class="jurisdiction-profile ca-box"')
+    profile_tag = check[profile_start : check.index(">", profile_start) + 1]
+    assert " hidden" in profile_tag
+    assert " open" not in profile_tag
     assert "renderJurisdictionProfile" in application
+    assert (
+        'output.innerHTML = `<summary id="jurisdictionProfileHeading">' in application
+    )
+    assert "output.open = false" in application
     assert "No linked records in this dataset" in application
     assert "This is not evidence of compliance" in application
+
+
+def test_check_page_uses_collapsed_native_support_disclosures_and_route_first_order():
+    check = (ROOT / "check.html").read_text(encoding="utf-8")
+    application = (ROOT / "assets" / "demo.js").read_text(encoding="utf-8")
+
+    clock_start = check.index('<details class="optional-tool" id="clocks"')
+    clock_tag = check[clock_start : check.index(">", clock_start) + 1]
+    clock_end = check.index("</details>", clock_start)
+    clock_markup = check[clock_start:clock_end]
+    assert " open" not in clock_tag
+    assert "<summary>" in clock_markup
+    assert 'id="recvDate"' in clock_markup
+    assert 'id="clockBtn"' in clock_markup
+
+    assert '<details class="result-cover-sheet result-support ca-box"' in application
+    assert (
+        '<summary class="result-support-summary" id="projectFactsHeading">'
+        in application
+    )
+    assert '<details class="statewide-orientation result-support ca-box"' in application
+    sample_result_start = check.index('id="sampleResult"')
+    sample_result_tag = check[
+        check.rfind("<a", 0, sample_result_start) : check.index(
+            ">", sample_result_start
+        )
+        + 1
+    ]
+    assert " hidden" in sample_result_tag
+    assert (
+        '<details class="result-cover-sheet result-support ca-box" open'
+        not in application
+    )
+    assert (
+        '<details class="statewide-orientation result-support ca-box" open'
+        not in application
+    )
+    facts_summary_start = application.index(
+        '<summary class="result-support-summary" id="projectFactsHeading">'
+    )
+    facts_summary_end = application.index("</summary>", facts_summary_start)
+    facts_summary = application[facts_summary_start:facts_summary_end]
+    assert "result-support-meta" not in facts_summary
+    assert "${esc(s.editAnswers)}" not in facts_summary
+
+    render_results = application[
+        application.index("function renderResults(list)") : application.index(
+            "function questionLabel", application.index("function renderResults(list)")
+        )
+    ]
+    assert render_results.index("${sections}") < render_results.rindex(
+        "${renderProjectFacts()}"
+    )
+    assert render_results.rindex("${renderProjectFacts()}") < render_results.rindex(
+        "${statewideOrientationMarkup(list)}"
+    )
 
 
 def test_static_pages_have_consistent_navigation_and_resolvable_links():
@@ -1271,10 +1336,10 @@ testCards.forEach(card => {{
     "source status is hidden inside the disclosure"
   );
 }});
-testAssert(testOpenCount === 1, "exactly one route should start open");
+testAssert(testOpenCount === 0, "all rule details should start closed");
 testAssert(
-  OPEN_RULE_IDS.has("adu-ministerial-review"),
-  "the configured ADU route did not start open"
+  OPEN_RULE_IDS.size === 0,
+  "submitting a project should reset rule details to closed"
 );
 const testAduRouteCard = testCards.find(card =>
   card.includes('data-rule-id="adu-ministerial-review"')

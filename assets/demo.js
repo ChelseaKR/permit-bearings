@@ -23,10 +23,14 @@ const STRINGS = {
     tagline: "Find a candidate route. See the sources behind it. Take open questions to staff.",
     screenHeading: "About your project",
     translationScope: "The language choice applies to the applicant form and pathway results. The deadline tool and source records remain in English.",
+    intakeStepPlace: "Step 1 of 3 · Place",
+    intakeStepProject: "Step 2 of 3 · Project",
+    intakeStepDetails: "Step 3 of 3 · Details",
     sampleLink: "Open a hypothetical detached ADU example",
     sampleSummary: "Made-up project facts run through the same screening logic as any other answers.",
     sampleLabel: "Example project.",
     sampleNotice: "These made-up Woodland ADU facts were screened with the same rules as your answers. They do not describe a real property.",
+    sampleResult: "View this sample result",
     sampleClear: "Clear the example and check another project",
     sampleEditedLabel: "Example changed.",
     sampleEditedNotice: "These answers no longer match the made-up Woodland example. The old results were cleared. Choose Check candidate pathways to calculate results from your answers.",
@@ -66,6 +70,7 @@ const STRINGS = {
     letterCount: count => `${count} letter${count === 1 ? "" : "s"} on record.`,
     moreLetters: count => `and ${count} more`,
     profileKicker: "Statewide coverage profile",
+    profileSummary: jurisdiction => `Coverage and source records for ${jurisdiction}`,
     profileTitle: "What is recorded for this jurisdiction",
     profileIntro: jurisdiction => `This profile shows the bounded source records committed to this prototype build for ${jurisdiction}. It is decision support, not a finding about a property, current local requirements, or permit approval.`,
     profileAvailable: "Review the coverage profile below.",
@@ -236,10 +241,14 @@ const STRINGS = {
     tagline: "Encuentre una posible ruta. Vea las fuentes que la respaldan. Consulte las preguntas pendientes con el personal de la agencia.",
     screenHeading: "Acerca de su proyecto",
     translationScope: "El idioma elegido se aplica al formulario y a los resultados para solicitantes. La herramienta de plazos y los registros de fuentes permanecen en inglés.",
+    intakeStepPlace: "Paso 1 de 3 · Lugar",
+    intakeStepProject: "Paso 2 de 3 · Proyecto",
+    intakeStepDetails: "Paso 3 de 3 · Detalles",
     sampleLink: "Abrir un ejemplo hipotético de una ADU separada",
     sampleSummary: "Los datos inventados del proyecto pasan por la misma lógica de evaluación que cualquier otra respuesta.",
     sampleLabel: "Proyecto de ejemplo.",
     sampleNotice: "Estos datos inventados para una ADU en Woodland se evaluaron con las mismas reglas que sus respuestas. No describen una propiedad real.",
+    sampleResult: "Ver el resultado de este ejemplo",
     sampleClear: "Borrar el ejemplo y revisar otro proyecto",
     sampleEditedLabel: "El ejemplo cambió.",
     sampleEditedNotice: "Estas respuestas ya no coinciden con el ejemplo inventado de Woodland. Se borraron los resultados anteriores. Elija Revisar posibles vías para calcular resultados con sus respuestas.",
@@ -279,6 +288,7 @@ const STRINGS = {
     letterCount: count => `${count} carta${count === 1 ? "" : "s"} registrada${count === 1 ? "" : "s"}.`,
     moreLetters: count => `y ${count} más`,
     profileKicker: "Perfil de cobertura estatal",
+    profileSummary: jurisdiction => `Cobertura y fuentes registradas para ${jurisdiction}`,
     profileTitle: "Lo que está registrado para esta jurisdicción",
     profileIntro: jurisdiction => `Este perfil muestra los registros de fuentes limitados incluidos en esta versión del prototipo para ${jurisdiction}. Es apoyo para decisiones, no una conclusión sobre una propiedad, requisitos locales vigentes ni la aprobación de un permiso.`,
     profileAvailable: "Revise el perfil de cobertura a continuación.",
@@ -1865,7 +1875,7 @@ const SB9_LOT_SPLIT_FIELDS = [
   "proposed_lot_size_compliant",
 ];
 const RESULT_GROUPS = ["route", "standard", "local_process", "other"];
-const INITIAL_OPEN_ROUTE_BY_PROJECT = Object.freeze({
+const CANDIDATE_ROUTE_BY_PROJECT = Object.freeze({
   adu: "adu-ministerial-review",
   jadu: "jadu-ministerial-review",
   two_unit: "sb9-two-unit-ministerial",
@@ -1974,7 +1984,10 @@ function renderProjectQuestions() {
   }).join("");
   container.hidden = false;
   container.lang = lang;
-  container.innerHTML = `<p class="small">${esc(s.questionIntro)}</p>${questions}`;
+  container.innerHTML = `<div class="intake-stage-heading">
+      <p class="intake-step" id="intakeStepDetails">${esc(s.intakeStepDetails)}</p>
+      <p class="small">${esc(s.questionIntro)}</p>
+    </div>${questions}`;
   for (const input of container.querySelectorAll("input[type=radio]")) {
     input.checked = intakeDraft[input.name] === input.value;
   }
@@ -1993,17 +2006,22 @@ function renderForm() {
                          "t-juris", "jurisHelp", "t-project", "t-submit",
                          "typeRadios", "projectQuestions", "jurisStatus",
                          "resultStatus", "sampleLink", "sampleSummary",
-                         "sampleLabel", "sampleNotice", "sampleClear"];
+                         "sampleLabel", "sampleNotice", "sampleResult",
+                         "sampleClear", "intakeStepPlace",
+                         "intakeStepProject"];
   translatedIds.forEach(id => { document.getElementById(id).lang = lang; });
   document.getElementById("t-tagline").textContent = s.tagline;
   document.getElementById("translationScope").textContent = s.translationScope;
   document.getElementById("sampleLink").textContent = s.sampleLink;
   document.getElementById("sampleSummary").textContent = s.sampleSummary;
+  document.getElementById("sampleResult").textContent = s.sampleResult;
   renderProjectSampleText();
   document.getElementById("screenHeading").textContent = s.screenHeading;
   document.getElementById("t-juris").textContent = s.juris;
   document.getElementById("jurisHelp").textContent = s.jurisHelp;
   document.getElementById("t-project").textContent = s.project;
+  document.getElementById("intakeStepPlace").textContent = s.intakeStepPlace;
+  document.getElementById("intakeStepProject").textContent = s.intakeStepProject;
   document.getElementById("t-submit").textContent = s.submit;
   document.getElementById("langToggle").textContent = s.langBtn;
   document.getElementById("langToggle").lang = lang === "en" ? "es" : "en";
@@ -2150,22 +2168,24 @@ function renderProjectFacts() {
   if (!facts.length) return "";
   const s = STRINGS[lang];
   const isSample = projectSampleState === "active";
-  return `<section class="result-cover-sheet ca-box" aria-labelledby="projectFactsHeading"
-      lang="${lang}">
-    <div class="result-cover-heading">
-      <h3 id="projectFactsHeading">
+  return `<details class="result-cover-sheet result-support ca-box"
+      aria-labelledby="projectFactsHeading" lang="${lang}">
+    <summary class="result-support-summary" id="projectFactsHeading">
+      <span class="result-support-title">
         ${esc(isSample ? s.sampleAnswersHeading : s.answersHeading)}
-      </h3>
-      <a class="edit-answers" href="#screenHeading">${esc(s.editAnswers)}</a>
+      </span>
+    </summary>
+    <div class="result-support-body">
+      <p class="small">${esc(isSample ? s.sampleAnswersIntro : s.answersIntro)}</p>
+      <p><a class="edit-answers" href="#screenHeading">${esc(s.editAnswers)}</a></p>
+      <dl class="result-facts">
+        ${facts.map(fact => `<div data-field="${esc(fact.name)}">
+          <dt>${esc(fact.label)}</dt>
+          <dd>${esc(fact.value)}</dd>
+        </div>`).join("")}
+      </dl>
     </div>
-    <p class="small">${esc(isSample ? s.sampleAnswersIntro : s.answersIntro)}</p>
-    <dl class="result-facts">
-      ${facts.map(fact => `<div data-field="${esc(fact.name)}">
-        <dt>${esc(fact.label)}</dt>
-        <dd>${esc(fact.value)}</dd>
-      </div>`).join("")}
-    </dl>
-  </section>`;
+  </details>`;
 }
 
 function decisionBoundaryMarkup(state) {
@@ -2236,14 +2256,17 @@ function statewideOrientationMarkup(list = [], unresolved = []) {
   const jurisdiction = jurisDisplay(LAST_JURISDICTION);
   const localCoverage = LAST_JURISDICTION.has_local_layer
     ? s.statewideLocalPresent : s.statewideLocalMissing;
-  return `<section class="statewide-orientation ca-box" id="statewideOrientation"
+  return `<details class="statewide-orientation result-support ca-box" id="statewideOrientation"
       aria-labelledby="statewideOrientationHeading" lang="${lang}"
       data-jurisdiction="${esc(LAST_JURISDICTION.slug)}"
       data-local-layer="${LAST_JURISDICTION.has_local_layer ? "true" : "false"}">
-    <p class="statewide-orientation-stage">${esc(s.statewideStage)}</p>
-    <h3 id="statewideOrientationHeading">${esc(s.statewideTitle)}</h3>
-    <p>${esc(s.statewideIntro(jurisdiction, JURIS.length))}</p>
-    <section class="statewide-orientation-coverage"
+    <summary class="result-support-summary">
+      <span class="statewide-orientation-stage">${esc(s.statewideStage)}</span>
+      <span class="result-support-title" id="statewideOrientationHeading">${esc(s.statewideTitle)}</span>
+    </summary>
+    <div class="statewide-orientation-body">
+      <p>${esc(s.statewideIntro(jurisdiction, JURIS.length))}</p>
+      <section class="statewide-orientation-coverage"
         aria-labelledby="statewideCoverageHeading">
       <h4 id="statewideCoverageHeading">${esc(s.statewideCoverage)}</h4>
       <dl>
@@ -2270,12 +2293,13 @@ function statewideOrientationMarkup(list = [], unresolved = []) {
       <ul>${questions.map(question => `<li>${esc(question)}</li>`).join("")}</ul>
     </section>
     <p class="statewide-orientation-boundary">${esc(s.statewideBoundary)}</p>
-    <div class="statewide-print-action">
-      <button class="button ca-button print-statewide-orientation" type="button">
-        ${esc(s.statewidePrint)}</button>
-      <p class="small">${esc(s.statewidePrintHelp)}</p>
+      <div class="statewide-print-action">
+        <button class="button ca-button print-statewide-orientation" type="button">
+          ${esc(s.statewidePrint)}</button>
+        <p class="small">${esc(s.statewidePrintHelp)}</p>
+      </div>
     </div>
-  </section>`;
+  </details>`;
 }
 
 function renderResultIndex(grouped) {
@@ -2378,7 +2402,7 @@ function renderResultCard(rule, explanation, options = {}) {
   const hideLabel = hasGuidance ? s.hideDetails : s.hideEvidence;
   const isOpen = OPEN_RULE_IDS.has(rule.rule_id);
   const isConfiguredRoute = group === "route"
-    && INITIAL_OPEN_ROUTE_BY_PROJECT[LAST_INTAKE?.project_type] === rule.rule_id;
+    && CANDIDATE_ROUTE_BY_PROJECT[LAST_INTAKE?.project_type] === rule.rule_id;
   const clockLink = ok
     && LAST_INTAKE?.project_type === "adu"
     && isConfiguredRoute
@@ -2565,12 +2589,12 @@ function renderResults(list) {
   status.lang = lang;
   if (!list.length) {
     status.textContent = `${s.resultCount(0)} ${s.none}`;
-    el.innerHTML = `<div lang="${lang}">
-      <h2 class="result-heading" id="resultsHeading" tabindex="-1">${esc(s.results)}</h2>
+    el.innerHTML = `<h2 class="result-heading" id="resultsHeading"
+        tabindex="-1" lang="${lang}">${esc(s.results)}</h2>
       ${decisionBoundaryMarkup("no-route")}
+      <div class="notice ca-shout" lang="${lang}">${esc(s.none)}</div>
       ${renderProjectFacts()}
-      ${statewideOrientationMarkup()}
-      <div class="notice ca-shout">${esc(s.none)}</div></div>`;
+      ${statewideOrientationMarkup()}`;
     return;
   }
   const grouped = groupResultRecords(list);
@@ -2614,7 +2638,7 @@ function renderResults(list) {
             lang="${lang}">${esc(s.groups[group])}</h3>
           ${localBoundary}<div class="result-records">${cards}</div>
         </section>`;
-    return section + (group === "route" ? packetSampleLink : "");
+    return section;
   }).join("");
   const draftBanner = oneSharedDraftLabel
     ? `<div class="result-trust-note ca-shout small" lang="${lang}">${esc(s.explanationBanner)}</div>`
@@ -2628,13 +2652,13 @@ function renderResults(list) {
   el.innerHTML = `<h2 class="result-heading" id="resultsHeading"
       tabindex="-1" lang="${lang}">${esc(s.results)}</h2>
     ${decisionBoundaryMarkup(boundaryState)}
-    ${renderProjectFacts()}
-    ${statewideOrientationMarkup(list)}
     <p class="result-count" lang="${lang}">${esc(summaryText)}</p>
     <p class="small result-limit" lang="${lang}">${esc(s.resultIntro)}
       ${hasRoute ? esc(s.routeOrientation) : ""}</p>
     ${noRouteNotice}${draftBanner}${renderResultIndex(grouped)}${sections}
-    ${hasRoute ? "" : packetSampleLink}`;
+    ${packetSampleLink}
+    ${renderProjectFacts()}
+    ${statewideOrientationMarkup(list)}`;
   renderJourneyHandoffOutcome();
 }
 
@@ -2656,20 +2680,19 @@ function renderNeedsStaffReview(fieldNames) {
   status.lang = lang;
   status.textContent = s.unknownHeading;
   document.getElementById("results").innerHTML =
-    `<div lang="${lang}">
-      <h2 class="result-heading" id="resultsHeading" tabindex="-1">
+    `<h2 class="result-heading" id="resultsHeading" tabindex="-1"
+        lang="${lang}">
         ${esc(s.unknownHeading)}
       </h2>
       ${decisionBoundaryMarkup("unknown")}
-      ${renderProjectFacts()}
-      ${statewideOrientationMarkup([], fieldNames)}
-      <div class="notice ca-shout">
+      <div class="notice ca-shout" lang="${lang}">
         <p>${esc(s.unknownIntro)}</p>
         <ul>${fieldNames.map(name =>
           `<li>${esc(questionLabel(name, LAST_INTAKE?.project_type))}</li>`
         ).join("")}</ul>
       </div>
-    </div>`;
+      ${renderProjectFacts()}
+      ${statewideOrientationMarkup([], fieldNames)}`;
 }
 
 function focusResults() {
@@ -2713,11 +2736,13 @@ function renderProjectSampleText() {
     s[`sample${suffix}Label`];
   document.getElementById("sampleNotice").textContent =
     s[`sample${suffix}Notice`];
+  document.getElementById("sampleResult").hidden =
+    projectSampleState !== "active";
   document.getElementById("sampleClear").textContent =
     s[`sample${suffix}Clear`];
 }
 
-function storeSubmittedProject(intake, jurisdiction, list = []) {
+function storeSubmittedProject(intake, jurisdiction) {
   LAST_INTAKE = {...intake};
   LAST_JURISDICTION = {
     county: jurisdiction.county,
@@ -2727,10 +2752,6 @@ function storeSubmittedProject(intake, jurisdiction, list = []) {
     slug: jurisdiction.slug,
   };
   OPEN_RULE_IDS.clear();
-  const initialRuleId = INITIAL_OPEN_ROUTE_BY_PROJECT[intake.project_type];
-  if (list.some(rule =>
-    rule.rule_id === initialRuleId && resultGroup(rule) === "route"
-  )) OPEN_RULE_IDS.add(initialRuleId);
 }
 
 function invalidateRenderedProjectResult(message = "") {
@@ -2752,6 +2773,12 @@ if (pageIs("project") && resultContainerElement) {
     const printButton = event.target.closest?.(".print-statewide-orientation");
     if (printButton) {
       window.print();
+      return;
+    }
+    const clockLink = event.target.closest?.('a[href="#clocks"]');
+    if (clockLink) {
+      const clockDisclosure = document.getElementById("clocks");
+      if (clockDisclosure) clockDisclosure.open = true;
       return;
     }
     const editLink = event.target.closest?.("a.edit-answers");
@@ -3225,6 +3252,7 @@ function renderJurisdictionProfile(jurisdiction) {
   const output = document.getElementById("jurisdictionProfile");
   if (!output) return;
   if (!jurisdiction || !COVERAGE_INDEX) {
+    output.open = false;
     output.hidden = true;
     output.innerHTML = "";
     delete output.dataset.jurisdiction;
@@ -3236,6 +3264,7 @@ function renderJurisdictionProfile(jurisdiction) {
   }
   const profile = COVERAGE_INDEX.profiles[jurisdiction.slug];
   if (!profile) {
+    output.open = false;
     output.hidden = true;
     output.innerHTML = "";
     delete output.dataset.jurisdiction;
@@ -3287,23 +3316,29 @@ function renderJurisdictionProfile(jurisdiction) {
   const statewideCopy = statewideReviewHoldCount
     ? s.profileStatewideReviewHoldCopy : s.profileStatewideCopy;
 
+  if (output.dataset.jurisdiction !== jurisdiction.slug) output.open = false;
   output.lang = lang;
   output.dataset.jurisdiction = jurisdiction.slug;
   output.dataset.localLayer = hasLocalRecords ? "true" : "false";
   output.dataset.hcdRecordCount = String(hcdRecords.length);
   output.dataset.statewideReviewHold = String(statewideReviewHoldCount);
   output.dataset.localReviewHold = String(localReviewHoldCount);
-  output.innerHTML = `<div class="jurisdiction-profile-header">
-      <div>
-        <p class="jurisdiction-profile-kicker">${esc(s.profileKicker)}</p>
-        <h3 id="jurisdictionProfileHeading">${esc(s.profileTitle)}</h3>
+  output.innerHTML = `<summary id="jurisdictionProfileHeading">
+      <span class="jurisdiction-profile-kicker">${esc(s.profileKicker)}</span>
+      <span class="jurisdiction-profile-summary-title">${esc(s.profileSummary(
+        jurisDisplay(jurisdiction),
+      ))}</span>
+      <span class="jurisdiction-profile-summary-meta">${esc(statewideTitle)} · ${esc(localTitle)}</span>
+    </summary>
+    <div class="jurisdiction-profile-body">
+      <div class="jurisdiction-profile-header">
+        <h3>${esc(s.profileTitle)}</h3>
+        <p class="jurisdiction-profile-location">${esc(location)}</p>
       </div>
-      <p class="jurisdiction-profile-location">${esc(location)}</p>
-    </div>
-    <p class="jurisdiction-profile-intro">${esc(s.profileIntro(
-      jurisDisplay(jurisdiction),
-    ))}</p>
-    <dl class="jurisdiction-profile-ledger">
+      <p class="jurisdiction-profile-intro">${esc(s.profileIntro(
+        jurisDisplay(jurisdiction),
+      ))}</p>
+      <dl class="jurisdiction-profile-ledger">
       <div>
         <dt>${esc(s.profileStatewideLabel)}</dt>
         <dd><strong>${esc(statewideTitle)}</strong><span class="small">${esc(statewideCopy)}</span></dd>
@@ -3319,11 +3354,12 @@ function renderJurisdictionProfile(jurisdiction) {
           ${hcdRecords.length
             ? hcdCoverageRecordMarkup(hcdRecords, jurisdiction) : ""}</dd>
       </div>
-    </dl>
-    <aside class="jurisdiction-profile-onboarding" role="note">
-      <strong>${esc(s.profileOnboardingTitle)}</strong><br>
-      ${esc(s.profileOnboarding)}
-    </aside>`;
+      </dl>
+      <aside class="jurisdiction-profile-onboarding" role="note">
+        <strong>${esc(s.profileOnboardingTitle)}</strong><br>
+        ${esc(s.profileOnboarding)}
+      </aside>
+    </div>`;
   output.hidden = false;
 }
 

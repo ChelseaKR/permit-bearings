@@ -50,13 +50,14 @@ Start at `/` for the product boundary, then use `/review.html`,
   fixture, fills the native form controls, and submits through the same
   validation and matching path as manual answers. It is not a real parcel,
   applicant record, pilot, or external validation result.
-- Start with the "Sample answers used for this result" cover sheet. It shows
-  exactly which made-up jurisdiction and project answers produced this view.
+- Start with the candidate route, then open the "Sample answers used for this
+  result" disclosure. It shows exactly which made-up jurisdiction and project
+  answers produced this view.
   State that the cover sheet exists only in the current page. It is not a
   stored applicant record, verified parcel record, completeness finding, or
   exportable evidence manifest.
-- Before submitting a new result, show the **Statewide Coverage Navigator**
-  that appears for a recognized jurisdiction. It always starts with the same
+- Before submitting a new result, open the **Statewide Coverage Navigator**
+  disclosure that appears for a recognized jurisdiction. It always starts with the same
   17 bounded statewide candidate-rule records—not a local-code conclusion.
   Type Albany to show `Not encoded` and no linked HCD record; say that neither
   means Albany lacks local requirements, has no HCD activity, or is compliant.
@@ -84,9 +85,9 @@ Start at `/` for the product boundary, then use `/review.html`,
   route-record line preserves the exact matched route. Mention that unresolved,
   no-route, and source-review states replace this copy rather than implying a
   favorable answer.
-- The explicitly configured ADU candidate route starts open. Point to its
-  citation and source-status label, which remain visible even when the
-  disclosure is closed. Walk through the separate 15-business-day and
+- The explicitly configured ADU candidate route appears first. Point to its
+  visible consequence, citation, and source-status label, then open its details.
+  Walk through the separate 15-business-day and
   conditional 60-day deadlines, starting steps, staff questions, and evidence.
   Then show how supporting standards and the local information record remain
   compact until opened.
@@ -106,7 +107,8 @@ Start at `/` for the product boundary, then use `/review.html`,
   review. Applicant-facing result titles are localized drafts; canonical
   pathway labels, source excerpts, citations, and document hints remain
   English.
-- Show the separate clock prototype and name its single-date assumption.
+- Open the optional clock disclosure and name its single-date assumption. The
+  ADU route's deadline link opens the same disclosure.
 - The trust moment: select an SB 9 fact combination with no matching encoded
   rule → the system abstains and routes to staff. "No match means insufficient
   encoded evidence, not ineligibility."
