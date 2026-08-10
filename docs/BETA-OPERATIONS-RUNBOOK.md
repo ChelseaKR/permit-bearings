@@ -413,14 +413,17 @@ user or their device, not deletable by the application.
 
 ## Export and offboarding
 
-The schema-v1 evidence ZIP exports only its pinned 58-file public/synthetic
-profile. It is not an applicant-data export, sensitive-record export, CPRA
-workflow, backup, contractual ownership finding, or partner acceptance.
+The frozen schema-v1 evidence ZIP exports only its pinned 58-file
+public/synthetic compatibility profile. The current schema-v2 profile exports
+59 files and adds registry-aware closure; its sole substantive membership
+addition is `data/workflows/registry.json`. Neither is an applicant-data
+export, sensitive-record export, CPRA workflow, backup, contractual ownership
+finding, or partner acceptance.
 
-The ADR, this runbook, the beta-operations ledger, validator, and tests were
-added after that fixed membership and are outside export profile v1. Do not
-claim they are included. A future reviewed profile/version must classify the
-new files, update membership and assertions, and rerun build/verify/restore.
+The ADR, this runbook, the beta-operations ledger, validator, and tests remain
+outside profiles v1 and v2. Do not claim they are included. A future reviewed
+profile/version must classify new files, update membership and assertions,
+and rerun build/verify/restore.
 Any operational, reviewer, participant, support, incident, or applicant
 record needs a separate authorized export design.
 

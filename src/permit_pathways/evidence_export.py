@@ -31,10 +31,16 @@ from .harness.watch import normalized_digest
 # The subprocess boundary below invokes Git only through fixed argument vectors
 # with shell execution disabled; the executable is resolved with ``shutil.which``.
 
-DEFAULT_PROFILE_PATH = Path("data/export/public-synthetic-evidence-v1.json")
+PROFILE_PATHS = {
+    1: Path("data/export/public-synthetic-evidence-v1.json"),
+    2: Path("data/export/public-synthetic-evidence-v2.json"),
+}
+DEFAULT_PROFILE_VERSION = 2
+DEFAULT_PROFILE_PATH = PROFILE_PATHS[DEFAULT_PROFILE_VERSION]
 MANIFEST_FILENAME = "MANIFEST.json"
-PACKAGE_SCHEMA_VERSION = 1
-PROFILE_SCHEMA_VERSION = 1
+PACKAGE_SCHEMA_VERSION = DEFAULT_PROFILE_VERSION
+PROFILE_SCHEMA_VERSION = DEFAULT_PROFILE_VERSION
+SUPPORTED_SCHEMA_VERSIONS = frozenset(PROFILE_PATHS)
 MEMBER_SHA256_BASIS = "raw_archive_member_bytes"
 
 _FIXED_ZIP_DATETIME = (1980, 1, 1, 0, 0, 0)
@@ -100,6 +106,7 @@ _ROLES = frozenset(
         "source_registry",
         "source_state_receipt",
         "third_party_notices",
+        "workflow_registry",
     }
 )
 
@@ -140,6 +147,15 @@ _MANIFEST_SOURCE_REFERENCE_KEYS = {"source_id", "label", "url"}
 _STATE_ASSERTION_KEYS = {"path", "pointer", "equals"}
 _SELF_PROFILE_ENTRY_KEYS = {"path", "role", "raw_sha256", "self_reference"}
 _ORDINARY_PROFILE_ENTRY_KEYS = {"path", "role", "raw_sha256"}
+_WORKFLOW_ARTIFACT_ROLES = {
+    "journey": "journey_definition",
+    "journey_evidence": "journey_evidence",
+    "program_availability": "availability_record",
+    "readiness_evidence": "readiness_evidence",
+    "readiness_packet": "readiness_packet",
+    "readiness_remedies": "readiness_remedies",
+    "readiness_workflow": "readiness_workflow",
+}
 
 
 @dataclass(frozen=True)
@@ -174,6 +190,7 @@ class ExportProfile:
     entries: tuple[ProfileEntry, ...]
     state_assertions: tuple[StateAssertion, ...]
     profile_path: str
+    schema_version: int = DEFAULT_PROFILE_VERSION
 
 
 @dataclass(frozen=True)
@@ -197,6 +214,7 @@ class _Manifest:
     profile_path: str
     profile_sha256: str
     files: tuple[_ManifestFile, ...]
+    schema_version: int
 
 
 def _require_object(value: Any, field: str) -> dict[str, Any]:
@@ -397,18 +415,61 @@ def _require_source_registry_entry(
         )
 
 
+def _require_workflow_registry_entry(
+    entries: tuple[ProfileEntry, ...], profile_path: str
+) -> None:
+    workflow_entry = next(
+        (entry for entry in entries if entry.path == "data/workflows/registry.json"),
+        None,
+    )
+    if workflow_entry is None or workflow_entry.role != "workflow_registry":
+        raise ValueError(
+            f"{profile_path}.entries: data/workflows/registry.json must be the "
+            "workflow registry"
+        )
+
+
+def _profile_schema_version(profile_path: str) -> int:
+    matches = [
+        version
+        for version, canonical_path in PROFILE_PATHS.items()
+        if canonical_path.as_posix() == profile_path
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"{profile_path}: expected a canonical versioned export profile path"
+        )
+    return matches[0]
+
+
+def _validate_profile_registry_membership(
+    entries: tuple[ProfileEntry, ...],
+    profile_path: str,
+    schema_version: int,
+) -> None:
+    if schema_version == 1:
+        if any(entry.role == "workflow_registry" for entry in entries):
+            raise ValueError(
+                f"{profile_path}.entries: schema v1 cannot include a workflow "
+                "registry; use the schema-v2 profile"
+            )
+        return
+    _require_workflow_registry_entry(entries, profile_path)
+
+
 def _parse_profile(
     payload: Any,
     profile_path: str,
 ) -> ExportProfile:
     profile = _require_object(payload, profile_path)
     _require_exact_keys(profile, _PROFILE_KEYS, profile_path)
+    expected_schema_version = _profile_schema_version(profile_path)
     if (
         type(profile.get("schema_version")) is not int
-        or profile.get("schema_version") != PROFILE_SCHEMA_VERSION
+        or profile.get("schema_version") != expected_schema_version
     ):
         raise ValueError(
-            f"{profile_path}.schema_version: expected {PROFILE_SCHEMA_VERSION}"
+            f"{profile_path}.schema_version: expected {expected_schema_version}"
         )
 
     package = _require_object(profile.get("package"), f"{profile_path}.package")
@@ -457,6 +518,11 @@ def _parse_profile(
             f"{profile_path}.entries: expected one self-referential profile"
         )
     _require_source_registry_entry(entries, profile_path)
+    _validate_profile_registry_membership(
+        entries,
+        profile_path,
+        expected_schema_version,
+    )
 
     assertions_raw = profile.get("public_state_assertions")
     if (
@@ -491,6 +557,7 @@ def _parse_profile(
         entries=entries,
         state_assertions=assertions,
         profile_path=profile_path,
+        schema_version=expected_schema_version,
     )
 
 
@@ -503,10 +570,34 @@ def _root_directory(root: Path) -> Path:
     return resolved
 
 
-def _profile_file(root: Path, profile_path: Path | None) -> tuple[Path, str]:
+def _profile_file(
+    root: Path,
+    profile_path: Path | None,
+    *,
+    profile_version: int | None = None,
+) -> tuple[Path, str]:
+    if profile_path is not None and profile_version is not None:
+        raise ValueError("select either profile_path or profile_version, not both")
     if profile_path is None:
-        relative = DEFAULT_PROFILE_PATH.as_posix()
-        return root / DEFAULT_PROFILE_PATH, relative
+        selected_version = profile_version
+        if selected_version is None:
+            selected_version = next(
+                (
+                    version
+                    for version in sorted(PROFILE_PATHS, reverse=True)
+                    if (root / PROFILE_PATHS[version]).exists()
+                    or (root / PROFILE_PATHS[version]).is_symlink()
+                ),
+                DEFAULT_PROFILE_VERSION,
+            )
+        if (
+            type(selected_version) is not int
+            or selected_version not in SUPPORTED_SCHEMA_VERSIONS
+        ):
+            raise ValueError("profile_version: expected 1 or 2")
+        selected_path = PROFILE_PATHS[selected_version]
+        relative = selected_path.as_posix()
+        return root / selected_path, relative
     if profile_path.is_absolute():
         candidate = profile_path.resolve()
         try:
@@ -698,6 +789,87 @@ def _entry_payloads(root: Path, profile: ExportProfile) -> dict[str, bytes]:
     return payloads
 
 
+def _validate_exported_workflow_artifact(
+    artifact: Any,
+    *,
+    artifact_name: str,
+    artifact_field: str,
+    required_role: str,
+    exported: dict[str, ProfileEntry],
+    payloads: dict[str, bytes],
+) -> None:
+    record = _require_object(artifact, artifact_field)
+    generated = artifact_name in {"journey_evidence", "readiness_evidence"}
+    _require_exact_keys(
+        record,
+        {"path"} if generated else {"path", "sha256"},
+        artifact_field,
+    )
+    path = _safe_relative_path(record.get("path"), f"{artifact_field}.path")
+    exported_entry = exported.get(path)
+    if exported_entry is None or exported_entry.role != required_role:
+        raise ValueError(
+            f"{artifact_field}.path: referenced workflow artifact is not "
+            "exported with its required role"
+        )
+    if generated:
+        return
+    expected_digest = _require_text(record.get("sha256"), f"{artifact_field}.sha256")
+    if not re.fullmatch(r"[0-9a-f]{64}", expected_digest):
+        raise ValueError(f"{artifact_field}.sha256: invalid SHA-256")
+    if _sha256_bytes(payloads[path]) != f"sha256:{expected_digest}":
+        raise ValueError(
+            f"{artifact_field}.sha256: registry fingerprint does not match "
+            "exported bytes"
+        )
+
+
+def _validate_workflow_registry_closure(
+    profile: ExportProfile,
+    payloads: dict[str, bytes],
+) -> None:
+    """Require a registry-aware profile to carry every selected artifact.
+
+    This is an export-membership check, not a workflow approval or a substitute
+    for the canonical workflow-registry loader replayed during build/restore.
+    """
+
+    registry_entries = tuple(
+        entry for entry in profile.entries if entry.role == "workflow_registry"
+    )
+    if not registry_entries:
+        return
+    if profile.schema_version == 1:
+        raise ValueError("schema v1 cannot include a workflow registry")
+    if len(registry_entries) != 1:
+        raise ValueError("export profile: expected exactly one workflow registry")
+    registry_entry = registry_entries[0]
+    registry = _require_object(
+        _read_json_bytes(payloads[registry_entry.path], registry_entry.path),
+        registry_entry.path,
+    )
+    workflows = registry.get("workflows")
+    if not isinstance(workflows, list) or not workflows:
+        raise ValueError(f"{registry_entry.path}.workflows: expected a non-empty list")
+
+    exported = {entry.path: entry for entry in profile.entries}
+    for workflow_index, raw_workflow in enumerate(workflows):
+        workflow_field = f"{registry_entry.path}.workflows[{workflow_index}]"
+        workflow = _require_object(raw_workflow, workflow_field)
+        artifacts_field = f"{workflow_field}.artifacts"
+        artifacts = _require_object(workflow.get("artifacts"), artifacts_field)
+        _require_exact_keys(artifacts, set(_WORKFLOW_ARTIFACT_ROLES), artifacts_field)
+        for artifact_name, required_role in _WORKFLOW_ARTIFACT_ROLES.items():
+            _validate_exported_workflow_artifact(
+                artifacts.get(artifact_name),
+                artifact_name=artifact_name,
+                artifact_field=f"{artifacts_field}.{artifact_name}",
+                required_role=required_role,
+                exported=exported,
+                payloads=payloads,
+            )
+
+
 def _git_head(root: Path) -> str:
     git = shutil.which("git")
     if git is None:
@@ -758,11 +930,17 @@ def _verify_profile_matches_git_head(
 def load_export_profile(
     root: Path,
     profile_path: Path | None = None,
+    *,
+    profile_version: int | None = None,
 ) -> ExportProfile:
     """Load a pinned, public/synthetic-only export profile from ``root``."""
 
     repository = _root_directory(root)
-    _, relative = _profile_file(repository, profile_path)
+    _, relative = _profile_file(
+        repository,
+        profile_path,
+        profile_version=profile_version,
+    )
     raw = _read_regular_file_bytes(
         repository,
         relative,
@@ -770,6 +948,7 @@ def load_export_profile(
     )
     profile = _parse_profile(_read_json_bytes(raw, relative), relative)
     payloads = _entry_payloads(repository, profile)
+    _validate_workflow_registry_closure(profile, payloads)
     _source_references_without_copies(
         _read_json_bytes(payloads["data/sources.json"], "data/sources.json"),
         set(payloads),
@@ -802,7 +981,7 @@ def _manifest_payload(
         payloads,
     )
     return {
-        "schema_version": PACKAGE_SCHEMA_VERSION,
+        "schema_version": profile.schema_version,
         "package": {
             "archive_root": profile.archive_root,
             "package_id": profile.package_id,
@@ -934,13 +1113,15 @@ def build_export(
     frozen_on: str,
     repository_commit_sha: str | None = None,
     today: date | None = None,
+    profile_path: Path | None = None,
+    profile_version: int | None = None,
 ) -> dict[str, Any]:
     """Build one deterministic ZIP_STORED evidence package.
 
-    Schema v1 always uses the canonical repository profile.  That profile
-    pins every included raw file except its explicitly self-referential entry.
-    A file drift therefore stops the build instead of silently broadening the
-    public/synthetic export.
+    Each schema uses its own canonical repository profile.  The default is the
+    current registry-aware schema v2; callers can explicitly select the frozen
+    schema v1 compatibility profile.  Every profile pins included raw files
+    except its self-referential entry, so drift stops the build.
     """
 
     repository = _root_directory(root)
@@ -951,7 +1132,11 @@ def build_export(
         "frozen_on",
         today=resolve_today(today),
     )
-    profile = load_export_profile(repository)
+    profile = load_export_profile(
+        repository,
+        profile_path,
+        profile_version=profile_version,
+    )
     payloads = _entry_payloads(repository, profile)
     normalized_commit_sha = _verify_profile_matches_git_head(
         repository,
@@ -963,6 +1148,7 @@ def build_export(
         repository,
         today=resolve_today(today),
         frozen_on=date.fromisoformat(normalized_frozen_on),
+        profile_path=Path(profile.profile_path),
     )
     manifest = _manifest_payload(
         profile,
@@ -1166,11 +1352,12 @@ def _parse_manifest_files(value: Any) -> tuple[_ManifestFile, ...]:
 def _parse_manifest(payload: Any, *, today: date) -> _Manifest:
     manifest = _require_object(payload, "manifest")
     _require_exact_keys(manifest, _MANIFEST_KEYS, "manifest")
+    schema_version = manifest.get("schema_version")
     if (
-        type(manifest.get("schema_version")) is not int
-        or manifest.get("schema_version") != PACKAGE_SCHEMA_VERSION
+        type(schema_version) is not int
+        or schema_version not in SUPPORTED_SCHEMA_VERSIONS
     ):
-        raise ValueError(f"manifest.schema_version: expected {PACKAGE_SCHEMA_VERSION}")
+        raise ValueError("manifest.schema_version: expected 1 or 2")
     if manifest.get("member_sha256_basis") != MEMBER_SHA256_BASIS:
         raise ValueError("manifest.member_sha256_basis: invalid digest basis")
 
@@ -1202,9 +1389,10 @@ def _parse_manifest(payload: Any, *, today: date) -> _Manifest:
     profile = _require_object(manifest.get("profile"), "manifest.profile")
     _require_exact_keys(profile, _MANIFEST_PROFILE_KEYS, "manifest.profile")
     profile_path = _safe_relative_path(profile.get("path"), "manifest.profile.path")
-    if profile_path != DEFAULT_PROFILE_PATH.as_posix():
+    if profile_path != PROFILE_PATHS[schema_version].as_posix():
         raise ValueError(
-            "manifest.profile.path: schema v1 requires the canonical profile"
+            f"manifest.profile.path: schema v{schema_version} requires its "
+            "canonical profile"
         )
     profile_sha256 = _require_sha256(profile.get("sha256"), "manifest.profile.sha256")
 
@@ -1235,6 +1423,7 @@ def _parse_manifest(payload: Any, *, today: date) -> _Manifest:
         profile_path=profile_path,
         profile_sha256=profile_sha256,
         files=files,
+        schema_version=schema_version,
     )
 
 
@@ -1251,6 +1440,8 @@ def _profile_from_archive(
     profile = _parse_profile(
         _read_json_bytes(profile_bytes, manifest.profile_path), manifest.profile_path
     )
+    if profile.schema_version != manifest.schema_version:
+        raise ValueError("manifest.schema_version: does not match the export profile")
     profile_entries = tuple((entry.path, entry.role) for entry in profile.entries)
     manifest_entries = tuple((entry.path, entry.role) for entry in manifest.files)
     if profile_entries != manifest_entries:
@@ -1310,6 +1501,7 @@ def _validate_archive_contents(
         actual = next(item.sha256 for item in manifest.files if item.path == entry.path)
         if actual != expected:
             raise ValueError(f"{entry.path}: raw SHA-256 does not match the profile")
+    _validate_workflow_registry_closure(profile, payloads)
     sources = _source_references_without_copies(
         _read_json_bytes(payloads["data/sources.json"], "data/sources.json"),
         {item.path for item in manifest.files},
@@ -1522,6 +1714,7 @@ def _restore_to_staging(
             staging,
             today=date.fromisoformat(manifest.frozen_on),
             frozen_on=date.fromisoformat(manifest.frozen_on),
+            profile_path=Path(manifest.profile_path),
         )
         return staging
     except BaseException:
@@ -1579,24 +1772,16 @@ def _read_restored_json(root: Path, relative: str) -> Any:
     )
 
 
-def validate_restored_evidence(
-    root: Path,
+def _validate_v1_workflow_evidence(
+    repository: Path,
+    data: Path,
+    rules: Any,
     *,
-    today: date,
-    frozen_on: date | None = None,
+    as_of: date,
 ) -> None:
-    """Replay core deterministic loaders against a restored evidence directory."""
+    """Replay the fixed paths retained by the frozen schema-v1 contract."""
 
-    repository = _root_directory(root)
-    as_of = frozen_on or today
-    profile = load_export_profile(repository)
-    _validate_state_assertions(profile, _entry_payloads(repository, profile))
-
-    from .conformance import load_checks
-    from .harness.runner import load_golden
-    from .harness.watch import load_sources
     from .journey import load_journey_config, resolve_journey
-    from .jurisdictions import build_coverage_index, load_registry
     from .program_availability import load_program_availability
     from .readiness import (
         evaluate_readiness,
@@ -1604,6 +1789,148 @@ def validate_restored_evidence(
         load_readiness_remedies,
         load_readiness_workflow,
     )
+
+    workflow = load_readiness_workflow(
+        data / "readiness/workflows/woodland-preapproved-detached-adu.json",
+        data / "sources.json",
+        today=as_of,
+    )
+    packet = load_readiness_packet(
+        data / "readiness/samples/woodland-preapproved-adu.json",
+        workflow,
+        today=as_of,
+    )
+    result = evaluate_readiness(
+        workflow,
+        packet,
+        today=date.fromisoformat(packet.evaluated_on),
+    )
+    load_readiness_remedies(
+        data / "readiness/remedies/woodland-preapproved-detached-adu.json",
+        workflow,
+        today=as_of,
+    )
+    generated_readiness = _read_restored_json(
+        repository,
+        "data/readiness/generated/woodland-preapproved-adu-evidence.json",
+    )
+    if generated_readiness != result.to_manifest(workflow, packet):
+        raise ValueError("restored readiness evidence does not match the evaluator")
+    load_program_availability(
+        data / "availability/woodland-preapproved-adu-program.json",
+        today=as_of,
+    )
+    journey = resolve_journey(
+        load_journey_config(data / "journeys/woodland-preapproved-detached-adu.json"),
+        data / "golden" / "example.json",
+        rules,
+        workflow,
+        packet,
+        result,
+    )
+    generated_journey = _read_restored_json(
+        repository,
+        "data/journeys/generated/woodland-preapproved-detached-adu.json",
+    )
+    if generated_journey != journey:
+        raise ValueError("restored journey evidence does not match the resolver")
+
+
+def _validate_v2_workflow_evidence(
+    repository: Path,
+    data: Path,
+    rules: Any,
+    *,
+    as_of: date,
+) -> None:
+    """Replay every workflow selected by the schema-v2 registry."""
+
+    from .journey import load_journey_config, resolve_journey
+    from .program_availability import load_program_availability
+    from .readiness import (
+        evaluate_readiness,
+        load_readiness_packet,
+        load_readiness_remedies,
+        load_readiness_workflow,
+    )
+    from .workflow_registry import load_workflow_registry
+
+    workflow_registry = load_workflow_registry(
+        data / "workflows" / "registry.json",
+        root=repository,
+    )
+    for workflow_entry in workflow_registry.workflows:
+        artifacts = workflow_entry.artifacts
+        workflow = load_readiness_workflow(
+            artifacts.readiness_workflow.resolve(repository),
+            data / "sources.json",
+            today=as_of,
+        )
+        packet = load_readiness_packet(
+            artifacts.readiness_packet.resolve(repository),
+            workflow,
+            today=as_of,
+        )
+        result = evaluate_readiness(
+            workflow,
+            packet,
+            today=date.fromisoformat(packet.evaluated_on),
+        )
+        load_readiness_remedies(
+            artifacts.readiness_remedies.resolve(repository),
+            workflow,
+            today=as_of,
+        )
+        generated_readiness = _read_restored_json(
+            repository,
+            artifacts.readiness_evidence.path,
+        )
+        if generated_readiness != result.to_manifest(workflow, packet):
+            raise ValueError("restored readiness evidence does not match the evaluator")
+        availability = load_program_availability(
+            artifacts.program_availability.resolve(repository),
+            today=as_of,
+            policy=workflow_entry.availability_policy,
+        )
+        if (
+            availability.workflow_id != workflow_entry.workflow_id
+            or availability.program_id != workflow_entry.program_id
+        ):
+            raise ValueError("restored availability does not match its registry entry")
+        journey = resolve_journey(
+            load_journey_config(artifacts.journey.resolve(repository)),
+            data / "golden" / "example.json",
+            rules,
+            workflow,
+            packet,
+            result,
+        )
+        generated_journey = _read_restored_json(
+            repository,
+            artifacts.journey_evidence.path,
+        )
+        if generated_journey != journey:
+            raise ValueError("restored journey evidence does not match the resolver")
+
+
+def validate_restored_evidence(
+    root: Path,
+    *,
+    today: date,
+    frozen_on: date | None = None,
+    profile_path: Path | None = None,
+) -> None:
+    """Replay core deterministic loaders against a restored evidence directory."""
+
+    repository = _root_directory(root)
+    as_of = frozen_on or today
+    profile = load_export_profile(repository, profile_path)
+    _validate_state_assertions(profile, _entry_payloads(repository, profile))
+
+    from .conformance import load_checks
+    from .harness.runner import load_golden
+    from .harness.watch import load_sources
+    from .jurisdictions import build_coverage_index, load_registry
     from .rule_verification import load_rule_verifications
     from .screening import load_rules
     from .source_state import load_source_state_snapshot
@@ -1624,52 +1951,10 @@ def validate_restored_evidence(
         rules,
         today=as_of,
     )
-    workflow = load_readiness_workflow(
-        data / "readiness" / "workflows" / "woodland-preapproved-detached-adu.json",
-        data / "sources.json",
-        today=as_of,
-    )
-    packet = load_readiness_packet(
-        data / "readiness" / "samples" / "woodland-preapproved-adu.json",
-        workflow,
-        today=as_of,
-    )
-    result = evaluate_readiness(
-        workflow,
-        packet,
-        today=date.fromisoformat(packet.evaluated_on),
-    )
-    load_readiness_remedies(
-        data / "readiness" / "remedies" / "woodland-preapproved-detached-adu.json",
-        workflow,
-        today=as_of,
-    )
-    generated_readiness = _read_restored_json(
-        repository,
-        "data/readiness/generated/woodland-preapproved-adu-evidence.json",
-    )
-    if generated_readiness != result.to_manifest(workflow, packet):
-        raise ValueError("restored readiness evidence does not match the evaluator")
-    load_program_availability(
-        data / "availability" / "woodland-preapproved-adu-program.json",
-        today=as_of,
-    )
-    journey = resolve_journey(
-        load_journey_config(
-            data / "journeys" / "woodland-preapproved-detached-adu.json"
-        ),
-        data / "golden" / "example.json",
-        rules,
-        workflow,
-        packet,
-        result,
-    )
-    generated_journey = _read_restored_json(
-        repository,
-        "data/journeys/generated/woodland-preapproved-detached-adu.json",
-    )
-    if generated_journey != journey:
-        raise ValueError("restored journey evidence does not match the resolver")
+    if profile.schema_version == 1:
+        _validate_v1_workflow_evidence(repository, data, rules, as_of=as_of)
+    else:
+        _validate_v2_workflow_evidence(repository, data, rules, as_of=as_of)
     if not load_checks(data / "conformance" / "checks.json"):
         raise ValueError("restored conformance checks are empty")
     registry = load_registry(

@@ -52,7 +52,7 @@
   both citation and full-rule fingerprints. Source change, source age, review
   age, or fingerprint drift demotes the effective claim. All 19 current rules
   remain `machine_linked`; the public evidence page records zero named human
-  reviews and zero jurisdiction approvals. Bundle format 5 carries this claim
+  reviews and zero jurisdiction approvals. Bundle format 6 carries this claim
   separately from source state and program availability.
 - **HCD HAU letter refresh:** the public HCD Housing Accountability Unit
   dashboard was re-read on August 3, 2026. The committed derived dataset now

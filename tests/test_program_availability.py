@@ -8,12 +8,17 @@ import pytest
 
 from permit_pathways.program_availability import (
     BOUNDARY,
+    GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+    GENERIC_PROTOTYPE_BOUNDARY,
+    GENERIC_PROTOTYPE_EXCERPT,
     JURISDICTION,
     MAX_RECHECK_INTERVAL_DAYS,
+    MAX_RECORD_BYTES,
     OFFICIAL_EXCERPT,
     OFFICIAL_PROGRAM_URL,
     PROGRAM_ID,
     SOURCE_ID,
+    WOODLAND_AVAILABILITY_POLICY,
     WORKFLOW_ID,
     excerpt_fingerprint,
     load_program_availability,
@@ -38,7 +43,11 @@ def _write(tmp_path: Path, payload: Any) -> Path:
 
 
 def test_committed_woodland_record_loads_with_exact_bounded_evidence() -> None:
-    record = load_program_availability(RECORD, today=TODAY)
+    record = load_program_availability(
+        RECORD,
+        today=TODAY,
+        policy=WOODLAND_AVAILABILITY_POLICY,
+    )
 
     assert record.program_id == PROGRAM_ID
     assert record.workflow_id == WORKFLOW_ID
@@ -253,3 +262,186 @@ def test_boundary_and_label_cannot_be_weakened_or_blank(tmp_path: Path) -> None:
     blank_label["availability"]["source"]["label"] = " "
     with pytest.raises(ValueError, match="expected non-blank text"):
         load_program_availability(_write(tmp_path, blank_label), today=TODAY)
+
+
+def test_generic_prototype_policy_accepts_a_distinct_bound_record(
+    tmp_path: Path,
+) -> None:
+    payload = _payload()
+    availability = payload["availability"]
+    availability.update(
+        {
+            "program_id": "second-prototype-program",
+            "workflow_id": "second-prototype-workflow",
+            "jurisdiction": "davis",
+            "boundary": GENERIC_PROTOTYPE_BOUNDARY,
+        }
+    )
+    source = availability["source"]
+    source.update(
+        {
+            "source_id": "second-prototype-program-page",
+            "url": "https://www.cityofdavis.org/second-prototype-program",
+            "label": "City of Davis prototype program page",
+            "excerpt": GENERIC_PROTOTYPE_EXCERPT,
+        }
+    )
+    source["excerpt_sha256"] = excerpt_fingerprint(source["excerpt"])
+
+    record = load_program_availability(
+        _write(tmp_path, payload),
+        today=TODAY,
+        policy=GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+    )
+
+    assert record.program_id == "second-prototype-program"
+    assert record.workflow_id == "second-prototype-workflow"
+    assert record.jurisdiction == "davis"
+    assert record.source.source_id == "second-prototype-program-page"
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("source_id", "unrelated-page", "requires .* source binding"),
+        (
+            "url",
+            "https://www.cityofdavis.org/unrelated-program",
+            "exact program-ID path",
+        ),
+        (
+            "excerpt",
+            "Plans are available now.",
+            "generic plans_not_listed observation",
+        ),
+    ],
+)
+def test_generic_policy_requires_exact_consistent_source_evidence(
+    tmp_path: Path,
+    field: str,
+    value: str,
+    message: str,
+) -> None:
+    payload = _payload()
+    availability = payload["availability"]
+    availability.update(
+        {
+            "program_id": "second-prototype-program",
+            "workflow_id": "second-prototype-workflow",
+            "jurisdiction": "davis",
+            "boundary": GENERIC_PROTOTYPE_BOUNDARY,
+        }
+    )
+    source = availability["source"]
+    source.update(
+        {
+            "source_id": "second-prototype-program-page",
+            "url": "https://www.cityofdavis.org/second-prototype-program",
+            "label": "City of Davis prototype program page",
+            "excerpt": GENERIC_PROTOTYPE_EXCERPT,
+        }
+    )
+    source[field] = value
+    source["excerpt_sha256"] = excerpt_fingerprint(source["excerpt"])
+
+    with pytest.raises(ValueError, match=message):
+        load_program_availability(
+            _write(tmp_path, payload),
+            today=TODAY,
+            policy=GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+        )
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://www.cityofdavis.org:443/second-prototype-program",
+        "https://www.cityofdavis.org/second-prototype-program?view=current",
+        "https://WWW.cityofdavis.org/second-prototype-program",
+        "https://localhost/second-prototype-program",
+        "https://127.0.0.1/second-prototype-program",
+        "https://www.cityofdavis.org/second-prototype-program ",
+    ],
+)
+def test_generic_policy_rejects_noncanonical_or_nonpublic_urls(
+    tmp_path: Path,
+    url: str,
+) -> None:
+    payload = _payload()
+    availability = payload["availability"]
+    availability.update(
+        {
+            "program_id": "second-prototype-program",
+            "workflow_id": "second-prototype-workflow",
+            "jurisdiction": "davis",
+            "boundary": GENERIC_PROTOTYPE_BOUNDARY,
+        }
+    )
+    source = availability["source"]
+    source.update(
+        {
+            "source_id": "second-prototype-program-page",
+            "url": url,
+            "label": "City of Davis prototype program page",
+            "excerpt": GENERIC_PROTOTYPE_EXCERPT,
+        }
+    )
+    source["excerpt_sha256"] = excerpt_fingerprint(source["excerpt"])
+
+    with pytest.raises(ValueError, match="expected HTTPS URL"):
+        load_program_availability(
+            _write(tmp_path, payload),
+            today=TODAY,
+            policy=GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+        )
+
+
+def test_generic_policy_still_requires_the_fixed_non_applicability_boundary(
+    tmp_path: Path,
+) -> None:
+    payload = _payload()
+    payload["availability"]["boundary"] = "A plan is probably available."
+    with pytest.raises(ValueError, match="must preserve"):
+        load_program_availability(
+            _write(tmp_path, payload),
+            today=TODAY,
+            policy=GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+        )
+
+
+def test_unknown_availability_policy_is_rejected(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="unsupported value"):
+        load_program_availability(
+            _write(tmp_path, _payload()),
+            today=TODAY,
+            policy="unknown-policy",
+        )
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        '{"schema_version":1,"schema_version":1,"availability":{}}',
+        '{"schema_version":NaN,"availability":{}}',
+        '{"schema_version":Infinity,"availability":{}}',
+    ],
+)
+def test_ambiguous_and_nonfinite_json_are_rejected(
+    tmp_path: Path,
+    raw: str,
+) -> None:
+    with pytest.raises(ValueError, match="could not be loaded"):
+        load_program_availability(_write(tmp_path, raw), today=TODAY)
+
+
+def test_oversized_availability_record_is_rejected(tmp_path: Path) -> None:
+    path = tmp_path / "availability.json"
+    path.write_bytes(b" " * (MAX_RECORD_BYTES + 1))
+    with pytest.raises(ValueError, match="could not be loaded"):
+        load_program_availability(path, today=TODAY)
+
+
+def test_recursively_nested_availability_json_is_rejected(tmp_path: Path) -> None:
+    raw = "[" * 10_000 + "0" + "]" * 10_000
+    with pytest.raises(ValueError, match="could not be loaded"):
+        load_program_availability(_write(tmp_path, raw), today=TODAY)
