@@ -183,6 +183,18 @@ direct questions for unresolved facts. The structured highlight group is used
 for the ADU review deadlines so the 15-business-day and conditional 60-day
 rules are not compressed into one paragraph.
 
+The bounded interface dictionary is also checked as a structural catalog.
+`scripts/check_applicant_copy.mjs` evaluates only the `STRINGS` declaration in
+an isolated context, then requires English/Spanish key order, nested shapes,
+stable option identifiers, formatter arity, static and formatter placeholders,
+and nonblank singular/plural string outputs to agree. Its copy-leaf
+pseudo-expansion test excludes stable option identifiers, preserves formatter
+tokens, and enforces an aggregate expansion threshold. It does not generate a
+runnable pseudolocale catalog or render expanded copy. This is a structural
+regression check, not a translation-quality or rendered-layout evaluation; its
+result deliberately leaves semantic review, Spanish applicant readiness, and
+layout compatibility unclaimed.
+
 ### 2. Bounded packet-presence evaluation (prototype)
 
 `src/permit_pathways/readiness.py` implements a deterministic evaluator for

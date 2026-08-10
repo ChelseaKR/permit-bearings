@@ -1,6 +1,9 @@
 {
   "name": "permit-pathways-quality",
   "private": true,
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "test:a11y": "playwright test tests/accessibility.spec.js",
     "test:perf": "node --test tests/lighthouse-score.test.mjs && node scripts/lighthouse-budget.mjs"

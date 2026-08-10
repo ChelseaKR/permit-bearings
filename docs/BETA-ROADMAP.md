@@ -111,7 +111,7 @@ or permitting-outcome claims.
 
 ### Now — autonomous foundations
 
-This roadmap tranche completes seven machine-testable foundations without
+This roadmap tranche completes eight machine-testable foundations without
 changing the product's maturity claim:
 
 - the Statewide Coverage Navigator is deployed as orientation, not statewide
@@ -149,7 +149,12 @@ changing the product's maturity claim:
   the ADR/runbook to exact raw-byte SHA-256 digests. The validator accepts only
   `prepared_not_approved`; all future-beta deployment, rehearsal, approval,
   receipt, and partner-decision fields remain null/`not_run`, and later
-  execution requires a separately reviewed schema.
+  execution requires a separately reviewed schema; and
+- a strict applicant-copy contract checks English/Spanish key order, nested
+  shapes, stable option identifiers, static and formatter placeholders,
+  nonblank singular/plural output, and a copy-leaf pseudo-expansion transform
+  while leaving complete pseudolocale generation, semantic review, Spanish
+  applicant readiness, and rendered layout compatibility unclaimed.
 
 The remaining autonomous work is:
 
@@ -177,8 +182,6 @@ The remaining autonomous work is:
    approvals described by the prepared operations package. Record them in a
    separately reviewed execution schema; the prepared ledger cannot be
    promoted.
-7. Add applicant-copy catalog parity, placeholder checks, and
-   pseudolocalization tests without promoting Spanish review status.
 
 These tasks can make the product pilot-ready, but they cannot supply a sponsor,
 source authority, human review, applicant observation, accessibility signoff,
