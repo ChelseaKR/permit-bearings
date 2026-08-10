@@ -122,6 +122,8 @@ PYTHONPATH=src python3 -m permit_pathways.harness --fetch \
 PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
 PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-30
 PYTHONPATH=src python3 -m permit_pathways.review_queue_cli  # read-only source-change worklist
+PYTHONPATH=src python3 -m permit_pathways.local_source_onboarding_cli \
+  validate                                      # validates the empty not_run template
 PYTHONPATH=src python3 -m permit_pathways.deployment_smoke # live static-route/artifact smoke check
 PYTHONPATH=src python3 -m permit_pathways.beta_operations  # validates PREPARED / NOT APPROVED only
 PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli build \
@@ -181,7 +183,7 @@ still needs a person.
 | Internationalization | Applies. `make verify` enforces English/Spanish catalog shape, stable option identifiers, formatter arity, static and formatter placeholders, nonblank singular/plural output, and a copy-leaf pseudo-expansion transform. This is structural automation only: it does not generate or render a complete pseudolocale catalog, and mixed-language acceptance and native Spanish semantic review remain pre-pilot work in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 699 public Python tests, 86.31% branch-aware coverage, 29/29 Golden cases, 46 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, the applicant-copy structural contract, local illustration path/format/size/accessibility checks, the deterministic evidence-export round trip, and 97 adversarial no-storage operations-package checks. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, illustration-decoding/tablet-hierarchy, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes 776 public Python tests, 86.97% branch-aware coverage, 29/29 Golden cases, 46 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, the applicant-copy structural contract, local illustration path/format/size/accessibility checks, the deterministic evidence-export round trip, 97 adversarial no-storage operations-package checks, and 77 local-source onboarding contract checks. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, illustration-decoding/tablet-hierarchy, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, local-source intake, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -568,8 +570,26 @@ coverage. The profile also lists a local-onboarding checklist for a maintainer
 considering a local layer: operative ordinance sections and effective dates;
 current forms, checklists, fees, and process pages; official URLs with
 source-check dates and content fingerprints; project/parcel scope, exceptions,
-and unresolved questions; plus a named review owner and re-verification
+and unresolved questions; plus accountable owner-role IDs and a re-verification
 cadence. A source link alone never creates a local rule.
+
+That checklist now has a separate, machine-testable offline intake contract at
+[`data/onboarding/local-source-intake-template.json`](data/onboarding/local-source-intake-template.json).
+The read-only validator accepts an empty `not_run` template, an in-progress
+collection, or a complete `prepared_for_review` package. It strictly binds the
+five source roles, source IDs/HTTPS URLs/fingerprints/check dates, operative
+passage text and enactment/effective/check dates, project/parcel scope,
+candidate exceptions, unresolved conflicts, open questions, and planned
+accountable owner-role IDs/cadence. It binds every operative passage to the
+declared ordinance role, rejects noncanonical metadata and malformed URLs,
+and limits UTF-8 JSON input to 1 MiB. Historical CLI replay never reports
+current readiness and emits its validation date and earliest recheck date. It
+never accepts a reviewed, approved, encoded, or published
+state, cannot change matching, and does not authenticate a publisher or create
+a real local layer. The committed template contains no jurisdiction or source
+data and all owner, cadence, review, and approval fields remain null/`not_run`.
+It is outside evidence export profile v1; a filled partner copy needs a
+separate data-classification and export decision.
 
 A changed dependency in the adopted source-state receipt visibly places its
 affected statewide inventory and any affected local source record on a
@@ -669,6 +689,9 @@ explanation sidecar and keeps a separate `/trust` route.
 - `src/permit_pathways/review_queue.py` and `review_queue_cli.py`: portable,
   fingerprint-bound source-change worklists and separate human decision
   ledgers that cannot clear holds or republish output
+- `src/permit_pathways/local_source_onboarding.py` and
+  `local_source_onboarding_cli.py`: strict read-only validation for a portable
+  local-source intake whose maximum state is `prepared_for_review`
 - `src/permit_pathways/deployment_smoke.py`: read-only public-route and
   generated-coverage-index deployment check
 - `src/permit_pathways/conformance_evaluation.py`: strict `not_run` manifest
@@ -698,6 +721,9 @@ explanation sidecar and keeps a separate `/trust` route.
 - `data/validation/beta-operations-readiness.json`: portable 17-control,
   nine-approval no-storage beta plan; all execution and approval evidence is
   null/`not_run`
+- `data/onboarding/local-source-intake-template.json`: generic `not_run`
+  local-source collection template with no jurisdiction, source, owner,
+  review, or approval evidence
 - `data/availability/woodland-preapproved-adu-program.json`: official-page
   evidence and recheck boundary for the future-state Woodland simulation
 - `data/readiness/`: the Woodland workflow, synthetic packet, review-pending

@@ -119,12 +119,45 @@ The profile also displays a local-onboarding checklist rather than silently
 filling gaps: operative ordinance sections and effective dates;
 current forms, checklist, fee, and process pages; official URLs, source-check
 dates, and content fingerprints; project/parcel scope, exceptions, and open
-questions; and a named review owner with a re-verification cadence. A source
-link alone cannot create a local rule. The checklist is not an uploader,
-authoring workflow, or validation of those future inputs. The navigator is
-therefore a bounded statewide routing aid, not an ordinance scraper,
-local-code finder, parcel lookup, local compliance determination, or statewide
-permit service.
+questions; and an accountable review-owner role with a re-verification cadence. A source
+link alone cannot create a local rule. The browser checklist is not an
+uploader or authoring workflow. A separate offline intake contract validates
+the shape and completeness of those future inputs without publishing them.
+The navigator is therefore a bounded statewide routing aid, not an ordinance
+scraper, local-code finder, parcel lookup, local compliance determination, or
+statewide permit service.
+
+#### Local-source onboarding intake (implemented tooling; template not run)
+
+`data/onboarding/local-source-intake-template.json` is a portable, generic
+schema-version-1 intake with no encoded jurisdiction or local source. The
+dependency-light loader and read-only CLI validate exact keys, unique sorted
+stable IDs, the five required official-source roles, HTTPS URL shape, source
+content fingerprints and check dates, and exact operative-passage text
+fingerprints bound to the ordinance's enactment, effective, and check dates.
+The same record carries project scope, parcel-fact provenance and fail-closed
+unknown handling, candidate exceptions, unresolved source conflicts, direct
+open questions, planned accountable source/review/approval/publication role
+IDs, and a re-verification cadence. Every operative passage source must equal
+the declared ordinance-role source set. Input is bounded to 1 MiB of UTF-8
+JSON; duplicate keys, non-finite values, excessive nesting, malformed/control-
+bearing URLs, and noncanonical metadata fail closed. Historical CLI replay is
+explicitly labeled, reports its validation and earliest recheck dates, and
+cannot emit current `ready_for_review: true`.
+
+The lifecycle is intentionally one-way only as far as collection:
+`not_run` → `collection_in_progress` → `prepared_for_review`. The validator
+has no reviewed, approved, encoded, or published state. Review and approval
+evidence fields must remain null, conflicts cannot be marked resolved, and a
+fixed claim boundary says the record cannot establish operative law, create a
+rule, prove comprehensive coverage, determine compliance or eligibility, or
+record human or jurisdiction approval. A `prepared_for_review` intake is an
+input to a future, separate fingerprint-bound review/authoring/publication
+workflow; it is not that workflow and is not bundled into the public browser.
+The empty template is also outside public/synthetic evidence export profile
+v1. The current schema records role IDs rather than people; a filled partner
+intake could still contain unpublished candidate work and needs a separate
+data-classification and export-profile decision.
 
 One bounded browser continuation is implemented for the canonical made-up
 Woodland sample as a **source-bound future-state simulation**. The City's
