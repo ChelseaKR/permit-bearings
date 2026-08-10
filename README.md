@@ -94,6 +94,10 @@ decision boundary are in
 
 ## Run it
 
+The verification commands require Python 3.12, `uv`, and Node.js 24. Browser
+checks additionally install the locked npm dependencies and Playwright's
+Chromium build.
+
 ```sh
 make verify                                        # locked Python quality/security/data gates
 npm ci && npx playwright install chromium          # one-time browser test setup
@@ -121,6 +125,7 @@ PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli build \
   --freeze-id public-synthetic-evidence-2026-08-09 \
   --frozen-on 2026-08-09                       # committed public/synthetic data only
 make evidence-export-check                     # disposable build/verify/restore round trip
+node scripts/check_applicant_copy.mjs           # structural locale/pseudolocale contract
 python3 -m http.server 8765                         # full static showcase
 PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
 # The Python server exposes the landing at /index.html and tools at
@@ -169,10 +174,10 @@ still needs a person.
 | CI/CD | Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. |
 | Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. The proposed no-storage beta runbook still requires host request-metadata and operational-system review because those records sit outside application telemetry. Storage, telemetry, uploads, or external model calls would trigger a new architecture and operational review. |
 | Accessibility | Axe runs on all five public pages plus populated candidate-route and valid packet states; Lighthouse covers seven public page states. Browser tests also check 320px and 390px reflow, compact mobile navigation, the Spanish handoff language boundary, labeled mobile evidence records, document-level overflow, and the print summary's isolated print-media layout. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps physical-device, virtual-keyboard, keyboard, screen-reader, zoom, forced-colors, printed-output, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
-| Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
+| Internationalization | Applies. `make verify` enforces English/Spanish catalog shape, stable option identifiers, formatter arity, static and formatter placeholders, nonblank singular/plural output, and a copy-leaf pseudo-expansion transform. This is structural automation only: it does not generate or render a complete pseudolocale catalog, and mixed-language acceptance and native Spanish semantic review remain pre-pilot work in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 689 public Python tests, 86.31% branch-aware coverage, 29/29 Golden cases, 45 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, the deterministic evidence-export round trip, and 97 adversarial no-storage operations-package checks. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes 698 public Python tests, 86.31% branch-aware coverage, 29/29 Golden cases, 45 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, the applicant-copy structural contract, the deterministic evidence-export round trip, and 97 adversarial no-storage operations-package checks. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
