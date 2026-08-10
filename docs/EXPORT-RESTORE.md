@@ -121,8 +121,10 @@ workflow registry and requires closure over that registry's referenced
 workflow inputs and outputs. This is a portable membership guarantee, not
 evidence that another jurisdiction is implemented, reviewed, or approved.
 
-The later `data/conformance/evaluations/heldout-v1/manifest.json`, its evaluator
-and CLI, the beta-operations ADR/runbook/ledger/validator/tests, and any future
+The later `data/conformance/evaluations/heldout-v1/manifest.json` and its
+evaluator/CLI, the `data/validation/source-change-release-v1/` null-evidence
+receipt templates and their validator/CLI, the beta-operations
+ADR/runbook/ledger/validator/tests, and any future
 frozen cases, answer key, blind predictions, execution or approval receipts,
 or results are outside export profiles v1 and v2. Exporting those artifacts requires a
 separately reviewed future profile/version with an updated membership,

@@ -1,0 +1,36 @@
+{
+  "claim_boundary": "This receipt records separately verified rollback evidence. Validation does not run or authenticate Git, inspect the live deployment, deploy, restore data, authenticate external receipt IDs, or change source-review holds.",
+  "effects": {
+    "validator_authenticates_external_evidence": false,
+    "validator_deploys": false,
+    "validator_mutates_repository": false,
+    "validator_restores_data": false
+  },
+  "publication_receipt": {
+    "receipt_fingerprint": null,
+    "receipt_id": null
+  },
+  "receipt_id": "source-change-rollback-template",
+  "receipt_type": "source_change_rollback",
+  "release_binding": {
+    "decision_ledger_fingerprint": null,
+    "source_snapshot_fingerprint": null,
+    "source_snapshot_id": null,
+    "worklist_fingerprint": null,
+    "worklist_id": null
+  },
+  "rollback": {
+    "actor_code": null,
+    "completed_at": null,
+    "hold_state": null,
+    "reason": null,
+    "restored_commit_sha": null,
+    "restored_source_snapshot_fingerprint": null,
+    "restored_source_snapshot_id": null,
+    "restored_url": null,
+    "triggered_at": null,
+    "verification_receipt_id": null
+  },
+  "schema_version": 1,
+  "status": "not_run"
+}
