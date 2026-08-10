@@ -3089,6 +3089,29 @@ function renderDashboard() {
       `${nHcd} have known HCD letter history.`;
     const coverageScore = document.getElementById("coverageScore");
     if (coverageScore) coverageScore.textContent = JURIS.length;
+
+    const nNoHcd = JURIS.length - nHcd;
+    const coverageMeter = document.getElementById("coverageMeter");
+    if (coverageMeter) {
+      coverageMeter.setAttribute(
+        "aria-label",
+        `Of ${JURIS.length} California jurisdictions, ${nHcd} have at least ` +
+        `one known HCD accountability letter on record; ${nNoHcd} have none ` +
+        "on record."
+      );
+      coverageMeter.innerHTML =
+        `<div class="seg-info" style="width:${100 * nHcd / JURIS.length}%"></div>` +
+        `<div class="seg-accent" style="width:${100 * nNoHcd / JURIS.length}%"></div>`;
+    }
+    const coverageMeterLegend = document.getElementById("coverageMeterLegend");
+    if (coverageMeterLegend) {
+      coverageMeterLegend.innerHTML =
+        `<span class="chart-legend-item"><span class="chart-swatch seg-info"
+          aria-hidden="true"></span>${nHcd} of ${JURIS.length} jurisdictions
+          have a known HCD letter</span>
+        <span class="chart-legend-item"><span class="chart-swatch seg-accent"
+          aria-hidden="true"></span>${nNoHcd} have none on record</span>`;
+    }
   }
   const verificationCounts = {
     machine_linked: 0,
@@ -4451,19 +4474,39 @@ function readinessStatusSummary(data, current) {
   };
 }
 
+const READINESS_STATUS_STYLE = {
+  missing: { label: "Reported missing", css: "seg-missing" },
+  conflicting: { label: "Reported conflicts", css: "seg-other" },
+  needs_staff_review: { label: "Need confirmation", css: "seg-review" },
+  not_evaluated: { label: "Not evaluated", css: "seg-other" },
+  present: { label: "Reported present", css: "seg-present" },
+  not_applicable: { label: "Not applicable", css: "seg-na" },
+};
+
+function readinessBreakdownMeter(entries, total) {
+  const segments = entries.map(([status, count]) =>
+    `<div class="${READINESS_STATUS_STYLE[status].css}"
+      style="width:${100 * count / total}%"></div>`
+  ).join("");
+  const sentence = `Of ${total} checklist items, ${entries.map(([status, count]) =>
+    `${count} ${READINESS_STATUS_STYLE[status].label.toLowerCase()}`
+  ).join(", ")}.`;
+  return `<div class="meter packet-meter" role="img"
+    aria-label="${esc(sentence)}">${segments}</div>`;
+}
+
 function readinessCountMarkup(data) {
-  const entries = [
-    ["Reported missing", readinessCount(data, "missing")],
-    ["Reported conflicts", readinessCount(data, "conflicting")],
-    ["Need confirmation", readinessCount(data, "needs_staff_review")],
-    ["Not evaluated", readinessCount(data, "not_evaluated")],
-    ["Reported present", readinessCount(data, "present")],
-    ["Not applicable", readinessCount(data, "not_applicable")],
-  ].filter(([, count]) => count > 0);
-  return `<dl class="packet-counts" aria-label="Finding counts">
-    ${entries.map(([label, count]) =>
-      `<div><dt>${esc(label)}</dt><dd>${count}</dd></div>`
-    ).join("")}
+  const entries = Object.keys(READINESS_STATUS_STYLE)
+    .map(status => [status, readinessCount(data, status)])
+    .filter(([, count]) => count > 0);
+  const total = entries.reduce((sum, [, count]) => sum + count, 0);
+  const meter = total ? readinessBreakdownMeter(entries, total) : "";
+  return `${meter}<dl class="packet-counts" aria-label="Finding counts">
+    ${entries.map(([status, count]) => {
+      const style = READINESS_STATUS_STYLE[status];
+      return `<div><dt><span class="chart-swatch ${style.css}"
+        aria-hidden="true"></span>${esc(style.label)}</dt><dd>${count}</dd></div>`;
+    }).join("")}
   </dl>`;
 }
 

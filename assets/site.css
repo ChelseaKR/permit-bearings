@@ -2105,6 +2105,70 @@ blockquote {
   background: var(--yellow);
 }
 
+/* Part-to-whole breakdown segments (packet evidence, statewide coverage).
+   Distinct from .m-good/.m-bad/.m-warn above: those mark a single pass/fail
+   split and are tuned as text-on-pale-fill tokens; these mark 2-5 categories
+   at once as filled bars, so they use ramp steps validated for large-fill
+   CVD separation and contrast rather than the badge-text tokens. */
+.meter .seg-present,
+.chart-swatch.seg-present {
+  background: var(--success-700);
+}
+
+.meter .seg-review,
+.chart-swatch.seg-review {
+  background: var(--warning-500);
+}
+
+.meter .seg-missing,
+.chart-swatch.seg-missing {
+  background: var(--danger-500);
+}
+
+.meter .seg-na,
+.chart-swatch.seg-na {
+  background: var(--info-700);
+}
+
+/* Fallback for the rarely populated conflicting/not_evaluated categories;
+   shares one color since both are structurally zero in the committed
+   fixture today. Pick a distinct validated color if that changes. */
+.meter .seg-other,
+.chart-swatch.seg-other {
+  background: var(--gray-600);
+}
+
+.meter .seg-info,
+.chart-swatch.seg-info {
+  background: var(--info-700);
+}
+
+.meter .seg-accent,
+.chart-swatch.seg-accent {
+  background: var(--accent1-700);
+}
+
+.chart-swatch {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-right: 0.35rem;
+  vertical-align: -0.05em;
+}
+
+.chart-legend-item {
+  display: inline-block;
+  margin-right: 1.2rem;
+}
+
+.chart-legend-item:last-child {
+  margin-right: 0;
+}
+
+.coverage-meter-label {
+  margin-top: 1.6rem;
+}
+
 .simulation-box {
   background: var(--primary-100);
   border-left: 0.25rem solid var(--primary-900);
