@@ -1,12 +1,13 @@
 # Public/synthetic evidence export and restore
 
-Status: implemented tooling for the repository's current public and synthetic
-evidence set. This is not a production applicant-data export, a backup system,
-a contractual offboarding procedure, partner acceptance, or a beta result.
+Status: implemented tooling for one pinned 58-file schema-v1 public/synthetic
+evidence profile. It is not an exhaustive export of later repository
+artifacts. This is not a production applicant-data export, a backup system, a
+contractual offboarding procedure, partner acceptance, or a beta result.
 
 ## What the package proves
 
-The schema-v1 package is a deterministic, standard ZIP containing only the
+The schema-v1 package is a deterministic, standard ZIP containing only the 58
 files named by
 [`public-synthetic-evidence-v1.json`](../data/export/public-synthetic-evidence-v1.json).
 Its manifest binds the exact Git commit, freeze ID and date, artifact roles,
@@ -54,7 +55,7 @@ The optional `--repository-commit-sha` argument is accepted only when it is
 the full lowercase SHA of the verified `HEAD`. The destination must not exist;
 there is no merge or force mode. Each successful command prints the validated
 manifest as JSON. `make evidence-export-check` performs a disposable
-build/verify/restore round trip for the current committed profile.
+build/verify/restore round trip for the pinned schema-v1 committed profile.
 
 Build and verify use cross-platform Python standard-library formats. Schema-v1
 restore currently publishes with the operating system's no-replace directory
@@ -95,11 +96,18 @@ publish guidance.
 
 ## Privacy and evidence boundary
 
-The exact profile includes the current official/public source copies,
+The pinned 58-file profile includes its selected official/public source copies,
 portable rules and sources, Golden and conformance development fixtures,
 synthetic Woodland readiness and journey records, jurisdiction/HCD snapshots,
 generated evidence, and the prepared validation ledgers. It also includes the
 repository license, third-party notices, and provenance record.
+
+The later `data/conformance/evaluations/heldout-v1/manifest.json`, its evaluator
+and CLI, and any future frozen cases, answer key, blind predictions, or result
+receipts are outside export profile v1. Exporting those artifacts requires a
+separately reviewed future profile/version with an updated membership,
+classification, and claim boundary; their presence elsewhere in the repository
+does not make the v1 package incomplete against its own pinned contract.
 
 Every payload except the self-referential profile is pinned by its raw digest.
 Public-state assertions additionally require the mutable validation records

@@ -86,6 +86,7 @@ npm run test:a11y                                  # axe, reflow, and journey-st
 npm run test:perf                                  # Lighthouse category budgets
 PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip --lat 38.5449 --lon -121.7442
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
+PYTHONPATH=src python3 -m permit_pathways.conformance_evaluation_cli validate-plan
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
 PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff
 PYTHONPATH=src python3 -m permit_pathways.harness --fetch \
@@ -145,7 +146,7 @@ still needs a person.
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 489 public Python tests, 85.11% branch-aware coverage, 29/29 Golden cases, 41 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, and the deterministic evidence-export round trip. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes 591 public Python tests, 85.83% branch-aware coverage, 29/29 Golden cases, 41 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, and the deterministic evidence-export round trip. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -332,6 +333,56 @@ statewide accuracy evaluation, legal interpretation, or proof that required
 language is present. Findings point staff or counsel to a candidate provision,
 state source, and documented precedent for review.
 
+The held-out evaluation contract is implemented as a validated
+`status: not_run` planning manifest in
+`data/conformance/evaluations/heldout-v1/manifest.json`; the evaluation itself
+is still planned. The strict Python interface in
+`src/permit_pathways/conformance_evaluation.py` validates the plan, frozen case
+set, a key carrying two declared blind reviewer records and adjudication, and
+blind predictions; it can
+generate blind predictions, score raw pairs, and write a result exclusively
+while returning its out-of-band SHA-256. No cases, key, predictions, result,
+or run receipt exists. The CLI exposes `validate-plan`; blind `predict` accepts
+frozen cases, an output path, timestamp, and declared commit SHA but
+intentionally has no answer-key argument. `score` requires the frozen cases,
+blind prediction receipt, and key carrying the declared reviewer/adjudication
+records. `validate-result` reloads those frozen inputs and the result, then
+recomputes the bounded pair outcomes and raw partitions before accepting the
+receipt.
+Both write paths refuse to overwrite an existing output, return the
+whole-artifact SHA-256, and use exit 2 for invalid input or output. The plan
+pins the current scanner and nine-check registry, defines the scoring unit as
+one `(case_id, check_id)` pair, and permits only
+`should_flag`, `should_stay_quiet`, or separately counted
+`reference_abstain` reference judgments. Flag and quiet mean only that the
+exact passage should enter or stay out of that exact check's review queue;
+quiet does not mean conformant. Per active check, the future official corpus
+must contain at least one targeted flag pair and one preselected candidate
+near-miss quiet pair; incidental findings cannot satisfy that coverage, and
+synthetic controls stay separately denominated. Development-source exclusions
+carry canonical URLs and retained digests when available. The case-set schema
+requires a custodian's near-duplicate-review attestation, while the manifest
+fixes the exclusion disposition; semantic overlap review remains external.
+Scoring must cover the full case-by-active-check Cartesian
+product so unexpected cross-check flags cannot be omitted. Targeted coverage
+uses one target check per case; multi-target cases are unsupported in v1. The
+six raw counts must remain recomputable overall, per check, and separately for
+official and synthetic strata from pair-level observations.
+The case set, answer key, blind predictions, result path, evaluator hash, and
+all freeze, prediction, and scoring receipts remain null until
+official passages are independently collected, fingerprinted, reviewed,
+adjudicated, and frozen. A future receipt must record freeze, blind prediction,
+answer-key unblinding, and scoring in that order. Unblinding retires that
+corpus for future scanner versions; any post-run tuning needs a newly selected
+corpus. The binary scanner has no machine-abstention output; an execution error
+must fail rather than become an abstention. A future result must bind every
+input digest internally; its whole-artifact SHA-256 is recorded out of band
+because the result cannot contain its own byte hash. The result binds the
+manifest digest directly. Receipt commit SHAs are
+recorded bindings; this interface does not retrieve or authenticate Git
+objects. Until that external work and a bound run exist, there are no held-out
+precision, recall, accuracy, or statewide-coverage results to report.
+
 Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 (ODI / GovOps / CHHA / GO-Biz). See [PROVENANCE.md](PROVENANCE.md).
 
@@ -347,9 +398,12 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 
 - Decision support, never a legal agent; abstention over confabulation.
 - Rules, sources, cases, and review artifacts use portable files. A pinned,
-  deterministic ZIP can export and restore-verify the current public and
-  synthetic evidence set without vendor-only storage. This is not a
-  production applicant-data export, contractual ownership/offboarding,
+  deterministic ZIP can export and restore-verify the pinned schema-v1 public
+  and synthetic evidence set without vendor-only storage. The held-out
+  evaluation planning artifact and any future cases, answer key, or results
+  are outside export profile v1 and require a separately reviewed future
+  profile version. This is not a production applicant-data export,
+  contractual ownership/offboarding,
   partner acceptance, backup, or CPRA workflow. This prototype has no
   accounts, uploads, or applicant-data store.
 - A production applicant-data flow would require deployment-specific privacy,
@@ -570,6 +624,12 @@ explanation sidecar and keeps a separate `/trust` route.
   ledgers that cannot clear holds or republish output
 - `src/permit_pathways/deployment_smoke.py`: read-only public-route and
   generated-coverage-index deployment check
+- `src/permit_pathways/conformance_evaluation.py`: strict `not_run` manifest
+  validation and future frozen-case, blind-prediction, adjudication, and raw
+  scoring contracts for the presence-based scanner
+- `src/permit_pathways/conformance_evaluation_cli.py`: `validate-plan`, blind
+  `predict`, declared-reviewer-key `score`, and recomputing `validate-result`
+  commands with exclusive prediction/result writes
 - `src/permit_pathways/evidence_export.py` and `evidence_export_cli.py`:
   deterministic, Git-bound public/synthetic evidence packaging, verification,
   and inert restore
@@ -579,6 +639,9 @@ explanation sidecar and keeps a separate `/trust` route.
 - `src/permit_pathways/harness/`: verification runner and CLI
 - `data/rules/`: the cited rule base; `data/golden/`: Golden cases with
   explicit positive and negative rule-dependency IDs
+- `data/conformance/evaluations/heldout-v1/manifest.json`: validated
+  `not_run` contract for a future independently frozen scanner evaluation;
+  no cases, answer key, blind predictions, execution, or result is recorded
 - `data/explanations/plain-language.json`: English/Spanish explanation drafts
 - `data/validation/rule-verification.json`: the rule verification-level
   ledger; every current entry is `machine_linked`

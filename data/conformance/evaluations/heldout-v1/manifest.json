@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "evaluation_id": "conformance-heldout-v1",
+  "status": "not_run",
+  "scoring_unit": "case_check_pair",
+  "scanner": {
+    "module": "permit_pathways.conformance",
+    "scanner_path": "src/permit_pathways/conformance.py",
+    "scanner_sha256": "0628bf6e81d7432371d152ecb039f1a3721e9931f2e24704940bacaa8a7eecaa",
+    "checks_path": "data/conformance/checks.json",
+    "checks_sha256": "bc4fc081f0cde1cb6c503cc5e44bb374077002d23fdc982f3f76e54828fe69d0",
+    "check_ids": [
+      "adu-owner-occupancy-requirement",
+      "height-cap-below-state",
+      "parking-above-one-space",
+      "sb9-outdated-fire-exclusion",
+      "setback-above-four-feet",
+      "size-cap-conflict",
+      "stale-statutory-citation",
+      "subjective-design-standard",
+      "unit-count-undercount"
+    ],
+    "evaluator_path": "src/permit_pathways/conformance_evaluation.py",
+    "evaluator_sha256": null
+  },
+  "freeze": {
+    "freeze_id": null,
+    "corpus_frozen_at": null,
+    "corpus_repository_commit_sha": null,
+    "prediction_generated_at": null,
+    "prediction_repository_commit_sha": null,
+    "answer_key_unblinded_at": null,
+    "scoring_run_at": null,
+    "scoring_repository_commit_sha": null,
+    "corpus_status": "not_frozen"
+  },
+  "inputs": {
+    "cases_path": null,
+    "cases_sha256": null,
+    "answer_key_path": null,
+    "answer_key_sha256": null,
+    "predictions_path": null,
+    "predictions_sha256": null
+  },
+  "output": {
+    "result_path": null
+  },
+  "reference_labels": [
+    "should_flag",
+    "should_stay_quiet",
+    "reference_abstain"
+  ],
+  "raw_count_fields": [
+    "expected_flag_observed_flag",
+    "expected_flag_observed_quiet",
+    "expected_quiet_observed_flag",
+    "expected_quiet_observed_quiet",
+    "reference_abstain",
+    "machine_abstain"
+  ],
+  "coverage_contract": {
+    "pair_universe": "full_case_check_cartesian_product",
+    "target_checks_per_case": 1,
+    "multi_target_cases_supported": false,
+    "official_targeted_pairs_per_check": {
+      "should_flag": 1,
+      "should_stay_quiet": 1
+    },
+    "synthetic_targeted_pairs_per_check": {
+      "should_flag": 0,
+      "should_stay_quiet": 0
+    },
+    "required_category_ids": [],
+    "incidental_findings_count_toward_coverage": false,
+    "synthetic_controls_reported_separately": true,
+    "reporting_grains": [
+      "overall",
+      "per_check",
+      "official_targeted",
+      "synthetic_targeted",
+      "official_incidental",
+      "synthetic_incidental"
+    ]
+  },
+  "development_source_exclusions": [
+    {
+      "source_id": "hcd-santa-clara-findings-2025-06-24",
+      "canonical_url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/santa-clara-cou-adu-sb-9-findings-062425.pdf",
+      "retained_raw_sha256": "d9808cdff77f79d191bf5c04d557c0d545d0c4bdf2b4f0b68dbd99b30b8a2a5e",
+      "reason": "Santa Clara passages and expected flags shaped the scanner's development regression fixture.",
+      "near_duplicate_disposition": "Materially overlapping passages are excluded before freeze."
+    },
+    {
+      "source_id": "hcd-laguna-beach-letter-2024-09-19",
+      "canonical_url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/lagunabeach-sb-9-ta-09192024.pdf",
+      "retained_raw_sha256": null,
+      "reason": "Laguna Beach precedent informed the owner-occupancy check.",
+      "near_duplicate_disposition": "Materially overlapping passages are excluded before freeze."
+    },
+    {
+      "source_id": "hcd-fort-bragg-letter-2025-02-19",
+      "canonical_url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/fort-bragg-hau-1106-sb9-ord-02192025.pdf",
+      "retained_raw_sha256": null,
+      "reason": "Fort Bragg precedent informed the size-cap check.",
+      "near_duplicate_disposition": "Materially overlapping passages are excluded before freeze."
+    },
+    {
+      "source_id": "hcd-riverside-letter-2025-03-21",
+      "canonical_url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/riverside-hau-1143-ta-sb9-03212025.pdf",
+      "retained_raw_sha256": null,
+      "reason": "Riverside precedent informed the setback check.",
+      "near_duplicate_disposition": "Materially overlapping passages are excluded before freeze."
+    },
+    {
+      "source_id": "hcd-adu-handbook-2026-03",
+      "canonical_url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/adu-handbook-update.pdf",
+      "retained_raw_sha256": "ec499e12c08974d8e25af352539b23afc8c26bc7dd200453bd35796de3188e6a",
+      "reason": "The HCD ADU Handbook informed multiple check definitions and their state-law explanations.",
+      "near_duplicate_disposition": "Materially overlapping passages are excluded before freeze."
+    },
+    {
+      "source_id": "san-diego-ordinance-scan-2026-07-27",
+      "canonical_url": "https://docs.sandiego.gov/municode/MuniCodeChapter14/Ch14Art01Division03.pdf",
+      "retained_raw_sha256": "f0170dcda45555662641df1690dbc94e7e6f52c629da571f14d85e2960f49cb7",
+      "reason": "The committed San Diego extracted-text scan is a development result and cannot serve as held-out material; the retained digest binds the extracted text artifact.",
+      "near_duplicate_disposition": "Materially overlapping passages are excluded before freeze."
+    }
+  ],
+  "external_blockers": [
+    "Retrieve and fingerprint exact official passages from sources that did not influence scanner development, reject excluded or materially overlapping passages, and satisfy the predeclared official targeted-pair coverage for every active check.",
+    "Retain two independent qualified reviewers' initial pair judgments, identities, qualifications, methods, dates, controlling-law and check-registry as-of dates, then adjudicate every disagreement with a named adjudicator, cited rationale, and version-bound receipts.",
+    "Assign independent freeze custody; bind cases, blind predictions, answer key, scanner, checks, evaluator, and commits in freeze/run/unblind order, then retire the corpus for future scanner versions after unblinding."
+  ],
+  "claim_boundary": "This manifest plans evaluation of review-queue behavior only. Status is not_run: cases, answer key, blind predictions, result, evaluator hash, freeze receipt, execution commits, scoring time, and unblinding time are absent. should_flag and should_stay_quiet mean only that an exact passage should enter or stay out of one exact check's review queue; quiet is not a conformance judgment. reference_abstain takes precedence: those pairs are excluded from binary scoring and counted only as reference_abstain. Every other scored pair must enter exactly one expected-flag-or-quiet by observed-flag-or-quiet cell. The full case-by-active-check Cartesian product is required, so unexpected cross-check flags cannot be omitted. Each case has exactly one target check in v1; multi-target cases are unsupported. The scanner has binary flag-or-quiet output, machine_abstain must remain zero, and an execution error must fail the run. Blind predictions must preserve each case_id/check_id pair's observed-flag value and finding count so all aggregates are recomputable. Official coverage requires one targeted should_flag pair and one preselected candidate near-miss should_stay_quiet pair per active check; unrelated incidental findings cannot satisfy that coverage, and synthetic controls are separately denominated. The case schema requires a custodian attestation and disposition that materially overlapping passages were excluded; the interface does not detect semantic overlap or prove reviewer independence or qualifications. Any future report is limited to the six named raw counts reported overall, per check, and for the official-targeted, synthetic-targeted, and incidental strata. Each result must internally bind the manifest digest, evaluation and freeze IDs, scanner, checks, evaluator, cases, predictions, and answer-key digests and record corpus, prediction, and scoring commit SHAs; those recorded SHAs do not authenticate Git objects. The operator records the whole result artifact's SHA-256 out of band because a result cannot contain its own byte hash. This supports no compliance or accuracy claim, no precision or recall claim, and no statewide-coverage claim. A future run must preserve freeze, prediction, unblind, and scoring chronology; revealing the answer key retires that corpus for subsequent scanner versions, and post-run tuning requires a newly selected corpus."
+}
