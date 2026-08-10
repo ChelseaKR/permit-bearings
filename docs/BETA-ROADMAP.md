@@ -23,8 +23,10 @@ workflow.
 All 19 published rule records are currently `machine_linked`, with zero named
 human reviews and zero jurisdiction approvals. The prepared content-review,
 participant, manual-access, Spanish, partner, and source-change-rehearsal
-evidence remains `not_run` or pending. Automated checks cannot promote any of
-those states.
+evidence remains `not_run` or pending. The held-out scanner manifest is also
+`not_run`: it has no case set, answer key, blind predictions, result, evaluator
+or result hash, or freeze/prediction/scoring receipt. Automated checks cannot
+promote any of those states.
 
 Current capability boundaries are canonical in
 [`PRODUCT-CONTEXT.md`](PRODUCT-CONTEXT.md#capability-truth). Current automated
@@ -71,14 +73,14 @@ versions are never combined.
 | Frozen artifact | Exact SHA, URL, freeze date, source snapshot and receipt, route/workflow/packet fingerprints, and a passing internal dry run are recorded. The same commit passes repository verification, browser accessibility checks, Lighthouse budgets, production smoke tests, and rollback verification. | Automation exists; the external-evidence artifact lock is `not_run`. | Mostly autonomous; deployed URL required |
 | Content authority | Two independent qualified reviewers classify 100% of reachable requirement mappings and action drafts. For the prepared 25-item workflow, at least 22 of 25 rows agree initially; every disagreement is sourced, suppressed, or routed to staff; zero blocking content defects remain. A differently sized pilot must freeze its threshold before review. | Two reviewer slots are `not_run`; no completed content-review claim exists. | External reviewers |
 | Review levels | Every rule and explanation reachable in the beta path is at least `human_reviewed`, bound to reviewer, method, date, exact version, citation fingerprint, and full-rule fingerprint. Local records use `jurisdiction_approved` only with institutional authorization. | All 19 rules are effectively `machine_linked`. | External reviewers and jurisdiction authority |
-| Deterministic evaluation | The local Golden set includes positive, negative, boundary, ambiguous, wrong-jurisdiction, local/state-conflict, stale, and unsupported cases, with at least one case per category and every material rule boundary. All expected IDs and withheld states pass; zero unknown or conflicting material fact is treated favorably. Held-out fixtures and raw result counts are reported separately from development fixtures. | Twenty-nine structured Golden cases exist, but there is no staff-adjudicated held-out set for an active local workflow. | Autonomous harness; external answer-key review |
+| Deterministic evaluation | The local Golden set includes positive, negative, boundary, ambiguous, wrong-jurisdiction, local/state-conflict, stale, and unsupported cases, with at least one case per category and every material rule boundary. All expected IDs and withheld states pass; zero unknown or conflicting material fact is treated favorably. Held-out fixtures and raw result counts are reported separately from development fixtures. | Twenty-nine structured Golden cases exist. A validated planned held-out scanner manifest records `not_run`, per-check official flag/targeted-quiet minima, structured development-source and near-duplicate exclusions, and a blind freeze/prediction/unblind/scoring sequence. Its case, answer-key, prediction, result, evaluator-hash, and execution-receipt fields are null; there is no independently adjudicated corpus or result for an active local workflow. | Autonomous harness; external source custody and answer-key review |
 | Packet behavior | Every requirement condition is exercised across applicable `present`, `missing`, `not applicable`, `conflicting`, `needs staff review`, and `not evaluated` states. No material false-favorable finding remains, and the interface never relabels presence as completeness or compliance. | Implemented for one synthetic 25-item manifest; no real or redacted packet evaluation exists. | Autonomous fixtures; external content adjudication |
 | Applicant evidence | Six same-version sessions meet the prepared cohort rules. At least 5/6 correctly describe candidate guidance, 5/6 correctly find source status and unknown escalation, and 5/6 identify the packet gap and next action. Median route time is at most 300 seconds, median packet time at most 360 seconds, no more than one repeated navigation-blocker session occurs, and there are zero confident critical over-trust errors. | Six scorecards are prepared and `not_run`. | External recruitment and moderation |
 | Problem evidence | At least three participants, including at least two primary beneficiaries, describe a specific recent pain, consequence, and workaround; at least one domain participant reports monthly-or-more recurrence. Raw counts and denominators remain visible. | No participant evidence exists. | External recruitment |
 | Human access | All 21 version-bound manual checks pass, including keyboard, VoiceOver/Safari, NVDA, physical iOS and Android, zoom/reflow, forced colors, three print browsers, and PDF/assistive-technology review. Automated axe and Lighthouse results remain separate. | All manual rows are `not_run`. | Human and assistive-technology testers |
 | Language | If Spanish is presented as applicant-ready within the beta, every reachable Spanish source-derived record has exact-version semantic-parity approval and `ES-USABILITY-JOURNEY` passes. Otherwise Spanish stays explicitly review-pending and outside the beta claim. | Nineteen semantic-review rows and Spanish usability are `not_run`. | Qualified Spanish reviewers and participants |
 | Maintainability | One controlled source change completes detection, affected/unaffected mapping, review, approval, republication, and rollback. The receipt records named human owners, elapsed and active-role time, defects, and the prospective partner's maintenance-burden decision. | Rehearsal is prepared and `not_run`; no human owner or burden decision is recorded. | External reviewer and partner |
-| Ownership and export | A jurisdiction-owned export of sources, rules, requirements, review receipts, fixtures, dependencies, and checksums opens and restores without vendor-only tooling. | A deterministic, Git-bound package now builds, verifies, and restores the exact public/synthetic evidence set. Its pinned profile excludes known sensitive records but is not a privacy classifier, and it does not establish contractual ownership, a production offboarding test, or partner acceptance. | Implemented mechanism; external partner acceptance and any sensitive-data design |
+| Ownership and export | A jurisdiction-owned export of sources, rules, requirements, review receipts, fixtures, dependencies, and checksums opens and restores without vendor-only tooling. | A deterministic, Git-bound package now builds, verifies, and restores the pinned schema-v1 public/synthetic evidence set. Its pinned profile excludes known sensitive records but is not a privacy classifier, and it does not establish contractual ownership, a production offboarding test, or partner acceptance. The later held-out planning artifact and future evaluation inputs/results are outside profile v1 and require a separately reviewed profile version. | Implemented mechanism; external partner acceptance and any sensitive-data design |
 | Privacy, records, and security | The first beta remains public/synthetic/redacted with no accounts, uploads, applicant store, telemetry, external model call, or write-back. Any expanded flow first records fields and purpose, access, retention/deletion, subprocessors, CPRA search/export and legal-hold behavior, threat model, control mapping, incident path, and deployment-specific approvals. | The static demo has a documented no-storage boundary; production controls are not approved. | Autonomous drafts; external approvals if scope expands |
 | Partner and decision | A credible partner supplies a written next step with an owner role and date, accepts the maintenance plan, and signs a `proceed`, `extend`, `pivot`, or `stop` decision after every supporting receipt. | Partner gate and aggregate decision are pending. | External partner |
 
@@ -99,7 +101,7 @@ or permitting-outcome claims.
 
 ### Now — autonomous foundations
 
-This roadmap tranche completes five machine-testable foundations without
+This roadmap tranche completes six machine-testable foundations without
 changing the product's maturity claim:
 
 - the Statewide Coverage Navigator is deployed as orientation, not statewide
@@ -110,11 +112,25 @@ changing the product's maturity claim:
   remedy, packet, and journey work plus a separate blank decision ledger; and
 - a repeatable deployment smoke command checks the five public routes and the
   generated 541-profile/17-rule artifact contract; and
-- a pinned canonical ZIP can package, verify, and inertly restore the current
-  public/synthetic evidence set while rejecting uncommitted selected files,
+- a pinned canonical ZIP can package, verify, and inertly restore the pinned
+  schema-v1 public/synthetic evidence set while rejecting uncommitted selected
+  files,
   asserted validation-state drift, unsafe members, and existing destinations;
   its allowlist excludes known sensitive material but is not a privacy
-  classifier.
+  classifier; and
+- a validated held-out scanner manifest freezes the evaluation semantics,
+  current scanner/check hashes, development-source exclusions, raw count
+  names and reporting grains, the full pair universe, per-check targeted-pair
+  roles/minima, blind execution chronology, and claim boundary while keeping
+  every case, answer-key, prediction, result path, evaluator hash, and execution
+  field explicitly null and `not_run`; a future result-artifact hash is
+  recorded out of band. A strict Python interface validates each future input,
+  generates blind predictions, scores raw pairs, and writes an exclusive
+  receipt. Its CLI exposes `validate-plan`, blind `predict` without an
+  answer-key argument, and `score` with frozen predictions plus the declared
+  reviewer/adjudication key. `validate-result` reloads all frozen inputs and
+  recomputes the recorded result before accepting it; the tooling does not
+  supply the external evidence.
 
 The remaining autonomous work is:
 
@@ -130,9 +146,13 @@ The remaining autonomous work is:
    complete assignments and dispositions with authorized people, and add
    separate approval, publication, and rollback receipts without allowing the
    decision ledger to clear a hold by itself.
-5. Add held-out evaluation support with frozen answer keys, category coverage,
-   raw confusion and abstention counts, and explicit separation from
-   development fixtures.
+5. After independent source collection, two-reviewer adjudication, and freeze
+   custody are available, execute the held-out scanner contract with frozen
+   cases and answer key; generate blind pair-level predictions before
+   unblinding, publish the six recomputable raw confusion/abstention counts,
+   and keep development fixtures and synthetic controls separate. Record the
+   freeze, prediction, unblind, and scoring chronology, then retire the
+   revealed corpus from use with future scanner versions.
 6. Draft the no-storage beta data flow, threat model, control map, records/CPRA
    workflow, incident path, support runbook, and release/rollback checklist.
    Keep approval fields pending.
@@ -195,6 +215,7 @@ language approval, or jurisdiction acceptance.
 | Rule review levels | [`rule-verification.json`](../data/validation/rule-verification.json) |
 | Adopted source-state receipt | [`current.json`](../data/source-status/current.json) |
 | Current Woodland program boundary | [`woodland-preapproved-adu-program.json`](../data/availability/woodland-preapproved-adu-program.json) |
+| Held-out scanner evaluation contract (`not_run`) | [`manifest.json`](../data/conformance/evaluations/heldout-v1/manifest.json) |
 
 Machine-readable ledgers remain authoritative for activity state. Narrative
 documentation may explain a recorded result, but it cannot turn `not_run`,

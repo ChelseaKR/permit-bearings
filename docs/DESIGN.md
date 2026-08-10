@@ -319,6 +319,61 @@ abstention path is a structured intake with no matching encoded rule.
 - **Golden set:** 29 structured intake records map to expected rule IDs.
   They are regression fixtures, not natural-language answer, citation, or
   jurisdiction-acceptance evaluations.
+- **Held-out conformance evaluation contract (implemented strict evaluator
+  scaffold/Python interface; planned execution):**
+  `data/conformance/evaluations/heldout-v1/manifest.json` is a validated
+  `not_run` record, not an evaluation result. The Python interface validates
+  the plan, frozen cases, a key carrying two distinct declared blind reviewer
+  records and adjudication, and blind predictions; it can generate predictions,
+  score raw pairs, and exclusively
+  write a receipt while returning its out-of-band SHA-256. The CLI provides
+  `validate-plan`; blind `predict`, which has no answer-key argument; and
+  `score`, which requires frozen predictions and the key carrying declared
+  reviewer/adjudication records. `validate-result` requires the frozen cases,
+  key, predictions, and result, then recomputes and validates every binding,
+  pair, partition, raw count, chronology, and lifecycle field. Invalid
+  input/output returns exit 2, and result writes do not overwrite. The
+  interface supplies none of the external evidence. The plan pins the current
+  scanner
+  and nine-check registry, excludes the sources that shaped scanner
+  development, and fixes `(case_id, check_id)` as the scoring unit.
+  `should_flag` and `should_stay_quiet` mean only that the exact passage enters
+  or stays out of one check's staff/counsel review queue; neither is a
+  compliance judgment. `reference_abstain` pairs are excluded from the binary
+  comparison and counted separately. The scanner itself can only flag or stay
+  quiet, so `machine_abstain` is fixed at zero and an execution error fails
+  the run. Each active check requires one targeted official flag pair and one
+  preselected candidate near-miss quiet pair. Incidental findings do
+  not satisfy that coverage; synthetic controls remain separately denominated.
+  Every case is scored against every active check, preventing unexpected
+  cross-check flags from being omitted. Each case has exactly one target check;
+  schema v1 does not permit multi-target reuse. Raw counts must be
+  reconstructable overall, per check, and by official/synthetic stratum from
+  the complete pair observations.
+  Excluded development sources are URL-bound and use retained digests where
+  available. The case-set schema requires a custodian attestation that
+  materially overlapping passages were excluded, while the manifest fixes the
+  exclusion disposition; semantic overlap review remains external. Cases,
+  answer key,
+  blind predictions, result, evaluator hash, and execution receipts remain
+  null until official passages are retrieved and fingerprinted, two independent
+  qualified reviewers' initial judgments are retained and adjudicated, and an
+  independent custodian freezes the inputs. A future receipt must record corpus
+  freeze, blind prediction, answer-key unblinding, and scoring; the interface
+  validates that recorded order. Pair-level predictions retain the observed
+  flag and finding count so the aggregates remain recomputable. A future
+  result binds the manifest
+  digest, evaluation and freeze IDs, scanner, checks, evaluator, cases,
+  predictions, and
+  answer-key digests internally; its whole-artifact SHA-256 is returned and
+  recorded out of band because it cannot contain its own byte hash. Receipt
+  commit SHAs are recorded bindings, not authenticated Git-object evidence.
+  Revealing the key retires that corpus for subsequent scanner versions; any
+  post-run tuning requires a newly selected corpus. Any eventual report starts
+  and ends with the six raw
+  confusion/abstention counts, keeps synthetic controls separate, and does not
+  create a compliance, accuracy, precision, recall, or statewide-coverage
+  claim.
 - **Verification runner:** replays the deterministic matcher, checks recorded
   verification dates, and can mark citation-matched sources stale.
 - **Verification-level ledger (implemented evidence surface, no promoted
@@ -527,9 +582,12 @@ private sibling staging directory, replays the canonical loaders, and exposes
 a new destination only after every check succeeds. It never uses ZIP
 extraction helpers, merges into a destination, or changes publication state.
 
-This is an evidence-data portability mechanism for the current public and
-synthetic repository scope. It is not a sensitive-data export, applicant
-record, proof of authenticity, backup/disaster-recovery system, copyright or
+This is an evidence-data portability mechanism for the pinned schema-v1 public
+and synthetic repository scope. The later held-out evaluation planning
+artifact and any future cases, answer key, or results are outside profile v1;
+adding them requires a separately reviewed profile version. It is not a
+sensitive-data export, applicant record, proof of authenticity,
+backup/disaster-recovery system, copyright or
 contractual ownership finding, partner acceptance, CPRA workflow, completed
 review, or beta evidence. The operator and maintenance contract is in
 `docs/EXPORT-RESTORE.md`.

@@ -22,6 +22,10 @@ Start at `/` for the product boundary, then use `/review.html`,
   findings letter to Santa Clara County. For that named six-provision
   regression fixture, the scanner reproduces HCD's six expected review flags.
   It is a review queue, not a compliance verdict or statewide accuracy claim.
+- A separate held-out evaluation manifest now fixes the future scoring and
+  evidence boundary, but its status is `not_run` and its cases, answer key,
+  blind predictions, result, evaluator hash, and execution receipts are null.
+  Do not present it as accuracy, precision, recall, or statewide evidence.
 - Positioning sentence: "Permit platforms can help applicants navigate and
   file. This component makes the rule, handout, or AI corpus auditable as its
   sources change and can sit inside somebody else's stack."
@@ -189,6 +193,10 @@ Start at `/` for the product boundary, then use `/review.html`,
 - 29 structured golden scenarios replay in the browser. They prove matcher
   regression behavior, not natural-language accuracy or jurisdiction
   acceptance.
+- The held-out scanner contract is separately validated but unrun. Its future
+  unit is one passage/check pair; it will report recomputable raw flag/quiet and
+  abstention counts only after official passages, two independent initial
+  reviews, adjudication, freeze custody, and blind predictions exist.
 
 ### 3b. Data-driven determinations, not self-attestation (2 min)
 - The parking exemption and 18-ft height allowance both turn on transit
@@ -243,8 +251,9 @@ Start at `/` for the product boundary, then use `/review.html`,
   ordinance-status warning; it does not establish the operative ordinance or
   decide which category applies. The current `verified_on` field records dated
   source evidence, not jurisdiction or counsel approval. Encoding was
-  machine-assisted; a named human review level and held-out evaluation are
-  next. The public evidence page shows the actual review level: all 19 rules
+  machine-assisted; a named human review level and execution of the separately
+  `not_run` held-out contract are next. The public evidence page shows the
+  actual review level: all 19 rules
   are `machine_linked`, with no named review. The separate Woodland checklist
   mapping has automated source, schema, and fingerprint checks, but no
   applicant, planner, counsel, or jurisdiction validation; its official
