@@ -613,7 +613,9 @@ def test_nested_favorable_field_is_rejected_after_all_digest_updates(
     _mutate_artifact(repository, gate, "external_evidence_gate", mutate)
     _refresh_export_profile_for_artifact(repository, gate, "external_evidence_gate")
 
-    with pytest.raises(ValueError, match="nested schema"):
+    # The closed-world key check on `decision` now rejects the unknown
+    # favorable field before the raw-byte pin backstop is ever reached.
+    with pytest.raises(ValueError, match="unknown fields: approved"):
         load_beta_gate(repository / DEFAULT_RECORD_PATH, repository_root=repository)
 
 
@@ -1021,3 +1023,166 @@ def test_explicit_record_rejects_a_symbolic_link_ancestor(tmp_path: Path) -> Non
 
     with pytest.raises(ValueError, match="symbolic-link ancestors"):
         load_beta_gate(alias / record.name, repository_root=ROOT, today=TODAY)
+
+
+def test_bound_artifact_hard_link_is_rejected(tmp_path: Path) -> None:
+    repository = _repository(tmp_path)
+    gate = _payload()
+    binding = _binding(gate, "content_review")
+    path = repository / binding["path"]
+    target = repository / _binding(gate, "participant_sessions")["path"]
+    path.unlink()
+    path.hardlink_to(target)
+    binding["sha256"] = f"sha256:{hashlib.sha256(target.read_bytes()).hexdigest()}"
+    gate["aggregate"]["artifact_set_fingerprint"] = artifact_set_fingerprint(
+        gate["artifact_bindings"]
+    )
+    _replace_json(repository / DEFAULT_RECORD_PATH, gate)
+
+    with pytest.raises(ValueError, match="linked files"):
+        load_beta_gate(repository / DEFAULT_RECORD_PATH, repository_root=repository)
+
+
+def test_missing_content_review_gate_key_is_rejected_cleanly(tmp_path: Path) -> None:
+    repository = _repository(tmp_path)
+    gate = _payload()
+
+    def mutate(payload: dict[str, Any]) -> None:
+        del payload["gate"]["initial_agreement_count"]
+
+    _mutate_artifact(repository, gate, "content_review", mutate)
+
+    with pytest.raises(ValueError, match=r"content review\.gate: missing fields"):
+        load_beta_gate(repository / DEFAULT_RECORD_PATH, repository_root=repository)
+
+
+def test_missing_rehearsal_simulation_target_source_id_is_rejected_cleanly(
+    tmp_path: Path,
+) -> None:
+    repository = _repository(tmp_path)
+    gate = _payload()
+
+    def mutate(payload: dict[str, Any]) -> None:
+        del payload["simulation_contract"]["target_source_id"]
+
+    _mutate_artifact(repository, gate, "source_change_rehearsal", mutate)
+
+    with pytest.raises(
+        ValueError, match=r"rehearsal\.simulation_contract: missing fields"
+    ):
+        load_beta_gate(repository / DEFAULT_RECORD_PATH, repository_root=repository)
+
+
+def test_artifact_lock_source_snapshot_tamper_is_rejected(tmp_path: Path) -> None:
+    repository = _repository(tmp_path)
+    gate = _payload()
+
+    def mutate(payload: dict[str, Any]) -> None:
+        payload["artifact_lock"]["source_snapshot"][0]["sha256"] = "not-a-sha256"
+
+    _mutate_artifact(repository, gate, "external_evidence_gate", mutate)
+
+    with pytest.raises(ValueError, match=r"source_snapshot.*sha256"):
+        load_beta_gate(repository / DEFAULT_RECORD_PATH, repository_root=repository)
+
+
+def test_artifact_lock_source_snapshot_unknown_field_is_rejected(
+    tmp_path: Path,
+) -> None:
+    repository = _repository(tmp_path)
+    gate = _payload()
+
+    def mutate(payload: dict[str, Any]) -> None:
+        payload["artifact_lock"]["source_snapshot"][0]["verified"] = True
+
+    _mutate_artifact(repository, gate, "external_evidence_gate", mutate)
+
+    with pytest.raises(ValueError, match=r"source_snapshot.*unknown fields"):
+        load_beta_gate(repository / DEFAULT_RECORD_PATH, repository_root=repository)
+
+
+def test_decision_bounded_public_claim_cannot_be_blanked(tmp_path: Path) -> None:
+    repository = _repository(tmp_path)
+    gate = _payload()
+
+    def mutate(payload: dict[str, Any]) -> None:
+        payload["decision"]["bounded_public_claim"] = ""
+
+    _mutate_artifact(repository, gate, "external_evidence_gate", mutate)
+
+    with pytest.raises(ValueError, match="bounded_public_claim"):
+        load_beta_gate(repository / DEFAULT_RECORD_PATH, repository_root=repository)
+
+
+def test_decision_permitted_recommendations_cannot_be_expanded(
+    tmp_path: Path,
+) -> None:
+    repository = _repository(tmp_path)
+    gate = _payload()
+
+    def mutate(payload: dict[str, Any]) -> None:
+        payload["decision"]["permitted_recommendations"].append("approved_statewide")
+
+    _mutate_artifact(repository, gate, "external_evidence_gate", mutate)
+
+    with pytest.raises(ValueError, match="permitted_recommendations"):
+        load_beta_gate(repository / DEFAULT_RECORD_PATH, repository_root=repository)
+
+
+def test_recruitment_null_count_is_rejected(tmp_path: Path) -> None:
+    repository = _repository(tmp_path)
+    gate = _payload()
+
+    def mutate(payload: dict[str, Any]) -> None:
+        payload["recruitment"]["reviewers"]["contacted"] = None
+
+    _mutate_artifact(repository, gate, "external_evidence_gate", mutate)
+
+    with pytest.raises(ValueError, match="recruitment"):
+        load_beta_gate(repository / DEFAULT_RECORD_PATH, repository_root=repository)
+
+
+def test_rehearsal_aggregate_defects_found_cannot_be_filled(tmp_path: Path) -> None:
+    repository = _repository(tmp_path)
+    gate = _payload()
+
+    def mutate(payload: dict[str, Any]) -> None:
+        payload["aggregate"]["defects_found"] = 3
+
+    _mutate_artifact(repository, gate, "source_change_rehearsal", mutate)
+
+    with pytest.raises(ValueError, match=r"rehearsal\.aggregate\.defects_found"):
+        load_beta_gate(repository / DEFAULT_RECORD_PATH, repository_root=repository)
+
+
+def test_aggregate_float_does_not_satisfy_expected_integer_count(
+    tmp_path: Path,
+) -> None:
+    payload = _payload()
+    payload["aggregate"]["changed_source_count"] = 0.0
+    with pytest.raises(ValueError, match="aggregate"):
+        load_beta_gate(_write_record(tmp_path, payload), repository_root=ROOT)
+
+
+def test_exact_rejects_float_for_int_inside_nested_objects() -> None:
+    assert beta_gate_module._strict_equal(0, 0) is True
+    assert beta_gate_module._strict_equal(0.0, 0) is False
+    assert beta_gate_module._strict_equal({"count": 0.0}, {"count": 0}) is False
+    assert beta_gate_module._strict_equal({"count": 0}, {"count": 0}) is True
+    assert beta_gate_module._strict_equal([0], [0.0]) is False
+    with pytest.raises(ValueError, match=r"field: expected \{'count': 0\}"):
+        beta_gate_module._exact({"count": 0.0}, {"count": 0}, "field")
+
+
+def test_all_numbers_zero_rejects_none_and_string_leaves() -> None:
+    with pytest.raises(ValueError, match="unexecuted zero count"):
+        beta_gate_module._all_numbers_zero({"contacted": None}, "field")
+    with pytest.raises(ValueError, match="unexecuted zero count"):
+        beta_gate_module._all_numbers_zero({"contacted": "0"}, "field")
+    beta_gate_module._all_numbers_zero({"contacted": 0, "nested": {"a": 0}}, "field")
+
+
+def test_text_rejects_zero_width_space_only_content() -> None:
+    with pytest.raises(ValueError, match="non-blank trimmed text"):
+        beta_gate_module._text("\u200b", "field")
+    assert beta_gate_module._text("visible text", "field") == "visible text"

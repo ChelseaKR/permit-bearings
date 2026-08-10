@@ -13,6 +13,7 @@ import os
 import re
 import stat
 import tempfile
+import unicodedata
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
@@ -65,6 +66,7 @@ _STABLE_ID = re.compile(r"^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$")
 _TOKEN_ID = re.compile(r"^[A-Za-z][A-Za-z0-9]*(?:[-_.][A-Za-z0-9]+)*$")
 _SEMVER = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 _FINGERPRINT = re.compile(r"^sha256:[0-9a-f]{64}$")
+_RAW_SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 _TOP_LEVEL_KEYS = {
@@ -549,6 +551,8 @@ def _array(value: Any, field: str) -> list[Any]:
 def _text(value: Any, field: str) -> str:
     if not isinstance(value, str) or not value or value != value.strip():
         raise ValueError(f"{field}: expected non-blank trimmed text")
+    if all(unicodedata.category(character)[0] in ("C", "Z") for character in value):
+        raise ValueError(f"{field}: expected non-blank trimmed text")
     return value
 
 
@@ -561,8 +565,23 @@ def _exact_keys(value: dict[str, Any], expected: set[str], field: str) -> None:
         raise ValueError(f"{field}: missing fields: {', '.join(missing)}")
 
 
+def _strict_equal(value: Any, expected: Any) -> bool:
+    if type(value) is not type(expected):
+        return False
+    if isinstance(expected, dict):
+        return set(value) == set(expected) and all(
+            _strict_equal(value[key], expected[key]) for key in expected
+        )
+    if isinstance(expected, list):
+        return len(value) == len(expected) and all(
+            _strict_equal(item, other)
+            for item, other in zip(value, expected, strict=True)
+        )
+    return bool(value == expected)
+
+
 def _exact(value: Any, expected: Any, field: str) -> None:
-    if type(value) is not type(expected) or value != expected:
+    if not _strict_equal(value, expected):
         raise ValueError(f"{field}: expected {expected!r}")
 
 
@@ -671,7 +690,7 @@ def _read_repository_file(
 
     canonical = _canonical_relative_path(relative, field)
     parts = PurePosixPath(canonical).parts
-    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW
     file_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW
     descriptors: list[int] = []
     try:
@@ -680,7 +699,7 @@ def _read_repository_file(
         for part in parts[:-1]:
             directory_fd = os.open(
                 part,
-                directory_flags | os.O_NOFOLLOW,
+                directory_flags,
                 dir_fd=directory_fd,
             )
             descriptors.append(directory_fd)
@@ -689,6 +708,8 @@ def _read_repository_file(
         metadata = os.fstat(file_fd)
         if not stat.S_ISREG(metadata.st_mode):
             raise ValueError(f"{field}: expected a regular file")
+        if metadata.st_nlink != 1:
+            raise ValueError(f"{field}: linked files are not allowed")
         if metadata.st_size > maximum:
             raise ValueError(f"{field}: exceeds byte limit")
         chunks: list[bytes] = []
@@ -733,6 +754,8 @@ def _read_external_record(path: Path) -> tuple[dict[str, Any], bytes]:
         metadata = os.fstat(file_fd)
         if not stat.S_ISREG(metadata.st_mode):
             raise ValueError("aggregate gate: expected a regular file")
+        if metadata.st_nlink != 1:
+            raise ValueError("aggregate gate: linked files are not allowed")
         if metadata.st_size > MAX_RECORD_BYTES:
             raise ValueError("aggregate gate: exceeds byte limit")
         chunks: list[bytes] = []
@@ -813,6 +836,10 @@ def _capture_repository_tree(  # noqa: C901
                 opened = os.fstat(file_fd)
                 if not stat.S_ISREG(opened.st_mode):
                     raise ValueError(f"snapshot tree {child}: expected a regular file")
+                if opened.st_nlink != 1:
+                    raise ValueError(
+                        f"snapshot tree {child}: linked files are not allowed"
+                    )
                 if opened.st_size > MAX_SNAPSHOT_FILE_BYTES:
                     raise ValueError(f"snapshot tree {child}: exceeds byte limit")
                 chunks: list[bytes] = []
@@ -832,7 +859,9 @@ def _capture_repository_tree(  # noqa: C901
                 ) from error
 
     try:
-        root_fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+        root_fd = os.open(
+            root, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW
+        )
         descriptors.append(root_fd)
         directory_fd = root_fd
         for part in PurePosixPath(base).parts:
@@ -1147,12 +1176,14 @@ def _all_numbers_zero(value: Any, field: str) -> None:
         if value != 0:
             raise ValueError(f"{field}: unexecuted count must be zero")
         return
-    if isinstance(value, dict):
+    elif isinstance(value, dict):
         for key, item in value.items():
             _all_numbers_zero(item, f"{field}.{key}")
     elif isinstance(value, list):
         for index, item in enumerate(value):
             _all_numbers_zero(item, f"{field}[{index}]")
+    else:
+        raise ValueError(f"{field}: expected an unexecuted zero count")
 
 
 def _validate_external_gate(payload: dict[str, Any]) -> None:
@@ -1160,6 +1191,36 @@ def _validate_external_gate(payload: dict[str, Any]) -> None:
     _stable_id(payload["gate_id"], "external gate.gate_id")
     _exact(payload["status"], "pending", "external gate.status")
     lock = _object(payload["artifact_lock"], "external gate.artifact_lock")
+    _exact_keys(
+        lock,
+        {
+            "lock_id",
+            "status",
+            "commit_sha",
+            "deployed_url",
+            "frozen_on",
+            "frozen_by_code",
+            "protocol_version",
+            "source_snapshot_id",
+            "source_snapshot_receipt_id",
+            "answer_key_version",
+            "thresholds_version",
+            "journey_id",
+            "journey_version",
+            "journey_fingerprint",
+            "fact_envelope_fingerprint",
+            "screening_case_id",
+            "screening_case_fingerprint",
+            "readiness_workflow_id",
+            "readiness_workflow_fingerprint",
+            "readiness_packet_id",
+            "readiness_packet_fingerprint",
+            "sample_urls",
+            "source_snapshot",
+            "internal_dry_run",
+        },
+        "external gate.artifact_lock",
+    )
     _exact(lock.get("status"), "not_run", "external gate.artifact_lock.status")
     _null_fields(
         lock,
@@ -1172,6 +1233,28 @@ def _validate_external_gate(payload: dict[str, Any]) -> None:
         },
         "external gate.artifact_lock",
     )
+    for index, item in enumerate(
+        _array(lock["source_snapshot"], "artifact_lock.source_snapshot")
+    ):
+        entry = _object(item, f"artifact_lock.source_snapshot[{index}]")
+        _exact_keys(
+            entry,
+            {"source_id", "sha256", "recorded_on"},
+            f"artifact_lock.source_snapshot[{index}]",
+        )
+        _stable_id(
+            entry["source_id"], f"artifact_lock.source_snapshot[{index}].source_id"
+        )
+        digest = _text(
+            entry["sha256"], f"artifact_lock.source_snapshot[{index}].sha256"
+        )
+        if not _RAW_SHA256.fullmatch(digest):
+            raise ValueError(
+                f"artifact_lock.source_snapshot[{index}].sha256: expected lowercase SHA-256"
+            )
+        _iso_date_value(
+            entry["recorded_on"], f"artifact_lock.source_snapshot[{index}].recorded_on"
+        )
     dry_run = _object(
         lock.get("internal_dry_run"), "external gate.artifact_lock.internal_dry_run"
     )
@@ -1193,6 +1276,29 @@ def _validate_external_gate(payload: dict[str, Any]) -> None:
     )
     external = _object(payload["external_evidence"], "external gate.external_evidence")
     partner = _object(external.get("partner_gate"), "external partner gate")
+    _exact_keys(
+        partner,
+        {
+            "gate_version",
+            "status",
+            "artifact_lock_id",
+            "tested_commit_sha",
+            "journey_id",
+            "journey_version",
+            "qualifying_written_next_steps",
+            "partner_category",
+            "next_step_type",
+            "owner_role",
+            "due_on",
+            "written_on",
+            "private_evidence_receipt_id",
+            "receipt_verified_on",
+            "receipt_verified_by_code",
+            "institutional_authorization",
+        },
+        "external partner gate",
+    )
+    _semver(partner["gate_version"], "external partner gate.gate_version")
     _exact(partner.get("status"), "pending", "external partner gate.status")
     _exact(
         partner.get("qualifying_written_next_steps"),
@@ -1220,6 +1326,22 @@ def _validate_external_gate(payload: dict[str, Any]) -> None:
         "external partner gate",
     )
     decision = _object(payload["decision"], "external gate.decision")
+    _exact_keys(
+        decision,
+        {
+            "status",
+            "decided_on",
+            "decision_owner_code",
+            "evaluated_on",
+            "evaluation_receipt_id",
+            "failure_reasons",
+            "recommendation",
+            "tested_commit_sha",
+            "bounded_public_claim",
+            "permitted_recommendations",
+        },
+        "external gate.decision",
+    )
     _exact(decision.get("status"), "pending", "external gate.decision.status")
     _null_fields(
         decision,
@@ -1234,6 +1356,14 @@ def _validate_external_gate(payload: dict[str, Any]) -> None:
         },
         "external gate.decision",
     )
+    _text(
+        decision["bounded_public_claim"], "external gate.decision.bounded_public_claim"
+    )
+    _exact(
+        decision["permitted_recommendations"],
+        ["proceed", "extend", "pivot", "stop"],
+        "external gate.decision.permitted_recommendations",
+    )
 
 
 def _validate_content_review(payload: dict[str, Any]) -> None:
@@ -1245,6 +1375,18 @@ def _validate_content_review(payload: dict[str, Any]) -> None:
         "content review.status",
     )
     lock = _object(payload["artifact_lock"], "content review.artifact_lock")
+    _exact_keys(
+        lock,
+        {
+            "status",
+            "execution_commit",
+            "deployed_url",
+            "frozen_on",
+            "freeze_owner_code",
+            "content_bindings",
+        },
+        "content review.artifact_lock",
+    )
     _exact(lock.get("status"), "pending", "content review.artifact_lock.status")
     _null_fields(
         lock,
@@ -1282,6 +1424,21 @@ def _validate_content_review(payload: dict[str, Any]) -> None:
                 f"{collection_name}[{index}]",
             )
     gate = _object(payload["gate"], "content review.gate")
+    _exact_keys(
+        gate,
+        {
+            "status",
+            "reviewers_completed",
+            "rows_completed",
+            "cross_cutting_checks_completed",
+            "all_disagreements_resolved",
+            "disagreement_count",
+            "eligible_for_applicant_testing",
+            "initial_agreement_count",
+            "known_blocking_content_defects",
+        },
+        "content review.gate",
+    )
     _exact(gate.get("status"), "not_run", "content review.gate.status")
     _exact(
         gate.get("reviewers_completed"), 0, "content review.gate.reviewers_completed"
@@ -1315,6 +1472,36 @@ def _validate_participants(payload: dict[str, Any]) -> None:
         "participant ledger.status",
     )
     lock = _object(payload["artifact_lock"], "participant ledger.artifact_lock")
+    _exact_keys(
+        lock,
+        {
+            "lock_id",
+            "status",
+            "commit_sha",
+            "deployed_url",
+            "frozen_on",
+            "frozen_by_code",
+            "source_snapshot_id",
+            "source_snapshot_receipt_id",
+            "protocol_version",
+            "answer_key_version",
+            "thresholds_version",
+            "journey_id",
+            "journey_version",
+            "journey_fingerprint",
+            "screening_case_id",
+            "screening_case_fingerprint",
+            "fact_envelope_fingerprint",
+            "readiness_workflow_id",
+            "readiness_workflow_fingerprint",
+            "readiness_packet_id",
+            "readiness_packet_fingerprint",
+            "landing_path",
+            "sample_entry_path",
+            "valid_journey_path",
+        },
+        "participant ledger.artifact_lock",
+    )
     _exact(lock.get("status"), "not_run", "participant ledger.artifact_lock.status")
     _null_fields(
         lock,
@@ -1432,6 +1619,29 @@ def _validate_manual(payload: dict[str, Any]) -> None:
         "manual ledger.status",
     )
     lock = _object(payload["artifact_lock"], "manual ledger.artifact_lock")
+    _exact_keys(
+        lock,
+        {
+            "execution_status",
+            "tested_commit",
+            "deployed_url",
+            "sample_entry_path",
+            "valid_journey_path",
+            "journey_id",
+            "journey_version",
+            "journey_fingerprint",
+            "screening_case_id",
+            "screening_case_fingerprint",
+            "fact_envelope_fingerprint",
+            "readiness_workflow_id",
+            "readiness_workflow_fingerprint",
+            "readiness_packet_id",
+            "readiness_packet_fingerprint",
+            "route_source_status_as_of",
+            "route_source_review_due_on",
+        },
+        "manual ledger.artifact_lock",
+    )
     _exact(
         lock.get("execution_status"),
         "not_run",
@@ -1498,6 +1708,25 @@ def _validate_rehearsal(payload: dict[str, Any]) -> None:
         "rehearsal.status",
     )
     lock = _object(payload["artifact_lock"], "rehearsal.artifact_lock")
+    _exact_keys(
+        lock,
+        {
+            "lock_id",
+            "status",
+            "baseline_commit_sha",
+            "baseline_deployed_url",
+            "source_snapshot_id",
+            "source_snapshot_receipt_id",
+            "journey_id",
+            "journey_version",
+            "journey_fingerprint",
+            "readiness_workflow_id",
+            "readiness_workflow_fingerprint",
+            "readiness_packet_id",
+            "readiness_packet_fingerprint",
+        },
+        "rehearsal.artifact_lock",
+    )
     _exact(lock.get("status"), "not_run", "rehearsal.artifact_lock.status")
     _null_fields(
         lock,
@@ -1507,6 +1736,76 @@ def _validate_rehearsal(payload: dict[str, Any]) -> None:
             "source_snapshot_receipt_id",
         },
         "rehearsal.artifact_lock",
+    )
+    simulation = _object(
+        payload["simulation_contract"], "rehearsal.simulation_contract"
+    )
+    _exact_keys(
+        simulation,
+        {
+            "change_kind",
+            "must_not_be_described_as_change_in_law",
+            "target_source_id",
+            "target_source_url",
+            "baseline_sha256",
+            "baseline_recorded_on",
+            "simulated_changed_sha256",
+            "changed_fixture_receipt_id",
+            "detection_method",
+            "readiness_command_argv",
+            "expected_source_state",
+            "expected_fail_closed_behavior",
+        },
+        "rehearsal.simulation_contract",
+    )
+    _stable_id(simulation["change_kind"], "rehearsal.simulation_contract.change_kind")
+    _exact(
+        simulation["must_not_be_described_as_change_in_law"],
+        True,
+        "rehearsal.simulation_contract.must_not_be_described_as_change_in_law",
+    )
+    _stable_id(
+        simulation["target_source_id"], "rehearsal.simulation_contract.target_source_id"
+    )
+    _text(
+        simulation["target_source_url"],
+        "rehearsal.simulation_contract.target_source_url",
+    )
+    baseline_sha256 = _text(
+        simulation["baseline_sha256"], "rehearsal.simulation_contract.baseline_sha256"
+    )
+    if not _RAW_SHA256.fullmatch(baseline_sha256):
+        raise ValueError(
+            "rehearsal.simulation_contract.baseline_sha256: expected lowercase SHA-256"
+        )
+    _iso_date_value(
+        simulation["baseline_recorded_on"],
+        "rehearsal.simulation_contract.baseline_recorded_on",
+    )
+    _null_fields(
+        simulation,
+        {"simulated_changed_sha256", "changed_fixture_receipt_id"},
+        "rehearsal.simulation_contract",
+    )
+    _text(
+        simulation["detection_method"], "rehearsal.simulation_contract.detection_method"
+    )
+    argv = _array(
+        simulation["readiness_command_argv"],
+        "rehearsal.simulation_contract.readiness_command_argv",
+    )
+    for index, token in enumerate(argv):
+        _text(
+            token,
+            f"rehearsal.simulation_contract.readiness_command_argv[{index}]",
+        )
+    _stable_id(
+        simulation["expected_source_state"],
+        "rehearsal.simulation_contract.expected_source_state",
+    )
+    _stable_id(
+        simulation["expected_fail_closed_behavior"],
+        "rehearsal.simulation_contract.expected_fail_closed_behavior",
     )
     stages = _array(payload["stages"], "rehearsal.stages")
     for index, item in enumerate(stages):
@@ -1518,12 +1817,41 @@ def _validate_rehearsal(payload: dict[str, Any]) -> None:
             f"rehearsal.stages[{index}]",
         )
     aggregate = _object(payload["aggregate"], "rehearsal.aggregate")
+    _exact_keys(
+        aggregate,
+        {
+            "status",
+            "stages_completed",
+            "rehearsals_completed",
+            "affected_requirements_confirmed",
+            "unaffected_controls_confirmed",
+            "defects_found",
+            "human_owner_recorded",
+            "republication_verified",
+            "acceptable_burden",
+            "acceptable_burden_decided_by_partner",
+        },
+        "rehearsal.aggregate",
+    )
     _exact(aggregate.get("status"), "not_run", "rehearsal.aggregate.status")
     _exact(aggregate.get("stages_completed"), 0, "rehearsal.aggregate.stages_completed")
     _exact(
         aggregate.get("rehearsals_completed"),
         0,
         "rehearsal.aggregate.rehearsals_completed",
+    )
+    _null_fields(
+        aggregate,
+        {
+            "affected_requirements_confirmed",
+            "unaffected_controls_confirmed",
+            "defects_found",
+            "human_owner_recorded",
+            "republication_verified",
+            "acceptable_burden",
+            "acceptable_burden_decided_by_partner",
+        },
+        "rehearsal.aggregate",
     )
     partner = _object(
         payload["partner_burden_decision"], "rehearsal.partner_burden_decision"
@@ -1534,12 +1862,51 @@ def _validate_rehearsal(payload: dict[str, Any]) -> None:
         set(partner) - {"status"},
         "rehearsal.partner_burden_decision",
     )
-    for field in ("execution", "publication_receipt"):
+    field_keys = {
+        "execution": {
+            "rehearsal_started_at",
+            "rehearsal_completed_at",
+            "maintainer_code",
+            "reviewer_code",
+            "human_owner_role",
+            "privacy_review_receipt_id",
+            "protocol_deviations",
+        },
+        "publication_receipt": {
+            "approval_receipt_id",
+            "republished_commit_sha",
+            "republished_url",
+            "republished_source_sha256",
+            "verification_receipt_id",
+            "rollback_receipt_id",
+        },
+    }
+    for field, expected_keys in field_keys.items():
         record = _object(payload[field], f"rehearsal.{field}")
+        _exact_keys(record, expected_keys, f"rehearsal.{field}")
         _null_fields(record, set(record), f"rehearsal.{field}")
     observed = _object(payload["observed_impact"], "rehearsal.observed_impact")
+    _exact_keys(
+        observed,
+        {
+            "detected_source_state",
+            "detected_sha256",
+            "affected_requirement_ids",
+            "affected_action_requirement_ids",
+            "affected_record_paths",
+            "unaffected_control_ids",
+            "dispositions",
+            "blocking_defects_found",
+        },
+        "rehearsal.observed_impact",
+    )
     _null_fields(observed, set(observed), "rehearsal.observed_impact")
     timing = _object(payload["timing"], "rehearsal.timing")
+    _exact_keys(
+        timing,
+        {"elapsed_minutes", "maintainer_active_minutes", "reviewer_active_minutes"},
+        "rehearsal.timing",
+    )
     _null_fields(timing, set(timing), "rehearsal.timing")
 
 
@@ -1566,13 +1933,11 @@ def _validate_reference_artifacts(
     )
 
 
-def _validate_rule_tree(snapshot: Path) -> None:
-    raw = _read_repository_file(
-        snapshot,
-        "data/rules/index.json",
-        "rule manifest",
-        maximum=MAX_ARTIFACT_BYTES,
-    )
+def _validate_rule_tree(snapshot_payloads: dict[str, bytes]) -> None:
+    try:
+        raw = snapshot_payloads["data/rules/index.json"]
+    except KeyError as error:
+        raise ValueError("rule manifest: missing from repository snapshot") from error
     manifest = _decode_json(raw, "rule manifest", maximum=MAX_ARTIFACT_BYTES)
     _exact_keys(manifest, {"schema_version", "files"}, "rule manifest")
     _exact(manifest["schema_version"], 1, "rule manifest.schema_version")
@@ -1587,10 +1952,12 @@ def _validate_rule_tree(snapshot: Path) -> None:
         raise ValueError("rule manifest.files: expected canonical JSON filenames")
     if declared != sorted(declared) or len(declared) != len(set(declared)):
         raise ValueError("rule manifest.files: expected sorted unique filenames")
+    rules_directory = PurePosixPath("data/rules")
     actual = sorted(
-        path.name
-        for path in (snapshot / "data/rules").iterdir()
-        if path.is_file() and path.name != "index.json"
+        PurePosixPath(relative).name
+        for relative in snapshot_payloads
+        if PurePosixPath(relative).parent == rules_directory
+        and PurePosixPath(relative).name != "index.json"
     )
     _exact(actual, declared, "rule manifest exact directory membership")
 
@@ -2077,10 +2444,10 @@ def _reference_currency_blockers(
             "external gate.answer_key.program_availability.checked_on: "
             "future dates are not allowed"
         )
-    if recheck_due_on < checked_on:
+    if recheck_due_on <= checked_on:
         raise ValueError(
             "external gate.answer_key.program_availability.recheck_due_on: "
-            "must not predate checked_on"
+            "must be after checked_on"
         )
     if (
         program.get("mode") != "future_state_simulation"
@@ -2464,7 +2831,7 @@ def load_beta_gate(
         data_payloads,
         data_directories,
     ) as (snapshot, snapshot_payloads, snapshot_directories):
-        _validate_rule_tree(snapshot)
+        _validate_rule_tree(snapshot_payloads)
         source_state = load_source_state_snapshot(
             snapshot / bindings["source_state"].path,
             snapshot / "data/sources.json",
