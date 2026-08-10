@@ -173,6 +173,38 @@ for (const [path, currentMobileLabel] of Object.entries(pages)) {
   }
 }
 
+test("decorative illustrations decode and keep the tablet boundary first", async ({
+  page,
+}) => {
+  await page.setViewportSize({width: 1280, height: 960});
+  for (const [path, selector] of [
+    ["/index.html", ".home-hero-visual img"],
+    ["/check.html", ".project-hero-visual img"],
+  ]) {
+    await page.goto(path);
+    const image = page.locator(selector);
+    await expect(image).toHaveAttribute("alt", "");
+    await expect(image.locator("xpath=..")).toHaveAttribute("aria-hidden", "true");
+    await expect.poll(() => image.evaluate(element => ({
+      complete: element.complete,
+      decoded: element.naturalWidth > 0 && element.naturalHeight > 0,
+    }))).toEqual({complete: true, decoded: true});
+  }
+
+  for (const width of [768, 928]) {
+    await page.setViewportSize({width, height: 1024});
+    await page.goto("/index.html");
+    const boundary = await page.locator(".home-boundary").boundingBox();
+    const visual = await page.locator(".home-hero-visual").boundingBox();
+    expect(boundary).not.toBeNull();
+    expect(visual).not.toBeNull();
+    expect(boundary.y + boundary.height).toBeLessThanOrEqual(1024);
+    expect(visual.y).toBeGreaterThanOrEqual(boundary.y + boundary.height);
+    expect(visual.height).toBeLessThanOrEqual(288);
+    await expectNoDocumentOverflow(page);
+  }
+});
+
 test("canonical journey gates the packet link on the editable applicability fact", async ({
   page,
 }) => {

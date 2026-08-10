@@ -88,6 +88,11 @@ imitating an agency website. The landing page gives the applicant check one
 primary action and keeps staff and assurance tools secondary. The applicant
 result presents submitted facts, grouped candidate records, citations, source
 currency, and uncertainty routing as service records rather than a dashboard.
+Project-specific machine-generated editorial illustrations on the landing and project-check
+introductions reuse the published primary/accent token palette and square-edge
+surface treatment. They are decorative orientation, not a substitute for
+headings, instructions, status, citations, or evidence; the project-check art
+is omitted when the layout collapses to one column.
 The evidence rail uses a gold structural rule to connect a decision-support
 result with the source record that constrains it.
 The result decision boundary composes the local `<ca-box>` hook with a native
