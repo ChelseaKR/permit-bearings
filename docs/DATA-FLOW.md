@@ -18,6 +18,81 @@ would require a separate data inventory, purpose and authority analysis,
 access controls, retention and deletion rules, public-records workflow,
 security review, and jurisdiction approval.
 
+## Proposed limited-beta operating flow (prepared, not approved)
+
+ADR 0002 proposes retaining the no-application-storage boundary for a first
+limited beta. The proposal, runbook, and portable control ledger are
+machine-testable planning artifacts; they do not represent a beta deployment,
+host review, rehearsal, approval, or partner decision.
+
+```text
+Public static HTML/CSS/JS + committed public/synthetic data
+    |
+    v
+Selected HTTPS host, DNS, and optional CDN
+    |   deployment provider/request-metadata/subprocessor review: not_run
+    v
+Applicant browser
+    |
+    +--> exact structured facts held in current page memory
+    |       purpose: deterministic candidate guidance, source status,
+    |       unresolved questions, and temporary print-oriented outputs
+    |       application network submission: none
+    |       cookie/local/session storage: none
+    |
+    +--> static repository data requests; no applicant answers attached
+    |
+    +--> optional official-source links cross into the linked site's boundary
+    |
+    +--> optional Browser Print / Save as PDF
+            user-controlled local artifact; no app retrieval/deletion path
+
+Application service applicant record store: none
+Application telemetry/runtime external model/writeback: none
+
+Separate operational systems may create records:
+repository/release + host/security + support + incident + partner review
+    |
+    +--> deployment-specific access/retention/deletion: not_run
+    +--> CPRA search/export and legal-hold routing: not_run
+    +--> privacy/security/records/partner approvals: not_run
+```
+
+The service-collected applicant field and purpose inventories are both empty.
+The browser-memory inventory is exact and limited to the structured names
+validated in `data/validation/beta-operations-readiness.json`: project type,
+recognized jurisdiction name/slug, the encoded ADU/JADU/SB 9 screening facts,
+and the bounded synthetic-journey applicability answer. The packet page
+accepts no applicant field or document; it replays committed synthetic data.
+Adding an address, APN, contact, permit number, upload, free text, identity,
+persistence, telemetry, runtime network/model request, or writeback changes
+this flow and requires a new ADR and approvals before implementation.
+
+“No storage” means no application-managed applicant record and no
+applicant-answer submission. It is not a claim that the network or host has no
+logs. The selected static host, DNS/CDN, linked official sites, repository,
+support system, incident system, and partner-controlled evaluation materials
+may process request or operational metadata under separate terms. Their
+actual fields, purposes, access, subprocessors, location, retention, deletion,
+export, and offboarding boundary remain unknown until deployment review.
+
+`src/permit_pathways/beta_operations.py` accepts only the fixed
+`prepared_not_approved` planning state: 17 exact controls are prepared, while
+all nine role approvals, future-beta deployment identifiers, host/subprocessor
+details, records rehearsals, decisions, and execution receipts remain
+null/`not_run`. It validates that pending contract; it does not inspect a host,
+execute the runbook, approve a system, or establish CPRA, Information
+Practices Act, SAM, or SIMM compliance. A later execution or approval record
+requires a separately reviewed schema.
+
+The role-based operational procedure in `docs/BETA-OPERATIONS-RUNBOOK.md`
+keeps retention/deletion, CPRA routing, incident triage, support, release,
+rollback, and escalation explicit. It also states that a records owner—not the
+application—must search authorized repository, deployment, source/review,
+support, and incident systems. The absence of an application applicant store
+must not be converted into a legal conclusion that no responsive record
+exists.
+
 ## Statewide jurisdiction-coverage path
 
 ```text
@@ -451,6 +526,12 @@ repository, or publish guidance. The archive and tree hashes are integrity and
 reproducibility records, not signatures, copyright ownership, partner
 acceptance, a backup, or a CPRA/sensitive-data export. The exact operational
 contract is in [`EXPORT-RESTORE.md`](EXPORT-RESTORE.md).
+
+The later held-out evaluation contract and the beta-operations ADR, runbook,
+ledger, validator, and tests are outside the pinned 58-file export profile v1.
+Their presence in the repository does not make that fixed package incomplete.
+A reviewed future profile version must classify and add them before an
+evidence handoff can claim to include them.
 
 ## AI boundary
 

@@ -103,8 +103,9 @@ generated evidence, and the prepared validation ledgers. It also includes the
 repository license, third-party notices, and provenance record.
 
 The later `data/conformance/evaluations/heldout-v1/manifest.json`, its evaluator
-and CLI, and any future frozen cases, answer key, blind predictions, or result
-receipts are outside export profile v1. Exporting those artifacts requires a
+and CLI, the beta-operations ADR/runbook/ledger/validator/tests, and any future
+frozen cases, answer key, blind predictions, execution or approval receipts,
+or results are outside export profile v1. Exporting those artifacts requires a
 separately reviewed future profile/version with an updated membership,
 classification, and claim boundary; their presence elsewhere in the repository
 does not make the v1 package incomplete against its own pinned contract.

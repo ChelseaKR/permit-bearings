@@ -63,6 +63,17 @@ Spanish semantic approval, completed rehearsal, or partner commitment is
 claimed. Inspect the current status on the live **Sources & limits** page or in
 [`data/validation/woodland-flagship-gate.json`](data/validation/woodland-flagship-gate.json).
 
+**Beta operations package:** **PREPARED / NOT APPROVED**. A proposed ADR,
+role-based runbook, portable control ledger, and strict validator now define a
+pilot-neutral public/static boundary with no accounts, uploads,
+application-managed applicant storage, browser persistence, application
+telemetry, runtime external model calls, or permitting-system writeback. Every
+deployment field, human approval, records rehearsal, and partner decision is
+still null/`not_run`. Static hosts and operational systems may separately
+process request or operational metadata and require deployment-specific
+review. See
+[`docs/BETA-OPERATIONS-RUNBOOK.md`](docs/BETA-OPERATIONS-RUNBOOK.md).
+
 **Made-up Woodland future-state route-to-packet simulation** (answer the
 applicability question to continue only if the availability record passes):
 https://chelseakr.github.io/permit-pathways/check.html?sample=adu
@@ -76,6 +87,10 @@ The measurable path from this automated-tested prototype to one bounded,
 active-jurisdiction beta is in [docs/BETA-ROADMAP.md](docs/BETA-ROADMAP.md).
 The execution, privacy, scoring, and claim rules for the external evidence
 gate are in [docs/VALIDATION-EVIDENCE.md](docs/VALIDATION-EVIDENCE.md).
+The proposed no-application-storage operating procedure and its pending
+decision boundary are in
+[docs/BETA-OPERATIONS-RUNBOOK.md](docs/BETA-OPERATIONS-RUNBOOK.md) and
+[ADR 0002](docs/adr/0002-retain-no-storage-beta-boundary.md).
 
 ## Run it
 
@@ -100,6 +115,7 @@ PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
 PYTHONPATH=src python3 -m permit_pathways.readiness_cli --as-of 2026-07-30
 PYTHONPATH=src python3 -m permit_pathways.review_queue_cli  # read-only source-change worklist
 PYTHONPATH=src python3 -m permit_pathways.deployment_smoke # live static-route/artifact smoke check
+PYTHONPATH=src python3 -m permit_pathways.beta_operations  # validates PREPARED / NOT APPROVED only
 PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli build \
   --output /tmp/permit-bearings-evidence.zip \
   --freeze-id public-synthetic-evidence-2026-08-09 \
@@ -117,6 +133,16 @@ queue with human work remaining, and `2` for invalid input or output. Neither
 its worklist nor its separate decision ledger changes the adopted source state
 or publishes anything. The deployment-smoke command returns only an
 availability/artifact-shape result.
+
+The beta-operations validator returns `0` only when the exact pilot-neutral
+planning package remains `prepared_not_approved`, every deployment and
+records-execution field remains null/`not_run`, all nine role approvals remain
+null/`not_run`, all 17 controls match the pinned contract, and the ADR/runbook
+raw-byte SHA-256 bindings still match. Exit `0` is schema evidence only; it
+cannot approve a beta,
+deployment, partner decision, privacy/security posture, records workflow, or
+legal compliance. A later execution or approval requires a separately
+reviewed schema.
 
 The evidence-export `build` command returns `0` only after its selected files
 are verified against Git `HEAD`, packaged in the single canonical ZIP
@@ -141,12 +167,12 @@ still needs a person.
 | Code Quality | Python 3.12 and development dependencies are locked; Ruff, strict mypy, 85% branch coverage, generated-data parity, and 29 golden cases run through `make verify`. Ruff enforces complexity 10 across the Python codebase; the former `WVR-007` loader/evaluator waiver has been retired. |
 | Security & Supply-Chain | Event-armed CodeQL, Bandit, pip-audit, gitleaks, zizmor, Dependabot, and Scorecard; all workflow actions are pinned to full commit SHAs and use scoped token permissions. |
 | CI/CD | Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. |
-| Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. Storage, telemetry, uploads, or external model calls would trigger a new operational design review. |
+| Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. The proposed no-storage beta runbook still requires host request-metadata and operational-system review because those records sit outside application telemetry. Storage, telemetry, uploads, or external model calls would trigger a new architecture and operational review. |
 | Accessibility | Axe runs on all five public pages plus populated candidate-route and valid packet states; Lighthouse covers seven public page states. Browser tests also check 320px and 390px reflow, compact mobile navigation, the Spanish handoff language boundary, labeled mobile evidence records, document-level overflow, and the print summary's isolated print-media layout. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps physical-device, virtual-keyboard, keyboard, screen-reader, zoom, forced-colors, printed-output, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
 | Internationalization | Applies, deferred to pre-pilot acceptance. The exact mixed-language boundary and required native Spanish review are recorded in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes 592 public Python tests, 85.83% branch-aware coverage, 29/29 Golden cases, 45 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, and the deterministic evidence-export round trip. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, or workflow are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes 689 public Python tests, 86.31% branch-aware coverage, 29/29 Golden cases, 45 browser checks, and seven Lighthouse page states at 1.00 accessibility and best practices, at least 0.96 performance, and at least 0.90 SEO, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, the deterministic evidence-export round trip, and 97 adversarial no-storage operations-package checks. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts plus distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, and multi-route accessible-name states. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -403,15 +429,19 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 - Rules, sources, cases, and review artifacts use portable files. A pinned,
   deterministic ZIP can export and restore-verify the pinned schema-v1 public
   and synthetic evidence set without vendor-only storage. The held-out
-  evaluation planning artifact and any future cases, answer key, or results
-  are outside export profile v1 and require a separately reviewed future
-  profile version. This is not a production applicant-data export,
+  evaluation planning artifact, beta-operations ADR/runbook/ledger/tooling,
+  and any future cases, answer key, execution receipt, approval, or result are
+  outside export profile v1 and require a separately reviewed future profile
+  version. This is not a production applicant-data export,
   contractual ownership/offboarding,
   partner acceptance, backup, or CPRA workflow. This prototype has no
   accounts, uploads, or applicant-data store.
-- A production applicant-data flow would require deployment-specific privacy,
-  retention, access-control, deletion, and public-records export review. This
-  prototype does not claim CPRA or Information Practices Act compliance.
+- A proposed beta operations package documents the current
+  no-application-storage boundary, deployment inventory, retention/deletion,
+  CPRA routing, incident, support, release, and rollback procedures. Every
+  deployment-specific approval and rehearsal remains null/`not_run`; it does
+  not establish CPRA, Information Practices Act, SAM, or SIMM compliance. Any
+  applicant-data flow would require a superseding architecture and review.
 - Dependency-light and designed to sit alongside existing permitting systems.
   Pilot integration, staffing, hosting, and cost evidence remain planned.
 - WCAG 2.2 AAA target with a static computed-contrast audit
@@ -638,6 +668,9 @@ explanation sidecar and keeps a separate `/trust` route.
 - `src/permit_pathways/evidence_export.py` and `evidence_export_cli.py`:
   deterministic, Git-bound public/synthetic evidence packaging, verification,
   and inert restore
+- `src/permit_pathways/beta_operations.py`: strict validator/CLI for the
+  pilot-neutral `prepared_not_approved` operating ledger; it rejects filled
+  deployment, approval, rehearsal, and receipt fields
 - `src/permit_pathways/rule_verification.py`: schema-v2
   machine-linked/human-reviewed/jurisdiction-approved claim evaluation for
   rule citations and full-rule records
@@ -650,6 +683,9 @@ explanation sidecar and keeps a separate `/trust` route.
 - `data/explanations/plain-language.json`: English/Spanish explanation drafts
 - `data/validation/rule-verification.json`: the rule verification-level
   ledger; every current entry is `machine_linked`
+- `data/validation/beta-operations-readiness.json`: portable 17-control,
+  nine-approval no-storage beta plan; all execution and approval evidence is
+  null/`not_run`
 - `data/availability/woodland-preapproved-adu-program.json`: official-page
   evidence and recheck boundary for the future-state Woodland simulation
 - `data/readiness/`: the Woodland workflow, synthetic packet, review-pending
@@ -680,6 +716,9 @@ explanation sidecar and keeps a separate `/trust` route.
 - `docs/PRODUCT-CONTEXT.md`: capability truth and opportunity priorities
 - `docs/BETA-ROADMAP.md`: evidence-gated path from tested prototype to one
   active-jurisdiction limited beta
+- `docs/BETA-OPERATIONS-RUNBOOK.md` and `docs/adr/0002-retain-no-storage-beta-boundary.md`:
+  proposed operating boundary, roles, release/incident/records procedures,
+  alternatives, and pending decisions
 - `docs/EXPORT-RESTORE.md`: package contract, commands, integrity model,
   privacy boundary, and maintenance rules
 - `docs/SHOWCASE-REMEDIATION-PLAN.md`: capability status, evidence, and known
