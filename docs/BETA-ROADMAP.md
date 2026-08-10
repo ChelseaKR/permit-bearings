@@ -38,6 +38,13 @@ Host request metadata and every deployment-specific privacy, security,
 records, access, accessibility, language, support, and hosting decision remain
 external work.
 
+A separate pilot-neutral aggregate is also **PREPARED / TESTED BETA NOT
+RUN**. It digest-binds the current specialized artifacts, reconciles their
+canonical roles and shared lock/prototype identity from one immutable input
+snapshot, and recomputes current currency plus all 14 exit categories as
+`not_run`. Its empty pilot scope and fixed false claim fields cannot be
+promoted by editing an aggregate row or coordinated nested hand edits.
+
 Current capability boundaries are canonical in
 [`PRODUCT-CONTEXT.md`](PRODUCT-CONTEXT.md#capability-truth). Current automated
 quality evidence is summarized in the
@@ -176,12 +183,23 @@ changing the product's maturity claim:
   browser validates that embedded contract but cannot inventory repository
   directories. A synthetic two-entry test proves build and review-queue
   traversal. Only the Woodland future-state simulation is committed; this is
-  not multiple active workflows.
+  not multiple active workflows; and
+- a pilot-neutral aggregate record and read-only CLI bind 12 existing
+  specialized ledgers/artifacts to exact canonical role paths and raw
+  digests; capture the complete `data/` tree and non-data dependencies once;
+  reject path, type, content, membership, and symlink drift; independently pin
+  every not-run ledger; accept changed/unverifiable arrays only through the
+  strict source-state semantics; rebuild the registry-selected packet and
+  journey; reconcile program availability and adopted dependencies; and
+  recompute current source/rule/reference currency plus 14 beta exit
+  categories as `not_run`. The schema accepts only `prepared` / `not_run`,
+  keeps the pilot scope empty, fixes every stronger-claim boolean false, and
+  is outside export profiles v1 and v2.
 
-The remaining autonomous work is:
+The remaining execution work is:
 
-1. Derive a pilot-neutral beta gate from the existing specialized ledgers;
-   validate every aggregate and prevent a hand-edited status promotion.
+1. Exercise the registry with a second reviewed, real pilot workflow only
+   after a jurisdiction supplies its authoritative source package and owners.
 2. Exercise the exact affected-output worklist and strict release-receipt
    schemas in a controlled rehearsal; complete assignments and dispositions
    with authorized people, then record separate approval, publication, and
@@ -247,7 +265,8 @@ language approval, or jurisdiction acceptance.
 | Source and claim provenance | [`PROVENANCE.md`](../PROVENANCE.md) |
 | Proposed pilot scope and participation | [`SHOWCASE-PILOT-BRIEF.md`](SHOWCASE-PILOT-BRIEF.md) |
 | External validation method and thresholds | [`SHOWCASE-VALIDATION-PLAN.md`](SHOWCASE-VALIDATION-PLAN.md) |
-| Aggregate evidence gate | [`woodland-flagship-gate.json`](../data/validation/woodland-flagship-gate.json) |
+| Woodland external-evidence aggregate | [`woodland-flagship-gate.json`](../data/validation/woodland-flagship-gate.json) |
+| Pilot-neutral beta aggregate (`prepared` / `not_run`) | [`pilot-beta-gate.json`](../data/validation/pilot-beta-gate.json) |
 | Content-review ledger | [`woodland-content-review.json`](../data/validation/woodland-content-review.json) |
 | Participant-session ledger | [`woodland-participant-sessions.json`](../data/validation/woodland-participant-sessions.json) |
 | Human accessibility and language ledger | [`woodland-manual-evidence.json`](../data/validation/woodland-manual-evidence.json) and [`MANUAL-VALIDATION.md`](MANUAL-VALIDATION.md) |

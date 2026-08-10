@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "gate_id": "limited-beta-aggregate-v1",
+  "gate_version": "1.0.0",
+  "record_status": "prepared",
+  "beta_status": "not_run",
+  "prepared_on": "2026-08-09",
+  "pilot_scope": {
+    "status": "not_run",
+    "jurisdiction_id": null,
+    "permit_subtype_id": null,
+    "workflow_id": null,
+    "workflow_version": null,
+    "sponsor_role": null,
+    "source_owner_role": null,
+    "review_owner_role": null,
+    "active_source_package_id": null,
+    "deployment_url": null,
+    "frozen_commit_sha": null
+  },
+  "prototype_reference": {
+    "classification": "synthetic_future_state_prototype_only",
+    "counts_as_active_pilot": false,
+    "journey_id": "woodland-preapproved-detached-adu-synthetic",
+    "journey_version": "1.0.0",
+    "journey_fingerprint": "sha256:22148b40724c3121fb255288700dcae50cb03175190402801a1fad3fb61724a2",
+    "screening_case_id": "woodland-new-detached-adu-local-layer",
+    "screening_case_fingerprint": "sha256:35ee26aee6d21cc2650807418ea3cc42610e238413274fb4cc2c21d50b9bbfeb",
+    "fact_envelope_fingerprint": "sha256:18c9bf3bdf525776352301b3150185fce8cdb0882b621d61f92eabcc25036847",
+    "readiness_workflow_id": "woodland-preapproved-detached-adu",
+    "readiness_workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
+    "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
+    "readiness_packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e"
+  },
+  "artifact_bindings": [
+    {
+      "artifact_id": "beta_operations",
+      "path": "data/validation/beta-operations-readiness.json",
+      "sha256": "sha256:858dad1191fd070eab4d3c2c168d77b6c61ac45553d0e968d4070e22075bf394"
+    },
+    {
+      "artifact_id": "content_review",
+      "path": "data/validation/woodland-content-review.json",
+      "sha256": "sha256:7110471ca09e6919dad42ef47990286f5530ba993d8840214a4f6e432b9d6abe"
+    },
+    {
+      "artifact_id": "external_evidence_gate",
+      "path": "data/validation/woodland-flagship-gate.json",
+      "sha256": "sha256:88f43375a80b0a0e02177e3605706c4e5251854cd00c94a0b18e42c773a33a7f"
+    },
+    {
+      "artifact_id": "heldout_evaluation",
+      "path": "data/conformance/evaluations/heldout-v1/manifest.json",
+      "sha256": "sha256:816bb414a09edbc024a2be7780761a1a2abb5f6cb2464c56e5790b58ad79e7b2"
+    },
+    {
+      "artifact_id": "manual_evidence",
+      "path": "data/validation/woodland-manual-evidence.json",
+      "sha256": "sha256:db1c41cf2752f1517a608e2ae6523cc5cf5b53099bd0413458aee1da0004d8d9"
+    },
+    {
+      "artifact_id": "participant_sessions",
+      "path": "data/validation/woodland-participant-sessions.json",
+      "sha256": "sha256:28e564adf81ec942f7a74a5cb849972f9607c4701ce8921673e644924028ab0f"
+    },
+    {
+      "artifact_id": "public_synthetic_export",
+      "path": "data/export/public-synthetic-evidence-v1.json",
+      "sha256": "sha256:2e5153f1dae2f7b660dcae156ed2d0f84480eff7a02a163fa8426a5272314e9e"
+    },
+    {
+      "artifact_id": "reference_journey",
+      "path": "data/journeys/generated/woodland-preapproved-detached-adu.json",
+      "sha256": "sha256:44d437a6cc40f83b07b570cd236b7a9f798482cb7a3b4b2471154c3c7c87911e"
+    },
+    {
+      "artifact_id": "reference_packet",
+      "path": "data/readiness/generated/woodland-preapproved-adu-evidence.json",
+      "sha256": "sha256:d631a8b97fa4253dec6b7f38099deb541d278b0ec745e5be19ccc280716b9c1d"
+    },
+    {
+      "artifact_id": "rule_verification",
+      "path": "data/validation/rule-verification.json",
+      "sha256": "sha256:389c8169130248d40f3429feba5205af4c403f6974eb50dccd8fee344d7f5e70"
+    },
+    {
+      "artifact_id": "source_change_rehearsal",
+      "path": "data/validation/woodland-source-change-rehearsal.json",
+      "sha256": "sha256:f28de3e2d86022ec61e6c73bbc98b64a658543886d98344e69063cd3d3c7d1f1"
+    },
+    {
+      "artifact_id": "source_state",
+      "path": "data/source-status/current.json",
+      "sha256": "sha256:4a95957be45dddef306bb4f648e0491251124fb4c0ba1b492deee8b08445893a"
+    }
+  ],
+  "derived_gates": [
+    {
+      "artifact_ids": [],
+      "gate_id": "active_scope",
+      "reason_code": "pilot_scope_not_selected",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "participant_sessions"
+      ],
+      "gate_id": "applicant_evidence",
+      "reason_code": "participant_sessions_not_run",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "content_review"
+      ],
+      "gate_id": "content_authority",
+      "reason_code": "content_review_not_run",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "heldout_evaluation",
+        "source_state"
+      ],
+      "gate_id": "deterministic_evaluation",
+      "reason_code": "heldout_evaluation_not_run",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "external_evidence_gate",
+        "source_state"
+      ],
+      "gate_id": "frozen_artifact",
+      "reason_code": "artifact_lock_not_run",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "manual_evidence"
+      ],
+      "gate_id": "human_access",
+      "reason_code": "manual_access_checks_not_run",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "manual_evidence"
+      ],
+      "gate_id": "language",
+      "reason_code": "language_reviews_not_run",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "source_change_rehearsal"
+      ],
+      "gate_id": "maintainability",
+      "reason_code": "source_change_rehearsal_not_run",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "public_synthetic_export"
+      ],
+      "gate_id": "ownership_export",
+      "reason_code": "partner_ownership_acceptance_not_run",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "reference_journey",
+        "reference_packet"
+      ],
+      "gate_id": "packet_behavior",
+      "reason_code": "synthetic_reference_is_not_pilot_evidence",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "external_evidence_gate"
+      ],
+      "gate_id": "partner_decision",
+      "reason_code": "partner_and_decision_receipts_absent",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "beta_operations"
+      ],
+      "gate_id": "privacy_records_security",
+      "reason_code": "operations_package_not_approved",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "participant_sessions"
+      ],
+      "gate_id": "problem_evidence",
+      "reason_code": "problem_evidence_sessions_not_run",
+      "status": "not_run"
+    },
+    {
+      "artifact_ids": [
+        "rule_verification",
+        "source_state"
+      ],
+      "gate_id": "review_levels",
+      "reason_code": "reachable_human_review_not_established",
+      "status": "not_run"
+    }
+  ],
+  "aggregate": {
+    "status": "not_run",
+    "prepared_gate_count": 0,
+    "not_run_gate_count": 14,
+    "changed_source_count": 0,
+    "unverifiable_source_count": 0,
+    "stale_rule_count": 0,
+    "unverified_rule_count": 0,
+    "reference_currency_blocker_ids": [],
+    "blocking_gate_ids": [
+      "active_scope",
+      "applicant_evidence",
+      "content_authority",
+      "deterministic_evaluation",
+      "frozen_artifact",
+      "human_access",
+      "language",
+      "maintainability",
+      "ownership_export",
+      "packet_behavior",
+      "partner_decision",
+      "privacy_records_security",
+      "problem_evidence",
+      "review_levels"
+    ],
+    "artifact_set_fingerprint": "sha256:1d50634b5083b5b86476dd169963065614187ef8da41f0e334fe1a08c3130be4",
+    "supports_tested_beta_claim": false,
+    "supports_statewide_beta_claim": false,
+    "supports_human_review_claim": false,
+    "supports_deployment_approval_claim": false,
+    "supports_partner_acceptance_claim": false
+  },
+  "export_boundary": {
+    "profile_id": "permit-bearings-public-synthetic-evidence-v1",
+    "profile_path": "data/export/public-synthetic-evidence-v1.json",
+    "gate_path": "data/validation/pilot-beta-gate.json",
+    "inclusion_status": "excluded_from_profiles_v1_v2",
+    "future_profile_review_status": "not_run",
+    "claim": "This aggregate record, its validator, and any future filled execution record are outside public/synthetic evidence export profiles v1 and v2. Profile validity is portability-mechanism evidence only, not jurisdiction ownership, offboarding acceptance, or beta evidence."
+  },
+  "claim_boundary": "PREPARED AGGREGATE / TESTED BETA NOT RUN. This record recomputes the current conservative gate state from bound repository artifacts. It is not evidence of an active pilot, deployed beta, human or jurisdiction review, applicant research, accessibility or language approval, partner acceptance, privacy/security/records approval, completed rehearsal, application completeness, compliance, eligibility, permit approval, or statewide local coverage. A passing or decision-bearing gate requires a separately reviewed execution schema and external receipts."
+}
