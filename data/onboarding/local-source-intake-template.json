@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "record_type": "local_source_onboarding_intake",
+  "template_version": "1.0.0",
+  "onboarding_id": "local-source-onboarding-template-v1",
+  "status": "not_run",
+  "template_published_on": "2026-08-09",
+  "project_scope": {
+    "jurisdiction_id": null,
+    "jurisdiction_name": null,
+    "permit_subtype_id": null,
+    "permit_subtype_name": null,
+    "included_project_types": [],
+    "excluded_project_types": []
+  },
+  "parcel_scope": {
+    "description": null,
+    "facts": [],
+    "unknown_behavior": "route_to_staff"
+  },
+  "source_requirements": [
+    {
+      "role": "operative_ordinance",
+      "status": "not_collected",
+      "source_ids": []
+    },
+    {
+      "role": "application_form",
+      "status": "not_collected",
+      "source_ids": []
+    },
+    {
+      "role": "submission_checklist",
+      "status": "not_collected",
+      "source_ids": []
+    },
+    {
+      "role": "fee_schedule",
+      "status": "not_collected",
+      "source_ids": []
+    },
+    {
+      "role": "process_page",
+      "status": "not_collected",
+      "source_ids": []
+    }
+  ],
+  "sources": [],
+  "operative_passages": [],
+  "exception_review": {
+    "status": "not_run",
+    "items": []
+  },
+  "conflict_review": {
+    "status": "not_run",
+    "items": []
+  },
+  "open_questions": [],
+  "review_plan": {
+    "status": "not_run",
+    "source_owner_role": null,
+    "content_review_owner_role": null,
+    "jurisdiction_approval_owner_role": null,
+    "publication_owner_role": null,
+    "reverification_cadence_days": null,
+    "reviewer": null,
+    "method": null,
+    "reviewed_on": null,
+    "reviewed_artifact_fingerprint": null,
+    "approver": null,
+    "approved_on": null,
+    "approved_artifact_fingerprint": null
+  },
+  "claim_boundary": {
+    "local_layer_status": "not_encoded",
+    "creates_or_publishes_local_rule": false,
+    "establishes_operative_law": false,
+    "establishes_comprehensive_local_coverage": false,
+    "determines_compliance_or_eligibility": false,
+    "records_human_review": false,
+    "records_jurisdiction_approval": false,
+    "statement": "This intake inventories unreviewed candidate local sources for future authoring. It does not establish which law is operative, create or publish a local rule, prove comprehensive local coverage, determine compliance or eligibility, or record human or jurisdiction review or approval."
+  }
+}

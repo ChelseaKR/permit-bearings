@@ -111,7 +111,7 @@ or permitting-outcome claims.
 
 ### Now — autonomous foundations
 
-This roadmap tranche completes eight machine-testable foundations without
+This roadmap tranche completes nine machine-testable foundations without
 changing the product's maturity claim:
 
 - the Statewide Coverage Navigator is deployed as orientation, not statewide
@@ -154,7 +154,14 @@ changing the product's maturity claim:
   shapes, stable option identifiers, static and formatter placeholders,
   nonblank singular/plural output, and a copy-leaf pseudo-expansion transform
   while leaving complete pseudolocale generation, semantic review, Spanish
-  applicant readiness, and rendered layout compatibility unclaimed.
+  applicant readiness, and rendered layout compatibility unclaimed; and
+- a generic portable local-source intake and read-only CLI strictly validate
+  the five required source roles, source IDs/URLs/fingerprints/check dates,
+  operative passages and enactment/effective dates, project/parcel scope,
+  candidate exceptions, unresolved conflicts, open questions, and planned
+  accountable owner-role IDs/cadence. The committed template is `not_run` and empty; the
+  maximum accepted state is `prepared_for_review`, never reviewed, approved,
+  encoded, or published.
 
 The remaining autonomous work is:
 
@@ -163,26 +170,22 @@ The remaining autonomous work is:
    preserving fail-closed behavior.
 2. Derive a pilot-neutral beta gate from the existing specialized ledgers;
    validate every aggregate and prevent a hand-edited status promotion.
-3. Add a local-source onboarding validator for operative passages and effective
-   dates; forms, checklists, fees, and process pages; source fingerprints;
-   scope, exceptions, and open questions; and named review ownership/cadence.
-4. Exercise the new exact affected-output worklist in a controlled rehearsal;
+3. Exercise the new exact affected-output worklist in a controlled rehearsal;
    complete assignments and dispositions with authorized people, and add
    separate approval, publication, and rollback receipts without allowing the
    decision ledger to clear a hold by itself.
-5. After independent source collection, two-reviewer adjudication, and freeze
+4. After independent source collection, two-reviewer adjudication, and freeze
    custody are available, execute the held-out scanner contract with frozen
    cases and answer key; generate blind pair-level predictions before
    unblinding, publish the six recomputable raw confusion/abstention counts,
    and keep development fixtures and synthetic controls separate. Record the
    freeze, prediction, unblind, and scoring chronology, then retire the
    revealed corpus from use with future scanner versions.
-6. Execute the deployment-specific host/subprocessor inventory, threat and
+5. Execute the deployment-specific host/subprocessor inventory, threat and
    control review, CPRA search/export and rollback rehearsals, and role
    approvals described by the prepared operations package. Record them in a
    separately reviewed execution schema; the prepared ledger cannot be
    promoted.
-
 These tasks can make the product pilot-ready, but they cannot supply a sponsor,
 source authority, human review, applicant observation, accessibility signoff,
 language approval, or jurisdiction acceptance.
