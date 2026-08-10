@@ -50,9 +50,11 @@ inside them. `.ca-button` styles native buttons and links without replacing
 their native semantics. Table utilities style semantic tables that retain
 captions and `<th>` headers.
 
-The applicant result cover sheet uses a `<dl>`, its group index is a labeled
-`<nav>`, and each nonempty group has a focusable heading that serves as a
-jump-link target. Each decision record is an `<article>` labeled by its unique
+The applicant result puts its decision boundary, count, and candidate route
+before supporting records. Its group index is a labeled `<nav>`, and each
+nonempty group has a focusable heading that serves as a jump-link target. The
+answers-used receipt is a closed native `<details>` containing a `<dl>` and an
+actual edit link. Each decision record is an `<article>` labeled by its unique
 title. Candidate-route cards keep the same visible non-approval heading while
 including the exact route-record identity in that heading's accessible name,
 so a multi-route result does not produce duplicate article names. The
@@ -61,26 +63,35 @@ avoid repeating the identity. The always-visible decision boundary is an `<aside
 labeled by its heading; its four states are expressed as definition-list rows
 for what is shown, what remains unconfirmed, and the next step rather than by
 border color alone. Automated browser contracts exercise candidate,
-unresolved-fact, no-route, and source-review-hold variants. One explicitly
-configured candidate route uses an open native
-`<details>` element when it matches; compact supporting records start closed.
-Citations and source-status text remain outside those disclosures. Multiple
+unresolved-fact, no-route, and source-review-hold variants. Every longer rule
+explanation and evidence body starts in a closed native `<details>`; the
+candidate route is distinguished by structure and border treatment rather
+than by starting open. Citations and source-status text remain outside those
+disclosures. Multiple
 deadlines or thresholds use a semantic heading and list rather than
 visual-only layout. All interactive elements remain native controls, so
 keyboard operability and focus order come from the platform.
 
-The Statewide Coverage Navigator is a native `<section>` hidden until a
-recognized jurisdiction value resolves. It has an `aria-labelledby` heading,
-a visible location label, and a three-row definition list for the bounded
+The separate ADU date tool is an optional closed native disclosure. A link in
+the configured current ADU route opens that same disclosure before moving to
+its fragment target; the date field, applicability checkboxes, action, status,
+and bounded deadline copy remain unchanged. Browser checks cover the closed
+state, keyboard expansion, and route-link opening.
+
+The Statewide Coverage Navigator is a closed native `<details>` hidden until a
+recognized jurisdiction value resolves. Its summary names the jurisdiction
+and bounded record counts; its body has a visible location label and a
+three-row definition list for the bounded
 statewide candidate-rule set, local requirements status, and public HCD record
 history. A limited local layer renders source links in a list; linked HCD
 records are behind a native `<details>`/`<summary>` disclosure and retain
 English source metadata with `lang="en"`; each HCD link's programmatic name
 also identifies its jurisdiction, date, authority, and HAU number where
-recorded. The native disclosure has a 44px minimum target. The local-onboarding boundary is a
+recorded. The outer disclosure has a 64px minimum target, and the nested HCD
+disclosure has a 44px minimum target. The local-onboarding boundary is a
 visible `role="note"`. These labels make `Not encoded`, limited local records,
 and no linked HCD record readable as different states rather than relying on
-color. The section is not a live region; the existing polite jurisdiction
+color. The profile is not a live region; the existing polite jurisdiction
 status announces whether a selected value resolved. Screen-reader reading
 order, the timing of the newly revealed section, and disclosure behavior
 remain manual checks.
@@ -131,11 +142,13 @@ behavior, or conformance for the other four static pages.
 
 On 2026-08-09, axe-core 4.12.1 reported no WCAG 2.0/2.1/2.2 A, AA, or tagged
 AAA violations on `index.html`, `check.html`, `prepare.html`, `review.html`,
-or `evidence.html` in a Playwright-managed Chromium build. Thirty-eight browser
+or `evidence.html` in a Playwright-managed Chromium build. Forty-five browser
 checks also exercise each page at 320px and 390px, open the compact navigation,
 check document-level overflow, scan a populated applicant result, verify that
-mobile evidence tables render as labeled records, and cover valid/invalid
-journey-summary disclosure. The evidence-page checks now cover the adopted
+mobile evidence tables render as labeled records, cover route-first order and
+the collapsed/expanded jurisdiction, answers, statewide, and deadline
+disclosures, and cover valid/invalid journey-summary disclosure. The
+evidence-page checks now cover the adopted
 all-unchanged source receipt, an internally consistent changed receipt with
 its derived review queue, and an unverifiable receipt that warns without
 staling a dependent. A print-media check isolates the summary from the
@@ -207,7 +220,8 @@ by a visible disclosure that identifies the facts as hypothetical. It fills
 the same native form controls and invokes the same form submission path as
 manual answers, so the existing result-status announcement applies. For the
 automatically submitted sample, focus moves to the disclosure instead of
-skipping past it to the results. A plainly labeled link clears the sample.
+skipping past it to the results. A sample-only link jumps to the generated
+result, and a plainly labeled link clears the sample.
 Editing a sample fact relabels the disclosure, removes the sample URL
 parameter, and clears the old results until the edited form is submitted.
 The same invalidation rule applies to ordinary applicant answers: changing the
@@ -215,23 +229,26 @@ jurisdiction or a named project fact removes the rendered result, temporary
 answers-used cover sheet, and remembered disclosure state. This prevents a
 result from remaining visible beside facts that no longer produced it.
 
-Selecting or clearing a recognized jurisdiction renders or hides the coverage
-profile before project submission. That render only reads bundled data and does
+Selecting or clearing a recognized jurisdiction renders or hides the closed
+coverage-profile disclosure before project submission. That render only reads bundled data and does
 not move the selection into the packet URL, create a browser record, or add a
 new asynchronous busy state. Static/code review covers the profile's generated
-heading, definition list, native disclosure, links, and boundary note. The
+summary, definition list, nested native disclosure, links, and boundary note. The
 automated browser test `jurisdiction coverage profile separates statewide,
 local, and HCD evidence` exercises Albany's zero-record state, Alameda's
 linked-record disclosure, Davis's limited local layer, and Los Angeles
 County's `Not encoded` state. It checks the 17-record statewide baseline,
 profile data attributes, the HCD link name and target height, clear/unknown
 selection cleanup, changed-statewide and changed-local source holds, empty
-browser storage, no document overflow, and an automated axe scan. That is not a screen-reader, keyboard-only, or
-physical-device test.
+browser storage, no document overflow, and an automated axe scan. Separate
+browser checks exercise keyboard expansion and axe/reflow at 320px and 390px
+with the jurisdiction and optional-clock disclosures both closed and open.
+That is not a screen-reader or physical-device test.
 
-Every resolved jurisdiction result also includes an orientation receipt built
-with native headings, definition lists, and lists. Its print action calls the
-browser's print dialog, and print media isolates the receipt from navigation,
+Every resolved jurisdiction result also includes a closed orientation-receipt
+disclosure built with native headings, definition lists, and lists. Its print
+action calls the browser's print dialog, and print media expands and isolates
+the receipt from navigation,
 intake, detailed result cards, and controls. Automated coverage checks the
 receipt's reflow and print overflow across representative city, county,
 incorporation-update, and bounded-local-layer profiles. Printed-output reading
@@ -289,7 +306,7 @@ media; it does not inspect a generated PDF, paper output, pagination across
 printer drivers, or assistive reading of a saved file.
 
 **Language switching.** The applicant page preserves the current intake and
-rendered result set, temporary cover sheet, and disclosure state when
+rendered result set, temporary answers-used receipt, and rule-disclosure state when
 English/Spanish interface copy is toggled. Stable rule anchors do not change
 with the language. Source material that remains English carries `lang="en"`.
 The Python reference demo's language link is labeled as starting over because

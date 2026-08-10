@@ -32,16 +32,23 @@ JADU, and SB 9; it does not yet encode SB 35, AB 2011, authoritative parcel
 facts, comprehensive local requirements, application-file review, or
 human-reviewed detailed remedies.
 
+The applicant intake remains one native form rather than a scripted wizard.
+Three visible stage labels—place, project, and details—plus a restrained
+California-token bearing rail expose the sequence without hiding later
+questions or creating client-side navigation state. The language toggle stays
+beside the form heading; the shareable sample keeps its made-up-data boundary
+and adds a direct result jump only while the canonical sample is active.
+
 The browser result surface is implemented for prototype data as a temporary
-result packet. It starts with an answers-used cover sheet built from the last
-submitted jurisdiction and material project facts. It then generates a count
-summary and jump links for each nonempty group: candidate routes, relevant
-standards, local information records, and any other matching records. One
-explicitly configured candidate route for the selected project type starts
-open when it is among the matches. This default is a presentation choice, not
-a ranking, recommendation, final route, or eligibility finding. Supporting
-records use compact disclosures. Each citation and source-status label remains
-visible when its disclosure is closed. Directly below the result heading, a
+result packet. After a count summary and group links, it renders the candidate
+route before relevant standards, local information, and other matching
+records. The configured candidate route has stronger visual hierarchy, but
+every longer explanation, next-step, and evidence body starts closed. This is
+a presentation choice, not a ranking, recommendation, final route, or
+eligibility finding. Each consequence, citation, and source-status label
+remains visible when its disclosure is closed. Temporary answers used and the
+statewide staff handoff follow all matching records in separate closed native
+disclosures. Directly below the result heading, a
 semantic decision-boundary note states what the result shows, what is still
 unconfirmed, and the next jurisdiction-staff step. Its state is derived from
 the same result and source overlay: candidate, unresolved material fact,
@@ -66,7 +73,9 @@ standards, and unresolved staff questions remains planned.
 #### Statewide Coverage Navigator (implemented surface for prototype data)
 
 At a recognized jurisdiction selection, before the applicant supplies or
-submits project facts, `check.html` presents a static coverage profile. The
+submits project facts, `check.html` presents a closed native disclosure whose
+summary names the jurisdiction and bounded record counts. Its body contains a
+static coverage profile. The
 profile is generated at build time by `src/permit_pathways/jurisdictions.py`
 into `data/jurisdictions/generated/coverage-index.json`, then carried in the
 browser bundle as `coverage_index`. It joins the portable jurisdiction
@@ -486,7 +495,8 @@ user job:
   jurisdiction selection, applicant intake, a temporary grouped result packet,
   a statewide orientation receipt, a labeled shareable sample that reuses a
   canonical golden fixture, its explicit applicability gate, and the separate
-  clock;
+  optional clock; longer coverage, answer, orientation, rule, and clock content
+  uses native disclosures so the candidate route remains the primary path;
 - `prepare.html`: a fail-closed versioned and availability-gated entry to the
   generated future-state Woodland packet-presence simulation,
   evidence-manifest link, and print-focused journey evidence summary;
@@ -609,8 +619,8 @@ review, or beta evidence. The operator and maintenance contract is in
 1. Start on the landing page to state the prototype boundary, then open
    `check.html?sample=adu`. The labeled hypothetical Woodland facts are
    submitted through the normal intake and matcher path. Show the temporary
-   answers-used cover sheet, dynamic group summary and jump links, one
-   candidate route open by default, compact supporting records, and
+   collapsed answers-used receipt, dynamic group summary and jump links, the
+   candidate route first, all detailed rule bodies closed, and
    always-visible citations and source status. These are prototype candidate
    rules and generic document hints, not a complete application checklist.
    Change one answer to show that the old result is invalidated until the form
