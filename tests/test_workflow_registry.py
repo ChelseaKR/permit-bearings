@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 from scripts.build_demo_bundle import build_bundle
 
+from permit_pathways.harness.watch import WatchResult, load_sources
 from permit_pathways.program_availability import (
     GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
     GENERIC_PROTOTYPE_BOUNDARY,
@@ -17,6 +18,12 @@ from permit_pathways.program_availability import (
 from permit_pathways.readiness import load_readiness_workflow
 from permit_pathways.readiness_cli import main as readiness_cli_main
 from permit_pathways.review_queue_cli import main as review_queue_cli_main
+from permit_pathways.source_release_cli import main as source_release_cli_main
+from permit_pathways.source_state import (
+    build_source_state_snapshot,
+    encoded_source_state,
+)
+from permit_pathways.workflow_context import load_registered_review_context
 from permit_pathways.workflow_registry import (
     MAX_REGISTRY_BYTES,
     load_workflow_registry,
@@ -200,6 +207,33 @@ def _add_second_registered_workflow(
         registry["browser_default_workflow_id"] = second_workflow_id
     _write_json(registry_path, registry)
     return second_workflow_id
+
+
+def _changed_snapshot(root: Path, source_id: str):
+    sources_path = root / "data/sources.json"
+    sources = load_sources(sources_path)
+    watched = {key: source for key, source in sources.items() if source.watch}
+    unchanged = sorted(set(watched) - {source_id})
+    result = WatchResult(
+        unchanged=unchanged,
+        changed=[source_id],
+        observed_digests={
+            key: watched[key].sha256 for key in unchanged if watched[key].sha256
+        },
+    )
+    result.observed_digests[source_id] = "0" * 64
+    return build_source_state_snapshot(
+        result,
+        sources_path,
+        root / "data/rules",
+        root / "data/golden/example.json",
+        snapshot_id="two-workflow-release-test",
+        checked_at="2026-08-10T04:00:00Z",
+        receipt_status="proposed",
+        method="synthetic_test_fixture",
+        run_url="https://example.gov/source-watch/two-workflow-release-test",
+        commit_sha="a" * 40,
+    )
 
 
 def test_canonical_registry_selects_exactly_the_one_browser_workflow():
@@ -447,6 +481,106 @@ def test_two_distinct_registered_workflows_build_and_reach_the_review_cli(
     assert result in {0, 1}
     captured = capsys.readouterr()
     assert second_workflow_id not in captured.err
+
+
+def test_two_registered_workflows_load_as_distinct_release_contexts(
+    tmp_path: Path,
+) -> None:
+    root = _copy_full_root(tmp_path)
+    second_workflow_id = _add_second_registered_workflow(root)
+    registry = _registry(root)
+
+    contexts = tuple(
+        load_registered_review_context(
+            entry,
+            root,
+            root / "data/sources.json",
+        )
+        for entry in registry.workflows
+    )
+
+    assert [context.workflow.workflow_id for context in contexts] == [
+        "woodland-preapproved-detached-adu",
+        second_workflow_id,
+    ]
+    assert len({context.packet.packet_id for context in contexts}) == 2
+    assert len({context.journeys[0].journey_id for context in contexts}) == 2
+
+
+def test_source_release_cli_binds_every_registered_workflow_by_default(
+    tmp_path: Path,
+    capsys,
+) -> None:
+    root = _copy_full_root(tmp_path)
+    second_workflow_id = _add_second_registered_workflow(root)
+    snapshot = _changed_snapshot(root, "woodland-preapproved-adu-checklist")
+    snapshot_path = tmp_path / "source-state.json"
+    snapshot_path.write_text(encoded_source_state(snapshot), encoding="utf-8")
+    worklist_path = tmp_path / "worklist.json"
+    decisions_path = tmp_path / "decisions.json"
+
+    assert (
+        review_queue_cli_main(
+            [
+                "--repository-root",
+                str(root),
+                "--source-state",
+                str(snapshot_path),
+                "--out",
+                str(worklist_path),
+                "--decisions-template-out",
+                str(decisions_path),
+            ]
+        )
+        == 1
+    )
+    capsys.readouterr()
+    worklist = _json(worklist_path)
+    assert [item["workflow_id"] for item in worklist["readiness_contexts"]] == [
+        second_workflow_id,
+        "woodland-preapproved-detached-adu",
+    ]
+    item_counts = {
+        item_type: sum(item["item_type"] == item_type for item in worklist["items"])
+        for item_type in (
+            "readiness_requirement_reverification",
+            "readiness_remedy_reverification",
+            "readiness_packet_revalidation",
+            "journey_handoff_revalidation",
+        )
+    }
+    assert item_counts == {
+        "readiness_requirement_reverification": 50,
+        "readiness_remedy_reverification": 50,
+        "readiness_packet_revalidation": 2,
+        "journey_handoff_revalidation": 2,
+    }
+
+    output = tmp_path / "prepared-release"
+    assert (
+        source_release_cli_main(
+            [
+                "prepare",
+                "--repository-root",
+                str(root),
+                "--source-state",
+                str(snapshot_path),
+                "--worklist",
+                str(worklist_path),
+                "--decisions",
+                str(decisions_path),
+                "--release-id",
+                "two-workflow-release",
+                "--output-dir",
+                str(output),
+            ]
+        )
+        == 1
+    )
+    prepared = json.loads(capsys.readouterr().out)
+    approval = _json(output / "approval.json")
+    assert prepared["release_binding"] == approval["release_binding"]
+    assert approval["release_binding"]["worklist_id"] == worklist["worklist_id"]
 
 
 def test_bundle_aliases_follow_a_generic_registry_default(tmp_path: Path) -> None:

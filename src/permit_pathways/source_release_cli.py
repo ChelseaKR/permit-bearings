@@ -19,14 +19,7 @@ from pathlib import Path
 
 from .harness.runner import load_golden
 from .harness.watch import load_sources
-from .journey import load_journey_config
-from .readiness import (
-    load_readiness_packet,
-    load_readiness_remedies,
-    load_readiness_workflow,
-)
 from .review_queue import (
-    ReadinessReviewContext,
     load_review_decisions,
     load_review_worklist,
 )
@@ -45,35 +38,26 @@ from .source_release import (
     prepared_receipts,
 )
 from .source_state import SourceStateSnapshot, load_source_state_snapshot
+from .workflow_context import load_registered_review_context
+from .workflow_registry import WorkflowRegistryEntry, load_workflow_registry
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_TEMPLATES = ROOT / "data" / "validation" / "source-change-release-v1"
 DEFAULT_SOURCES = ROOT / "data" / "sources.json"
 DEFAULT_RULES = ROOT / "data" / "rules"
 DEFAULT_GOLDEN = ROOT / "data" / "golden" / "example.json"
-DEFAULT_WORKFLOW = (
-    ROOT / "data" / "readiness" / "workflows" / "woodland-preapproved-detached-adu.json"
-)
-DEFAULT_PACKET = (
-    ROOT / "data" / "readiness" / "samples" / "woodland-preapproved-adu.json"
-)
-DEFAULT_REMEDIES = (
-    ROOT / "data" / "readiness" / "remedies" / "woodland-preapproved-detached-adu.json"
-)
-DEFAULT_JOURNEY = ROOT / "data" / "journeys" / "woodland-preapproved-detached-adu.json"
+DEFAULT_REGISTRY = ROOT / "data" / "workflows" / "registry.json"
 
 
 def _add_release_inputs(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--repository-root", type=Path, default=ROOT)
+    parser.add_argument("--workflow-registry", type=Path, default=None)
     parser.add_argument("--source-state", type=Path, required=True)
     parser.add_argument("--worklist", type=Path, required=True)
     parser.add_argument("--decisions", type=Path, required=True)
-    parser.add_argument("--sources", type=Path, default=DEFAULT_SOURCES)
-    parser.add_argument("--rules", type=Path, default=DEFAULT_RULES)
-    parser.add_argument("--golden", type=Path, default=DEFAULT_GOLDEN)
-    parser.add_argument("--workflow", type=Path, default=DEFAULT_WORKFLOW)
-    parser.add_argument("--packet", type=Path, default=DEFAULT_PACKET)
-    parser.add_argument("--remedies", type=Path, default=DEFAULT_REMEDIES)
-    parser.add_argument("--journey", type=Path, default=DEFAULT_JOURNEY)
+    parser.add_argument("--sources", type=Path, default=None)
+    parser.add_argument("--rules", type=Path, default=None)
+    parser.add_argument("--golden", type=Path, default=None)
 
 
 def _add_published_state_inputs(parser: argparse.ArgumentParser) -> None:
@@ -138,19 +122,36 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _readiness_context(args: argparse.Namespace) -> ReadinessReviewContext:
-    workflow = load_readiness_workflow(args.workflow, args.sources)
-    packet = load_readiness_packet(args.packet, workflow)
-    remedies = load_readiness_remedies(args.remedies, workflow)
-    return ReadinessReviewContext(
-        workflow=workflow,
-        packet=packet,
-        remedies=remedies,
-        journeys=(load_journey_config(args.journey),),
+def _registered_entries(args: argparse.Namespace) -> tuple[WorkflowRegistryEntry, ...]:
+    root: Path = args.repository_root.resolve()
+    registry_path = args.workflow_registry or (
+        DEFAULT_REGISTRY
+        if root == ROOT.resolve()
+        else root / "data" / "workflows" / "registry.json"
     )
+    registry = load_workflow_registry(registry_path, root=root)
+    return registry.workflows
+
+
+def _resolve_release_paths(args: argparse.Namespace) -> Path:
+    root: Path = args.repository_root.resolve()
+    args.sources = args.sources or (
+        DEFAULT_SOURCES if root == ROOT.resolve() else root / "data" / "sources.json"
+    )
+    args.rules = args.rules or (
+        DEFAULT_RULES if root == ROOT.resolve() else root / "data" / "rules"
+    )
+    args.golden = args.golden or (
+        DEFAULT_GOLDEN
+        if root == ROOT.resolve()
+        else root / "data" / "golden" / "example.json"
+    )
+    return root
 
 
 def _release_context(args: argparse.Namespace) -> ReleaseContext:
+    root = _resolve_release_paths(args)
+    entries = _registered_entries(args)
     snapshot = load_source_state_snapshot(
         args.source_state,
         args.sources,
@@ -161,7 +162,14 @@ def _release_context(args: argparse.Namespace) -> ReleaseContext:
     sources = load_sources(args.sources)
     rules = load_rules(args.rules)
     golden = load_golden(args.golden, rules)
-    readiness = (_readiness_context(args),)
+    readiness = tuple(
+        load_registered_review_context(
+            entry,
+            root,
+            args.sources,
+        )
+        for entry in entries
+    )
     worklist = load_review_worklist(
         args.worklist,
         snapshot,

@@ -532,7 +532,10 @@ abstention path is a structured intake with no matching encoded rule.
   matching, verification level, or publication.
 - **Separate release receipts (implemented strict scaffold; not executed):**
   `src/permit_pathways/source_release.py` validates approval, publication, and
-  rollback as three independent records. Their common binding covers the exact
+  rollback as three independent records. The CLI uses the same shared registry
+  context loader as the review-worklist CLI and includes every registered
+  workflow by default; it exposes no unregistered-path or single-workflow
+  release mode. Their common binding covers the exact
   changed-source snapshot, generated worklist, and complete decision-ledger
   fingerprints. A resolved ledger is necessary but never sufficient:
   approval requires a declared reviewer code, authority-scope receipt ID, and
