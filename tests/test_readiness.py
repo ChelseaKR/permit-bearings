@@ -559,18 +559,44 @@ def test_workflow_loader_rejects_duplicate_orphan_and_schema_errors(
             today=AS_OF,
         )
 
-    unrecorded_provider_claim = copy.deepcopy(canonical)
-    unrecorded_provider_claim["workflow"]["mapping_provenance"]["provider"] = "OpenAI"
-    with pytest.raises(ValueError, match="no provider was recorded"):
+    malformed_provider = copy.deepcopy(canonical)
+    malformed_provider["workflow"]["mapping_provenance"]["provider"] = "OpenAI"
+    with pytest.raises(ValueError, match="expected 'unknown' or a lowercase token"):
         load_readiness_workflow(
             _write_json(
                 tmp_path,
-                "workflow-unrecorded-provider.json",
-                unrecorded_provider_claim,
+                "workflow-malformed-provider.json",
+                malformed_provider,
             ),
             SOURCES_PATH,
             today=AS_OF,
         )
+
+    # An attribution is recorded in full or not at all. Naming a provider while
+    # leaving the model "unknown" reads as a recorded draft but cannot say what
+    # produced it.
+    half_recorded = copy.deepcopy(canonical)
+    half_recorded["workflow"]["mapping_provenance"]["provider"] = "anthropic"
+    with pytest.raises(ValueError, match="both be recorded or both be"):
+        load_readiness_workflow(
+            _write_json(tmp_path, "workflow-half-recorded.json", half_recorded),
+            SOURCES_PATH,
+            today=AS_OF,
+        )
+
+    recorded = copy.deepcopy(canonical)
+    recorded["workflow"]["mapping_provenance"]["provider"] = "anthropic"
+    recorded["workflow"]["mapping_provenance"]["model"] = "claude-opus-5"
+    loaded = load_readiness_workflow(
+        _write_json(tmp_path, "workflow-recorded-attribution.json", recorded),
+        SOURCES_PATH,
+        today=AS_OF,
+    )
+    assert loaded.mapping_provenance.provider == "anthropic"
+    assert loaded.mapping_provenance.model == "claude-opus-5"
+    # Recording who drafted the mapping is not a reproducibility claim.
+    assert loaded.mapping_provenance.run_record_status == "not_recorded"
+    assert loaded.mapping_provenance.review_status == "prototype_review_pending"
 
 
 def test_packet_loader_rejects_duplicate_orphan_coverage_and_schema_errors(

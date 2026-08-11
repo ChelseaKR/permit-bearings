@@ -53,6 +53,7 @@ _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
 _SOURCE_FIELD = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
+_ATTRIBUTION = re.compile(r"^[a-z][a-z0-9]*(?:[-.][a-z0-9]+)*$")
 
 
 def _required_text(value: Any, field: str) -> str:
@@ -363,6 +364,26 @@ def _required_literal(value: Any, field: str, expected: str, message: str) -> st
     return text
 
 
+def _attribution(value: Any, field: str) -> str:
+    """Accept a recorded provider or model token, or an honest ``unknown``.
+
+    A mapping drafted without retaining who produced it records ``unknown``.
+    A mapping that does know must say so rather than claim ignorance, so a
+    concrete lowercase token is also allowed. Recording an attribution is not
+    a reproducibility claim: ``run_record_status`` stays separate.
+    """
+
+    text = _required_text(value, field)
+    if text == "unknown":
+        return text
+    if not _ATTRIBUTION.fullmatch(text):
+        raise ValueError(
+            f"{field}: expected 'unknown' or a lowercase token such as "
+            f"'anthropic' or 'claude-opus-5', found {text!r}"
+        )
+    return text
+
+
 def _mapping_input(
     value: Any,
     field: str,
@@ -459,18 +480,13 @@ def _load_mapping_provenance(
         "requirements_excerpts_and_fact_bindings",
         "expected requirements_excerpts_and_fact_bindings",
     )
-    provider = _required_literal(
-        value["provider"],
-        f"{field}.provider",
-        "unknown",
-        "no provider was recorded for this draft",
-    )
-    model = _required_literal(
-        value["model"],
-        f"{field}.model",
-        "unknown",
-        "no model was recorded for this draft",
-    )
+    provider = _attribution(value["provider"], f"{field}.provider")
+    model = _attribution(value["model"], f"{field}.model")
+    if (provider == "unknown") != (model == "unknown"):
+        raise ValueError(
+            f"{field}: provider and model must both be recorded or both be "
+            f"'unknown'; found provider={provider!r}, model={model!r}"
+        )
     run_record_status = _required_literal(
         value["run_record_status"],
         f"{field}.run_record_status",
