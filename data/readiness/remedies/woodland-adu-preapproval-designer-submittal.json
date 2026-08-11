@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "workflow_id": "woodland-adu-preapproval-designer-submittal",
+  "workflow_fingerprint": "sha256:0b12e333547bef9a96bb9d285fe59646a66787c5fe46d5c2209839780e92b236",
+  "version": "1.0.0",
+  "updated_on": "2026-08-11",
+  "drafted_by": "ai_assisted",
+  "review": {
+    "status": "prototype_review_pending",
+    "reviewer": null,
+    "method": null,
+    "reviewed_on": null,
+    "reviewed_version": null,
+    "content_fingerprint": null
+  },
+  "entries": [
+    {
+      "requirement_id": "designer-contact-information",
+      "requirement_fingerprint": "sha256:dafaf3afb6ae216133092d99293320564a2e2d4ce26475179d8864bb1310e1a0",
+      "action": "Add a designer contact block to the submittal."
+    },
+    {
+      "requirement_id": "designer-full-name",
+      "requirement_fingerprint": "sha256:e663f331d01bad420b2a7226abc12f705d8778a3e5c6e6c043ddaf07a28db030",
+      "action": "Add the designer's full name to the contact block."
+    },
+    {
+      "requirement_id": "designer-email",
+      "requirement_fingerprint": "sha256:3e1b69af994bfce14800f20cb9f213fcfe196b178124312d1e462446f864ea86",
+      "action": "Add the designer's email address to the contact block."
+    },
+    {
+      "requirement_id": "designer-phone-number",
+      "requirement_fingerprint": "sha256:04536e14827589a797504aa3a5a97b1ae65643d21ead6a91f55e24c6a564e1fa",
+      "action": "Add the designer's phone number to the contact block."
+    },
+    {
+      "requirement_id": "designer-address",
+      "requirement_fingerprint": "sha256:1a18eeb047d8eab2c91218b9619343111902186d9b637e0c3288784ef49166ed",
+      "action": "Add the designer's address to the contact block."
+    },
+    {
+      "requirement_id": "designer-license-number",
+      "requirement_fingerprint": "sha256:d8cfb16534029dfabcd4eff486033583828f79d5784d5db7e0ac136e94204ea2",
+      "action": "Add the designer's license number to the contact block."
+    },
+    {
+      "requirement_id": "designer-website-link",
+      "requirement_fingerprint": "sha256:56215b5aa243b9efb6029cce97b42a630b81486697456dc7913e58c335522cf3",
+      "action": "Add the designer's website link to the contact block, or tell the City there is none."
+    },
+    {
+      "requirement_id": "industry-standard-plan-set",
+      "requirement_fingerprint": "sha256:99386fdf2f23d49c46e9577fd8ae88f80f76a23f4c29afff81777c49db0f0132",
+      "action": "Add the industry-standard plan set."
+    },
+    {
+      "requirement_id": "plan-set-cover-sheet",
+      "requirement_fingerprint": "sha256:145c27f857415aad91089541870bb0c0991fa55a524e8b7aed100df8eee18ac6",
+      "action": "Add a cover sheet carrying the designer contact information."
+    },
+    {
+      "requirement_id": "plan-set-watermarked-website-images",
+      "requirement_fingerprint": "sha256:2e1b65987be06db92f6c359bffbc99032c516ddab417173357aa34ebb46c6229",
+      "action": "Add watermarked elevations and a floorplan for the City website, or tell the City you are not supplying them."
+    },
+    {
+      "requirement_id": "plan-set-placeholder-site-plan-sheet",
+      "requirement_fingerprint": "sha256:71192f39f32427d5352112b4051281dcddbf21f4ca2eba5616be09518ae81e22",
+      "action": "Add a placeholder sheet for the future site plan."
+    },
+    {
+      "requirement_id": "plan-set-architectural-elevations",
+      "requirement_fingerprint": "sha256:c177246886fd6d2d867266b37d62875d7b312ccdfbb8a6348d68e4989a67113c",
+      "action": "Add architectural elevations. The City encourages two or more options."
+    },
+    {
+      "requirement_id": "plan-set-floor-plan",
+      "requirement_fingerprint": "sha256:938eadaae480384fec132d5e542818f770e83977565b171dbe3193b065148917",
+      "action": "Add the floor plan."
+    },
+    {
+      "requirement_id": "plan-set-foundation-plan",
+      "requirement_fingerprint": "sha256:1730abe74f4ba1d5f8d458ec3f39809c98e4f566752f343d4ba036e4721b99d2",
+      "action": "Add the foundation plan. The City encourages multiple options."
+    },
+    {
+      "requirement_id": "foundation-plan-flood-hazard-considerations",
+      "requirement_fingerprint": "sha256:2a13ba54dcf26991a6df7ddcd0cfe798632fd3186b2dd9c48d8b221be18886a2",
+      "action": "Ask the City what the foundation plan needs if the plan will be used in a flood hazard area."
+    },
+    {
+      "requirement_id": "plan-set-structural-plans",
+      "requirement_fingerprint": "sha256:cef48b153f57b6ca1946036a2534567857a3ff044bc3e1d9333c518db83d3067",
+      "action": "Add the structural plans."
+    },
+    {
+      "requirement_id": "plan-set-mechanical-plumbing-electrical-plans",
+      "requirement_fingerprint": "sha256:384c4425bdc8ce1d13d404a35deac10cf9e3937b794e04e855d66d2f397721ea",
+      "action": "Add the mechanical, plumbing, and electrical plans."
+    },
+    {
+      "requirement_id": "plan-set-photovoltaic-plans",
+      "requirement_fingerprint": "sha256:b99be0206a88ae5bfff3a51570d99131221c6672f2a2cf038c77de0e87dfa7a1",
+      "action": "Add the photovoltaic plans."
+    },
+    {
+      "requirement_id": "plan-set-fire-sprinkler-plans",
+      "requirement_fingerprint": "sha256:0319e8a400541564c16c269f657eb77bb9741d083a3d49ef2a30082abdc2fb6c",
+      "action": "Add fire sprinkler plans if the primary residence has sprinklers. The City says these go to the Fire Department and may be deferred to permit submittal."
+    },
+    {
+      "requirement_id": "plan-format-requirements",
+      "requirement_fingerprint": "sha256:7c100062e88bd607470f7ea11b66ad0069578dc1a31fb7684c97cf4e006a79d2",
+      "action": "Bring the plan set up to the City's stated format requirements."
+    },
+    {
+      "requirement_id": "plans-are-scaled",
+      "requirement_fingerprint": "sha256:6b7d3df9a33910e5753b4c76cc30791e549a89b6bf8031bf570fcc28aed3d8a5",
+      "action": "Draw the plans to scale."
+    },
+    {
+      "requirement_id": "plans-are-dimensioned",
+      "requirement_fingerprint": "sha256:2f01df31635bccfeb6832939056144b603dbc2253265508b858c993368488530",
+      "action": "Add dimensions to the plans."
+    },
+    {
+      "requirement_id": "plans-signed-by-designer",
+      "requirement_fingerprint": "sha256:b34dd372afbcea3fa4b37137475e79e343504006eb6f6d81cfd469dbfc75461c",
+      "action": "Have the designer sign the plans."
+    },
+    {
+      "requirement_id": "plans-stamped-by-licensed-design-professional",
+      "requirement_fingerprint": "sha256:caeaabaa7faaaee9d295e4265080bfff2faa73d3a6d184f31f96f5896e14fed9",
+      "action": "Have a licensed design professional stamp the plans."
+    },
+    {
+      "requirement_id": "building-materials-sheet",
+      "requirement_fingerprint": "sha256:20585f97fc184054e157df950a7478dab12e19581470365bf8b54f84e4887fc8",
+      "action": "Add a building materials sheet."
+    },
+    {
+      "requirement_id": "building-materials-material-types",
+      "requirement_fingerprint": "sha256:64cf7188f4392cacf8840e554f8830653f102a593ffe8aeb0d9d2023c35dbcf3",
+      "action": "List the material types on the building materials sheet."
+    },
+    {
+      "requirement_id": "building-materials-color-options",
+      "requirement_fingerprint": "sha256:2d2383361893a2dc145ae24057ef52a991821fe3920f49c4f6d4c380f12c2d70",
+      "action": "List the color options on the building materials sheet."
+    },
+    {
+      "requirement_id": "building-materials-exterior-features",
+      "requirement_fingerprint": "sha256:aa7027a4e775ba5fcf4db1c4813748b79e6e3ab05151a3f2de1703f7a47da48d",
+      "action": "List the exterior features and fixtures on the building materials sheet."
+    },
+    {
+      "requirement_id": "structural-load-and-lateral-calculations",
+      "requirement_fingerprint": "sha256:a3cfd42f3ec6d4a6622195b55737d06ac70d08f96b817d868522485d60d0168e",
+      "action": "Add the structural load and lateral calculations."
+    },
+    {
+      "requirement_id": "truss-calculations",
+      "requirement_fingerprint": "sha256:e70c8d24589b688b11930959d85bce1fa53d29cd32961ac573e60220bc700ffe",
+      "action": "Add the truss calculations if the plan set uses trusses."
+    },
+    {
+      "requirement_id": "energy-calculations-all-orientations",
+      "requirement_fingerprint": "sha256:4903c1e4358a65b3bd7260a1ee7dc3d37e2e64d8ee29a49f27f96e9376c287e3",
+      "action": "Add energy calculations covering all orientations."
+    },
+    {
+      "requirement_id": "specifications-and-supplemental-reports",
+      "requirement_fingerprint": "sha256:0df35323ccad05251cbe1f16a7cc09460e488e3349bf9f2b55830e68d7787f2b",
+      "action": "Add the specifications and any supplemental reports, or ask the City which apply to this plan set."
+    }
+  ]
+}

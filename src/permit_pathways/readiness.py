@@ -1447,12 +1447,22 @@ def evaluate_readiness(
     if max_age_days < 0:
         raise ValueError("max_age_days must be non-negative")
     as_of = resolve_today(today)
+    # The boundary has to describe the bindings this workflow actually has.
+    # A workflow with no dataset-backed fact must not claim invented parcel
+    # values, and one that has them must not stay silent about them.
+    if any(fact.source_field for fact in workflow.facts):
+        bindings = (
+            "Its parcel values are invented fixtures shaped like fields in a "
+            "linked public dataset; it does not query or verify a live parcel, "
+        )
+    else:
+        bindings = (
+            "It binds no parcel and queries no parcel dataset; it does not "
+        )
     boundary = (
         "This prototype checks reported item presence against one City "
-        "checklist. Its parcel values are invented fixtures shaped like fields "
-        "in a linked public dataset; it does not query or verify a live parcel, "
-        "inspect files, determine legal sufficiency, certify completeness, or "
-        "limit what staff may request."
+        f"checklist. {bindings}inspect files, determine legal sufficiency, "
+        "certify completeness, or limit what staff may request."
     )
 
     applicability = _applicability_state(
