@@ -49,7 +49,7 @@ REMEDIES = (
     ROOT / "data" / "readiness" / "remedies" / "woodland-preapproved-detached-adu.json"
 )
 JOURNEY = ROOT / "data" / "journeys" / "woodland-preapproved-detached-adu.json"
-AS_OF = date(2026, 8, 9)
+AS_OF = date(2026, 8, 11)
 CHECKED_AT = "2026-08-09T12:00:00Z"
 COMMIT_SHA = "8d841409dc5fd16fe56b52a8b57c826c07f176a6"
 RUN_URL = "https://github.com/ChelseaKR/permit-pathways/actions/runs/30835371749"

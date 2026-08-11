@@ -34,7 +34,7 @@ EVIDENCE_PATH = (
     ROOT / "data" / "readiness" / "generated" / "woodland-preapproved-adu-evidence.json"
 )
 SOURCES_PATH = ROOT / "data" / "sources.json"
-AS_OF = date(2026, 8, 2)
+AS_OF = date(2026, 8, 11)
 BASELINE_COMMIT = "18d6af3b72e83538c32fbad91e43a0c4636652a8"
 EXECUTION_COMMIT = "a" * 40
 DEPLOYED_URL = (

@@ -61,7 +61,7 @@ EXPORT_PROFILES = (
     ROOT / "data" / "export" / "public-synthetic-evidence-v1.json",
     ROOT / "data" / "export" / "public-synthetic-evidence-v2.json",
 )
-AS_OF = date(2026, 8, 10)
+AS_OF = date(2026, 8, 11)
 NOW = datetime(2026, 8, 10, 12, 0, tzinfo=UTC)
 BASELINE_COMMIT = "a" * 40
 PUBLISHED_COMMIT = "b" * 40

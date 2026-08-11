@@ -14,7 +14,7 @@
       "remedy_content_fingerprint": "sha256:3e49650e15f812f4ce0dfc13caa57b0ea9d20649a24b19b79ef4cca1be804787",
       "journey_id": "woodland-preapproved-detached-adu-synthetic",
       "journey_version": "1.0.0",
-      "journey_fingerprint": "sha256:22148b40724c3121fb255288700dcae50cb03175190402801a1fad3fb61724a2",
+      "journey_fingerprint": "sha256:3bb19c49d48ba108e75e5ab9f7a73459c88a5e813af856861fabb5a99a4363de",
       "source_bindings": [
         {
           "source_id": "woodland-preapproved-adu-checklist",
@@ -45,7 +45,7 @@
       "remedy_content_fingerprint": "sha256:3e49650e15f812f4ce0dfc13caa57b0ea9d20649a24b19b79ef4cca1be804787",
       "journey_id": "woodland-preapproved-detached-adu-synthetic",
       "journey_version": "1.0.0",
-      "journey_fingerprint": "sha256:22148b40724c3121fb255288700dcae50cb03175190402801a1fad3fb61724a2",
+      "journey_fingerprint": "sha256:3bb19c49d48ba108e75e5ab9f7a73459c88a5e813af856861fabb5a99a4363de",
       "source_bindings": [
         {
           "source_id": "woodland-preapproved-adu-checklist",

@@ -71,14 +71,18 @@ def load_registered_review_context(
         ),
         workflow,
     )
-    journey = load_journey_config(
-        _assert_registered_path(
-            root,
-            entry.artifacts.journey,
-            journey_override,
-            "journey",
+    # A packet-only workflow registers no journey, so there is none to load
+    # and none of the journey cross-checks below apply.
+    journey = None
+    if entry.artifacts.journey is not None:
+        journey = load_journey_config(
+            _assert_registered_path(
+                root,
+                entry.artifacts.journey,
+                journey_override,
+                "journey",
+            )
         )
-    )
     availability = load_program_availability(
         entry.artifacts.program_availability.resolve(root),
         policy=entry.availability_policy,
@@ -87,13 +91,16 @@ def load_registered_review_context(
         raise ValueError("registered workflow ID does not match its artifact")
     if packet.workflow_id != entry.workflow_id or packet.packet_id != entry.packet_id:
         raise ValueError("registered packet IDs do not match its artifact")
-    if journey.journey_id != entry.journey_id:
-        raise ValueError("registered journey ID does not match its artifact")
-    if (
-        journey.readiness_workflow_id != entry.workflow_id
-        or journey.readiness_packet_id != entry.packet_id
-    ):
-        raise ValueError("registered journey references do not match its workflow")
+    if journey is not None:
+        if journey.journey_id != entry.journey_id:
+            raise ValueError("registered journey ID does not match its artifact")
+        if (
+            journey.readiness_workflow_id != entry.workflow_id
+            or journey.readiness_packet_id != entry.packet_id
+        ):
+            raise ValueError(
+                "registered journey references do not match its workflow"
+            )
     if (
         availability.workflow_id != entry.workflow_id
         or availability.program_id != entry.program_id
@@ -109,5 +116,5 @@ def load_registered_review_context(
         workflow=workflow,
         packet=packet,
         remedies=remedies,
-        journeys=(journey,),
+        journeys=() if journey is None else (journey,),
     )
