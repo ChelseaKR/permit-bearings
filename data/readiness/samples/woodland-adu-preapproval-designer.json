@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "packet": {
+    "packet_id": "woodland-adu-preapproval-designer-hypothetical-001",
+    "workflow_id": "woodland-adu-preapproval-designer-submittal",
+    "label": "Made-up Woodland ADU preapproval designer submittal",
+    "synthetic": true,
+    "evaluated_on": "2026-08-11",
+    "jurisdiction": "woodland",
+    "project_type": "adu",
+    "facts": [
+      {
+        "fact_id": "submitting_plans_for_city_preapproval",
+        "value": "yes",
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
+      },
+      {
+        "fact_id": "designer_is_licensed",
+        "value": "yes",
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
+      },
+      {
+        "fact_id": "designer_publishes_website",
+        "value": "unknown",
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
+      },
+      {
+        "fact_id": "provides_watermarked_website_images",
+        "value": "no",
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
+      },
+      {
+        "fact_id": "primary_residence_has_fire_sprinklers",
+        "value": "unknown",
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
+      },
+      {
+        "fact_id": "uses_trusses",
+        "value": "yes",
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
+      },
+      {
+        "fact_id": "in_flood_hazard_area",
+        "value": "unknown",
+        "provenance": "synthetic_applicant_assertion",
+        "source_id": null,
+        "source_field": null,
+        "source_checked_on": null
+      }
+    ],
+    "inventory": [
+      {
+        "requirement_id": "designer-contact-information",
+        "status": "present"
+      },
+      {
+        "requirement_id": "designer-full-name",
+        "status": "present"
+      },
+      {
+        "requirement_id": "designer-email",
+        "status": "present"
+      },
+      {
+        "requirement_id": "designer-phone-number",
+        "status": "present"
+      },
+      {
+        "requirement_id": "designer-address",
+        "status": "present"
+      },
+      {
+        "requirement_id": "designer-license-number",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "designer-website-link",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "industry-standard-plan-set",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plan-set-cover-sheet",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plan-set-watermarked-website-images",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "plan-set-placeholder-site-plan-sheet",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "plan-set-architectural-elevations",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plan-set-floor-plan",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plan-set-foundation-plan",
+        "status": "present"
+      },
+      {
+        "requirement_id": "foundation-plan-flood-hazard-considerations",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "plan-set-structural-plans",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plan-set-mechanical-plumbing-electrical-plans",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plan-set-photovoltaic-plans",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "plan-set-fire-sprinkler-plans",
+        "status": "unknown"
+      },
+      {
+        "requirement_id": "plan-format-requirements",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plans-are-scaled",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plans-are-dimensioned",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plans-signed-by-designer",
+        "status": "present"
+      },
+      {
+        "requirement_id": "plans-stamped-by-licensed-design-professional",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "building-materials-sheet",
+        "status": "present"
+      },
+      {
+        "requirement_id": "building-materials-material-types",
+        "status": "present"
+      },
+      {
+        "requirement_id": "building-materials-color-options",
+        "status": "present"
+      },
+      {
+        "requirement_id": "building-materials-exterior-features",
+        "status": "missing"
+      },
+      {
+        "requirement_id": "structural-load-and-lateral-calculations",
+        "status": "present"
+      },
+      {
+        "requirement_id": "truss-calculations",
+        "status": "present"
+      },
+      {
+        "requirement_id": "energy-calculations-all-orientations",
+        "status": "present"
+      },
+      {
+        "requirement_id": "specifications-and-supplemental-reports",
+        "status": "unknown"
+      }
+    ]
+  }
+}
