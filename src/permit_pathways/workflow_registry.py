@@ -18,6 +18,7 @@ from typing import Any
 
 from .program_availability import (
     GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+    INTAKE_AVAILABILITY_POLICY,
     WOODLAND_AVAILABILITY_POLICY,
 )
 from .program_availability import (
@@ -42,6 +43,7 @@ _WINDOWS_RESERVED_STEMS = {
 }
 _AVAILABILITY_POLICIES = {
     GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+    INTAKE_AVAILABILITY_POLICY,
     WOODLAND_AVAILABILITY_POLICY,
 }
 _TOP_LEVEL_KEYS = {"schema_version", "browser_default_workflow_id", "workflows"}
@@ -64,6 +66,7 @@ _ARTIFACT_KEYS = {
     "journey_evidence",
     "program_availability",
 }
+_JOURNEY_ARTIFACT_KEYS = {"journey", "journey_evidence"}
 _INPUT_LAYOUT = {
     "readiness_workflow": "data/readiness/workflows",
     "readiness_packet": "data/readiness/samples",
@@ -104,20 +107,22 @@ class WorkflowArtifacts:
     readiness_packet: FingerprintedArtifact
     readiness_remedies: FingerprintedArtifact
     readiness_evidence: GeneratedArtifact
-    journey: FingerprintedArtifact
-    journey_evidence: GeneratedArtifact
+    journey: FingerprintedArtifact | None
+    journey_evidence: GeneratedArtifact | None
     program_availability: FingerprintedArtifact
 
     def inputs(self) -> tuple[FingerprintedArtifact, ...]:
-        return (
+        core = (
             self.readiness_workflow,
             self.readiness_packet,
             self.readiness_remedies,
-            self.journey,
             self.program_availability,
         )
+        return core if self.journey is None else (*core, self.journey)
 
     def outputs(self) -> tuple[GeneratedArtifact, ...]:
+        if self.journey_evidence is None:
+            return (self.readiness_evidence,)
         return (self.readiness_evidence, self.journey_evidence)
 
 
@@ -125,7 +130,7 @@ class WorkflowArtifacts:
 class WorkflowRegistryEntry:
     workflow_id: str
     packet_id: str
-    journey_id: str
+    journey_id: str | None
     program_id: str
     jurisdiction: str
     status: str
@@ -150,8 +155,15 @@ class WorkflowRegistry:
         return matches[0]
 
 
-def _exact_keys(record: dict[str, Any], expected: set[str], field: str) -> None:
-    unknown = sorted(set(record) - expected)
+def _exact_keys(
+    record: dict[str, Any],
+    expected: set[str],
+    field: str,
+    *,
+    optional: set[str] | None = None,
+) -> None:
+    allowed = expected | (optional or set())
+    unknown = sorted(set(record) - allowed)
     missing = sorted(expected - set(record))
     if unknown:
         raise ValueError(f"{field}: unknown fields: {', '.join(unknown)}")
@@ -342,22 +354,35 @@ def _generated_artifact(
 def _artifacts(value: Any, field: str, root: Path) -> WorkflowArtifacts:
     if not isinstance(value, dict):
         raise ValueError(f"{field}: expected an object")
-    _exact_keys(value, _ARTIFACT_KEYS, field)
+    _exact_keys(
+        value,
+        _ARTIFACT_KEYS - _JOURNEY_ARTIFACT_KEYS,
+        field,
+        optional=_JOURNEY_ARTIFACT_KEYS,
+    )
+    present = _JOURNEY_ARTIFACT_KEYS & set(value)
+    if present and present != _JOURNEY_ARTIFACT_KEYS:
+        raise ValueError(
+            f"{field}: a journey needs both journey and journey_evidence; "
+            f"found only {', '.join(sorted(present))}"
+        )
     inputs = {
         key: _fingerprinted_artifact(value[key], f"{field}.{key}", parent, root)
         for key, parent in _INPUT_LAYOUT.items()
+        if key in value
     }
     outputs = {
         key: _generated_artifact(value[key], f"{field}.{key}", parent, root)
         for key, parent in _OUTPUT_LAYOUT.items()
+        if key in value
     }
     return WorkflowArtifacts(
         readiness_workflow=inputs["readiness_workflow"],
         readiness_packet=inputs["readiness_packet"],
         readiness_remedies=inputs["readiness_remedies"],
         readiness_evidence=outputs["readiness_evidence"],
-        journey=inputs["journey"],
-        journey_evidence=outputs["journey_evidence"],
+        journey=inputs.get("journey"),
+        journey_evidence=outputs.get("journey_evidence"),
         program_availability=inputs["program_availability"],
     )
 
@@ -379,15 +404,26 @@ def _entry(value: Any, index: int, root: Path) -> WorkflowRegistryEntry:
         raise ValueError(
             f"{field}.availability_policy: unsupported value {availability_policy!r}"
         )
+    artifacts = _artifacts(value["artifacts"], f"{field}.artifacts", root)
+    raw_journey_id = value["journey_id"]
+    if raw_journey_id is None:
+        journey_id = None
+    else:
+        journey_id = _stable_id(raw_journey_id, f"{field}.journey_id")
+    if (journey_id is None) != (artifacts.journey is None):
+        raise ValueError(
+            f"{field}: a packet-only workflow declares journey_id null and "
+            "registers no journey artifacts; a journey workflow must do both"
+        )
     return WorkflowRegistryEntry(
         workflow_id=workflow_id,
         packet_id=_stable_id(value["packet_id"], f"{field}.packet_id"),
-        journey_id=_stable_id(value["journey_id"], f"{field}.journey_id"),
+        journey_id=journey_id,
         program_id=_stable_id(value["program_id"], f"{field}.program_id"),
         jurisdiction=_stable_id(value["jurisdiction"], f"{field}.jurisdiction"),
         status=status,
         availability_policy=availability_policy,
-        artifacts=_artifacts(value["artifacts"], f"{field}.artifacts", root),
+        artifacts=artifacts,
     )
 
 
@@ -395,7 +431,11 @@ def _reject_duplicates(registry: WorkflowRegistry) -> None:
     identifiers = {
         "workflow ID": [entry.workflow_id for entry in registry.workflows],
         "packet ID": [entry.packet_id for entry in registry.workflows],
-        "journey ID": [entry.journey_id for entry in registry.workflows],
+        "journey ID": [
+            entry.journey_id
+            for entry in registry.workflows
+            if entry.journey_id is not None
+        ],
         "program ID": [entry.program_id for entry in registry.workflows],
         "input path": [
             artifact.path
@@ -477,7 +517,11 @@ def _inventory_paths(root: Path, parent: str) -> set[str]:
 
 def _validate_inventory(registry: WorkflowRegistry, root: Path) -> None:
     for key, parent in _INPUT_LAYOUT.items():
-        expected = {getattr(entry.artifacts, key).path for entry in registry.workflows}
+        expected = {
+            artifact.path
+            for entry in registry.workflows
+            if (artifact := getattr(entry.artifacts, key)) is not None
+        }
         observed = _inventory_paths(root, parent)
         if observed != expected:
             extras = sorted(observed - expected)
@@ -489,7 +533,11 @@ def _validate_inventory(registry: WorkflowRegistry, root: Path) -> None:
                 detail.append("missing files: " + ", ".join(missing))
             raise ValueError(f"workflow registry {parent}: {'; '.join(detail)}")
     for key, parent in _OUTPUT_LAYOUT.items():
-        expected = {getattr(entry.artifacts, key).path for entry in registry.workflows}
+        expected = {
+            artifact.path
+            for entry in registry.workflows
+            if (artifact := getattr(entry.artifacts, key)) is not None
+        }
         extras = sorted(_inventory_paths(root, parent) - expected)
         if extras:
             raise ValueError(
@@ -542,7 +590,6 @@ def _validate_declared_ids(registry: WorkflowRegistry, root: Path) -> None:
             entry.artifacts.readiness_remedies,
             None,
         )
-        journey = _artifact_record(root, entry.artifacts.journey, "journey")
         availability = _artifact_record(
             root,
             entry.artifacts.program_availability,
@@ -555,17 +602,6 @@ def _validate_declared_ids(registry: WorkflowRegistry, root: Path) -> None:
             (packet.get("packet_id"), entry.packet_id, "packet.packet_id"),
             (packet.get("jurisdiction"), entry.jurisdiction, "packet.jurisdiction"),
             (remedies.get("workflow_id"), entry.workflow_id, "remedies.workflow_id"),
-            (journey.get("journey_id"), entry.journey_id, "journey.journey_id"),
-            (
-                journey.get("readiness_workflow_id"),
-                entry.workflow_id,
-                "journey.readiness_workflow_id",
-            ),
-            (
-                journey.get("readiness_packet_id"),
-                entry.packet_id,
-                "journey.readiness_packet_id",
-            ),
             (
                 availability.get("workflow_id"),
                 entry.workflow_id,
@@ -582,6 +618,21 @@ def _validate_declared_ids(registry: WorkflowRegistry, root: Path) -> None:
                 "availability.jurisdiction",
             ),
         )
+        if entry.artifacts.journey is not None:
+            journey = _artifact_record(root, entry.artifacts.journey, "journey")
+            expected += (
+                (journey.get("journey_id"), entry.journey_id, "journey.journey_id"),
+                (
+                    journey.get("readiness_workflow_id"),
+                    entry.workflow_id,
+                    "journey.readiness_workflow_id",
+                ),
+                (
+                    journey.get("readiness_packet_id"),
+                    entry.packet_id,
+                    "journey.readiness_packet_id",
+                ),
+            )
         for value, declared, field in expected:
             _expect_declared(value, declared, f"{entry.workflow_id}: {field}")
 
@@ -632,7 +683,12 @@ def load_workflow_registry(
         ),
     )
     _reject_duplicates(registry)
-    registry.select()
+    default = registry.select()
+    if default.journey_id is None:
+        raise ValueError(
+            "workflow registry.browser_default_workflow_id: the browser default "
+            "renders a journey, so it cannot be a packet-only workflow"
+        )
     _validate_declared_ids(registry, root)
     _validate_policy_bindings(registry)
     if validate_inventory:

@@ -31,13 +31,43 @@
           "sha256": "12b802bb7fc76a23d873f1d553f1edbad6b00974ca332bfc2f32ded1a35781a4"
         }
       },
+      "availability_policy": "woodland-preapproved-adu-plans-not-listed-v1",
       "journey_id": "woodland-preapproved-detached-adu-synthetic",
       "jurisdiction": "woodland",
       "packet_id": "woodland-preapproved-adu-hypothetical-001",
       "program_id": "woodland-preapproved-adu-plan-program",
-      "availability_policy": "woodland-preapproved-adu-plans-not-listed-v1",
       "status": "prototype",
       "workflow_id": "woodland-preapproved-detached-adu"
+    },
+    {
+      "artifacts": {
+        "program_availability": {
+          "path": "data/availability/woodland-adu-preapproval-intake.json",
+          "sha256": "8ec5fa49a69f9c5c7de81fe4a903b29bec749808c610608b974b35527f6213e6"
+        },
+        "readiness_evidence": {
+          "path": "data/readiness/generated/woodland-adu-preapproval-designer-evidence.json"
+        },
+        "readiness_packet": {
+          "path": "data/readiness/samples/woodland-adu-preapproval-designer.json",
+          "sha256": "04d761f72cdb9f3e3c858667363e528a8272387e5389f77c432d767ed863f86f"
+        },
+        "readiness_remedies": {
+          "path": "data/readiness/remedies/woodland-adu-preapproval-designer-submittal.json",
+          "sha256": "21e05dae2fc82b4c522267108d65a1815a47b5f751d16cc0565743cf037f58fe"
+        },
+        "readiness_workflow": {
+          "path": "data/readiness/workflows/woodland-adu-preapproval-designer-submittal.json",
+          "sha256": "d383620fb2893009941b196688999a9bba5e1a5f32693a63f56c376d3d7e85ab"
+        }
+      },
+      "availability_policy": "woodland-adu-preapproval-intake-available-v1",
+      "journey_id": null,
+      "jurisdiction": "woodland",
+      "packet_id": "woodland-adu-preapproval-designer-hypothetical-001",
+      "program_id": "woodland-adu-preapproval-intake",
+      "status": "prototype",
+      "workflow_id": "woodland-adu-preapproval-designer-submittal"
     }
   ]
 }
