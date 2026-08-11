@@ -190,7 +190,7 @@
     {
       "path": "data/demo-data.js",
       "role": "derived_browser_bundle",
-      "raw_sha256": "sha256:5ad2542d1c68275da539235e0789cd95a58f3ab84fa2e51f8df9af1ecabf6c2c"
+      "raw_sha256": "sha256:57133db2d4167a960125cf778cb83fca060febc7dd8531c2c1a9e945792edcae"
     },
     {
       "path": "data/explanations/plain-language.json",
@@ -211,7 +211,7 @@
     {
       "path": "data/journeys/generated/woodland-preapproved-detached-adu.json",
       "role": "journey_evidence",
-      "raw_sha256": "sha256:61423d319254480fbd34f39dd738d9b4554d46cc2468d1f6d47dd7b70b27fbe5"
+      "raw_sha256": "sha256:44d437a6cc40f83b07b570cd236b7a9f798482cb7a3b4b2471154c3c7c87911e"
     },
     {
       "path": "data/journeys/woodland-preapproved-detached-adu.json",
@@ -236,7 +236,7 @@
     {
       "path": "data/readiness/generated/woodland-preapproved-adu-evidence.json",
       "role": "readiness_evidence",
-      "raw_sha256": "sha256:05896b039a9149d76b9a775564d0e153b35d0e38269becc3e7d4b0a78af82627"
+      "raw_sha256": "sha256:d631a8b97fa4253dec6b7f38099deb541d278b0ec745e5be19ccc280716b9c1d"
     },
     {
       "path": "data/readiness/remedies/woodland-preapproved-detached-adu.json",
@@ -246,7 +246,7 @@
     {
       "path": "data/readiness/samples/woodland-preapproved-adu.json",
       "role": "readiness_packet",
-      "raw_sha256": "sha256:9f8e9e1468ec95a972b9eeed5f13a2415c3c4e18c56fecc1ac6edb6c8332e5c9"
+      "raw_sha256": "sha256:9fad4ee4a2b616cb4a8c93d0dff2b70e91921d520c1f798e51b8a2ec123d1e5b"
     },
     {
       "path": "data/readiness/workflows/woodland-preapproved-detached-adu.json",
@@ -276,12 +276,12 @@
     {
       "path": "data/source-status/current.json",
       "role": "source_state_receipt",
-      "raw_sha256": "sha256:4c590b76a497e11e074a4661e83bdb61065e99b234176b4ccc3e55f6a1fa7852"
+      "raw_sha256": "sha256:4a95957be45dddef306bb4f648e0491251124fb4c0ba1b492deee8b08445893a"
     },
     {
       "path": "data/sources.json",
       "role": "source_registry",
-      "raw_sha256": "sha256:7092d16f1b9043667fb06ae0a39e2eaf66550588dc63789fa964c0671a0ced8f"
+      "raw_sha256": "sha256:8cb44c50a79e1e42d73335284e6b2c7b9b72f884b2745552d6cc85b93a0ee472"
     },
     {
       "path": "data/validation/rule-verification.json",
@@ -291,32 +291,32 @@
     {
       "path": "data/validation/woodland-content-review.json",
       "role": "content_review_ledger",
-      "raw_sha256": "sha256:089ed2f0227247ffbdaba606a51c74dc6e1a04ec0a1ee74b681e75a34940b064"
+      "raw_sha256": "sha256:7110471ca09e6919dad42ef47990286f5530ba993d8840214a4f6e432b9d6abe"
     },
     {
       "path": "data/validation/woodland-flagship-gate.json",
       "role": "flagship_gate",
-      "raw_sha256": "sha256:687a8aecace1d206c8662baaea72c604f67bcbce57a95d6507f34522eb466744"
+      "raw_sha256": "sha256:88f43375a80b0a0e02177e3605706c4e5251854cd00c94a0b18e42c773a33a7f"
     },
     {
       "path": "data/validation/woodland-manual-evidence.json",
       "role": "manual_evidence_ledger",
-      "raw_sha256": "sha256:41338e4d2a27a5a9fc03c94e6fb050cc563de3c542cacce43a8b44914e75b6d7"
+      "raw_sha256": "sha256:db1c41cf2752f1517a608e2ae6523cc5cf5b53099bd0413458aee1da0004d8d9"
     },
     {
       "path": "data/validation/woodland-participant-sessions.json",
       "role": "participant_ledger",
-      "raw_sha256": "sha256:0294da0caf0861facc87e5da5a9bcd0fe4b1ce116d591350026c4ac2b768985b"
+      "raw_sha256": "sha256:28e564adf81ec942f7a74a5cb849972f9607c4701ce8921673e644924028ab0f"
     },
     {
       "path": "data/validation/woodland-source-change-rehearsal.json",
       "role": "source_change_rehearsal_ledger",
-      "raw_sha256": "sha256:233247e666a2f61eeebf7d9980a711019cd784170685e112ef2eaae97fb84700"
+      "raw_sha256": "sha256:f28de3e2d86022ec61e6c73bbc98b64a658543886d98344e69063cd3d3c7d1f1"
     },
     {
       "path": "data/workflows/registry.json",
       "role": "workflow_registry",
-      "raw_sha256": "sha256:9aab01c2f3bd5ef0f96512d1ce910b9ce969d9b8eb8036e6f05557965d5598b9"
+      "raw_sha256": "sha256:bd5607f9dbe11713397d6438cf162fd0f6e296c3c8097fd5b46214745dcf963e"
     }
   ],
   "public_state_assertions": [

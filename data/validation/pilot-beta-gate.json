@@ -23,14 +23,14 @@
     "counts_as_active_pilot": false,
     "journey_id": "woodland-preapproved-detached-adu-synthetic",
     "journey_version": "1.0.0",
-    "journey_fingerprint": "sha256:3bb19c49d48ba108e75e5ab9f7a73459c88a5e813af856861fabb5a99a4363de",
+    "journey_fingerprint": "sha256:22148b40724c3121fb255288700dcae50cb03175190402801a1fad3fb61724a2",
     "screening_case_id": "woodland-new-detached-adu-local-layer",
     "screening_case_fingerprint": "sha256:35ee26aee6d21cc2650807418ea3cc42610e238413274fb4cc2c21d50b9bbfeb",
     "fact_envelope_fingerprint": "sha256:18c9bf3bdf525776352301b3150185fce8cdb0882b621d61f92eabcc25036847",
     "readiness_workflow_id": "woodland-preapproved-detached-adu",
     "readiness_workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
     "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
-    "readiness_packet_fingerprint": "sha256:891159aeacb015371437a239a84a9a4875f6e1d6c830a6e936151c4b4f84bf1a"
+    "readiness_packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e"
   },
   "artifact_bindings": [
     {
@@ -41,12 +41,12 @@
     {
       "artifact_id": "content_review",
       "path": "data/validation/woodland-content-review.json",
-      "sha256": "sha256:089ed2f0227247ffbdaba606a51c74dc6e1a04ec0a1ee74b681e75a34940b064"
+      "sha256": "sha256:7110471ca09e6919dad42ef47990286f5530ba993d8840214a4f6e432b9d6abe"
     },
     {
       "artifact_id": "external_evidence_gate",
       "path": "data/validation/woodland-flagship-gate.json",
-      "sha256": "sha256:687a8aecace1d206c8662baaea72c604f67bcbce57a95d6507f34522eb466744"
+      "sha256": "sha256:88f43375a80b0a0e02177e3605706c4e5251854cd00c94a0b18e42c773a33a7f"
     },
     {
       "artifact_id": "heldout_evaluation",
@@ -56,17 +56,17 @@
     {
       "artifact_id": "manual_evidence",
       "path": "data/validation/woodland-manual-evidence.json",
-      "sha256": "sha256:41338e4d2a27a5a9fc03c94e6fb050cc563de3c542cacce43a8b44914e75b6d7"
+      "sha256": "sha256:db1c41cf2752f1517a608e2ae6523cc5cf5b53099bd0413458aee1da0004d8d9"
     },
     {
       "artifact_id": "participant_sessions",
       "path": "data/validation/woodland-participant-sessions.json",
-      "sha256": "sha256:0294da0caf0861facc87e5da5a9bcd0fe4b1ce116d591350026c4ac2b768985b"
+      "sha256": "sha256:28e564adf81ec942f7a74a5cb849972f9607c4701ce8921673e644924028ab0f"
     },
     {
       "artifact_id": "public_synthetic_export",
       "path": "data/export/public-synthetic-evidence-v1.json",
-      "sha256": "sha256:9990d3a551ffafae424da94645e6b8cdf13b196549ebdaba4c9c5f6ef537fdcb"
+      "sha256": "sha256:2e5153f1dae2f7b660dcae156ed2d0f84480eff7a02a163fa8426a5272314e9e"
     },
     {
       "artifact_id": "reference_journey",
@@ -86,7 +86,7 @@
     {
       "artifact_id": "source_change_rehearsal",
       "path": "data/validation/woodland-source-change-rehearsal.json",
-      "sha256": "sha256:233247e666a2f61eeebf7d9980a711019cd784170685e112ef2eaae97fb84700"
+      "sha256": "sha256:f28de3e2d86022ec61e6c73bbc98b64a658543886d98344e69063cd3d3c7d1f1"
     },
     {
       "artifact_id": "source_state",

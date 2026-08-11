@@ -14,11 +14,11 @@
     "source_snapshot_receipt_id": null,
     "journey_id": "woodland-preapproved-detached-adu-synthetic",
     "journey_version": "1.0.0",
-    "journey_fingerprint": "sha256:3bb19c49d48ba108e75e5ab9f7a73459c88a5e813af856861fabb5a99a4363de",
+    "journey_fingerprint": "sha256:22148b40724c3121fb255288700dcae50cb03175190402801a1fad3fb61724a2",
     "readiness_workflow_id": "woodland-preapproved-detached-adu",
     "readiness_workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
     "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
-    "readiness_packet_fingerprint": "sha256:891159aeacb015371437a239a84a9a4875f6e1d6c830a6e936151c4b4f84bf1a"
+    "readiness_packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e"
   },
   "simulation_contract": {
     "change_kind": "controlled_source_hash_change",
