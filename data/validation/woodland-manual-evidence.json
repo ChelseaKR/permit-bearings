@@ -22,7 +22,7 @@
     "readiness_workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
     "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
     "readiness_packet_fingerprint": "sha256:891159aeacb015371437a239a84a9a4875f6e1d6c830a6e936151c4b4f84bf1a",
-    "route_source_status_as_of": "2026-07-30",
+    "route_source_status_as_of": "2026-08-11",
     "route_source_review_due_on": "2027-01-23"
   },
   "privacy_protocol": {

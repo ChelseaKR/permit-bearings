@@ -296,12 +296,12 @@
     {
       "path": "data/validation/woodland-flagship-gate.json",
       "role": "flagship_gate",
-      "raw_sha256": "sha256:70d472b099ff01a9f9a21ecf2a7b24f515c189097806247799b257b03371a16b"
+      "raw_sha256": "sha256:687a8aecace1d206c8662baaea72c604f67bcbce57a95d6507f34522eb466744"
     },
     {
       "path": "data/validation/woodland-manual-evidence.json",
       "role": "manual_evidence_ledger",
-      "raw_sha256": "sha256:20470b8f97580155417c2ce6288cd66bbfc7bf061583d68c8309e1e8a32040fe"
+      "raw_sha256": "sha256:41338e4d2a27a5a9fc03c94e6fb050cc563de3c542cacce43a8b44914e75b6d7"
     },
     {
       "path": "data/validation/woodland-participant-sessions.json",
