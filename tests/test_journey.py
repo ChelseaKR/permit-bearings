@@ -23,7 +23,7 @@ from permit_pathways.readiness import (
 from permit_pathways.screening import Rule, load_rules
 
 ROOT = Path(__file__).resolve().parents[1]
-AS_OF = date(2026, 7, 30)
+AS_OF = date(2026, 8, 11)
 JOURNEY_PATH = ROOT / "data" / "journeys" / "woodland-preapproved-detached-adu.json"
 GOLDEN_PATH = ROOT / "data" / "golden" / "example.json"
 RULES_PATH = ROOT / "data" / "rules"

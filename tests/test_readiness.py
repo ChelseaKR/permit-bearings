@@ -23,7 +23,11 @@ from permit_pathways.readiness import (
 from permit_pathways.readiness_cli import main as readiness_cli_main
 
 ROOT = Path(__file__).resolve().parents[1]
-AS_OF = date(2026, 7, 30)
+# "Today" for evaluation. Kept distinct from the date the canonical fixtures
+# were captured: those two were accidentally equal until a source was fetched
+# later, which made date-conflating assertions look correct.
+AS_OF = date(2026, 8, 11)
+DATA_AS_OF = date(2026, 7, 30)
 WORKFLOW_PATH = (
     ROOT / "data" / "readiness" / "workflows" / "woodland-preapproved-detached-adu.json"
 )
@@ -199,7 +203,8 @@ def test_canonical_parcel_facts_are_source_shaped_but_explicitly_fabricated(
     assert {fact.source_id for fact in parcel_facts.values()} == {PARCEL_SOURCE_ID}
     assert {fact.source_field for fact in parcel_facts.values()} == {"CITY", "LU_Descr"}
     assert all(
-        fact.source_checked_on == AS_OF.isoformat() for fact in parcel_facts.values()
+        fact.source_checked_on == DATA_AS_OF.isoformat()
+        for fact in parcel_facts.values()
     )
     assert all(fact.value == "yes" for fact in parcel_facts.values())
     assert all(
@@ -215,7 +220,7 @@ def test_mapping_provenance_is_source_bound_and_explicitly_review_pending(
     provenance = workflow.mapping_provenance
 
     assert provenance.version == "1.1.0"
-    assert provenance.updated_on == AS_OF.isoformat()
+    assert provenance.updated_on == DATA_AS_OF.isoformat()
     assert provenance.drafted_by == "ai_assisted"
     assert provenance.review_status == "prototype_review_pending"
     assert provenance.review_scope == "requirements_excerpts_and_fact_bindings"
@@ -440,7 +445,7 @@ def test_changed_or_stale_source_fails_closed_for_every_requirement(
     due_date = evaluate_readiness(
         workflow,
         packet,
-        today=AS_OF + timedelta(days=179),
+        today=DATA_AS_OF + timedelta(days=179),
     )
     assert due_date.source_status == "current"
     assert due_date.source_status_as_of == "2027-01-25"
@@ -449,7 +454,7 @@ def test_changed_or_stale_source_fails_closed_for_every_requirement(
     stale = evaluate_readiness(
         workflow,
         packet,
-        today=AS_OF + timedelta(days=180),
+        today=DATA_AS_OF + timedelta(days=180),
     )
     assert stale.overall_status == "source_review_required"
     assert stale.source_status_as_of == "2027-01-26"
@@ -928,8 +933,8 @@ def test_manifest_is_deterministic_and_matches_committed_evidence(
     workflow: ReadinessWorkflow,
     packet: ReadinessPacket,
 ):
-    first = evaluate_readiness(workflow, packet, today=AS_OF)
-    second = evaluate_readiness(workflow, packet, today=AS_OF)
+    first = evaluate_readiness(workflow, packet, today=DATA_AS_OF)
+    second = evaluate_readiness(workflow, packet, today=DATA_AS_OF)
     first_manifest = first.to_manifest(workflow, packet)
     second_manifest = second.to_manifest(workflow, packet)
 
@@ -956,7 +961,7 @@ def test_manifest_is_deterministic_and_matches_committed_evidence(
     assert first_manifest["packet_fingerprint"].startswith("sha256:")
     assert first_manifest["applicability_status"] == "applies"
     assert first_manifest["source_status"] == "current"
-    assert first_manifest["source_status_as_of"] == AS_OF.isoformat()
+    assert first_manifest["source_status_as_of"] == DATA_AS_OF.isoformat()
     assert first_manifest["source_review_due_on"] == "2027-01-25"
 
 
@@ -964,7 +969,7 @@ def test_default_loader_and_cli_use_current_date_for_source_currency(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ):
-    runtime_as_of = AS_OF + timedelta(days=181)
+    runtime_as_of = DATA_AS_OF + timedelta(days=181)
     monkeypatch.setattr(
         "permit_pathways.dates.utc_today",
         lambda: runtime_as_of,
@@ -976,7 +981,7 @@ def test_default_loader_and_cli_use_current_date_for_source_currency(
         SOURCES_PATH,
     )
 
-    assert packet.evaluated_on == AS_OF.isoformat()
+    assert packet.evaluated_on == DATA_AS_OF.isoformat()
     assert result.evaluated_on == runtime_as_of.isoformat()
     assert result.source_status_as_of == runtime_as_of.isoformat()
     assert result.source_review_due_on == "2027-01-25"

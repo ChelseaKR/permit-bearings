@@ -11,7 +11,7 @@ from permit_pathways.screening import load_rules
 DATA = Path(__file__).parent.parent / "data"
 RULES = DATA / "rules"
 GOLDEN = DATA / "golden" / "example.json"
-AS_OF = date(2026, 7, 30)
+AS_OF = date(2026, 8, 11)
 
 
 def test_report_accepts_the_bounded_davis_record_with_dated_evidence():
