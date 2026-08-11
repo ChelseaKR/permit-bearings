@@ -20,7 +20,7 @@
         },
         "readiness_packet": {
           "path": "data/readiness/samples/woodland-preapproved-adu.json",
-          "sha256": "9fad4ee4a2b616cb4a8c93d0dff2b70e91921d520c1f798e51b8a2ec123d1e5b"
+          "sha256": "9f8e9e1468ec95a972b9eeed5f13a2415c3c4e18c56fecc1ac6edb6c8332e5c9"
         },
         "readiness_remedies": {
           "path": "data/readiness/remedies/woodland-preapproved-detached-adu.json",

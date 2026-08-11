@@ -5,7 +5,7 @@
     "workflow_id": "woodland-preapproved-detached-adu",
     "label": "Made-up Woodland preapproved ADU packet",
     "synthetic": true,
-    "evaluated_on": "2026-07-30",
+    "evaluated_on": "2026-08-11",
     "jurisdiction": "woodland",
     "project_type": "adu",
     "facts": [

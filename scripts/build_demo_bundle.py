@@ -414,14 +414,18 @@ def _build_registered_payloads(
             workflow_id=entry.workflow_id,
             records=entry_records,
         )
-        journey, journey_digests = build_journey_payload(
-            root,
-            workflow_id=entry.workflow_id,
-            records=entry_records,
-        )
+        # A packet-only workflow registers no journey; there is nothing to
+        # build and nothing to digest for it.
+        journey = None
+        if entry.artifacts.journey is not None:
+            journey, journey_digests = build_journey_payload(
+                root,
+                workflow_id=entry.workflow_id,
+                records=entry_records,
+            )
+            digests.update(journey_digests)
         _registered_program_availability(entry, root)
         digests.update(readiness_digests)
-        digests.update(journey_digests)
         digests[entry.artifacts.program_availability.path] = (
             entry.artifacts.program_availability.sha256
         )
@@ -559,11 +563,6 @@ def main() -> int:
             workflow_id=entry.workflow_id,
             records=records,
         )
-        journey, _ = build_journey_payload(
-            ROOT,
-            workflow_id=entry.workflow_id,
-            records=records,
-        )
         generated_outputs[entry.artifacts.readiness_evidence.resolve(ROOT)] = (
             json.dumps(
                 readiness["evidence_manifest"],
@@ -573,15 +572,21 @@ def main() -> int:
             )
             + "\n"
         )
-        generated_outputs[entry.artifacts.journey_evidence.resolve(ROOT)] = (
-            json.dumps(
-                journey,
-                ensure_ascii=True,
-                indent=2,
-                sort_keys=True,
+        if entry.artifacts.journey_evidence is not None:
+            journey, _ = build_journey_payload(
+                ROOT,
+                workflow_id=entry.workflow_id,
+                records=records,
             )
-            + "\n"
-        )
+            generated_outputs[entry.artifacts.journey_evidence.resolve(ROOT)] = (
+                json.dumps(
+                    journey,
+                    ensure_ascii=True,
+                    indent=2,
+                    sort_keys=True,
+                )
+                + "\n"
+            )
         if entry.workflow_id == default_entry.workflow_id:
             default_records = records
     if default_records is None:
