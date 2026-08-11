@@ -43,6 +43,25 @@ BOUNDARY = (
     "with the City before use."
 )
 WOODLAND_AVAILABILITY_POLICY = "woodland-preapproved-adu-plans-not-listed-v1"
+# A program whose intake is open. Recording that the City accepts submittals is
+# a different claim from recording that a plan is listed for applicants to
+# choose, and the boundary below must keep the two apart.
+INTAKE_AVAILABILITY_POLICY = "woodland-adu-preapproval-intake-available-v1"
+INTAKE_PROGRAM_ID = "woodland-adu-preapproval-intake"
+INTAKE_SOURCE_ID = "woodland-adu-preapproval-intake-requirements"
+INTAKE_WORKFLOW_ID = "woodland-adu-preapproval-designer-submittal"
+INTAKE_URL = "https://www.cityofwoodland.gov/DocumentCenter/View/12371"
+INTAKE_EXCERPT = (
+    "Submit digital PDFs of the required documents to "
+    "cdd-building@cityofwoodland.gov."
+)
+INTAKE_BOUNDARY = (
+    "The City of Woodland published requirements for submitting ADU plans for "
+    "preapproval and, on the checked date, accepted those submittals. This is "
+    "not evidence that any preapproved plan is yet listed for an applicant to "
+    "choose, and it is not a determination that a given plan set will be "
+    "accepted."
+)
 GENERIC_PROTOTYPE_AVAILABILITY_POLICY = "prototype-generic-plans-not-listed-v1"
 GENERIC_PROTOTYPE_BOUNDARY = (
     "No currently listed plan was identified on the checked official program "
@@ -53,11 +72,12 @@ GENERIC_PROTOTYPE_BOUNDARY = (
 GENERIC_PROTOTYPE_EXCERPT = "No plans are listed on this prototype page."
 SUPPORTED_AVAILABILITY_POLICIES = (
     GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+    INTAKE_AVAILABILITY_POLICY,
     WOODLAND_AVAILABILITY_POLICY,
 )
 
-AvailabilityMode = Literal["future_state_simulation"]
-AvailabilityStatus = Literal["plans_not_listed"]
+AvailabilityMode = Literal["future_state_simulation", "live_program"]
+AvailabilityStatus = Literal["plans_not_listed", "submittals_accepted"]
 MonitoringStatus = Literal["manual_date_bound"]
 
 _STABLE_ID = re.compile(r"^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$")
@@ -265,6 +285,19 @@ def _validate_policy_source_binding(
     excerpt: str,
 ) -> None:
     field = "availability.source"
+    if policy == INTAKE_AVAILABILITY_POLICY:
+        if source_id != INTAKE_SOURCE_ID:
+            raise ValueError(f"{field}.source_id: expected {INTAKE_SOURCE_ID!r}")
+        if excerpt != INTAKE_EXCERPT:
+            raise ValueError(
+                f"{field}.excerpt: must match the submittals_accepted observation"
+            )
+        if url != INTAKE_URL:
+            raise ValueError(
+                f"{field}.url: expected the published intake requirements URL"
+            )
+        return
+
     if policy == WOODLAND_AVAILABILITY_POLICY:
         if source_id != SOURCE_ID:
             raise ValueError(f"{field}.source_id: expected {SOURCE_ID!r}")
@@ -361,18 +394,28 @@ def _availability(
     program_id = _stable_id(record["program_id"], f"{field}.program_id")
     if policy == WOODLAND_AVAILABILITY_POLICY and program_id != PROGRAM_ID:
         raise ValueError(f"{field}.program_id: expected {PROGRAM_ID!r}")
+    if policy == INTAKE_AVAILABILITY_POLICY and program_id != INTAKE_PROGRAM_ID:
+        raise ValueError(f"{field}.program_id: expected {INTAKE_PROGRAM_ID!r}")
     workflow_id = _stable_id(record["workflow_id"], f"{field}.workflow_id")
     if policy == WOODLAND_AVAILABILITY_POLICY and workflow_id != WORKFLOW_ID:
         raise ValueError(f"{field}.workflow_id: expected {WORKFLOW_ID!r}")
+    if policy == INTAKE_AVAILABILITY_POLICY and workflow_id != INTAKE_WORKFLOW_ID:
+        raise ValueError(f"{field}.workflow_id: expected {INTAKE_WORKFLOW_ID!r}")
     jurisdiction = _stable_id(record["jurisdiction"], f"{field}.jurisdiction")
-    if policy == WOODLAND_AVAILABILITY_POLICY and jurisdiction != JURISDICTION:
+    if (
+        policy in (WOODLAND_AVAILABILITY_POLICY, INTAKE_AVAILABILITY_POLICY)
+        and jurisdiction != JURISDICTION
+    ):
         raise ValueError(f"{field}.jurisdiction: expected {JURISDICTION!r}")
 
+    intake = policy == INTAKE_AVAILABILITY_POLICY
+    expected_mode = "live_program" if intake else "future_state_simulation"
+    expected_status = "submittals_accepted" if intake else "plans_not_listed"
     mode = _required_text(record["mode"], f"{field}.mode")
-    if mode != "future_state_simulation":
+    if mode != expected_mode:
         raise ValueError(f"{field}.mode: unsupported value {mode!r}")
     status = _required_text(record["status"], f"{field}.status")
-    if status != "plans_not_listed":
+    if status != expected_status:
         raise ValueError(f"{field}.status: unsupported value {status!r}")
     monitoring = _required_text(
         record["monitoring_status"], f"{field}.monitoring_status"
@@ -380,11 +423,12 @@ def _availability(
     if monitoring != "manual_date_bound":
         raise ValueError(f"{field}.monitoring_status: unsupported value {monitoring!r}")
     boundary = _required_text(record["boundary"], f"{field}.boundary")
-    expected_boundary = (
-        BOUNDARY
-        if policy == WOODLAND_AVAILABILITY_POLICY
-        else GENERIC_PROTOTYPE_BOUNDARY
-    )
+    if intake:
+        expected_boundary = INTAKE_BOUNDARY
+    elif policy == WOODLAND_AVAILABILITY_POLICY:
+        expected_boundary = BOUNDARY
+    else:
+        expected_boundary = GENERIC_PROTOTYPE_BOUNDARY
     if boundary != expected_boundary:
         raise ValueError(
             f"{field}.boundary: must preserve the {policy!r} "

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "availability": {
+    "program_id": "woodland-adu-preapproval-intake",
+    "workflow_id": "woodland-adu-preapproval-designer-submittal",
+    "jurisdiction": "woodland",
+    "mode": "live_program",
+    "status": "submittals_accepted",
+    "monitoring_status": "manual_date_bound",
+    "source": {
+      "source_id": "woodland-adu-preapproval-intake-requirements",
+      "url": "https://www.cityofwoodland.gov/DocumentCenter/View/12371",
+      "label": "City of Woodland ADU Preapproval Application Requirements (for Designers)",
+      "checked_on": "2026-08-11",
+      "recheck_due_on": "2026-09-08",
+      "excerpt": "Submit digital PDFs of the required documents to cdd-building@cityofwoodland.gov.",
+      "excerpt_sha256": "sha256:26714e9c3965f91b5e166fc5d592c3d9e8870b7a547d6eb8807b60e9ff20a496"
+    },
+    "boundary": "The City of Woodland published requirements for submitting ADU plans for preapproval and, on the checked date, accepted those submittals. This is not evidence that any preapproved plan is yet listed for an applicant to choose, and it is not a determination that a given plan set will be accepted."
+  }
+}
