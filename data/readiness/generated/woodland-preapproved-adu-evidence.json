@@ -9,7 +9,7 @@
     "not_evaluated": 0,
     "present": 14
   },
-  "evaluated_on": "2026-07-30",
+  "evaluated_on": "2026-08-11",
   "facts": [
     {
       "fact_id": "parcel_city_matches_woodland",
@@ -465,7 +465,7 @@
   ],
   "manifest_type": "prototype_packet_presence",
   "overall_status": "known_gaps",
-  "packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e",
+  "packet_fingerprint": "sha256:891159aeacb015371437a239a84a9a4875f6e1d6c830a6e936151c4b4f84bf1a",
   "packet_id": "woodland-preapproved-adu-hypothetical-001",
   "schema_version": 1,
   "source_bindings": [
@@ -484,7 +484,7 @@
   ],
   "source_review_due_on": "2027-01-25",
   "source_status": "current",
-  "source_status_as_of": "2026-07-30",
+  "source_status_as_of": "2026-08-11",
   "staff_questions": [
     "Do solar plans apply to this project?",
     "Do fire sprinkler plans apply to this project?",

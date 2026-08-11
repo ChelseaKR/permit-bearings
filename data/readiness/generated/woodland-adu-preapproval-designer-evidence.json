@@ -1,0 +1,579 @@
+{
+  "applicability_status": "applies",
+  "boundary": "This prototype checks reported item presence against one City checklist. It binds no parcel and queries no parcel dataset; it does not inspect files, determine legal sufficiency, certify completeness, or limit what staff may request.",
+  "counts": {
+    "conflicting": 0,
+    "missing": 5,
+    "needs_staff_review": 4,
+    "not_applicable": 1,
+    "not_evaluated": 0,
+    "present": 22
+  },
+  "evaluated_on": "2026-08-11",
+  "facts": [
+    {
+      "fact_id": "submitting_plans_for_city_preapproval",
+      "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
+      "value": "yes"
+    },
+    {
+      "fact_id": "designer_is_licensed",
+      "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
+      "value": "yes"
+    },
+    {
+      "fact_id": "designer_publishes_website",
+      "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
+      "value": "unknown"
+    },
+    {
+      "fact_id": "provides_watermarked_website_images",
+      "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
+      "value": "no"
+    },
+    {
+      "fact_id": "primary_residence_has_fire_sprinklers",
+      "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
+      "value": "unknown"
+    },
+    {
+      "fact_id": "uses_trusses",
+      "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
+      "value": "yes"
+    },
+    {
+      "fact_id": "in_flood_hazard_area",
+      "provenance": "synthetic_applicant_assertion",
+      "source_checked_on": null,
+      "source_field": null,
+      "source_id": null,
+      "value": "unknown"
+    }
+  ],
+  "findings": [
+    {
+      "category": "Designer contact information",
+      "label": "Designer contact information",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:dafaf3afb6ae216133092d99293320564a2e2d4ce26475179d8864bb1310e1a0",
+      "requirement_id": "designer-contact-information",
+      "source_excerpt": "Designer Contact Information",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Designer Contact Information",
+      "status": "present"
+    },
+    {
+      "category": "Designer contact information",
+      "label": "Full name",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:e663f331d01bad420b2a7226abc12f705d8778a3e5c6e6c043ddaf07a28db030",
+      "requirement_id": "designer-full-name",
+      "source_excerpt": "Full Name",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Designer Contact Information",
+      "status": "present"
+    },
+    {
+      "category": "Designer contact information",
+      "label": "Email",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:3e1b69af994bfce14800f20cb9f213fcfe196b178124312d1e462446f864ea86",
+      "requirement_id": "designer-email",
+      "source_excerpt": "Email",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Designer Contact Information",
+      "status": "present"
+    },
+    {
+      "category": "Designer contact information",
+      "label": "Phone number",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:04536e14827589a797504aa3a5a97b1ae65643d21ead6a91f55e24c6a564e1fa",
+      "requirement_id": "designer-phone-number",
+      "source_excerpt": "Phone Number",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Designer Contact Information",
+      "status": "present"
+    },
+    {
+      "category": "Designer contact information",
+      "label": "Address",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:1a18eeb047d8eab2c91218b9619343111902186d9b637e0c3288784ef49166ed",
+      "requirement_id": "designer-address",
+      "source_excerpt": "Address",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Designer Contact Information",
+      "status": "present"
+    },
+    {
+      "category": "Designer contact information",
+      "label": "License number",
+      "reason": "The synthetic inventory reports this item missing.",
+      "requirement_fingerprint": "sha256:d8cfb16534029dfabcd4eff486033583828f79d5784d5db7e0ac136e94204ea2",
+      "requirement_id": "designer-license-number",
+      "source_excerpt": "License Number (if applicable)",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Designer Contact Information",
+      "status": "missing"
+    },
+    {
+      "category": "Designer contact information",
+      "label": "Website link",
+      "reason": "A project fact that controls this item is unknown.",
+      "requirement_fingerprint": "sha256:56215b5aa243b9efb6029cce97b42a630b81486697456dc7913e58c335522cf3",
+      "requirement_id": "designer-website-link",
+      "source_excerpt": "Website Link (if applicable)",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Designer Contact Information",
+      "status": "needs_staff_review"
+    },
+    {
+      "category": "Plan set",
+      "label": "Industry-standard plan set",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:99386fdf2f23d49c46e9577fd8ae88f80f76a23f4c29afff81777c49db0f0132",
+      "requirement_id": "industry-standard-plan-set",
+      "source_excerpt": "Industry-Standard Plan Set, including:",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "present"
+    },
+    {
+      "category": "Plan set",
+      "label": "Cover sheet with designer contact information",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:145c27f857415aad91089541870bb0c0991fa55a524e8b7aed100df8eee18ac6",
+      "requirement_id": "plan-set-cover-sheet",
+      "source_excerpt": "Cover Sheet with designer contact information",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "present"
+    },
+    {
+      "category": "Plan set",
+      "label": "Watermarked elevations and floorplan for the website",
+      "reason": "The reported project facts do not trigger this item.",
+      "requirement_fingerprint": "sha256:2e1b65987be06db92f6c359bffbc99032c516ddab417173357aa34ebb46c6229",
+      "requirement_id": "plan-set-watermarked-website-images",
+      "source_excerpt": "Watermarked elevations and floorplan for website (optional)",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "not_applicable"
+    },
+    {
+      "category": "Plan set",
+      "label": "Placeholder sheet for the future site plan",
+      "reason": "The synthetic inventory reports this item missing.",
+      "requirement_fingerprint": "sha256:71192f39f32427d5352112b4051281dcddbf21f4ca2eba5616be09518ae81e22",
+      "requirement_id": "plan-set-placeholder-site-plan-sheet",
+      "source_excerpt": "Placeholder Sheet for Future Site Plan",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "missing"
+    },
+    {
+      "category": "Plan set",
+      "label": "Architectural elevations",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:c177246886fd6d2d867266b37d62875d7b312ccdfbb8a6348d68e4989a67113c",
+      "requirement_id": "plan-set-architectural-elevations",
+      "source_excerpt": "Architectural Elevations (2 or more elevation options encouraged)",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "present"
+    },
+    {
+      "category": "Plan set",
+      "label": "Floor plan",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:938eadaae480384fec132d5e542818f770e83977565b171dbe3193b065148917",
+      "requirement_id": "plan-set-floor-plan",
+      "source_excerpt": "Floor Plan",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "present"
+    },
+    {
+      "category": "Plan set",
+      "label": "Foundation plan",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:1730abe74f4ba1d5f8d458ec3f39809c98e4f566752f343d4ba036e4721b99d2",
+      "requirement_id": "plan-set-foundation-plan",
+      "source_excerpt": "Foundation Plan (Multiple options are encouraged. Additional considerations may be needed for flood hazard area)",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "present"
+    },
+    {
+      "category": "Conditional items",
+      "label": "Flood hazard area considerations on the foundation plan",
+      "reason": "A project fact that controls this item is unknown.",
+      "requirement_fingerprint": "sha256:2a13ba54dcf26991a6df7ddcd0cfe798632fd3186b2dd9c48d8b221be18886a2",
+      "requirement_id": "foundation-plan-flood-hazard-considerations",
+      "source_excerpt": "Additional considerations may be needed for flood hazard area",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "needs_staff_review"
+    },
+    {
+      "category": "Plan set",
+      "label": "Structural plans",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:cef48b153f57b6ca1946036a2534567857a3ff044bc3e1d9333c518db83d3067",
+      "requirement_id": "plan-set-structural-plans",
+      "source_excerpt": "Structural Plans",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "present"
+    },
+    {
+      "category": "Plan set",
+      "label": "Mechanical, plumbing, and electrical plans",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:384c4425bdc8ce1d13d404a35deac10cf9e3937b794e04e855d66d2f397721ea",
+      "requirement_id": "plan-set-mechanical-plumbing-electrical-plans",
+      "source_excerpt": "Mechanical, Plumbing, and Electrical Plans",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "present"
+    },
+    {
+      "category": "Plan set",
+      "label": "Photovoltaic plans",
+      "reason": "The synthetic inventory reports this item missing.",
+      "requirement_fingerprint": "sha256:b99be0206a88ae5bfff3a51570d99131221c6672f2a2cf038c77de0e87dfa7a1",
+      "requirement_id": "plan-set-photovoltaic-plans",
+      "source_excerpt": "Photovoltaic Plans",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "missing"
+    },
+    {
+      "category": "Conditional items",
+      "label": "Fire sprinkler plans",
+      "reason": "A project fact that controls this item is unknown.",
+      "requirement_fingerprint": "sha256:0319e8a400541564c16c269f657eb77bb9741d083a3d49ef2a30082abdc2fb6c",
+      "requirement_id": "plan-set-fire-sprinkler-plans",
+      "source_excerpt": "Fire Sprinkler Plans. Required if the primary residence has fire sprinklers. Must be submitted to the Fire Department for review but may be deferred to permit submittal.",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Industry-Standard Plan Set",
+      "status": "needs_staff_review"
+    },
+    {
+      "category": "Plan format",
+      "label": "Plan format requirements",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:7c100062e88bd607470f7ea11b66ad0069578dc1a31fb7684c97cf4e006a79d2",
+      "requirement_id": "plan-format-requirements",
+      "source_excerpt": "Plans must be scaled, dimensioned, signed by the designer, and stamped by a licensed design professional.",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 plan format note",
+      "status": "present"
+    },
+    {
+      "category": "Plan format",
+      "label": "Plans are scaled",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:6b7d3df9a33910e5753b4c76cc30791e549a89b6bf8031bf570fcc28aed3d8a5",
+      "requirement_id": "plans-are-scaled",
+      "source_excerpt": "scaled",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 plan format note",
+      "status": "present"
+    },
+    {
+      "category": "Plan format",
+      "label": "Plans are dimensioned",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:2f01df31635bccfeb6832939056144b603dbc2253265508b858c993368488530",
+      "requirement_id": "plans-are-dimensioned",
+      "source_excerpt": "dimensioned",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 plan format note",
+      "status": "present"
+    },
+    {
+      "category": "Plan format",
+      "label": "Plans signed by the designer",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:b34dd372afbcea3fa4b37137475e79e343504006eb6f6d81cfd469dbfc75461c",
+      "requirement_id": "plans-signed-by-designer",
+      "source_excerpt": "signed by the designer",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 plan format note",
+      "status": "present"
+    },
+    {
+      "category": "Plan format",
+      "label": "Plans stamped by a licensed design professional",
+      "reason": "The synthetic inventory reports this item missing.",
+      "requirement_fingerprint": "sha256:caeaabaa7faaaee9d295e4265080bfff2faa73d3a6d184f31f96f5896e14fed9",
+      "requirement_id": "plans-stamped-by-licensed-design-professional",
+      "source_excerpt": "stamped by a licensed design professional",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 plan format note",
+      "status": "missing"
+    },
+    {
+      "category": "Building materials",
+      "label": "Building materials sheet",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:20585f97fc184054e157df950a7478dab12e19581470365bf8b54f84e4887fc8",
+      "requirement_id": "building-materials-sheet",
+      "source_excerpt": "Building Materials Sheet, including:",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Building Materials Sheet",
+      "status": "present"
+    },
+    {
+      "category": "Building materials",
+      "label": "Material types",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:64cf7188f4392cacf8840e554f8830653f102a593ffe8aeb0d9d2023c35dbcf3",
+      "requirement_id": "building-materials-material-types",
+      "source_excerpt": "Material Types",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Building Materials Sheet",
+      "status": "present"
+    },
+    {
+      "category": "Building materials",
+      "label": "Color options",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:2d2383361893a2dc145ae24057ef52a991821fe3920f49c4f6d4c380f12c2d70",
+      "requirement_id": "building-materials-color-options",
+      "source_excerpt": "Color Options",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Building Materials Sheet",
+      "status": "present"
+    },
+    {
+      "category": "Building materials",
+      "label": "Exterior features and fixtures",
+      "reason": "The synthetic inventory reports this item missing.",
+      "requirement_fingerprint": "sha256:aa7027a4e775ba5fcf4db1c4813748b79e6e3ab05151a3f2de1703f7a47da48d",
+      "requirement_id": "building-materials-exterior-features",
+      "source_excerpt": "Exterior Features and Fixtures",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements \u2014 Building Materials Sheet",
+      "status": "missing"
+    },
+    {
+      "category": "Calculations and reports",
+      "label": "Structural load and lateral calculations",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:a3cfd42f3ec6d4a6622195b55737d06ac70d08f96b817d868522485d60d0168e",
+      "requirement_id": "structural-load-and-lateral-calculations",
+      "source_excerpt": "Structural Load and Lateral Calculations",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements",
+      "status": "present"
+    },
+    {
+      "category": "Conditional items",
+      "label": "Truss calculations",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:e70c8d24589b688b11930959d85bce1fa53d29cd32961ac573e60220bc700ffe",
+      "requirement_id": "truss-calculations",
+      "source_excerpt": "Truss calculations, if using trusses",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements",
+      "status": "present"
+    },
+    {
+      "category": "Calculations and reports",
+      "label": "Energy calculations for all orientations",
+      "reason": "The synthetic inventory reports this item present. Its contents were not inspected.",
+      "requirement_fingerprint": "sha256:4903c1e4358a65b3bd7260a1ee7dc3d37e2e64d8ee29a49f27f96e9376c287e3",
+      "requirement_id": "energy-calculations-all-orientations",
+      "source_excerpt": "Energy Calculations for all orientations",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements",
+      "status": "present"
+    },
+    {
+      "category": "Calculations and reports",
+      "label": "Specifications and supplemental reports",
+      "reason": "The synthetic inventory does not confirm whether this item is present.",
+      "requirement_fingerprint": "sha256:0df35323ccad05251cbe1f16a7cc09460e488e3349bf9f2b55830e68d7787f2b",
+      "requirement_id": "specifications-and-supplemental-reports",
+      "source_excerpt": "Specifications and Supplemental Reports",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "source_locator": "page 1, Preapproval Submittal Requirements",
+      "status": "needs_staff_review"
+    }
+  ],
+  "inventory": [
+    {
+      "requirement_id": "designer-contact-information",
+      "status": "present"
+    },
+    {
+      "requirement_id": "designer-full-name",
+      "status": "present"
+    },
+    {
+      "requirement_id": "designer-email",
+      "status": "present"
+    },
+    {
+      "requirement_id": "designer-phone-number",
+      "status": "present"
+    },
+    {
+      "requirement_id": "designer-address",
+      "status": "present"
+    },
+    {
+      "requirement_id": "designer-license-number",
+      "status": "missing"
+    },
+    {
+      "requirement_id": "designer-website-link",
+      "status": "unknown"
+    },
+    {
+      "requirement_id": "industry-standard-plan-set",
+      "status": "present"
+    },
+    {
+      "requirement_id": "plan-set-cover-sheet",
+      "status": "present"
+    },
+    {
+      "requirement_id": "plan-set-watermarked-website-images",
+      "status": "missing"
+    },
+    {
+      "requirement_id": "plan-set-placeholder-site-plan-sheet",
+      "status": "missing"
+    },
+    {
+      "requirement_id": "plan-set-architectural-elevations",
+      "status": "present"
+    },
+    {
+      "requirement_id": "plan-set-floor-plan",
+      "status": "present"
+    },
+    {
+      "requirement_id": "plan-set-foundation-plan",
+      "status": "present"
+    },
+    {
+      "requirement_id": "foundation-plan-flood-hazard-considerations",
+      "status": "unknown"
+    },
+    {
+      "requirement_id": "plan-set-structural-plans",
+      "status": "present"
+    },
+    {
+      "requirement_id": "plan-set-mechanical-plumbing-electrical-plans",
+      "status": "present"
+    },
+    {
+      "requirement_id": "plan-set-photovoltaic-plans",
+      "status": "missing"
+    },
+    {
+      "requirement_id": "plan-set-fire-sprinkler-plans",
+      "status": "unknown"
+    },
+    {
+      "requirement_id": "plan-format-requirements",
+      "status": "present"
+    },
+    {
+      "requirement_id": "plans-are-scaled",
+      "status": "present"
+    },
+    {
+      "requirement_id": "plans-are-dimensioned",
+      "status": "present"
+    },
+    {
+      "requirement_id": "plans-signed-by-designer",
+      "status": "present"
+    },
+    {
+      "requirement_id": "plans-stamped-by-licensed-design-professional",
+      "status": "missing"
+    },
+    {
+      "requirement_id": "building-materials-sheet",
+      "status": "present"
+    },
+    {
+      "requirement_id": "building-materials-material-types",
+      "status": "present"
+    },
+    {
+      "requirement_id": "building-materials-color-options",
+      "status": "present"
+    },
+    {
+      "requirement_id": "building-materials-exterior-features",
+      "status": "missing"
+    },
+    {
+      "requirement_id": "structural-load-and-lateral-calculations",
+      "status": "present"
+    },
+    {
+      "requirement_id": "truss-calculations",
+      "status": "present"
+    },
+    {
+      "requirement_id": "energy-calculations-all-orientations",
+      "status": "present"
+    },
+    {
+      "requirement_id": "specifications-and-supplemental-reports",
+      "status": "unknown"
+    }
+  ],
+  "manifest_type": "prototype_packet_presence",
+  "overall_status": "known_gaps",
+  "packet_fingerprint": "sha256:9035190ef610b659f605b4b10de42274f5ddc6e5c99b2957381f4a2360de8d38",
+  "packet_id": "woodland-adu-preapproval-designer-hypothetical-001",
+  "schema_version": 1,
+  "source_bindings": [
+    {
+      "sha256": "6517a6ac38102d6ab59a5480e52b30b179f35c5eb2f4e7deb00a20c2b65bf1a9",
+      "source_checked_on": "2026-08-11",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "url": "https://www.cityofwoodland.gov/DocumentCenter/View/12371"
+    }
+  ],
+  "source_review_due_on": "2027-02-07",
+  "source_status": "current",
+  "source_status_as_of": "2026-08-11",
+  "staff_questions": [
+    "Does the designer have a website link to record on the submittal?",
+    "Is this plan set intended for use in a flood hazard area?",
+    "Does the primary residence have fire sprinklers?"
+  ],
+  "synthetic": true,
+  "workflow_fingerprint": "sha256:0b12e333547bef9a96bb9d285fe59646a66787c5fe46d5c2209839780e92b236",
+  "workflow_id": "woodland-adu-preapproval-designer-submittal"
+}

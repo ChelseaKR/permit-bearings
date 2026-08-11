@@ -2,7 +2,7 @@
   "affected_golden_case_ids": [],
   "affected_rule_ids": [],
   "changed_source_ids": [],
-  "checked_at": "2026-08-03T17:08:28Z",
+  "checked_at": "2026-08-11T21:00:29Z",
   "observations": [
     {
       "last_verified_on": "2026-07-27",
@@ -133,6 +133,14 @@
       "status": "unchanged"
     },
     {
+      "last_verified_on": "2026-08-11",
+      "observed_sha256": "6517a6ac38102d6ab59a5480e52b30b179f35c5eb2f4e7deb00a20c2b65bf1a9",
+      "reason": null,
+      "recorded_sha256": "6517a6ac38102d6ab59a5480e52b30b179f35c5eb2f4e7deb00a20c2b65bf1a9",
+      "source_id": "woodland-adu-preapproval-designer-requirements",
+      "status": "unchanged"
+    },
+    {
       "last_verified_on": "2026-07-28",
       "observed_sha256": "a5ac4dce1cd5d60a96d245b3f96ce9c656ba79d59c10461aba53943d52e1da60",
       "reason": null,
@@ -158,14 +166,14 @@
     }
   ],
   "receipt": {
-    "commit_sha": "8d841409dc5fd16fe56b52a8b57c826c07f176a6",
-    "method": "github_actions_scheduled_watch",
-    "run_url": "https://github.com/ChelseaKR/permit-pathways/actions/runs/30835371749",
+    "commit_sha": "a03141c37262767e73213070b0aa1b7b40d2d0bc",
+    "method": "github_actions_source_currency_watch",
+    "run_url": "https://github.com/ChelseaKR/permit-pathways/actions/runs/31535778878",
     "status": "reviewed"
   },
   "schema_version": 1,
-  "snapshot_id": "source-watch-2026-08-03-run-30835371749",
-  "source_registry_sha256": "8cb44c50a79e1e42d73335284e6b2c7b9b72f884b2745552d6cc85b93a0ee472",
+  "snapshot_id": "source-watch-31535778878-1",
+  "source_registry_sha256": "7092d16f1b9043667fb06ae0a39e2eaf66550588dc63789fa964c0671a0ced8f",
   "unaffected_golden_case_ids": [
     "adu-conversion-only",
     "adu-detached-basic",

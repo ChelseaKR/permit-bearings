@@ -62,7 +62,7 @@
       ],
       "source_review_due_on": "2027-01-23",
       "source_status": "current",
-      "source_status_as_of": "2026-07-30"
+      "source_status_as_of": "2026-08-11"
     }
   ],
   "editable_applicability_fact_ids": [
@@ -174,7 +174,7 @@
     "synthetic": true
   },
   "fact_envelope_fingerprint": "sha256:18c9bf3bdf525776352301b3150185fce8cdb0882b621d61f92eabcc25036847",
-  "journey_fingerprint": "sha256:22148b40724c3121fb255288700dcae50cb03175190402801a1fad3fb61724a2",
+  "journey_fingerprint": "sha256:3bb19c49d48ba108e75e5ab9f7a73459c88a5e813af856861fabb5a99a4363de",
   "journey_id": "woodland-preapproved-detached-adu-synthetic",
   "label": "Made-up Woodland preapproved detached ADU journey",
   "readiness_evidence_manifest": {
@@ -188,7 +188,7 @@
       "not_evaluated": 0,
       "present": 14
     },
-    "evaluated_on": "2026-07-30",
+    "evaluated_on": "2026-08-11",
     "facts": [
       {
         "fact_id": "parcel_city_matches_woodland",
@@ -644,7 +644,7 @@
     ],
     "manifest_type": "prototype_packet_presence",
     "overall_status": "known_gaps",
-    "packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e",
+    "packet_fingerprint": "sha256:891159aeacb015371437a239a84a9a4875f6e1d6c830a6e936151c4b4f84bf1a",
     "packet_id": "woodland-preapproved-adu-hypothetical-001",
     "schema_version": 1,
     "source_bindings": [
@@ -663,7 +663,7 @@
     ],
     "source_review_due_on": "2027-01-25",
     "source_status": "current",
-    "source_status_as_of": "2026-07-30",
+    "source_status_as_of": "2026-08-11",
     "staff_questions": [
       "Do solar plans apply to this project?",
       "Do fire sprinkler plans apply to this project?",
@@ -673,13 +673,13 @@
     "workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
     "workflow_id": "woodland-preapproved-detached-adu"
   },
-  "readiness_packet_fingerprint": "sha256:dd9ed173d0e87e44b713d9133232d5ec8c200826d4264e25e5e7ba4e99c6364e",
+  "readiness_packet_fingerprint": "sha256:891159aeacb015371437a239a84a9a4875f6e1d6c830a6e936151c4b4f84bf1a",
   "readiness_packet_id": "woodland-preapproved-adu-hypothetical-001",
   "readiness_workflow_fingerprint": "sha256:66013f9f75ba247e23ede5241639ee5f443d1b40205a1777565b13418c6b8df5",
   "readiness_workflow_id": "woodland-preapproved-detached-adu",
   "route_source_review_due_on": "2027-01-23",
   "route_source_status": "current",
-  "route_source_status_as_of": "2026-07-30",
+  "route_source_status_as_of": "2026-08-11",
   "schema_version": 1,
   "screening_case_fingerprint": "sha256:35ee26aee6d21cc2650807418ea3cc42610e238413274fb4cc2c21d50b9bbfeb",
   "screening_case_id": "woodland-new-detached-adu-local-layer",
