@@ -1,0 +1,511 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "workflow_id": "woodland-adu-preapproval-designer-submittal",
+    "jurisdiction": "woodland",
+    "project_type": "adu",
+    "status": "prototype",
+    "title": "Woodland ADU preapproval designer submittal packet-presence check",
+    "scope": "One made-up plan set prepared by a designer for City of Woodland ADU preapproval. This workflow checks reported item presence against the City's published designer requirements handout, which the City states is a summary and from which staff may request additional items. The preapproval submittal is site-agnostic: the handout asks for a placeholder sheet for a future site plan, so this workflow binds no parcel and queries no parcel dataset. It does not inspect files, verify designer credentials, determine legal sufficiency, certify completeness, or reproduce every item staff may request.",
+    "source_bindings": [
+      {
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "url": "https://www.cityofwoodland.gov/DocumentCenter/View/12371",
+        "sha256": "6517a6ac38102d6ab59a5480e52b30b179f35c5eb2f4e7deb00a20c2b65bf1a9",
+        "source_checked_on": "2026-08-11"
+      }
+    ],
+    "mapping_provenance": {
+      "version": "1.0.0",
+      "updated_on": "2026-08-11",
+      "drafted_by": "ai_assisted",
+      "input_source_fingerprints": [
+        {
+          "source_id": "woodland-adu-preapproval-designer-requirements",
+          "sha256": "6517a6ac38102d6ab59a5480e52b30b179f35c5eb2f4e7deb00a20c2b65bf1a9"
+        }
+      ],
+      "review_status": "prototype_review_pending",
+      "review_scope": "requirements_excerpts_and_fact_bindings",
+      "provider": "anthropic",
+      "model": "claude-opus-5",
+      "run_record_status": "not_recorded"
+    },
+    "applicability": [
+      {
+        "fact_id": "submitting_plans_for_city_preapproval",
+        "equals": "yes"
+      }
+    ],
+    "facts": [
+      {
+        "fact_id": "submitting_plans_for_city_preapproval",
+        "label": "Submitting plans for City preapproval",
+        "question": "Is this plan set being submitted to the City of Woodland for ADU preapproval?",
+        "allowed_values": [
+          "yes",
+          "no",
+          "unknown"
+        ],
+        "source_id": null,
+        "source_field": null
+      },
+      {
+        "fact_id": "designer_is_licensed",
+        "label": "Designer holds a license",
+        "question": "Does the designer hold a license number to record on the submittal?",
+        "allowed_values": [
+          "yes",
+          "no",
+          "unknown"
+        ],
+        "source_id": null,
+        "source_field": null
+      },
+      {
+        "fact_id": "designer_publishes_website",
+        "label": "Designer publishes a website",
+        "question": "Does the designer have a website link to record on the submittal?",
+        "allowed_values": [
+          "yes",
+          "no",
+          "unknown"
+        ],
+        "source_id": null,
+        "source_field": null
+      },
+      {
+        "fact_id": "provides_watermarked_website_images",
+        "label": "Providing watermarked images for the City website",
+        "question": "Is the designer providing optional watermarked elevations and a floorplan for the City website?",
+        "allowed_values": [
+          "yes",
+          "no",
+          "unknown"
+        ],
+        "source_id": null,
+        "source_field": null
+      },
+      {
+        "fact_id": "primary_residence_has_fire_sprinklers",
+        "label": "Primary residence has fire sprinklers",
+        "question": "Does the primary residence have fire sprinklers?",
+        "allowed_values": [
+          "yes",
+          "no",
+          "unknown"
+        ],
+        "source_id": null,
+        "source_field": null
+      },
+      {
+        "fact_id": "uses_trusses",
+        "label": "Plan set uses trusses",
+        "question": "Does the plan set use trusses?",
+        "allowed_values": [
+          "yes",
+          "no",
+          "unknown"
+        ],
+        "source_id": null,
+        "source_field": null
+      },
+      {
+        "fact_id": "in_flood_hazard_area",
+        "label": "Intended for a flood hazard area",
+        "question": "Is this plan set intended for use in a flood hazard area?",
+        "allowed_values": [
+          "yes",
+          "no",
+          "unknown"
+        ],
+        "source_id": null,
+        "source_field": null
+      }
+    ],
+    "requirements": [
+      {
+        "requirement_id": "designer-contact-information",
+        "label": "Designer contact information",
+        "category": "Designer contact information",
+        "item_type": "document",
+        "parent_requirement_id": null,
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Designer Contact Information",
+        "source_excerpt": "Designer Contact Information"
+      },
+      {
+        "requirement_id": "designer-full-name",
+        "label": "Full name",
+        "category": "Designer contact information",
+        "item_type": "document_content",
+        "parent_requirement_id": "designer-contact-information",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Designer Contact Information",
+        "source_excerpt": "Full Name"
+      },
+      {
+        "requirement_id": "designer-email",
+        "label": "Email",
+        "category": "Designer contact information",
+        "item_type": "document_content",
+        "parent_requirement_id": "designer-contact-information",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Designer Contact Information",
+        "source_excerpt": "Email"
+      },
+      {
+        "requirement_id": "designer-phone-number",
+        "label": "Phone number",
+        "category": "Designer contact information",
+        "item_type": "document_content",
+        "parent_requirement_id": "designer-contact-information",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Designer Contact Information",
+        "source_excerpt": "Phone Number"
+      },
+      {
+        "requirement_id": "designer-address",
+        "label": "Address",
+        "category": "Designer contact information",
+        "item_type": "document_content",
+        "parent_requirement_id": "designer-contact-information",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Designer Contact Information",
+        "source_excerpt": "Address"
+      },
+      {
+        "requirement_id": "designer-license-number",
+        "label": "License number",
+        "category": "Designer contact information",
+        "item_type": "document_content",
+        "parent_requirement_id": "designer-contact-information",
+        "applies_when": [
+          {
+            "fact_id": "designer_is_licensed",
+            "equals": "yes"
+          }
+        ],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Designer Contact Information",
+        "source_excerpt": "License Number (if applicable)"
+      },
+      {
+        "requirement_id": "designer-website-link",
+        "label": "Website link",
+        "category": "Designer contact information",
+        "item_type": "document_content",
+        "parent_requirement_id": "designer-contact-information",
+        "applies_when": [
+          {
+            "fact_id": "designer_publishes_website",
+            "equals": "yes"
+          }
+        ],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Designer Contact Information",
+        "source_excerpt": "Website Link (if applicable)"
+      },
+      {
+        "requirement_id": "industry-standard-plan-set",
+        "label": "Industry-standard plan set",
+        "category": "Plan set",
+        "item_type": "document",
+        "parent_requirement_id": null,
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Industry-Standard Plan Set, including:"
+      },
+      {
+        "requirement_id": "plan-set-cover-sheet",
+        "label": "Cover sheet with designer contact information",
+        "category": "Plan set",
+        "item_type": "document_content",
+        "parent_requirement_id": "industry-standard-plan-set",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Cover Sheet with designer contact information"
+      },
+      {
+        "requirement_id": "plan-set-watermarked-website-images",
+        "label": "Watermarked elevations and floorplan for the website",
+        "category": "Plan set",
+        "item_type": "document_content",
+        "parent_requirement_id": "industry-standard-plan-set",
+        "applies_when": [
+          {
+            "fact_id": "provides_watermarked_website_images",
+            "equals": "yes"
+          }
+        ],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Watermarked elevations and floorplan for website (optional)"
+      },
+      {
+        "requirement_id": "plan-set-placeholder-site-plan-sheet",
+        "label": "Placeholder sheet for the future site plan",
+        "category": "Plan set",
+        "item_type": "document_content",
+        "parent_requirement_id": "industry-standard-plan-set",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Placeholder Sheet for Future Site Plan"
+      },
+      {
+        "requirement_id": "plan-set-architectural-elevations",
+        "label": "Architectural elevations",
+        "category": "Plan set",
+        "item_type": "document_content",
+        "parent_requirement_id": "industry-standard-plan-set",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Architectural Elevations (2 or more elevation options encouraged)"
+      },
+      {
+        "requirement_id": "plan-set-floor-plan",
+        "label": "Floor plan",
+        "category": "Plan set",
+        "item_type": "document_content",
+        "parent_requirement_id": "industry-standard-plan-set",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Floor Plan"
+      },
+      {
+        "requirement_id": "plan-set-foundation-plan",
+        "label": "Foundation plan",
+        "category": "Plan set",
+        "item_type": "document_content",
+        "parent_requirement_id": "industry-standard-plan-set",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Foundation Plan (Multiple options are encouraged. Additional considerations may be needed for flood hazard area)"
+      },
+      {
+        "requirement_id": "foundation-plan-flood-hazard-considerations",
+        "label": "Flood hazard area considerations on the foundation plan",
+        "category": "Conditional items",
+        "item_type": "document_content",
+        "parent_requirement_id": "plan-set-foundation-plan",
+        "applies_when": [
+          {
+            "fact_id": "in_flood_hazard_area",
+            "equals": "yes"
+          }
+        ],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Additional considerations may be needed for flood hazard area"
+      },
+      {
+        "requirement_id": "plan-set-structural-plans",
+        "label": "Structural plans",
+        "category": "Plan set",
+        "item_type": "document_content",
+        "parent_requirement_id": "industry-standard-plan-set",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Structural Plans"
+      },
+      {
+        "requirement_id": "plan-set-mechanical-plumbing-electrical-plans",
+        "label": "Mechanical, plumbing, and electrical plans",
+        "category": "Plan set",
+        "item_type": "document_content",
+        "parent_requirement_id": "industry-standard-plan-set",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Mechanical, Plumbing, and Electrical Plans"
+      },
+      {
+        "requirement_id": "plan-set-photovoltaic-plans",
+        "label": "Photovoltaic plans",
+        "category": "Plan set",
+        "item_type": "document_content",
+        "parent_requirement_id": "industry-standard-plan-set",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Photovoltaic Plans"
+      },
+      {
+        "requirement_id": "plan-set-fire-sprinkler-plans",
+        "label": "Fire sprinkler plans",
+        "category": "Conditional items",
+        "item_type": "document_content",
+        "parent_requirement_id": "industry-standard-plan-set",
+        "applies_when": [
+          {
+            "fact_id": "primary_residence_has_fire_sprinklers",
+            "equals": "yes"
+          }
+        ],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Industry-Standard Plan Set",
+        "source_excerpt": "Fire Sprinkler Plans. Required if the primary residence has fire sprinklers. Must be submitted to the Fire Department for review but may be deferred to permit submittal."
+      },
+      {
+        "requirement_id": "plan-format-requirements",
+        "label": "Plan format requirements",
+        "category": "Plan format",
+        "item_type": "document",
+        "parent_requirement_id": null,
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — plan format note",
+        "source_excerpt": "Plans must be scaled, dimensioned, signed by the designer, and stamped by a licensed design professional."
+      },
+      {
+        "requirement_id": "plans-are-scaled",
+        "label": "Plans are scaled",
+        "category": "Plan format",
+        "item_type": "document_content",
+        "parent_requirement_id": "plan-format-requirements",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — plan format note",
+        "source_excerpt": "scaled"
+      },
+      {
+        "requirement_id": "plans-are-dimensioned",
+        "label": "Plans are dimensioned",
+        "category": "Plan format",
+        "item_type": "document_content",
+        "parent_requirement_id": "plan-format-requirements",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — plan format note",
+        "source_excerpt": "dimensioned"
+      },
+      {
+        "requirement_id": "plans-signed-by-designer",
+        "label": "Plans signed by the designer",
+        "category": "Plan format",
+        "item_type": "document_content",
+        "parent_requirement_id": "plan-format-requirements",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — plan format note",
+        "source_excerpt": "signed by the designer"
+      },
+      {
+        "requirement_id": "plans-stamped-by-licensed-design-professional",
+        "label": "Plans stamped by a licensed design professional",
+        "category": "Plan format",
+        "item_type": "document_content",
+        "parent_requirement_id": "plan-format-requirements",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — plan format note",
+        "source_excerpt": "stamped by a licensed design professional"
+      },
+      {
+        "requirement_id": "building-materials-sheet",
+        "label": "Building materials sheet",
+        "category": "Building materials",
+        "item_type": "document",
+        "parent_requirement_id": null,
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Building Materials Sheet",
+        "source_excerpt": "Building Materials Sheet, including:"
+      },
+      {
+        "requirement_id": "building-materials-material-types",
+        "label": "Material types",
+        "category": "Building materials",
+        "item_type": "document_content",
+        "parent_requirement_id": "building-materials-sheet",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Building Materials Sheet",
+        "source_excerpt": "Material Types"
+      },
+      {
+        "requirement_id": "building-materials-color-options",
+        "label": "Color options",
+        "category": "Building materials",
+        "item_type": "document_content",
+        "parent_requirement_id": "building-materials-sheet",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Building Materials Sheet",
+        "source_excerpt": "Color Options"
+      },
+      {
+        "requirement_id": "building-materials-exterior-features",
+        "label": "Exterior features and fixtures",
+        "category": "Building materials",
+        "item_type": "document_content",
+        "parent_requirement_id": "building-materials-sheet",
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements — Building Materials Sheet",
+        "source_excerpt": "Exterior Features and Fixtures"
+      },
+      {
+        "requirement_id": "structural-load-and-lateral-calculations",
+        "label": "Structural load and lateral calculations",
+        "category": "Calculations and reports",
+        "item_type": "document",
+        "parent_requirement_id": null,
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements",
+        "source_excerpt": "Structural Load and Lateral Calculations"
+      },
+      {
+        "requirement_id": "truss-calculations",
+        "label": "Truss calculations",
+        "category": "Conditional items",
+        "item_type": "document",
+        "parent_requirement_id": null,
+        "applies_when": [
+          {
+            "fact_id": "uses_trusses",
+            "equals": "yes"
+          }
+        ],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements",
+        "source_excerpt": "Truss calculations, if using trusses"
+      },
+      {
+        "requirement_id": "energy-calculations-all-orientations",
+        "label": "Energy calculations for all orientations",
+        "category": "Calculations and reports",
+        "item_type": "document",
+        "parent_requirement_id": null,
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements",
+        "source_excerpt": "Energy Calculations for all orientations"
+      },
+      {
+        "requirement_id": "specifications-and-supplemental-reports",
+        "label": "Specifications and supplemental reports",
+        "category": "Calculations and reports",
+        "item_type": "document",
+        "parent_requirement_id": null,
+        "applies_when": [],
+        "source_id": "woodland-adu-preapproval-designer-requirements",
+        "source_locator": "page 1, Preapproval Submittal Requirements",
+        "source_excerpt": "Specifications and Supplemental Reports"
+      }
+    ]
+  }
+}
