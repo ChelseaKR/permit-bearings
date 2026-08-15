@@ -18,11 +18,11 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
-from .dates import resolve_today
+from .dates import SOURCE_REVIEW_WINDOW_DAYS, resolve_today
 from .harness.watch import load_sources
 
 SCHEMA_VERSION = 1
-SOURCE_MAX_AGE_DAYS = 180
+SOURCE_MAX_AGE_DAYS = SOURCE_REVIEW_WINDOW_DAYS
 TRI_VALUES = ("yes", "no", "unknown")
 INVENTORY_STATUSES = ("present", "missing", "unknown", "conflicting")
 FINDING_STATUSES = (

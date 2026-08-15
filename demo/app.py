@@ -18,6 +18,7 @@ Routes:
 """
 
 import html
+import json
 import mimetypes
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -27,7 +28,10 @@ from urllib.parse import parse_qs, unquote, urlparse
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from permit_pathways.dates import utc_today  # noqa: E402
+from permit_pathways.dates import (  # noqa: E402
+    SOURCE_REVIEW_WINDOW_DAYS,
+    utc_today,
+)
 from permit_pathways.explanations import load_explanations  # noqa: E402
 from permit_pathways.harness import verify_rules  # noqa: E402
 from permit_pathways.screening import load_rules, screen  # noqa: E402
@@ -35,6 +39,7 @@ from permit_pathways.screening import load_rules, screen  # noqa: E402
 RULES_PATH = ROOT / "data" / "rules"
 EXPLANATIONS_PATH = ROOT / "data" / "explanations" / "plain-language.json"
 GOLDEN_PATH = ROOT / "data" / "golden" / "example.json"
+SOURCE_STATE_PATH = ROOT / "data" / "source-status" / "current.json"
 DATA_ROOT = (ROOT / "data").resolve()
 ASSETS_ROOT = (ROOT / "assets").resolve()
 MAX_BODY_BYTES = 64 * 1024
@@ -678,15 +683,43 @@ def _review_labels(explanation, lang, copy_lang):
     return labels
 
 
-def _result_badge(result, strings, *, today=None):
+def committed_changed_source_ids():
+    """Read the same changed-source list the browser bundle ships.
+
+    ``scripts/build_demo_bundle.py`` copies this file into the bundle as
+    ``SOURCE_STATE``, so the reference server and the browser answer from one
+    record instead of the server ignoring drift the browser can see.
+    """
+
+    try:
+        record = json.loads(SOURCE_STATE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return ()
+    changed = record.get("changed_source_ids")
+    if not isinstance(changed, list):
+        return ()
+    return tuple(value for value in changed if isinstance(value, str))
+
+
+def _result_badge(result, strings, *, today=None, changed_source_ids=()):
+    """Label one rule, using the same precedence as ``harness.runner``.
+
+    A changed source wins over the age check: once a dependency has moved,
+    the rule is stale no matter how recently its citation was verified.
+    Keep this ordering identical to ``runner.verify_rules`` and to
+    ``ruleStatus`` in ``assets/demo.js``; all three are asserted to agree.
+    """
+
     citation = result.rule.citation
-    status = "unverified"
-    if result.verified:
-        status = (
-            "stale"
-            if citation.is_stale(180, today or utc_today())
-            else "verified"
-        )
+    changed = set(changed_source_ids)
+    if changed.intersection(result.rule.source_dependencies):
+        status = "stale"
+    elif not result.verified:
+        status = "unverified"
+    elif citation.is_stale(SOURCE_REVIEW_WINDOW_DAYS, today or utc_today()):
+        status = "stale"
+    else:
+        status = "verified"
     if status == "verified":
         markup = (
             f"<span class='badge info'>{strings['verified']} "
@@ -715,13 +748,18 @@ def render_result_card(
     *,
     suppress_pending_review=False,
     today=None,
+    changed_source_ids=None,
 ):
     """Render one decision record without affecting the underlying match."""
 
     s = STRINGS[lang]
     rule = result.rule
     citation = rule.citation
-    status, badge = _result_badge(result, s, today=today)
+    if changed_source_ids is None:
+        changed_source_ids = committed_changed_source_ids()
+    status, badge = _result_badge(
+        result, s, today=today, changed_source_ids=changed_source_ids
+    )
     safe_rule_id = "".join(
         character if character.isalnum() or character in "-_" else "-"
         for character in rule.rule_id
@@ -934,8 +972,11 @@ def result_page(form, lang):
         )
         grouped = {key: [] for key in ("route", "standard", "local_process", "other")}
         shown = []
+        changed_source_ids = committed_changed_source_ids()
         for result in results:
-            status, _badge = _result_badge(result, s, today=as_of)
+            status, _badge = _result_badge(
+                result, s, today=as_of, changed_source_ids=changed_source_ids
+            )
             explanation = explanations.get(result.rule.rule_id)
             if status == "verified" and explanation is not None:
                 localized = explanation.localized(lang)
@@ -966,6 +1007,7 @@ def result_page(form, lang):
                     lang,
                     suppress_pending_review=shared_draft,
                     today=as_of,
+                    changed_source_ids=changed_source_ids,
                 )
             )
         sections = "".join(
@@ -1033,7 +1075,7 @@ def trust_page(query, lang):
               f"{len(report.golden_passed) + len(report.golden_failed)} golden cases passing")
     body = f"""<h1>{STRINGS[lang]['dashboard']}</h1>
 <p><b>{pct}%</b> of rule records have dated source evidence within the
-180-day review window · {golden} · checked {report.checked_on}</p>
+{SOURCE_REVIEW_WINDOW_DAYS}-day review window · {golden} · checked {report.checked_on}</p>
 <div class="bar"><div style="width:{pct}%"></div><div class="stale" style="width:{100 - pct}%"></div></div>
 {sim}
 <div class="table-scroll trust-table" role="region" aria-label="Rule source status" tabindex="0">
