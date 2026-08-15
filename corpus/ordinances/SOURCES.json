@@ -1,8 +1,44 @@
 {
+  "angels": {
+    "title": "Angels Municipal Code, Title 17, Ch. 17.61 \u2014 Accessory Dwelling Units (ADUs) and Junior Accessory Dwelling Units (JADUs)",
+    "url": "https://www.codepublishing.com/CA/Angels/html/Angels17/Angels1761.html",
+    "retrieved": "2026-08-15",
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 42a71f1983b57e02\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+  },
+  "capitola": {
+    "title": "Capitola Municipal Code, Title 17, Ch. 17.74 \u2014 Accessory Dwelling Units",
+    "url": "https://www.codepublishing.com/CA/Capitola/html/Capitola17/Capitola1774.html",
+    "retrieved": "2026-08-15",
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 e18b9056472bfdf5\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+  },
+  "folsom": {
+    "title": "Folsom Municipal Code, Title 17, Ch. 17.105 \u2014 Accessory Dwelling Units",
+    "url": "https://www.codepublishing.com/CA/Folsom/html/Folsom17/Folsom17105.html",
+    "retrieved": "2026-08-15",
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 49fde0e655a95915\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+  },
+  "foster-city": {
+    "title": "Foster City Municipal Code, Title 17, Ch. 17.78 \u2014 Accessory Dwelling Units",
+    "url": "https://www.codepublishing.com/CA/FosterCity/html/FosterCity17/FosterCity1778.html",
+    "retrieved": "2026-08-15",
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 04d387c46eecbc18\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+  },
   "san-diego": {
-    "title": "San Diego Municipal Code, Ch. 14, Art. 1, Div. 3 — Accessory Dwelling Units (ADUs) and Junior Accessory Dwelling Units (JADUs) (§ 141.0302 et seq.)",
+    "title": "San Diego Municipal Code, Ch. 14, Art. 1, Div. 3 \u2014 Accessory Dwelling Units (ADUs) and Junior Accessory Dwelling Units (JADUs) (\u00a7 141.0302 et seq.)",
     "url": "https://docs.sandiego.gov/municode/MuniCodeChapter14/Ch14Art01Division03.pdf",
     "retrieved": "2026-07-27",
     "note": "Official city PDF; text extracted with pdftotext. Ordinance last amended 7-23-2025 (O-21989 N.S.), effective 8-22-2025 per the document's own history note."
+  },
+  "trinidad": {
+    "title": "Trinidad Municipal Code, Title 17, Ch. 17.54 \u2014 Accessory Dwelling Units",
+    "url": "https://www.codepublishing.com/CA/Trinidad/html/Trinidad17/Trinidad1754.html",
+    "retrieved": "2026-08-15",
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 307dd4e5a8c77167\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+  },
+  "watsonville": {
+    "title": "Watsonville Municipal Code, Ch. 14-23 \u2014 Accessory Dwelling Units and Junior Accessory Dwelling Units",
+    "url": "https://www.codepublishing.com/CA/Watsonville/html/Watsonville14/Watsonville1423.html",
+    "retrieved": "2026-08-15",
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 8b1061e3437750bf\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
   }
 }

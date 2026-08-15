@@ -1,0 +1,672 @@
+Chapter 17.105
+ACCESSORY DWELLING UNITS
+
+ Sections:
+
+ 17.105.010 Purpose, applicability and where permitted. 
+
+ 17.105.020 Definitions. 
+
+ 17.105.030 Types. 
+
+ 17.105.040 Density and consistency. 
+
+ 17.105.050 Processing time and submittal requirements. 
+
+ 17.105.060 Fee requirements. 
+
+ 17.105.070 Rental and sale limitations. 
+
+ 17.105.080 Conditions for nonconforming uses and structures. 
+
+ 17.105.090 Accessory dwelling units subject to mandatory approval. 
+
+ 17.105.110 Accessory dwelling units subject to design review. 
+
+ 17.105.120 Limitation on the number of accessory dwelling units. 
+
+ 17.105.130 Standards applicable to all accessory dwelling units. 
+
+ 17.105.140 Single-unit developments—Attached accessory dwelling unit standards. 
+
+ 17.105.150 Single-unit developments—Detached accessory dwelling unit standards. 
+
+ 17.105.160 Single-unit developments—Junior accessory dwelling unit standards. 
+
+ 17.105.170 Two-unit and multi-unit dwellings—Accessory dwelling unit standards. 
+
+ 17.105.180 Parking requirements. 
+
+ 17.105.190 All zones—Design standards. 
+
+ 17.105.200 Historic district zones—Design standards. 
+
+ 17.105.010 Purpose, applicability and where permitted.
+
+ A. Purpose. This chapter establishes regulations and procedures for reviewing and permitting accessory dwelling units in conformance with California Government Code Title 7 , Division 1, Chapter 13.
+
+ B. Applicability. Any construction, establishment, alteration, enlargement, or modification of an accessory dwelling unit shall comply with the requirements of this chapter and the city’s building and fire codes, as modified by Government Code Title 7 , Division 1, Chapter 13. For the purposes of this chapter, accessory dwelling units include attached, detached, and junior accessory dwelling units.
+
+ C. Building Permit Required. Any accessory dwelling unit or junior accessory dwelling unit shall require a building permit, subject to all the standard application and processing fees and procedures that apply to building permits generally.
+
+ D. Where Permitted. Accessory dwelling units are allowed on parcels zoned to allow for single-unit, two-unit, and/or multi-unit residential uses where such a parcel includes a proposed or existing primary dwelling unit. Junior accessory dwelling units are allowed on parcels zoned to allow for single-unit residential uses where such parcel includes a proposed or existing primary dwelling unit. (Ord. 1361 § 2, 2026)
+
+ 17.105.020 Definitions.
+
+ A. “Accessory dwelling unit” (ADU) means an attached or a detached residential dwelling unit that provides complete independent living facilities for one or more persons and is located on a lot with a proposed or existing primary residence. It shall include permanent provisions for living, sleeping, eating, cooking, and sanitation on the same parcel as the single-unit or multi-unit dwelling is or will be situated, and include a permanent foundation and has a permanent connection to utility services. An accessory dwelling unit also includes the following:
+
+ 1. An efficiency unit, as defined in Section 17958.1 of the Health and Safety Code.
+
+ 2. A manufactured home, as defined in Section 18007 of the Health and Safety Code.
+
+ B. “Accessory building” means a detached subordinate building, the use of which is incidental to that of the main building on the same lot, or to the use of the land, such as a detached garage, shed or barn, etc.
+
+ C. “Car share” means a program that allows customers hourly access to shared vehicles from a dedicated home location, with the vehicles required to be returned to that same location at the end of the trip.
+
+ D. “Discretionary review” means the review of an application that involves a decision-maker’s judgement, and may involve public hearing and/or environmental review. Approvals are granted at the discretion of the city decision-maker. Discretionary review typically applies to projects which may have an impact to the surrounding area, require more analysis, and/or necessitate public feedback.
+
+ E. “Efficiency kitchen” is defined for purposes of establishing a junior accessory dwelling unit as a cooking facility that includes all of the following:
+
+ 1. A cooking facility with appliances; and
+
+ 2. A food preparation counter; and
+
+ 3. Storage cabinets that are of reasonable size in relation to the size of the junior accessory dwelling unit.
+
+ F. “Independent living facilities” means a residential dwelling unit having permanent provisions for living, sleeping, eating, cooking, and sanitation.
+
+ G. “Junior accessory dwelling unit” (JADU) means a unit that is no more than five hundred square feet in size and contained entirely within a single-unit dwelling. A JADU may include separate sanitation facilities or may share sanitation facilities with the existing structure.
+
+ H. “Livable space” means a space in a dwelling intended for human habitation, including living, sleeping, eating, cooking, or sanitation.
+
+ I. “Living area” means the interior habitable area of a dwelling unit, including basements and attics, but does not include a garage or any accessory building.
+
+ J. “Ministerial review” means review of an application at a staff level for compliance to clear and objective requirements, and does not involve public hearing. If an application subject to ministerial review meets all of the city’s requirements, then it shall be approved by staff. Ministerial reviews are exempt from the California Environmental Quality Act (CEQA) and cannot be appealed.
+
+ K. “New construction” means the creation of new built space that did not previously exist. This includes a wholly new building, or an addition that increases the space beyond the existing building where new space was not previously a part of the building.
+
+ L. “Nonconforming zoning condition” means a physical improvement on a property that does not conform with current zoning standards.
+
+ M. “Objective standards” means standards that involve no personal or subjective judgment by a public official and are uniformly verifiable by reference to an external and uniform benchmark or criterion available and knowable by both the development applicant or proponent and the public official prior to submittal.
+
+ N. “Passageway” means a pathway that is unobstructed clear to the sky and extends from a street or alley to one entrance of the accessory dwelling unit.
+
+ O. “Primary dwelling unit” means the single-unit dwelling or each multi-unit dwelling unit, but does not include an accessory dwelling unit or junior accessory dwelling unit. An attached garage is considered part of the primary dwelling unit.
+
+ P. “Public transit” means a location, including but not limited to a bus stop or train station, where the public may access buses, trains, subway, and other forms of transportation that charge set fares, run on fixed routes, and are available to the public.
+
+ Q. “Single-unit, two-unit, and multi-unit” mean the same, respectively, as single-family, duplex, and multifamily residential units.
+
+ R. “Spindle work detailing” means a decorative element created by shaping wood on a spindle lathe to create symmetrical, repeating patterns like beads, coves, rings, and tapers. Spindlework detailing was often used as decorative spindles, balusters, posts, and trim on railings, porches, staircases, and other architectural features.
+
+ S. “66323 unit” means accessory dwelling units that must be approved ministerially in accordance with Government Code Section 66323 .
+
+ T. “Tandem parking” means two or more automobiles parked on a driveway or in any other location on a parcel, lined up behind one another.
+
+ Tandem Parking 
+
+ (Ord. 1361 § 2, 2026)
+
+ 17.105.030 Types.
+
+ An accessory dwelling unit approved under this chapter shall be one of the following types:
+
+ A. Attached. An accessory dwelling unit that meets the requirements of this chapter, and that is created as a result of new construction or conversion which is attached to an existing or proposed primary dwelling unit, such as through a shared structural wall, floor, ceiling, or roof. An attached accessory dwelling unit may also include, in part or in whole, a conversion of space within an existing primary dwelling unit, and/or an addition to an existing or proposed primary dwelling unit.
+
+ B. Detached. An accessory dwelling unit that meets the requirements of this chapter, and that is created as a result of new construction or conversion which is detached and separate from an existing or proposed primary dwelling unit on the same parcel. A detached accessory dwelling unit may also include, in part or in whole, a conversion of space within an existing accessory building, and/or an addition to an existing or proposed accessory building, and/or a newly constructed standalone accessory dwelling unit.
+
+ C. Junior Accessory Dwelling Unit. An accessory dwelling unit that is a unit that meets all the following requirements in addition to the requirements of this chapter:
+
+ 1. Is no more than five hundred square feet in size; and
+
+ 2. Is contained entirely within a proposed or existing single-unit primary dwelling; and
+
+ 3. Has a separate entrance from the main entrance to the proposed or existing single-unit primary dwelling; and
+
+ 4. Has a bathroom that is either shared with or separate from those of the single-unit primary dwelling; and
+
+ 5. Includes an efficiency kitchen. (Ord. 1361 § 2, 2026)
+
+ 17.105.040 Density and consistency.
+
+ An accessory dwelling unit that conforms to the requirements of this chapter shall:
+
+ A. Not be considered for the purposes of evaluating the density requirements established in the general plan.
+
+ B. Be found consistent with the existing general plan designation and zoning for the lot.
+
+ C. Not be considered a new residential use for the purpose of calculating local agency connection fees of capacity charges for utilities, including water and sewer service.
+
+ D. Not be considered in the application of any local ordinance, policy, or program to limit residential growth. (Ord. 1361 § 2, 2026)
+
+ 17.105.050 Processing time and submittal requirements.
+
+ A. Processing time of an application for an accessory dwelling unit shall comply with Government Code Section 66317 and the standards below. Processing time of an application for a junior accessory dwelling unit shall comply with Government Code Section 66335 and the standards below. Where conflict occurs between the regulations of this section and the Government Code, the Government Code regulations shall apply.
+
+ 1. Within fifteen business days after the city receives an application, the city shall provide written notice whether the application is complete or incomplete.
+
+ a. If the city determines an application is incomplete, the city shall provide the applicant with a list of incomplete items, and a description of how the application can be made complete. The list and description shall be provided with the written notice, as required by subsection (A)(1) of this section.
+
+ b. After receiving a notice that the application is incomplete, an applicant may cure and address the items deemed incomplete by the city.
+
+ c. In the review of an application submitted pursuant to subsection (A)(1)(b) of this section, the city shall not require the application to include an item that was not included in the list required by subsection (A)(1)(a) of this section.
+
+ d. If an applicant submits supplemental information pursuant to subsection (A)(1)(b) of this section, the city shall determine whether the supplemental information has remedied all incomplete items listed in the determination issued pursuant to subsection (A)(1)(a) of this section. This additional application is subject to the timelines and requirements specified in subsection (A)(1) of this section.
+
+ e. If the city does not make a timely determination as required by this subsection, the application or resubmitted application shall be deemed to be complete for the purposes of this subsection.
+
+ 2. An application to create an accessory dwelling unit or junior accessory dwelling unit shall be approved or denied within sixty days of submission of a complete application, unless:
+
+ a. The application to create an accessory dwelling unit or junior accessory dwelling unit is submitted concurrently with an application to create a new primary dwelling unit on the parcel, in which case the city shall not act on the application for the accessory dwelling unit or junior accessory dwelling unit until the city acts on the application for the new primary dwelling unit, but the application to create an accessory dwelling unit or junior accessory dwelling unit shall still be considered ministerially; or
+
+ b. The applicant requests a delay, in which case the sixty-day time period shall be tolled for the period of delay.
+
+ 3. If the city has not acted upon the completed application for an accessory dwelling unit or junior accessory dwelling unit within sixty days, and none of the above exceptions are met, then the application for the accessory dwelling unit or junior accessory dwelling unit shall be deemed approved.
+
+ B. Submittal Requirements. The application for an accessory dwelling unit or junior accessory dwelling unit shall be submitted to the community development director. An accessory dwelling unit or junior accessory dwelling unit shall be reviewed for compliance with the standards of this chapter through the planning process, if required, in addition to the established building permit process.
+
+ C. Denial/Remedies. If the city denies an application for an accessory dwelling unit or junior accessory dwelling unit, the city will provide in writing a full set of comments within sixty days to the applicant from the date the city received a complete application with a list of items that are defective, deficient, or not compliant, and a description of how the application can be remedied by the applicant. When the primary dwelling is proposed concurrently with the accessory dwelling unit, more than sixty days can be taken by the city.
+
+ D. Appeals. Appeals of a determination of incompleteness or a denial of an application by the community development director may be made to the planning commission in accordance with Chapter 17.04 , with the modification that all appeals of determinations made under this chapter shall be decided within sixty business days after receipt of the appeal. The planning commission’s decision on appeals of determinations made under this chapter is final and may not be further appealed. (Ord. 1361 § 2, 2026)
+
+ 17.105.060 Fee requirements.
+
+ A. Application and Permit Fees. All accessory dwelling units shall be subject to all standard application and processing fees that apply to building permits. If the accessory dwelling unit is required to undergo review through the planning process, the application is subject to a required application fee established by council resolution.
+
+ B. Connection Fees or Capacity Charges. An accessory dwelling unit or junior accessory dwelling unit shall not be considered a new residential use for the purposes of calculating connection fees or capacity charges for utilities, including water and sewer service, unless the accessory dwelling unit was constructed with a new single-unit dwelling.
+
+ C. Impact Fees.
+
+ 1. For the purposes of this subsection, impact fees do not include any connection fee or capacity charge for water or sewer service.
+
+ 2. No city-imposed impact fees shall be charged to an accessory dwelling unit that is seven hundred fifty square feet or less in floor area, or a junior accessory dwelling unit that has five hundred square feet or less in floor area.
+
+ 3. For accessory dwelling units more than seven hundred fifty square feet, city-imposed impact fees shall be charged proportionately in relation to the square footage of the primary dwelling unit (e.g., the floor area of the accessory dwelling unit, divided by the floor area of the primary dwelling unit, times the typical fee amount charged for a new dwelling).
+
+ a. If any agency or special district other than the city imposes impact fees collected by the city, the city shall collect such fees in accordance with such agency’s or district’s fee schedule. (Ord. 1361 § 2, 2026)
+
+ 17.105.070 Rental and sale limitations.
+
+ A. Long-Term Rentals Only. An accessory dwelling unit and junior accessory dwelling unit may be rented separately from the primary residence; however, the rental shall be for a term of thirty days or longer. Occupancy of the accessory dwelling unit or junior accessory dwelling unit shall not be allowed until the city approves the occupancy of the primary dwelling unit.
+
+ B. Sale or Conveyance. An accessory dwelling unit may be sold or conveyed separately from the primary dwelling unit to a qualified buyer, as defined in Government Code Section 66341 , if all the requirements of Government Code Section 66341 are met. (Ord. 1361 § 2, 2026)
+
+ 17.105.080 Conditions for nonconforming uses and structures.
+
+ A. Nonconforming Conditions. Notwithstanding Chapter 17.64 , until January 1, 2030, or until a date specified in Health and Safety Code Section 17980.12 , whichever is later, an owner of an accessory dwelling unit that receives a notice to correct violations or abate nuisances, in relation to the accessory dwelling unit, may request a delay of up to five years in enforcement of a building standard, as long as the violation is not a health and safety issue as determined by the city, subject to compliance with Government Code Section 66331 and Health and Safety Code Section 17980.12 and the following conditions:
+
+ 1. The accessory dwelling unit was built before January 1, 2020; or
+
+ 2. The accessory dwelling unit was built on or after January 1, 2020, during a time when the city had a noncompliant accessory dwelling unit ordinance, but the ordinance is compliant at the time the request is made.
+
+ B. The city shall not deny an application for a permit to create an accessory dwelling unit or junior accessory dwelling unit due to the failure to correct nonconforming zoning conditions, building code violations, or unpermitted structures that do not present a threat to public health and safety and are not affected by the construction of the accessory dwelling unit in compliance with Government Code Sections 66322 and 66336 . (Ord. 1361 § 2, 2026)
+
+ 17.105.090 Accessory dwelling units subject to mandatory approval.
+
+ The city shall approve any application for an accessory dwelling unit as described in this section and specified in Government Code Section 66323 , referred to as a “66323 unit.” Approval or denial of an accessory dwelling unit specified in Government Code Section 66323 is a ministerial action not subject to discretionary review. The following types of 66323 units are exempt from the design standards of this chapter and exempt from design review; however, they are subject to applicable standards of Government Code Title 7 , Division 1, Chapter 13:
+
+ A. Any accessory dwelling unit on a lot with an existing or proposed single-unit primary dwelling that is a conversion of the space of a proposed or existing single-unit primary dwelling, and may include an expansion of not more than one hundred fifty square feet beyond the physical dimensions of the building for the sole purpose of accommodating ingress and egress;
+
+ B. Any accessory dwelling unit on a lot with an existing or proposed single-unit primary dwelling that is a conversion of the space of an existing accessory building, and may include an expansion of not more than one hundred fifty square feet beyond the physical dimensions of the building for the sole purpose of accommodating ingress and egress;
+
+ C. Any junior accessory dwelling unit;
+
+ D. Any new construction detached accessory dwelling unit on a lot with an existing or proposed single-unit primary dwelling that is eight hundred square feet or smaller in size, has a peak height above finished grade as allowed under the conditions specified in Government Code Section 66321 , and has a minimum four-foot-wide side and rear yard setbacks;
+
+ E. Any accessory dwelling unit that is a conversion of a portion of an existing multi-unit dwelling building that is not used as livable space;
+
+ F. Any new construction detached accessory dwelling unit on a lot with an existing or proposed multi-unit primary dwelling that has a peak height above finished grade as allowed under the conditions specified in Government Code Section 66321 , and has a minimum four-foot-wide side and rear yard setbacks. (Ord. 1361 § 2, 2026)
+
+ 17.105.110 Accessory dwelling units subject to design review.
+
+ A. Ministerial Design Review Required. All accessory dwelling units which are not 66323 units shall be subject to the objective design standards in Section 17.105.190 or 17.105.200 , as applicable. Compliance with the objective design standards listed in Sections 17.105.190 and 17.105.200 shall be conducted in accordance with the ministerial design review process outlined in Section 17.06.045 , except as otherwise noted in this section. The city shall ministerially approve any application for an accessory dwelling unit subject to design review if all requirements in this chapter are met.
+
+ 1. Review Authority. All accessory dwelling units shall be reviewed by the community development director.
+
+ a. If a proposed detached accessory dwelling unit project includes proposed new garage space, the proposed new garage space shall be reviewed concurrently with the accessory dwelling unit through a ministerial design review process.
+
+ 2. Design Review Findings. Notwithstanding the findings of Chapter 17.06 , in approving or denying an application for ministerial design review under this chapter, the community development director shall make the finding that the accessory dwelling unit complies with the objective design and development standards of this chapter.
+
+ B. Deviations From Design Standards. A request to deviate from the design standards contained in Section 17.105.190 or 17.105.200 may be made by application for design review, in accordance with the standard design review process outlined in Chapter 17.06 , except as otherwise noted in this section.
+
+ 1. Review Authority. Any deviations for accessory dwelling units from the objective design standards of this chapter shall be reviewed by the community development director. (Ord. 1361 § 2, 2026)
+
+ 17.105.120 Limitation on the number of accessory dwelling units.
+
+ A. The number of accessory dwelling units allowed shall comply with Government Code Title 7 , Division 1, Chapter 13, as listed below. Where conflict occurs between the regulations of this section and the Government Code, the Government Code regulations shall apply.
+
+ 1. Accessory dwelling units are permitted in single-unit developments with an existing or proposed single-unit dwelling as long as the units satisfy the requirements of this chapter and the number does not exceed, per single-unit lot:
+
+ a. One attached or detached accessory dwelling unit that complies with the requirements of this chapter; and
+
+ b. One accessory dwelling unit that is located within the proposed or existing space of a single-unit dwelling, or located within the existing space of an accessory building, consistent with Government Code Section 66323 (a)(1); and
+
+ c. One junior accessory dwelling unit consistent with Government Code Section 66323 (a)(1); and
+
+ d. One new construction detached accessory dwelling unit consistent with Government Code Section 66323 (a)(2).
+
+ 2. Accessory dwelling units are permitted in multi-unit developments with an existing or proposed multi-unit dwelling as long as the units satisfy the requirements of this chapter and the number does not exceed:
+
+ a. At least one accessory dwelling unit that is a conversion of portions of existing multi-unit dwelling structures that are not used as livable space, up to a maximum of twenty-five percent of the original number of approved primary units within the development. When calculating the required number of allowed accessory dwelling units, any fractions of units shall be rounded to the next larger whole number.
+
+ b. Up to two detached accessory dwelling units on a lot that has proposed multi-unit dwellings, or up to eight detached accessory dwelling units on a lot that has existing multi-unit dwellings; provided, that the number of accessory dwelling units does not exceed the number of existing dwelling units on the lot.
+
+ 3. Notwithstanding the above, no more than two units (including ADUs and JADUs) on a parcel created through a Senate Bill (SB) 9 (Chapter 162, Statues of 2021) lot split shall be allowed (Government Code Section 66411.7 (j)(1)). (Ord. 1361 § 2, 2026)
+
+ 17.105.130 Standards applicable to all accessory dwelling units.
+
+ The following standards shall apply to all accessory dwelling units. Where conflict occurs between the regulations of this section and the Government Code, the Government Code regulations shall apply:
+
+ A. Passageways. No passageway, breezeway, or similar connection between structures on the parcel shall be required in conjunction with the construction of an accessory dwelling unit.
+
+ B. Utility Connections. All accessory dwelling units shall be connected to public utilities or their equivalent, including water, electric, and sewer services.
+
+ 1. The city shall not require the applicant to install a new or separate utility connection directly between the attached or detached accessory dwelling unit and the utility unless the utility connection is required by the utility provider. The applicant may voluntarily install a new or separate utility connection, subject to the approval of the utility provider. Any utility charges or fees must be consistent with California Government Code Section 66311.5 .
+
+ C. Septic System. If allowed by the city pursuant to Chapter 13.20 , the accessory dwelling unit may connect to an on-site water-treatment system. The owner shall include with the application a percolation test completed within the last five years or, if the percolation test has been recertified, within the last ten years. Such test must demonstrate the ability of the site to accommodate waste discharge associated with the accessory dwelling unit.
+
+ D. Open Space. Accessory dwelling units shall not encroach into required open space areas on a residentially zoned parcel. This requirement shall not apply to a 66323 unit.
+
+ E. Addressing. An accessory dwelling unit shall have its own address according to the city’s standard addressing procedure. (Ord. 1361 § 2, 2026)
+
+ 17.105.140 Single-unit developments—Attached accessory dwelling unit standards.
+
+ A. 66323 Units. An attached accessory dwelling unit shall qualify as a 66323 unit if it meets all of the following requirements, in accordance with Government Code Section 66323 :
+
+ 1. Location. Is a conversion of the space of a proposed or existing single-unit primary dwelling that may include an expansion of not more than one hundred fifty square feet beyond the physical dimensions of the building for the sole purpose of accommodating ingress and egress.
+
+ 2. Size. Size shall be measured based on the interior living space of the accessory dwelling unit. At a minimum meets the requirements of an efficiency unit (one hundred fifty square feet minimum).
+
+ 3. Setbacks. Has side and rear setbacks that comply with applicable building and fire codes.
+
+ 4. Access. Has exterior access that is independent of that for the proposed or existing primary dwelling unit.
+
+ B. All Other Attached Accessory Dwelling Units. An attached accessory dwelling unit that is not a 66323 unit shall meet all of the following requirements:
+
+ 1. Location. Is located on a single-unit parcel with an existing or proposed primary dwelling unit, and shares at least one common structural wall, floor, ceiling, or roof with the primary dwelling unit.
+
+ 2. Size. Size shall be measured based on the interior living space of the accessory dwelling unit. At a minimum meets the requirements of an efficiency unit (one hundred fifty square feet minimum), and at a maximum does not exceed eight hundred fifty square feet if it has no more than one bedroom, or one thousand square feet if it has two or more bedrooms. Subject to the foregoing maximum size limitation, the total floor area of an attached accessory dwelling unit shall not exceed fifty percent of the existing primary dwelling unit.
+
+ 3. Setbacks. Has a front yard setback that conforms to the front setback for the zone in which the attached accessory dwelling unit is located, has side and rear setbacks of at least four feet, and complies with applicable building and fire codes.
+
+ a. Setback Exceptions. Any portion of an accessory dwelling unit that is a conversion of the space of an existing primary dwelling unit may maintain the same setbacks as that of the existing primary dwelling unit; however, the accessory dwelling unit must comply with applicable fire and building codes.
+
+ 4. Parcel Coverage. For any attached accessory dwelling unit, the parcel coverage standard and pervious surface standard, if applicable, for the zone in which it is located shall apply.
+
+ a. Rear Yard Coverage. Notwithstanding the parcel coverage standard, the area covered by an accessory dwelling unit shall not exceed forty percent of the rear yard.
+
+ b. Parcel Coverage Exceptions. No adjustment to the existing parcel coverage and pervious surface standard, if applicable, is required for any portion of an accessory dwelling unit that is a conversion of the space of an existing primary dwelling unit; however, the accessory dwelling unit must comply with applicable fire and building codes.
+
+ 5. Height. Height shall not exceed the height standard for the zone in which the attached accessory dwelling unit is located.
+
+ a. Additional Height Restrictions. Notwithstanding the height standard, any portion of an attached accessory dwelling unit that encroaches into the required setback area for the primary dwelling unit shall not exceed twenty-five feet.
+
+ b. Height Exceptions. Any portion of an accessory dwelling unit that is a conversion of the space of an existing primary dwelling unit may maintain the same height as that of the existing primary dwelling unit; however, the accessory dwelling unit must comply with applicable fire and building codes.
+
+ 6. Access. Has exterior access that is independent of that for the proposed or existing primary dwelling unit. The entrance to the accessory dwelling unit shall be located on a different side of the building from the entrance to the primary dwelling unit, except as may be required to comply with applicable fire and building codes.
+
+ C. Additional Requirements.
+
+ 1. Design Standards. Any accessory dwelling unit must comply with the design standards set forth in Sections 17.105.190 and 17.105.200 for an accessory dwelling unit in the historic district, or Section 17.105.190 for an accessory dwelling unit located outside of the historic district.
+
+ a. Design Standard Exceptions. Design standards shall not apply to 66323 units specified in Government Code Section 66323 .
+
+ 2. Exceptions. Notwithstanding the standards of this section, in no event shall any of the standards of this section preclude the development of at least an eight-hundred-square-foot accessory dwelling unit with four-foot side and rear setbacks, in compliance with all other development standards. (Ord. 1361 § 2, 2026)
+
+ 17.105.150 Single-unit developments—Detached accessory dwelling unit standards.
+
+ A. 66323 Units. A detached accessory dwelling unit shall qualify as a 66323 unit if it meets either of the following requirements, in accordance with Government Code Section 66323 :
+
+ 1. New Construction Detached 66323 Units.
+
+ a. Location. Is detached from the primary dwelling unit and is entirely new construction.
+
+ b. Size. Size shall be measured based on the interior living space of the accessory dwelling unit. At a minimum meets the requirements of an efficiency unit (one hundred fifty square feet minimum), and at a maximum shall not exceed eight hundred square feet.
+
+ c. Setbacks. Has side and rear setbacks of four feet, and complies with applicable building and fire codes.
+
+ i. Setback Exceptions. Any portion of an accessory dwelling unit that is a conversion of the space of an existing accessory building may maintain the same setbacks as that of the existing accessory building; however, the accessory dwelling unit must comply with applicable fire and building codes.
+
+ d. Height. Has a peak height above finished grade as allowed under the conditions specified in Government Code Section 66321 .
+
+ i. Height Exceptions. Any portion of an accessory dwelling unit that is a conversion of the space of an existing accessory building may maintain the same height as that of the existing accessory building; however, the accessory dwelling unit must comply with applicable fire and building codes.
+
+ 2. Converted Detached 66323 Units.
+
+ a. Location. Is detached from the primary dwelling unit and is a conversion of the space of an existing accessory building that may include an expansion of not more than one hundred fifty square feet beyond the physical dimensions of the building for the sole purpose of accommodating ingress and egress.
+
+ b. Size. Size shall be measured based on the interior living space of the accessory dwelling unit. At a minimum meets the requirements of an efficiency unit (one hundred fifty square feet minimum).
+
+ c. Setbacks. Has side and rear setbacks that comply with applicable building and fire codes.
+
+ i. Setback Exceptions. Any portion of an accessory dwelling unit that is a conversion of the space of an existing accessory building may maintain the same setbacks as that of the existing accessory building; however, the accessory dwelling unit must comply with applicable fire and building codes.
+
+ B. All Other Detached Accessory Dwelling Units. A detached accessory dwelling unit that is not a 66323 unit shall meet all of the following requirements:
+
+ 1. Location. Is located on a single-unit parcel with an existing or proposed primary dwelling unit, and is detached from the primary dwelling unit.
+
+ 2. Size. Size shall be measured based on the interior living space of the accessory dwelling unit. At a minimum meets the requirements of an efficiency unit (one hundred fifty square feet minimum), and at a maximum shall not exceed eight hundred fifty square feet if it has no more than one bedroom or one thousand square feet if it has two or more bedrooms.
+
+ 3. Setbacks. Has side and rear setbacks of at least four feet, and complies with applicable building and fire codes. In no case shall the accessory dwelling unit break the front plane of the primary dwelling unit. Detached accessory dwelling units shall be located at least six feet from the primary dwelling unit or an accessory building on the same parcel other than a fence or a wall.
+
+ a. Setback Exceptions.
+
+ i. Any portion of an accessory dwelling unit that is a conversion of the space of an existing accessory building may maintain the same setbacks as that of the existing accessory building; however, the accessory dwelling unit must comply with applicable fire and building codes.
+
+ ii. Notwithstanding Chapter 17.64 , any accessory dwelling unit constructed that is built on top of an existing accessory building with side and/or rear setback of less than four feet may maintain the same side and/or rear setback of that accessory building; however, the accessory dwelling unit must comply with applicable fire and building codes. Notwithstanding this exception, in no case shall the accessory dwelling unit break the front plane of the primary dwelling unit.
+
+ 4. Parcel Coverage. For any detached accessory dwelling unit, the parcel coverage standard and pervious surface standard, if applicable, for the zone in which it is located shall apply.
+
+ a. Rear Yard Coverage. Notwithstanding the parcel coverage standard, the area covered by an accessory dwelling unit shall not exceed forty percent of the rear yard.
+
+ b. Parcel Coverage Exceptions. No adjustment to the existing parcel coverage and pervious surface standard, if applicable, is required for any portion of an accessory dwelling unit that is a conversion of the space of an existing accessory building; however, the accessory dwelling unit must comply with applicable fire and building codes.
+
+ 5. Height. Height shall not exceed twenty-five feet or the height of the residence, whichever is less.
+
+ a. Accessory Dwelling Units Near a Listed Historic Structure. Any accessory dwelling unit proposed for construction on or within fifty feet of the property line of a parcel containing a structure listed on a state or federal register of historic resources shall have a peak height above finished grade of as allowed under the conditions specified in Government Code Section 66321 .
+
+ b. Height Exceptions. Any portion of an accessory dwelling unit that is a conversion of the space of an existing accessory building may maintain the same height as that of the existing accessory building; however, the accessory dwelling unit must comply with applicable fire and building codes.
+
+ 6. Access. The entrance to the accessory dwelling unit shall be located on a different side of the building from the entrance to the primary dwelling unit, except as may be required to comply with applicable fire and building codes.
+
+ C. Additional Requirements.
+
+ 1. Design Standards. Any accessory dwelling unit must comply with the design standards set forth in Sections 17.105.190 and 17.105.200 for an accessory dwelling unit in the historic district, or Section 17.105.190 for an accessory dwelling unit located outside of the historic district.
+
+ a. Design Standard Exceptions. Design standards shall not apply to 66323 units specified in Government Code Section 66323 .
+
+ 2. Exceptions. Notwithstanding the standards of this section, in no event shall any of the standards of this section preclude the development of at least an eight-hundred-square-foot accessory dwelling unit with four-foot side and rear setbacks, in compliance with all other development standards. (Ord. 1361 § 2, 2026)
+
+ 17.105.160 Single-unit developments—Junior accessory dwelling unit standards.
+
+ A. Generally. A junior accessory dwelling unit shall be allowed on a single-unit parcel with a proposed or existing primary dwelling unit, if the junior accessory dwelling unit meets all the following requirements:
+
+ 1. Location. Is entirely within the proposed space of a primary dwelling unit or within the existing space of a primary dwelling unit.
+
+ 2. Size. Size shall be measured based on the interior living space of the junior accessory dwelling unit. At a minimum meets the requirements of an efficiency unit (one hundred fifty square feet minimum), and at a maximum does not exceed five hundred square feet.
+
+ 3. Setbacks. No adjustment to the existing setback is required for an existing space that is converted to a junior accessory dwelling unit; however, the junior accessory dwelling unit must comply with applicable fire and building codes.
+
+ 4. Parcel Coverage. No adjustment to the existing parcel coverage and pervious surface standard, if applicable, is required for an existing space that is converted to a junior accessory dwelling unit; however, the junior accessory dwelling unit must comply with applicable fire and building codes.
+
+ 5. Height. No adjustment to the existing height is required for an existing space that is converted to a junior accessory dwelling unit. The height of the existing primary dwelling unit being converted to a junior accessory dwelling unit shall not be increased.
+
+ 6. Access. Has exterior access that is independent of that for the proposed or existing primary dwelling unit. The entrance to the junior accessory dwelling unit shall be located on a different side of the building from the entrance to the primary dwelling unit, except as may be required to comply with applicable fire and building codes. If the junior accessory dwelling unit does not include separate sanitation facilities, the junior accessory dwelling unit shall also include interior entry to the main living area of the primary dwelling unit.
+
+ B. Additional Requirements.
+
+ 1. Efficiency Kitchen. The junior accessory dwelling unit shall include an efficiency kitchen.
+
+ 2. Design Standards. No design standards shall be applied.
+
+ 3. Deed Restriction. Prior to issuance of a building permit for a junior accessory dwelling unit, a deed restriction shall be recorded in the chain of title of the single-unit property. The form of the deed restriction shall be approved by the city attorney and shall provide that:
+
+ a. The junior accessory dwelling units shall not be sold separately from the primary dwelling unit.
+
+ b. The junior accessory dwelling units are restricted to the approved size and other attributes allowed by this chapter.
+
+ c. The deed restriction shall run with the land and shall be enforced against future property owners.
+
+ 4. Owner Occupancy Requirements. All junior accessory dwelling units that have shared sanitation facilities shall be subject to an owner occupancy requirement. A person with legal or equitable title to the primary dwelling unit shall reside on the property in either the primary dwelling unit or junior accessory dwelling unit as that person’s legal domicile and permanent residence.
+
+ a. Exceptions. Owner occupancy shall not be required if the junior accessory dwelling unit has separate sanitation facilities from the primary dwelling unit, or if the owner is a governmental agency, land trust, or nonprofit housing organization. (Ord. 1361 § 2, 2026)
+
+ 17.105.170 Two-unit and multi-unit dwellings—Accessory dwelling unit standards.
+
+ Accessory dwelling units, in accordance with Government Code Section 66323 , are permitted on a lot with existing or proposed two-unit and multi-unit dwellings as follows:
+
+ A. Generally. An accessory dwelling unit conversion shall be allowed on a parcel with an existing multi-unit dwelling, if the accessory dwelling unit conversion meets all the following requirements:
+
+ 1. Location. Is converted from portions of a multi-unit dwelling that are not used as livable space, including but not limited to storage rooms, boiler rooms, passageways, attics, basements, or garages; provided, that any such space converted to an accessory dwelling unit complies with minimum state building standards for dwellings.
+
+ 2. Size. Size shall be measured based on the interior living space of the accessory dwelling unit. At a minimum meets the requirements of an efficiency unit (one hundred fifty square feet minimum).
+
+ 3. Setbacks. No adjustment to the existing setback is required for the space that is converted to an accessory dwelling unit; however, the accessory dwelling unit conversion must comply with applicable fire and building codes.
+
+ 4. Parcel Coverage. No adjustment to the existing parcel coverage and pervious surface standard, if applicable, is required for an existing space that is converted to an accessory dwelling unit; however, the converted accessory dwelling unit must comply with applicable fire and building codes.
+
+ 5. Height. No adjustment to the existing height is required for the space that is converted to an accessory dwelling unit. The height of the existing multi-unit dwelling being converted to an accessory dwelling unit shall not be increased.
+
+ 6. Design Standards. No design standards shall be applied.
+
+ B. Generally. A detached accessory dwelling unit shall be allowed on a parcel with an existing or proposed two-unit or multi-unit dwelling, if the detached accessory dwelling unit meets all the following requirements:
+
+ 1. Location. Is detached from the two-unit or multi-unit dwelling. The detached accessory dwelling unit may be attached to an accessory building or other detached accessory dwelling unit.
+
+ 2. Size. Size shall be measured based on the interior living space of the accessory dwelling unit. At a minimum meets the requirements of an efficiency unit (one hundred fifty square feet minimum), and at a maximum shall not exceed eight hundred square feet.
+
+ 3. Setbacks. Has side and rear setbacks of at least four feet, and complies with applicable building and fire codes.
+
+ 4. Parcel Coverage. Accessory dwelling units that are eight hundred square feet or smaller shall not be required to adhere to the parcel coverage standard and pervious surface standard, if applicable.
+
+ 5. Height. Has a peak height above finished grade as allowed under the conditions specified in Government Code Section 66321 .
+
+ 6. Design Standards. No design standards shall be applied. (Ord. 1361 § 2, 2026)
+
+ 17.105.180 Parking requirements.
+
+ Off-street parking space shall be provided in accordance with the following:
+
+ A. Requirement. One additional off-street parking space shall be required per accessory dwelling unit or per bedroom, whichever is less.
+
+ 1. Parking may be provided in front and/or side setback areas on a driveway, or as tandem parking on a driveway. Parking spaces may also be provided through a mechanical vehicle parking lift if located in an enclosed parking garage.
+
+ B. Exceptions. Additional parking for an accessory dwelling unit is not required in the following instances:
+
+ 1. The accessory dwelling unit is located within one-half mile walking distance of public transit, as defined in Section 17.105.020 , including transit stations and bus stations.
+
+ 2. The accessory dwelling unit is located within the historic district.
+
+ 3. The accessory dwelling unit is a part of the proposed or existing primary dwelling unit (e.g., attached accessory dwelling unit or junior accessory dwelling unit), or an existing accessory building (e.g., detached accessory dwelling unit addition to an accessory building).
+
+ 4. When on-street parking permits are required by the city but not offered to the occupant of the accessory dwelling unit.
+
+ 5. When there is a car share vehicle located within one block of the accessory dwelling unit.
+
+ 6. When a permit application for an accessory dwelling unit is submitted with a permit application to create a new single-unit dwelling or multi-unit dwelling on the same lot; provided, that the accessory dwelling unit or the parcel satisfies any other criteria listed in this subsection.
+
+ C. Replacement Parking Not Required. When a garage, carport, uncovered parking space, or covered parking structure is removed in conjunction with the construction or conversion of an accessory dwelling unit, replacement parking is not required.
+
+ Acceptable Location of Parking for Accessory Dwelling Units 
+
+ (Ord. 1361 § 2, 2026)
+
+ 17.105.190 All zones—Design standards.
+
+ A. Applicability. An accessory dwelling unit shall comply with objective standards for accessory dwelling units in this section or any other objective design standards for accessory dwelling units, as adopted by resolution of the city council. The following objective design standards shall apply to all accessory dwelling units that are not 66323 units specified in Government Code Section 66323 :
+
+ B. Exterior Walls.
+
+ 1. Attached accessory dwelling units shall utilize the same exterior wall materials, including accent materials, as the existing or proposed primary dwelling unit.
+
+ 2. Detached accessory dwelling units shall utilize at least two different exterior wall materials.
+
+ C. Windows. The accessory dwelling unit shall incorporate at least one of the following features: windows, projections, bays, or recessed elements. Additionally, windows are subject to the following requirements:
+
+ 1. Any second-story window that is within ten feet or less of the side and/or rear property line shall have translucent glazing, or be one of the following window types: Transom windows, clerestory windows, or false windows.
+
+ D. Roof Pitch. The accessory dwelling unit shall have the same roof pitch as the primary dwelling unit but may vary by up to 2/12 more or 2/12 less than the roof pitch of the primary dwelling unit. However, if the unit is located in the historic district, it must follow the roof pitch requirements for design style allowed in that zone or subarea specified in Section 17.105.200 .
+
+ E. Two-Story Accessory Dwelling Units. If the accessory dwelling unit is two stories, or is constructed on the second story or higher of an existing or proposed building, the following requirements shall apply:
+
+ 1. Form and Massing. The building massing of the accessory dwelling unit shall be designed according to the following requirements:
+
+ a. Attached accessory dwelling units shall utilize at least one of the following:
+
+ i. Recessed or projecting windows, doors, or parts of the wall. Recessed windows and doors shall project a minimum of six inches or shall be recessed a minimum of six inches. Any projection must be behind the parcel side or rear yard setback line.
+
+ ii. Cantilevered areas so long as area does not extend beyond the side or rear yard setback.
+
+ iii. At least two different roof forms, such as a mix of different roof types (e.g., hipped, gabled, shed, etc.).
+
+ b. Detached accessory dwelling units shall utilize at least two of the following:
+
+ i. Different primary siding materials for each of the stories.
+
+ ii. Recessed or projecting windows, doors, or parts of the wall. Recessed windows and doors shall project a minimum of six inches or shall be recessed a minimum of six inches. Any projection must be behind the parcel side or rear yard setback line.
+
+ iii. Cantilevered areas so long as area does not extend beyond the side or rear yard setback.
+
+ iv. At least two different roof forms, such as a mix of different roof types (e.g., hipped, gabled, shed, etc.) on the building.
+
+ 2. Staircases. Staircases necessary to access a second-story accessory dwelling unit shall comply with the following requirements:
+
+ a. Location. The staircase shall be located internal to the building, or along the edge of the building.
+
+ b. Setback. Has side and rear setbacks that comply with applicable building and fire codes.
+
+ c. Design. The staircase shall be screened. If located along the edge of a building, the staircase exterior walls shall use the same colors and materials as used for the exterior of the building.
+
+ 3. Balconies. One second-story balcony is allowed, not to exceed twenty square feet. Balconies shall not be located in the setback areas of the primary dwelling unit.
+
+ F. Design Style Deviations. Applicants for accessory dwelling units may seek a waiver from a required design standard listed in this section by requesting a design review in accordance with Section 17.105.110 . (Ord. 1361 § 2, 2026)
+
+ 17.105.200 Historic district zones—Design standards.
+
+ A. Applicability. In addition to the provisions of Section 17.105.190 , if located in a historic district, an accessory dwelling unit shall comply with objective standards for accessory dwelling units in this section or any other objective design standards for accessory dwelling units, as adopted by resolution of the city council. The following objective design standards shall apply to all accessory dwelling units that are not 66323 units specified in Government Code Section 66323 .
+
+ B. Architectural Style. The architectural styles in the historic district reflect the types of design during the period from the 1850s to 1950s. The applicant for an accessory dwelling unit shall select an allowed architectural style for the historic district zone or subarea in which it is located and shall meet all required design elements. Acceptable styles by zone and subarea are as follows:
+
+ 1. Figueroa Subarea: Queen Anne, Delta, Italianate, Spanish Eclectic, Craftsman, and Carriage House Styles.
+
+ 2. Central Subarea: Queen Anne, Delta, Italianate, Spanish Eclectic, Craftsman, and Carriage House Styles.
+
+ 3. Persifer-Dean Subarea: 1950s Ranch, Spanish Eclectic, Delta, and Craftsman Styles.
+
+ 4. The Preserve Subarea: Craftsman, Delta, Spanish Eclectic Styles.
+
+ 5. River Way Subarea: Delta, Spanish Eclectic, Craftsman Styles.
+
+ 6. All other subareas: Queen Anne, Delta, Italianate, Spanish Eclectic, Craftsman and Carriage House Styles.
+
+ C. Required Design Elements. The specified design elements for each architectural style are set forth as follows:
+
+ 1. Carriage House Style.
+
+ a. Limitations. This type may only be used for detached accessory dwelling units which include existing or proposed garage space.
+
+ b. Massing/Form. This style may include garage space on the main story not to exceed eight hundred square feet. The garage portion shall comply with the zoning requirements of the property.
+
+ i. Second Story. If a second story is used, the second story shall be located within the roof attic space. The second story shall not include any cantilever space above the main story.
+
+ c. Roofs. Roof shall have a side-gable, side-gambrel, or hip roof and incorporate the following elements:
+
+ i. Roof Pitch. Roof pitch shall be between 4/12 and 12/12 for gabled roofs. If a gambrel roof is used, the roof pitch for the lower roof leg (i.e., the lower portion of the roof slope) shall be between 22/12 and 26/12 and the upper roof leg (i.e., upper portion of the roof slope) shall be between 5/12 and 8/12; the upper and lower roof legs shall be equal in length.
+
+ ii. Roof Detailing. A window or vent shall be provided on the gable or gambrel ends.
+
+ iii. Optional. Shed or gabled roof dormer(s) may be used; wall dormers are not permitted. A singular square-cupola or tower may be used, but shall not exceed the overall height maximum of the structure and shall not exceed four square feet in size.
+
+ d. Windows. Windows shall be square or vertically proportioned rectangular windows with a multi-pane grid.
+
+ e. Exterior Walls. Exterior walls shall utilize the same siding materials of the primary dwelling unit, including the use of accent materials. If trim is used on the primary dwelling unit, the same type and width of trim shall be used.
+
+ f. Garage Door. The garage door shall incorporate the following features:
+
+ i. Garage doors shall be a single-car door in size (i.e., two-car garage doors prohibited);
+
+ ii. Black metal hinges and handle door hardware;
+
+ iii. Wood board construction, or be of a material shaped to imitate wood board construction;
+
+ iv. If windows are used, windows shall include rectangular grids and shall be located on the upper third of the garage door; and
+
+ v. If panels are used, panels shall be narrow and rectangular and extend from bottom of door to top of door. If windows are also used, the panels shall extend from bottom of door to bottom of windows.
+
+ 2. Craftsman Style.
+
+ a. Roofs. Roofs shall be front-gabled, side-gabled, or cross-gabled and incorporate the following elements:
+
+ i. Roof Pitch. The roof pitch shall be between 3/12 and 8/12.
+
+ ii. Roof Detailing. The roof shall have unenclosed eave overhangs. Exposed roof rafter and/or braces under the gables (i.e., knee braces or corbels, etc.) shall be included.
+
+ iii. Optional. Shed or gabled roof dormers may be used.
+
+ b. Windows. All windows on the front elevation shall be single- or double-hung sash windows with at least three small panes above one large pane (e.g., three small panes over one large pane, six small panes over one large pane window, etc.).
+
+ c. Exterior Walls. Exterior walls shall be horizontal lap or shingle siding that is two and one-half to six inches wide, or board and batten siding, or shingle siding, or stone and mortar, or brick and mortar, or a mix of the siding options mentioned. Fiber cement board and shingles may be used in place of wood siding or shingles.
+
+ d. Optional Porch. If an entry porch is provided, the porch shall be located under the roofline and supported by tapered or square columns with square bases that extend to the ground.
+
+ 3. Queen Anne Style.
+
+ a. Roofs. Roofs shall be hipped and/or gabled and incorporate the following elements:
+
+ i. Roof Pitch. The roof pitch shall be between 8/12 and 18/12.
+
+ ii. Roof Detailing. Front gables, if used, shall include scalloped shingles with a window or vent.
+
+ iii. Optional. Multiple gables and dormers may be used.
+
+ b. Windows. All windows on the front elevation shall be single- or double-hung sash windows with small panes above one large. All windows on the building shall be vertically proportioned, with a minimum height of two feet for every one foot of width, and a maximum height of three and one-half feet for every one foot of width.
+
+ c. Exterior Walls. Exterior walls shall be horizontal lap siding that is between two and one-half to six inches wide and/or shingle siding. Fiber cement siding may be used in place of wood siding.
+
+ d. Optional Porch. If an entry porch is provided, the porch shall include turned spindle columns and railing. Porches may also include the use of spindlework detailing.
+
+ e. Optional Features. Chamfered bay windows may be used. This feature is defined as an architectural projection that is either attached to the ground or projects from the building facade, contains windows that cover at least sixty percent of the projecting faces with glass area, and has side faces that are angled (chamfered) back toward the building rather than forming a right-angled corner.
+
+ 4. Delta Style.
+
+ a. Roofs. The roof shall be a single-front gabled roof and incorporate the following elements:
+
+ i. Roof Pitch. The roof pitch shall be between 6/12 to 12/12.
+
+ ii. Roof Detailing. A rectangular vent shall be utilized at ends of the front-facing gable. The roof shall have soffited eaves.
+
+ b. Windows. All windows on the building shall be vertically proportioned, with a minimum height of two feet for every one foot of width. The window shall include flat trim measuring no more than three and one-half inches wide surrounding all sides of the window.
+
+ c. Exterior Walls. Exterior walls shall be horizontal clapboard siding that is between two and one-half to six inches wide, or board and batten siding. Fiber cement siding may be used in place of wood siding.
+
+ d. Optional Porch. If an entry porch is provided, the porch shall have a roof pitch that is no greater than 4/12, supported by square posts not to exceed ten inches wide that extend to the ground, and include railing. Porches may also include the use of spindlework detailing.
+
+ 5. Italianate Style.
+
+ a. Roofs. The roof shall be a hipped roof and incorporate the following elements:
+
+ i. Roof Pitch. The roof pitch shall be between 3/12 and 6/12.
+
+ ii. Roof Detailing. The roof shall have eave overhangs that are at least twelve inches, supported by large, decorative roof brackets under an ornamental cornice.
+
+ iii. Optional. A singular square cupola or tower may be used, but shall not exceed the overall height maximum of the structure and shall not exceed six square feet in size.
+
+ b. Windows. All windows on the building shall be vertically proportioned, with a minimum height of two feet for every one foot of width, and a maximum height of three and one-half feet for every one foot of width.
+
+ c. Exterior Walls. Exterior walls shall be horizontal lap siding that is between four to six inches side, or brick and mortar siding. Fiber cement siding may be used in place of wood siding.
+
+ d. Optional Porch. If an entry porch is provided, the porch shall be a wrap-around porch (or smaller entry porch) with double columns.
+
+ e. Optional Features. Angled bay cut-away forms and windows may be used on the front elevation. Paneled wood doors may also be used.
+
+ 6. Spanish Eclectic Style (Also Known as Spanish Revival).
+
+ a. Roofs. The roof shall be cross-gabled, hipped, or a combined hipped-and-gabled roof and incorporate the following elements:
+
+ i. Roof Pitch. The roof pitch shall be between 2/12 and 5/12.
+
+ ii. Roof Detailing. The roof shall be red tile, include red tile vents on open gables, and shall not have a roof eave overhang that exceeds four inches.
+
+ b. Windows. All windows shall be recessed casement windows. On the front elevation, one window with a rounded arch shall be provided that is larger than any other window on the building.
+
+ c. Exterior Walls. Exterior walls shall be stucco.
+
+ d. Doors. Exterior doors shall be recessed, and be either wood plank or wood paneled doors. A rounded arch shall be provided over the main door.
+
+ e. Optional Porch. If a porch is provided, the porch shall be uncovered.
+
+ 7. 1950s Ranch Style.
+
+ a. Roofs. The roof shall be cross-gabled, side-gabled, hipped, or cross-hipped and incorporate the following elements:
+
+ i. Roof Pitch. The roof pitch shall be between 3/12 and 5/12.
+
+ ii. Roof Detailing. The roof shall have soffited eaves.
+
+ b. Exterior Walls. Exterior walls shall be smooth stucco, horizontal lap siding, shingles, board-and-batten, stone, brick and mortar, or a combination of these materials. Fiber cement siding may be used in place of wood siding.
+
+ c. Optional Window Detailing. Windows may include open shutters.
+
+ d. Optional Porch. If an entry porch is provided, the porch shall not be greater than one hundred square feet in size.
+
+ D. Design Style Deviations. Applicants for accessory dwelling units may seek a waiver from a required design standard listed in this section by requesting a design review in accordance with Section 17.105.110 . (Ord. 1361 § 2, 2026)

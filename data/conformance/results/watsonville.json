@@ -1,0 +1,29 @@
+{
+ "slug": "watsonville",
+ "source": {
+  "title": "Watsonville Municipal Code, Ch. 14-23 \u2014 Accessory Dwelling Units and Junior Accessory Dwelling Units",
+  "url": "https://www.codepublishing.com/CA/Watsonville/html/Watsonville14/Watsonville1423.html",
+  "retrieved": "2026-08-15",
+  "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 8b1061e3437750bf\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+ },
+ "scanned_on": "2026-08-15",
+ "disclaimer": "Presence-based screening for staff/counsel review; not a certification of compliance and silence is not a clean bill of health. Point-in-time: this result reflects the ordinance text retrieved on the date in source.retrieved, which no source-currency watch monitors for amendment.",
+ "findings": [
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "nt Code. (b) Length of Tenancy. State-exempt units shall not be rented for a period less than thirty (30) days. (c) Owner Occupancy of JADUs. For all proposed JADUs, owner-occupancy in the single-family dwelling or the newly created JADU is required,",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  },
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "ts shall not be rented for a period less than thirty (30) days. (c) Owner Occupancy of JADUs. For all proposed JADUs, owner-occupancy in the single-family dwelling or the newly created JADU is required, or as per California Government Code Section 66333",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  }
+ ]
+}

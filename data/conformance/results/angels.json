@@ -1,0 +1,45 @@
+{
+ "slug": "angels",
+ "source": {
+  "title": "Angels Municipal Code, Title 17, Ch. 17.61 \u2014 Accessory Dwelling Units (ADUs) and Junior Accessory Dwelling Units (JADUs)",
+  "url": "https://www.codepublishing.com/CA/Angels/html/Angels17/Angels1761.html",
+  "retrieved": "2026-08-15",
+  "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 42a71f1983b57e02\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+ },
+ "scanned_on": "2026-08-15",
+ "disclaimer": "Presence-based screening for staff/counsel review; not a certification of compliance and silence is not a clean bill of health. Point-in-time: this result reflects the ordinance text retrieved on the date in source.retrieved, which no source-currency watch monitors for amendment.",
+ "findings": [
+  {
+   "check_id": "stale-statutory-citation",
+   "title": "Cites Government Code sections deleted by SB 477 (2024)",
+   "severity": "definite",
+   "excerpt": "law including but not limited to: 1. Government Code Sections 66310 through 66342 ; and 2. Government Code Sections 65852.2 , 65852.21 , 65852.22 , 65852.23 , 65852.26 , 65852.27 , 65852.150 , 65583 (c)(7), 65585 (j), 66313 , 66314 , 66322 , 6",
+   "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+  },
+  {
+   "check_id": "stale-statutory-citation",
+   "title": "Cites Government Code sections deleted by SB 477 (2024)",
+   "severity": "definite",
+   "excerpt": "limited to: 1. Government Code Sections 66310 through 66342 ; and 2. Government Code Sections 65852.2 , 65852.21 , 65852.22 , 65852.23 , 65852.26 , 65852.27 , 65852.150 , 65583 (c)(7), 65585 (j), 66313 , 66314 , 66322 , 66323 and 66411.7 ; and",
+   "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+  },
+  {
+   "check_id": "stale-statutory-citation",
+   "title": "Cites Government Code sections deleted by SB 477 (2024)",
+   "severity": "definite",
+   "excerpt": ": 1. Government Code Sections 66310 through 66342 ; and 2. Government Code Sections 65852.2 , 65852.21 , 65852.22 , 65852.23 , 65852.26 , 65852.27 , 65852.150 , 65583 (c)(7), 65585 (j), 66313 , 66314 , 66322 , 66323 and 66411.7 ; and 3. Publi",
+   "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+  },
+  {
+   "check_id": "stale-statutory-citation",
+   "title": "Cites Government Code sections deleted by SB 477 (2024)",
+   "severity": "definite",
+   "excerpt": "rnment Code Sections 66310 through 66342 ; and 2. Government Code Sections 65852.2 , 65852.21 , 65852.22 , 65852.23 , 65852.26 , 65852.27 , 65852.150 , 65583 (c)(7), 65585 (j), 66313 , 66314 , 66322 , 66323 and 66411.7 ; and 3. Public Resources",
+   "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+  }
+ ]
+}

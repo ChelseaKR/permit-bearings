@@ -1,0 +1,37 @@
+{
+ "slug": "folsom",
+ "source": {
+  "title": "Folsom Municipal Code, Title 17, Ch. 17.105 \u2014 Accessory Dwelling Units",
+  "url": "https://www.codepublishing.com/CA/Folsom/html/Folsom17/Folsom17105.html",
+  "retrieved": "2026-08-15",
+  "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 49fde0e655a95915\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+ },
+ "scanned_on": "2026-08-15",
+ "disclaimer": "Presence-based screening for staff/counsel review; not a certification of compliance and silence is not a clean bill of health. Point-in-time: this result reflects the ordinance text retrieved on the date in source.retrieved, which no source-currency watch monitors for amendment.",
+ "findings": [
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "s chapter. c. The deed restriction shall run with the land and shall be enforced against future property owners. 4. Owner Occupancy Requirements. All junior accessory dwelling units that have shared sanitation facilities shall be subject to an owner o",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  },
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "cupancy Requirements. All junior accessory dwelling units that have shared sanitation facilities shall be subject to an owner occupancy requirement. A person with legal or equitable title to the primary dwelling unit shall reside on the property in either",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  },
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "elling unit or junior accessory dwelling unit as that person\u2019s legal domicile and permanent residence. a. Exceptions. Owner occupancy shall not be required if the junior accessory dwelling unit has separate sanitation facilities from the primary dwellin",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  }
+ ]
+}

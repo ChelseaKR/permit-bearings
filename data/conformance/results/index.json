@@ -1,10 +1,60 @@
 {
+ "angels": {
+  "scanned_on": "2026-08-15",
+  "findings": 4,
+  "by_severity": {
+   "definite": 4
+  },
+  "source_title": "Angels Municipal Code, Title 17, Ch. 17.61 \u2014 Accessory Dwelling Units (ADUs) and Junior Accessory Dwelling Units (JADUs)"
+ },
+ "capitola": {
+  "scanned_on": "2026-08-15",
+  "findings": 12,
+  "by_severity": {
+   "definite": 5,
+   "review": 7
+  },
+  "source_title": "Capitola Municipal Code, Title 17, Ch. 17.74 \u2014 Accessory Dwelling Units"
+ },
+ "folsom": {
+  "scanned_on": "2026-08-15",
+  "findings": 3,
+  "by_severity": {
+   "review": 3
+  },
+  "source_title": "Folsom Municipal Code, Title 17, Ch. 17.105 \u2014 Accessory Dwelling Units"
+ },
+ "foster-city": {
+  "scanned_on": "2026-08-15",
+  "findings": 6,
+  "by_severity": {
+   "review": 6
+  },
+  "source_title": "Foster City Municipal Code, Title 17, Ch. 17.78 \u2014 Accessory Dwelling Units"
+ },
  "san-diego": {
-  "scanned_on": "2026-08-14",
+  "scanned_on": "2026-08-15",
   "findings": 1,
   "by_severity": {
    "review": 1
   },
   "source_title": "San Diego Municipal Code, Ch. 14, Art. 1, Div. 3 \u2014 Accessory Dwelling Units (ADUs) and Junior Accessory Dwelling Units (JADUs) (\u00a7 141.0302 et seq.)"
+ },
+ "trinidad": {
+  "scanned_on": "2026-08-15",
+  "findings": 5,
+  "by_severity": {
+   "definite": 1,
+   "review": 4
+  },
+  "source_title": "Trinidad Municipal Code, Title 17, Ch. 17.54 \u2014 Accessory Dwelling Units"
+ },
+ "watsonville": {
+  "scanned_on": "2026-08-15",
+  "findings": 2,
+  "by_severity": {
+   "review": 2
+  },
+  "source_title": "Watsonville Municipal Code, Ch. 14-23 \u2014 Accessory Dwelling Units and Junior Accessory Dwelling Units"
  }
 }
