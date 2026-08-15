@@ -445,6 +445,19 @@ six quoted provisions from HCD's June 24, 2025 Santa Clara County findings
 letter, it reproduces six expected review flags in
 `tests/test_conformance.py`.
 
+That fixture runs the Python scanner in `src/permit_pathways/conformance.py`.
+The browser page runs a hand-ported JavaScript implementation of the same
+checks, so the claim only covers what a visitor runs if the two agree.
+`tests/test_conformance_browser_parity.py` executes the shipped
+`scanOrdinance()` from `assets/demo.js` under Node against the same fixtures
+and requires identical output — check IDs, offsets and excerpt text, not just
+the flagged set — and `tests/accessibility.spec.js` asserts that `review.html`
+itself renders those flags with the current `checks.json` wording. The two
+engines interpret the same check data through different regex implementations
+and duplicate the exclusion, context-window and overlap rules by hand, so the
+parity test is what keeps a fix or a check edit from landing in one and not
+the other.
+
 This is a bounded presence-based screen. It is not a compliance test,
 statewide accuracy evaluation, legal interpretation, or proof that required
 language is present. Findings point staff or counsel to a candidate provision,

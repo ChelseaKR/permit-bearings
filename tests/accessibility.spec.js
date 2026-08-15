@@ -1028,3 +1028,74 @@ test("external evidence gate stays visibly pending without success claims", asyn
   await expectNoAutomatedWcagViolations(page);
   await expectBrowserStorageEmpty(page);
 });
+
+const HCD_VALIDATION = JSON.parse(
+  readFileSync(
+    resolve(__dirname, "../data/conformance/hcd-validation-santa-clara.json"),
+    "utf8",
+  ),
+);
+const CONFORMANCE_CHECKS = JSON.parse(
+  readFileSync(resolve(__dirname, "../data/conformance/checks.json"), "utf8"),
+);
+
+// demo.js renders interface copy through uiText(), which drops em dashes for
+// readability. Compare against the same transformation so the assertion is
+// about the check's wording rather than its punctuation.
+function asRendered(value) {
+  return String(value).replace(/\s*—\s*/g, " ");
+}
+
+async function screenOrdinanceText(page, text) {
+  await page.fill("#ordText", text);
+  await page.click("#scanBtn");
+  await expect(page.locator("#scanStatus")).not.toBeEmpty();
+  return page.locator("#scanResults .card");
+}
+
+// The HCD re-derivation is this screen's headline evidence, and
+// tests/test_conformance_browser_parity.py holds the browser engine to the
+// validated Python scanner's exact output. This asserts the last link: that
+// review.html, as served, runs that engine and renders the current
+// checks.json text for each flag rather than a stale copy of it.
+for (const provision of HCD_VALIDATION.provisions) {
+  test(`review screen reproduces ${provision.hcd_finding}`, async ({ page }) => {
+    await page.goto("/review.html");
+    const cards = await screenOrdinanceText(page, provision.text);
+
+    expect(provision.expected_checks.length).toBeGreaterThan(0);
+    for (const checkId of provision.expected_checks) {
+      const check = CONFORMANCE_CHECKS.find(entry => entry.check_id === checkId);
+      if (!check) throw new Error(`unknown check in fixture: ${checkId}`);
+      const matching = cards.filter({
+        has: page.getByRole("heading", { name: check.title }),
+      });
+      // A provision can trip the same check more than once; every card the
+      // screen renders for it must carry the check's current wording.
+      const rendered = await matching.count();
+      expect(rendered).toBeGreaterThan(0);
+      for (let index = 0; index < rendered; index += 1) {
+        await expect(matching.nth(index)).toContainText(
+          asRendered(check.state_law),
+        );
+        await expect(matching.nth(index)).toContainText(
+          asRendered(check.hcd_precedent),
+        );
+      }
+    }
+  });
+}
+
+test("conformant control text stays quiet on the review screen", async ({ page }) => {
+  await page.goto("/review.html");
+  const cards = await screenOrdinanceText(page, HCD_VALIDATION.control.text);
+  await expect(cards).toHaveCount(0);
+  await expect(page.locator("#scanResults")).toContainText(
+    "No candidate provisions flagged",
+  );
+  await expect(page.locator("#scanResults")).toContainText(
+    "not a certification of compliance",
+  );
+  await expectNoAutomatedWcagViolations(page);
+  await expectBrowserStorageEmpty(page);
+});

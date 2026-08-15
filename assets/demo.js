@@ -3680,7 +3680,9 @@ function scanOrdinance(text) {
         seen.push([m.index, m.index + m[0].length]);
         const start = Math.max(0, m.index - 120);
         const end = Math.min(text.length, m.index + m[0].length + 120);
-        findings.push({ check, excerpt: text.slice(start, end).replace(/\s+/g, " "), offset: m.index });
+        // .trim() keeps the excerpt identical to the validated Python
+        // scanner, which collapses whitespace with " ".join(split()).
+        findings.push({ check, excerpt: text.slice(start, end).replace(/\s+/g, " ").trim(), offset: m.index });
       }
     }
   }
