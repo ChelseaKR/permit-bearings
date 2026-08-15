@@ -7,6 +7,20 @@ published a versioned release.
 
 ### Fixed
 
+- Transit screening no longer treats a stop that exists only in a regional
+  transportation plan as an existing major transit stop. The statewide
+  Caltrans/Cal-ITP dataset marks those rows `mpo_rtp_planned_major_stop` in
+  its `hqta_details` field; the loader parsed that field and nothing read it
+  back, so 3,125 of the snapshot's 20,240 major-stop rows were indistinguishable
+  from a built Amtrak platform. A planned row now supports neither the
+  § 66322(a)(1) parking line nor the § 66321(b)(4)(B) height line, and prints
+  on its own `PLANNED, NOT COUNTED` line with its `hqta_details` value visible.
+  Whether a planned stop can support the half-mile tests is left open and
+  routed to the operator and the local agency rather than answered. A point
+  whose only nearby major-stop rows were planned previously returned two
+  present-tense CANDIDATE lines; it now returns neither, and the regression
+  fixture asserts that no planned row can reach the qualifying set.
+
 - The source-currency watcher no longer reports a source it could not
   download as a source that changed. Each watched source is now classified as
   `unchanged`, `changed` (fetched, hash moved), or `unverifiable` (fetch

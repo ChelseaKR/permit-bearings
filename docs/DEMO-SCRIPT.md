@@ -207,12 +207,15 @@ evidence.
 - The parking exemption and 18-ft height allowance both turn on transit
   proximity. Run the GTFS module live against the Unitrans feed for a
   downtown Davis point. The local summer bus feed contains no stop meeting the
-  encoded peak screen, but the statewide dataset supplies the Davis Amtrak
-  major-stop candidate.
+  encoded peak screen, but the statewide dataset supplies the existing rail
+  major-stop candidate at the Davis depot.
+- The twelve nearer stops on that same run are Regional Transportation Plan
+  entries. They print on a separate `PLANNED, NOT COUNTED` line and support
+  neither result; the tool routes the question of whether a planned stop can
+  qualify to the operator and the agency instead of answering it.
 - The reveal is the disagreement, not a citywide legal conclusion: feed date,
-  planned/current facility status, operator completeness, walking distance,
-  and service-calendar logic all need confirmation. "Even the map and
-  schedule are versioned evidence."
+  operator completeness, walking distance, and service-calendar logic all
+  need confirmation. "Even the map and schedule are versioned evidence."
 
 ### 4. Fit and posture (4 min)
 - Rules, sources, and the golden set are portable files. A versioned command

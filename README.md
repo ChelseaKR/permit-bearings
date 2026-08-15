@@ -591,10 +591,21 @@ establish that every relevant operator, stop, or service record is present.
 
 Run against the bundled summer Unitrans (Davis) feed, no local bus stops meet
 the encoded ≤15/≤20-minute peak screens. The separate statewide high-quality
-transit dataset supplies the Davis Amtrak major-stop candidate near the depot.
-That disagreement is the useful finding: a local feed alone is incomplete,
-and schedule dates, planned facilities, multiple operators, and walking
-distance all need explicit confirmation before applicant-facing use.
+transit dataset supplies the existing rail major-stop candidate at the Davis
+depot (Capitol Corridor and Amtrak rows, about 0.36 mi from the documented
+coordinate). That disagreement is the useful finding: a local feed alone is
+incomplete, and schedule dates, multiple operators, and walking distance all
+need explicit confirmation before applicant-facing use.
+
+The statewide dataset also carries stops that exist only in a metropolitan
+planning organization's Regional Transportation Plan, marked in the
+`hqta_details` field as `mpo_rtp_planned_major_stop` — 3,125 of its 20,240
+major-stop rows in the committed snapshot. Those rows are read, reported on
+their own `PLANNED, NOT COUNTED` line, and never counted toward either
+determination; twelve of them sit inside the half mile at the documented
+Davis coordinate, seven of them closer than the depot. Whether a planned
+stop can support the half-mile tests is a question the tool leaves open and
+routes to the operator and the local agency rather than answering.
 
 **Jurisdiction registry:** 541 California jurisdictions (483 incorporated
 cities + 58 counties) are selectable. The original Census 2020 FIPS snapshot

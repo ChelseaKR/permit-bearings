@@ -15,6 +15,15 @@ self-attestation:
   service) or a "high-quality transit corridor" (Pub. Res. Code
   § 21155(b): fixed-route bus service with ≤15-minute peak intervals).
 
+Existing versus planned. The statewide Caltrans/Cal-ITP dataset carries
+both built facilities and stops that appear only in a metropolitan planning
+organization's Regional Transportation Plan, distinguished by the
+``hqta_details`` field (``mpo_rtp_planned_major_stop``). A planned stop is
+reported on its own line and is never counted toward either determination.
+This module does not decide whether a planned stop can support the half-mile
+tests; it keeps the distinction visible so a reader can confirm the
+facility's status.
+
 Honesty model. Distances here are straight-line (haversine). Walking
 distance is never shorter than straight-line, so a supplied stop farther than
 the threshold can be eliminated. That does not prove every relevant operator,
@@ -47,6 +56,9 @@ STOP_CLUSTER_MILES = 0.1  # stops this close count as one "intersection"
 RAIL_ROUTE_TYPES = {"0", "1", "2"}  # tram, metro, rail
 FERRY_ROUTE_TYPES = {"4"}
 BUS_ROUTE_TYPES = {"3", "11"}  # bus and trolleybus
+# Caltrans/Cal-ITP `hqta_details` value for a stop that exists only in an
+# MPO's Regional Transportation Plan. See HQStop.is_planned.
+PLANNED_HQTA_DETAIL = "mpo_rtp_planned_major_stop"
 
 
 def haversine_miles(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -261,12 +273,35 @@ class HQStop:
     lon: float
     hqta_type: str  # major_stop_rail | major_stop_brt | major_stop_ferry
     # | major_stop_bus | hq_corridor_bus
-    details: str
+    details: str  # hqta_details, e.g. major_stop_rail_single_operator
+    # | intersection_2_bus_routes_same_operator | mpo_rtp_planned_major_stop
+    # | corridor_frequent_stop | corridor_other_stop
     agency: str
 
     @property
-    def is_major(self) -> bool:
+    def is_major_type(self) -> bool:
+        """The dataset classifies the row as a major-stop type.
+
+        This is the `hqta_type` alone. It does not distinguish an existing
+        facility from one that only appears in a regional transportation
+        plan; `is_planned` carries that.
+        """
         return self.hqta_type.startswith("major_stop")
+
+    @property
+    def is_planned(self) -> bool:
+        """`hqta_details` marks the row as planned, not built.
+
+        `mpo_rtp_planned_major_stop` rows are stops an MPO's Regional
+        Transportation Plan proposes. In the committed corpus 3,125 of
+        20,240 major-stop rows carry this value.
+        """
+        return self.details == PLANNED_HQTA_DETAIL
+
+    @property
+    def is_existing_major(self) -> bool:
+        """A major-stop row the dataset reports as an existing facility."""
+        return self.is_major_type and not self.is_planned
 
 
 def load_hq_stops(path: Path) -> list[HQStop]:
@@ -303,6 +338,10 @@ class Determination:
     parking_exemption: str  # "candidate" | "no"
     height_18ft: str  # "candidate" | "no"
     qualifying_stops: list[tuple[StopService, float, str]]
+    # Rows the statewide dataset marks as planned rather than existing. They
+    # are never counted toward either determination above; they are reported
+    # so the reader can see them and confirm their status.
+    planned_stops: list[tuple[StopService, float, str]] = field(default_factory=list)
 
     def summary(self) -> str:
         lines = []
@@ -334,12 +373,35 @@ class Determination:
                 "FOUND IN SUPPLIED DATA — no encoded qualifying stop was found "
                 "within a half mile; confirm source coverage."
             )
+        lines.extend(self._planned_lines())
         lines.append(
             "Screening result from GTFS peak headways (busiest weekday service "
             "in the feed); straight-line distance can eliminate a supplied stop "
             "but cannot prove dataset completeness. Not a legal determination."
         )
         return "\n".join(lines)
+
+    def _planned_lines(self) -> list[str]:
+        """Report planned rows separately from the two determinations.
+
+        The statewide dataset carries stops that only appear in an MPO's
+        Regional Transportation Plan. Neither determination above counts
+        them, and nothing here decides whether such a stop can support the
+        § 66321(b)(4)(B) allowance; that question is left open on purpose.
+        """
+        if not self.planned_stops:
+            return []
+        stop, miles, reason = self.planned_stops[0]
+        count = len(self.planned_stops)
+        noun = "stop" if count == 1 else "stops"
+        return [
+            f"PLANNED, NOT COUNTED — {count} {noun} within a half mile are recorded "
+            f"as planned in a regional transportation plan, not as existing "
+            f"facilities; nearest is {stop.name} at {miles:.2f} mi, a {reason}. "
+            "Neither line above rests on them. Whether a planned stop can support "
+            "the half-mile transit tests is not decided here: confirm the "
+            "facility's status with the operator and the local agency."
+        ]
 
 
 def determine(
@@ -374,31 +436,33 @@ def determine(
             )
 
     hq_within = []
+    planned: list[tuple[StopService, float, str]] = []
     for hq in hq_stops or []:
         miles = haversine_miles(lat, lon, hq.lat, hq.lon)
         if miles > HALF_MILE:
             continue
-        hq_within.append((hq, miles))
         label = (
             "major transit stop"
-            if hq.is_major
+            if hq.is_major_type
             else "high-quality transit corridor stop"
         )
         stop_view = StopService(
             stop_id=f"hq:{hq.hqta_type}",
-            name=f"{hq.agency} ({hq.hqta_type})",
+            name=f"{hq.agency} ({hq.hqta_type}, {hq.details})",
             lat=hq.lat,
             lon=hq.lon,
         )
-        qualifying.append(
-            (
-                stop_view,
-                miles,
-                f"{label} (Caltrans HQ Transit Stops dataset: {hq.hqta_type})",
-            )
-        )
+        source = "Caltrans HQ Transit Stops dataset"
+        if hq.is_planned:
+            # A row the dataset reports as planned is not evidence of an
+            # existing facility, so it supports neither determination.
+            planned.append((stop_view, miles, f"planned {label} ({source})"))
+            continue
+        hq_within.append((hq, miles))
+        qualifying.append((stop_view, miles, f"{label} ({source})"))
 
     qualifying.sort(key=lambda x: x[1])
+    planned.sort(key=lambda x: x[1])
     parking = (
         "candidate"
         if ((nearest_miles is not None and nearest_miles <= HALF_MILE) or hq_within)
@@ -410,6 +474,7 @@ def determine(
         parking_exemption=parking,
         height_18ft="candidate" if qualifying else "no",
         qualifying_stops=qualifying,
+        planned_stops=planned,
     )
 
 
@@ -440,7 +505,9 @@ def main() -> int:
         f"Loaded {len(stops)} feed stops; "
         f"{sum(1 for s in stops if s.hqtc_routes())} with ≤15-min peak routes, "
         f"{sum(1 for s in stops if len(s.major_candidate_routes()) >= 1)} with "
-        f"≤20-min peak routes; {len(hq)} Caltrans HQ dataset stops.\n"
+        f"≤20-min peak routes; {len(hq)} Caltrans HQ dataset stops "
+        f"({sum(1 for s in hq if s.is_planned)} of them marked planned in a "
+        f"regional transportation plan and never counted as existing).\n"
     )
     print(determine(args.lat, args.lon, stops, hq_stops=hq).summary())
     return 0
