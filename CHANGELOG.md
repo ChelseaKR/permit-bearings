@@ -7,6 +7,23 @@ published a versioned release.
 
 ### Fixed
 
+- The published San Diego ordinance scan now matches the checks that produced
+  it. `data/conformance/results/san-diego.json` was generated on 2026-07-27
+  and copied the `size-cap-conflict` check's `state_law` text; that check was
+  rewritten on 2026-07-28 to add "these figures protect what local maximums
+  must allow; they are not required minimum unit sizes", and the published
+  file — which the browser links to directly — kept serving the superseded
+  wording. The finding set was never wrong; the explanatory text was stale.
+  `scripts/scan_ordinances.py --check` now re-derives every published result
+  from the committed corpus, names the exact field that moved, and fails;
+  `make bundle-check` runs it, so this class of drift breaks the build
+  instead of being published. The result's disclaimer also now states that a
+  scan is point-in-time and that no source-currency watch monitors the
+  scanned ordinance for amendment. Regenerating the result also refreshed
+  the generated demo bundle and, per the export maintenance rule, the two
+  changed raw digests plus the bundle digest in the schema-v2 export
+  profile; the frozen schema-v1 profile keeps its historical digests.
+
 - The source-currency watcher no longer reports a source it could not
   download as a source that changed. Each watched source is now classified as
   `unchanged`, `changed` (fetched, hash moved), or `unverifiable` (fetch

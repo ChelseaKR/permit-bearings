@@ -180,17 +180,17 @@
     {
       "path": "data/conformance/results/index.json",
       "role": "conformance_results",
-      "raw_sha256": "sha256:36b31972a3bc58cf7a95cf2fc54e7b0ddc361d3b853fb809b8f8c140d5d6efad"
+      "raw_sha256": "sha256:60fd162d5ca7bddf72fefc5ce73742d48b113812d289650a120aceae2f39157d"
     },
     {
       "path": "data/conformance/results/san-diego.json",
       "role": "conformance_result",
-      "raw_sha256": "sha256:0011b54024198971febd682d136850be425411e03419242c524fd67aa71b5845"
+      "raw_sha256": "sha256:466d92e78cc72c028503eb4be930ba9cc16c370f44ce1d5b372269a4b63e278e"
     },
     {
       "path": "data/demo-data.js",
       "role": "derived_browser_bundle",
-      "raw_sha256": "sha256:57133db2d4167a960125cf778cb83fca060febc7dd8531c2c1a9e945792edcae"
+      "raw_sha256": "sha256:6eb286ede9010a42251ce389cdcf3b10999c728284d15621978bf726e6c7006d"
     },
     {
       "path": "data/explanations/plain-language.json",

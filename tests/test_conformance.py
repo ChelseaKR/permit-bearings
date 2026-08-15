@@ -109,6 +109,86 @@ def test_committed_scan_results_are_valid(checks):
             assert f["check_id"] in check_ids
 
 
+def test_no_published_finding_disagrees_with_the_check_that_produced_it(checks):
+    """No published text may disagree with `checks.json`.
+
+    Each result denormalises `title`, `state_law` and `hcd_precedent` out of
+    the check it matched. Editing a check without rescanning leaves a dated,
+    jurisdiction-named artifact stating something the checks no longer say —
+    which is what happened between 2026-07-27 and 2026-07-28, and what the
+    browser served afterwards. Shape validation does not catch it: the
+    finding count and check IDs stayed correct the whole time.
+    """
+    by_id = {check.check_id: check for check in checks}
+    results_dir = DATA / "results"
+    published = sorted(results_dir.glob("*.json"))
+    compared = 0
+    for path in published:
+        if path.name == "index.json":
+            continue
+        record = json.loads(path.read_text())
+        for finding in record["findings"]:
+            check = by_id[finding["check_id"]]
+            assert finding["title"] == check.title, path.name
+            assert finding["state_law"] == check.state_law, path.name
+            assert finding["hcd_precedent"] == check.hcd_precedent, path.name
+            assert finding["severity"] == check.severity, path.name
+            compared += 1
+    assert compared, "at least one published finding is compared"
+
+
+def test_published_scan_artifacts_match_a_fresh_scan():
+    """The whole artifact, not just its denormalised strings.
+
+    `--check` is the gate wired into `make bundle-check`; this runs the same
+    derivation under pytest so the parity failure is visible in the test run
+    too. Each committed `scanned_on` is reused, so a date is never reported
+    as drift.
+    """
+    from scripts.scan_ordinances import build_results, committed_scan_dates
+
+    dates = committed_scan_dates()
+    assert dates, "at least one ordinance scan is committed"
+    expected = build_results(lambda slug: dates[slug])
+    for path, content in expected.items():
+        assert path.exists(), f"{path.name}: published result missing"
+        assert path.read_text() == content, (
+            f"{path.name}: published artifact differs from a fresh scan of the "
+            f"committed corpus; rerun scripts/scan_ordinances.py <date>"
+        )
+
+
+def test_scan_check_mode_fails_when_a_published_result_drifts(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The gate must fail on drift, not merely run.
+
+    This is the exact 2026-07-28 edit: `state_law` rewritten in
+    `checks.json` while the published result keeps the old wording. The
+    finding set, severity and excerpt are untouched, so a shape check still
+    passes and only a parity check catches it.
+    """
+    from scripts.scan_ordinances import check_published
+
+    staged = tmp_path / "results"
+    staged.mkdir()
+    for path in (DATA / "results").glob("*.json"):
+        (staged / path.name).write_text(path.read_text())
+    assert check_published(staged) == 0, capsys.readouterr().out
+    capsys.readouterr()
+
+    published = staged / "san-diego.json"
+    stale = json.loads(published.read_text())
+    stale["findings"][0]["state_law"] = "the superseded 2026-07-27 wording"
+    published.write_text(json.dumps(stale, indent=1) + "\n")
+
+    assert check_published(staged) == 1
+    output = capsys.readouterr().out
+    assert "drifted" in output
+    assert "findings[0].state_law" in output
+
+
 def test_san_diego_scan_reproduces():
     from permit_pathways.conformance import scan_file
 
