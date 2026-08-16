@@ -136,6 +136,7 @@ npm run test:a11y                                  # axe, reflow, and journey-st
 npm run test:perf                                  # Lighthouse category budgets
 PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip --lat 38.5449 --lon -121.7442
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
+python3 scripts/scan_ordinances.py --check         # published scan results vs. checks.json
 PYTHONPATH=src python3 -m permit_pathways.conformance_evaluation_cli validate-plan
 PYTHONPATH=src python3 -m permit_pathways.harness   # verification report
 PYTHONPATH=src python3 -m permit_pathways.harness --fetch            # live source diff
@@ -448,6 +449,17 @@ This is a bounded presence-based screen. It is not a compliance test,
 statewide accuracy evaluation, legal interpretation, or proof that required
 language is present. Findings point staff or counsel to a candidate provision,
 state source, and documented precedent for review.
+
+One committed jurisdiction scan is published under `data/conformance/results/`
+and linked from the applicant page. `scripts/scan_ordinances.py` generates it
+from the committed ordinance text, copying each matched check's title, state-law
+basis and HCD precedent into the result. Because those strings are copies,
+`scripts/scan_ordinances.py --check` re-derives every published artifact from
+the same corpus and fails when one no longer matches the checks that produced
+it; `make bundle-check` runs that gate, so a published result that disagrees
+with `data/conformance/checks.json` breaks the build instead of being served.
+A published result is point-in-time: it records the date the scan ran, and no
+source-currency watch monitors the scanned ordinance for later amendment.
 
 The held-out evaluation contract is implemented as a validated
 `status: not_run` planning manifest in

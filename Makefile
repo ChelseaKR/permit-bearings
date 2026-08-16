@@ -26,6 +26,7 @@ security:
 
 bundle-check:
 	.venv/bin/python scripts/build_demo_bundle.py --check
+	.venv/bin/python scripts/scan_ordinances.py --check
 	PYTHONPATH=src .venv/bin/python -m permit_pathways.harness
 
 copy-check:
