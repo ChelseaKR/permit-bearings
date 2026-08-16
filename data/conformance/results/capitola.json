@@ -1,0 +1,109 @@
+{
+ "slug": "capitola",
+ "source": {
+  "title": "Capitola Municipal Code, Title 17, Ch. 17.74 \u2014 Accessory Dwelling Units",
+  "url": "https://www.codepublishing.com/CA/Capitola/html/Capitola17/Capitola1774.html",
+  "retrieved": "2026-08-15",
+  "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 e18b9056472bfdf5\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+ },
+ "scanned_on": "2026-08-15",
+ "disclaimer": "Presence-based screening for staff/counsel review; not a certification of compliance and silence is not a clean bill of health. Point-in-time: this result reflects the ordinance text retrieved on the date in source.retrieved, which no source-currency watch monitors for amendment.",
+ "findings": [
+  {
+   "check_id": "stale-statutory-citation",
+   "title": "Cites Government Code sections deleted by SB 477 (2024)",
+   "severity": "definite",
+   "excerpt": "standards for the location and construction of accessory dwelling units (ADUs) consistent with Government Code Sections 65852.2 through 65852.22 . These standards are intended to allow accessory dwelling units as a form of affordable housing in Ca",
+   "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+  },
+  {
+   "check_id": "stale-statutory-citation",
+   "title": "Cites Government Code sections deleted by SB 477 (2024)",
+   "severity": "definite",
+   "excerpt": "e location and construction of accessory dwelling units (ADUs) consistent with Government Code Sections 65852.2 through 65852.22 . These standards are intended to allow accessory dwelling units as a form of affordable housing in Capitola while main",
+   "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+  },
+  {
+   "check_id": "stale-statutory-citation",
+   "title": "Cites Government Code sections deleted by SB 477 (2024)",
+   "severity": "definite",
+   "excerpt": "ivision 13 of the Health and Safety Code. b. The accessory dwelling unit does not comply with Government Code Section 65852.2 or this chapter. 2. The city may deny a permit for an unpermitted accessory dwelling unit that was constructed before",
+   "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+  },
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "the property unless the property is owned by a governmental agency, land trust, or housing organization, in which case owner-occupancy is not required. 3. Sanitation Facilities. a. A junior accessory dwelling unit may include sanitation facilities, o",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  },
+  {
+   "check_id": "stale-statutory-citation",
+   "title": "Cites Government Code sections deleted by SB 477 (2024)",
+   "severity": "definite",
+   "excerpt": "backs are sufficient for fire and safety. 4. The junior accessory dwelling unit complies with Government Code Section 65852.22 . B. One-Story Detached Accessory Dwelling Units Eight Hundred Square Feet or Less. One detached accessory dwelling u",
+   "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+  },
+  {
+   "check_id": "stale-statutory-citation",
+   "title": "Cites Government Code sections deleted by SB 477 (2024)",
+   "severity": "definite",
+   "excerpt": "dwelling unit is located within one-half mile walking distance of public transit, as defined in Government Code Section 65852.2 (j)(10). ii. The accessory dwelling unit is located within a National Register Historic District or other historic di",
+   "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+  },
+  {
+   "check_id": "subjective-design-standard",
+   "title": "Subjective design standard (must be objective)",
+   "severity": "review",
+   "excerpt": "the design permit, the planning commission shall find that: 1. The exterior design of the accessory dwelling unit is compatible with the primary dwelling on the parcel through architectural use of building forms, height , construction materials, colors",
+   "state_law": "Gov. Code \u00a7\u00a7 66314(b)(1), 66313(i): only objective standards \u2014 uniformly verifiable by an external benchmark knowable before submittal \u2014 may be imposed on ADUs.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 8 (Subjective Standard: \"similar styled roof design\")."
+  },
+  {
+   "check_id": "subjective-design-standard",
+   "title": "Subjective design standard (must be objective)",
+   "severity": "review",
+   "excerpt": "lors, landscaping , and other methods that conform to acceptable construction practices. 2. The exterior design is in harmony with, and maintains the scale of, the neighborhood. 3. The accessory dwelling unit will not create excessive noise, t",
+   "state_law": "Gov. Code \u00a7\u00a7 66314(b)(1), 66313(i): only objective standards \u2014 uniformly verifiable by an external benchmark knowable before submittal \u2014 may be imposed on ADUs.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 8 (Subjective Standard: \"similar styled roof design\")."
+  },
+  {
+   "check_id": "subjective-design-standard",
+   "title": "Subjective design standard (must be objective)",
+   "severity": "review",
+   "excerpt": "the design permit, the planning commission shall find that: 1. The exterior design of the accessory dwelling unit is compatible with the primary dwelling on the parcel through architectural use of building forms, height , construction materials, colors",
+   "state_law": "Gov. Code \u00a7\u00a7 66314(b)(1), 66313(i): only objective standards \u2014 uniformly verifiable by an external benchmark knowable before submittal \u2014 may be imposed on ADUs.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 8 (Subjective Standard: \"similar styled roof design\")."
+  },
+  {
+   "check_id": "subjective-design-standard",
+   "title": "Subjective design standard (must be objective)",
+   "severity": "review",
+   "excerpt": "lors, landscaping , and other methods that conform to acceptable construction practices. 2. The exterior design is in harmony with, and maintains the scale of, the neighborhood. 3. The accessory dwelling unit will not create excessive noise, t",
+   "state_law": "Gov. Code \u00a7\u00a7 66314(b)(1), 66313(i): only objective standards \u2014 uniformly verifiable by an external benchmark knowable before submittal \u2014 may be imposed on ADUs.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 8 (Subjective Standard: \"similar styled roof design\")."
+  },
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "may not be sold separately from the primary dwelling. 3. For junior accessory dwelling units , restrictions on size, owner occupancy requirement, and attributes in conformance with this chapter. B. The above declarations are binding upon any successo",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  },
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "2. The junior accessory dwelling unit may not be sold separately from the primary dwelling. 3. Restrictions on size, owner occupancy requirement, and attributes in conformance with this chapter. B. The above declarations are binding upon any successo",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  }
+ ]
+}

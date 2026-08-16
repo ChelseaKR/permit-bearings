@@ -1,0 +1,61 @@
+{
+ "slug": "foster-city",
+ "source": {
+  "title": "Foster City Municipal Code, Title 17, Ch. 17.78 \u2014 Accessory Dwelling Units",
+  "url": "https://www.codepublishing.com/CA/FosterCity/html/FosterCity17/FosterCity1778.html",
+  "retrieved": "2026-08-15",
+  "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 04d387c46eecbc18\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+ },
+ "scanned_on": "2026-08-15",
+ "disclaimer": "Presence-based screening for staff/counsel review; not a certification of compliance and silence is not a clean bill of health. Point-in-time: this result reflects the ordinance text retrieved on the date in source.retrieved, which no source-currency watch monitors for amendment.",
+ "findings": [
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "esidence. 2. The property owner must reside in either the remaining portion of the primary dwelling unit or the JADU. Owner occupancy shall not be required if the owner is another governmental agency, land trust, or housing organization. 3. The owner",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  },
+  {
+   "check_id": "height-cap-below-state",
+   "title": "Height cap below state-mandated allowances",
+   "severity": "review",
+   "excerpt": "ween the detached ADU and the primary dwelling shall be as per California Residential Code. 4. Height. A detached ADU shall not exceed sixteen feet in height, except in the following cases: a. A height of eighteen feet is permitted when an ADU is located within one",
+   "state_law": "Gov. Code \u00a7 66321(b)(4): 16 ft is the base for detached ADUs. A detached ADU must be allowed 18 ft near a qualifying major transit stop / high-quality transit corridor; that transit branch also allows 2 additional ft for an aligned roof pitch. A separate 18-ft branch applies on a lot with an existing or proposed multistory multifamily dwelling. Attached ADUs must be allowed up to 25 ft or the primary-dwelling zoning limit, whichever is lower.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 6 (Height)."
+  },
+  {
+   "check_id": "setback-above-four-feet",
+   "title": "Side/rear setback above the 4-foot state maximum",
+   "severity": "review",
+   "excerpt": "these standards preclude at least an eight-hundred-square-foot ADU. 3. Windows. Second floor windows facing another residential property, less than ten feet from the property line, and larger than two square feet shall include at least one of the following: a. Have obscured",
+   "state_law": "Gov. Code \u00a7 66314(d)(7): no more than four feet side and rear setbacks may be required for an ADU; no setback for conversions or same-footprint rebuilds. SB 9: \u00a7\u00a7 65852.21(b)(2)(B), 66411.7(c)(3) \u2014 max four feet, none for existing structures.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, SB 9 Finding 6 (setback requirements must reflect the 4-foot statutory allowance); HCD letter to City of Riverside, Mar. 21, 2025."
+  },
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "ys. Said deed restriction shall run with the land, and shall be binding upon any future owners, heirs, or assigns. B. Owner Occupancy. Except for the JADU owner-occupancy requirements set forth in this chapter, no owner-occupancy requirement shall be en",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  },
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "ith the land, and shall be binding upon any future owners, heirs, or assigns. B. Owner Occupancy. Except for the JADU owner-occupancy requirements set forth in this chapter, no owner-occupancy requirement shall be enforced, and no deed restriction shall",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  },
+  {
+   "check_id": "adu-owner-occupancy-requirement",
+   "title": "Owner-occupancy requirement on ADUs",
+   "severity": "review",
+   "excerpt": "heirs, or assigns. B. Owner Occupancy. Except for the JADU owner-occupancy requirements set forth in this chapter, no owner-occupancy requirement shall be enforced, and no deed restriction shall be required for ADU permit applications. C. Permitting o",
+   "state_law": "Gov. Code \u00a7 66315: no owner-occupancy requirement may be imposed on ADUs (narrow exception: separate-conveyance sales under \u00a7 66341(c)(3)). JADUs with shared sanitation are a lawful exception (\u00a7 66333(b)).",
+   "hcd_precedent": "HCD letter to City of Laguna Beach, Sept. 19, 2024 (owner-occupancy imposed on SB 9 developments, not allowed); HCD ADU Handbook (March 2026), Owner-Occupancy."
+  }
+ ]
+}

@@ -140,7 +140,7 @@
     {
       "path": "corpus/ordinances/SOURCES.json",
       "role": "public_source_index",
-      "raw_sha256": "sha256:c94925487ca856548d6eddc27f4c2c1351d3077661aa69886104dea4571db76a"
+      "raw_sha256": "sha256:a3f80495e81769e7031ab0dd80f861b921fb3465906afd15cb88882ff84a3cc1"
     },
     {
       "path": "corpus/ordinances/san-diego.txt",
@@ -180,17 +180,17 @@
     {
       "path": "data/conformance/results/index.json",
       "role": "conformance_results",
-      "raw_sha256": "sha256:60fd162d5ca7bddf72fefc5ce73742d48b113812d289650a120aceae2f39157d"
+      "raw_sha256": "sha256:4c3daf17e3115311a7f9907853c5314f66198714fbdf343ca73ba15866f77670"
     },
     {
       "path": "data/conformance/results/san-diego.json",
       "role": "conformance_result",
-      "raw_sha256": "sha256:466d92e78cc72c028503eb4be930ba9cc16c370f44ce1d5b372269a4b63e278e"
+      "raw_sha256": "sha256:3bb8ceb56a9b8a2b3d74b2f02160afdb61e8c0d925ce3f88b7034b066ba30a49"
     },
     {
       "path": "data/demo-data.js",
       "role": "derived_browser_bundle",
-      "raw_sha256": "sha256:6eb286ede9010a42251ce389cdcf3b10999c728284d15621978bf726e6c7006d"
+      "raw_sha256": "sha256:e7ed5a9871f527db0fb22c8049d6aff0b5f736891bbfcc005e6c91fd9ade617c"
     },
     {
       "path": "data/explanations/plain-language.json",

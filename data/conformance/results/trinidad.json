@@ -1,0 +1,53 @@
+{
+ "slug": "trinidad",
+ "source": {
+  "title": "Trinidad Municipal Code, Title 17, Ch. 17.54 \u2014 Accessory Dwelling Units",
+  "url": "https://www.codepublishing.com/CA/Trinidad/html/Trinidad17/Trinidad1754.html",
+  "retrieved": "2026-08-15",
+  "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 307dd4e5a8c77167\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+ },
+ "scanned_on": "2026-08-15",
+ "disclaimer": "Presence-based screening for staff/counsel review; not a certification of compliance and silence is not a clean bill of health. Point-in-time: this result reflects the ordinance text retrieved on the date in source.retrieved, which no source-currency watch monitors for amendment.",
+ "findings": [
+  {
+   "check_id": "stale-statutory-citation",
+   "title": "Cites Government Code sections deleted by SB 477 (2024)",
+   "severity": "definite",
+   "excerpt": "uding permanent provisions for living, sleeping, cooking, eating, and sanitation, as defined in Government Code Section 65852.2 (i)(4). \u201cPrimary unit\u201d means the primary, existing legal single-family residential dwelling unit which provides compl",
+   "state_law": "SB 477 (Ch. 7, Stats. 2024) relocated State ADU/JADU Law from Gov. Code \u00a7\u00a7 65852.2, 65852.22, 65852.26 to \u00a7\u00a7 66310\u201366342, effective March 25, 2024. (SB 9's \u00a7\u00a7 65852.21 and 66411.7 remain current.)",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 1 (Statutory Numbering)."
+  },
+  {
+   "check_id": "subjective-design-standard",
+   "title": "Subjective design standard (must be objective)",
+   "severity": "review",
+   "excerpt": "ision of the city planner and/or planning commission may be appealed in accordance with TMC 17.72.100 . 1. The ADU is compatible with the design of the main unit and the surrounding neighborhood in terms of landscaping, scale, height , length, width, bu",
+   "state_law": "Gov. Code \u00a7\u00a7 66314(b)(1), 66313(i): only objective standards \u2014 uniformly verifiable by an external benchmark knowable before submittal \u2014 may be imposed on ADUs.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 8 (Subjective Standard: \"similar styled roof design\")."
+  },
+  {
+   "check_id": "size-cap-conflict",
+   "title": "Size cap that may preclude protected units or conversions",
+   "severity": "review",
+   "excerpt": "that a minimum size of 150 square feet shall be allowed. The total area of floor space of a detached second unit shall not exceed 1,000 square feet. D. Setbacks. The setback requirements of the zoning district in which the ADU is located shall apply; however, ADUs",
+   "state_law": "Gov. Code \u00a7 66321(b)(2): a local maximum must still allow 850 sq ft of interior livable space, or 1,000 sq ft for an ADU with more than one bedroom. These figures protect what local maximums must allow; they are not required minimum unit sizes. Qualifying \u00a7 66323(a)(1) conversions are not subject to unit-size limits.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 7 (Size Maximums); HCD letter to City of Fort Bragg, Feb. 19, 2025 (overly restrictive ADU size limits)."
+  },
+  {
+   "check_id": "size-cap-conflict",
+   "title": "Size cap that may preclude protected units or conversions",
+   "severity": "review",
+   "excerpt": "oor area is measured to the outside surface of exterior walls of the living space. Total floor area of both units shall not exceed 2,600 square feet or 30 percent floor-to-area ratio and 25 percent lot coverage. G. Off-Street Parking. The ADU shall provide one off-s",
+   "state_law": "Gov. Code \u00a7 66321(b)(2): a local maximum must still allow 850 sq ft of interior livable space, or 1,000 sq ft for an ADU with more than one bedroom. These figures protect what local maximums must allow; they are not required minimum unit sizes. Qualifying \u00a7 66323(a)(1) conversions are not subject to unit-size limits.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 7 (Size Maximums); HCD letter to City of Fort Bragg, Feb. 19, 2025 (overly restrictive ADU size limits)."
+  },
+  {
+   "check_id": "subjective-design-standard",
+   "title": "Subjective design standard (must be objective)",
+   "severity": "review",
+   "excerpt": "ilizes the same entrance as the primary unit. Windows which face an adjoining residential property shall be designed to protect the privacy of neighbors; alternatively, fencing or landscaping shall be required to provide screening. K. Utilities. All utiliti",
+   "state_law": "Gov. Code \u00a7\u00a7 66314(b)(1), 66313(i): only objective standards \u2014 uniformly verifiable by an external benchmark knowable before submittal \u2014 may be imposed on ADUs.",
+   "hcd_precedent": "HCD findings letter to County of Santa Clara, June 24, 2025, ADU Finding 8 (Subjective Standard: \"similar styled roof design\")."
+  }
+ ]
+}
