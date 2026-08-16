@@ -9,6 +9,13 @@ from __future__ import annotations
 
 from datetime import UTC, date, datetime
 
+#: How long a dated source record stays inside the review window.
+#:
+#: This is the single definition. Every Python runtime imports it, and
+#: ``assets/demo.js`` mirrors it as ``MAX_AGE_DAYS``; a contract test asserts
+#: the two agree so the browser and the servers cannot drift apart silently.
+SOURCE_REVIEW_WINDOW_DAYS = 180  # roughly one legislative cycle between re-checks
+
 
 def utc_today() -> date:
     """Return the current UTC calendar date."""

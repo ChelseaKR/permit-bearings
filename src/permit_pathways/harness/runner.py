@@ -15,10 +15,10 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from ..dates import resolve_today
+from ..dates import SOURCE_REVIEW_WINDOW_DAYS, resolve_today
 from ..screening import Rule, load_rules, screen
 
-DEFAULT_MAX_AGE_DAYS = 180  # roughly one legislative cycle between re-checks
+DEFAULT_MAX_AGE_DAYS = SOURCE_REVIEW_WINDOW_DAYS
 _IDENTIFIER = re.compile(r"^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$")
 _GOLDEN_KEYS = {
     "case_id",

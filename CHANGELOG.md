@@ -47,6 +47,19 @@ published a versioned release.
   raised and the step was silent. The drift step now comments on the one open
   drift issue instead of opening another, and the fetch sends an identifying
   User-Agent.
+- The reference server no longer disagreed with the browser about staleness.
+  `demo/app.py` labelled a rule `verified` whenever its citation was inside
+  the review window, ignoring changed sources entirely, while
+  `assets/demo.js` and `permit_pathways.harness.runner` both treat a changed
+  dependency as stale regardless of citation age. The server also contradicted
+  itself: `/trust` routed through the harness and got it right, `/screen` did
+  not. It now applies the same changed-source-first precedence and reads the
+  same `data/source-status/current.json` the browser bundle ships.
+- The 180-day source review window had four separate definitions. It now has
+  one, `permit_pathways.dates.SOURCE_REVIEW_WINDOW_DAYS`, which the harness
+  and readiness constants alias and the reference server renders.
+  `tests/test_source_review_window.py` fails if any runtime drifts from it,
+  including the browser constant that cannot import Python.
 
 - The source-currency watcher no longer reports a source it could not
   download as a source that changed. Each watched source is now classified as
