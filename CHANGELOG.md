@@ -23,6 +23,17 @@ published a versioned release.
   the generated demo bundle and, per the export maintenance rule, the two
   changed raw digests plus the bundle digest in the schema-v2 export
   profile; the frozen schema-v1 profile keeps its historical digests.
+- The ordinance screen a visitor runs is now covered by the evidence the
+  README cites for it. The HCD six-finding validation exercised the Python
+  scanner; `review.html` runs a hand-ported JavaScript reimplementation that
+  no test touched. A parity test now executes the shipped `scanOrdinance()`
+  from `assets/demo.js` under Node against the same fixtures and requires
+  identical check IDs, offsets and excerpt text, and a browser test asserts
+  that the page renders those flags with the current `checks.json` wording.
+  The comparison found one live divergence: the port collapsed excerpt
+  whitespace without trimming, so an excerpt could be published with a
+  leading or trailing space the validated scanner strips. The port now
+  matches.
 
 - The source-currency watcher no longer reports a source it could not
   download as a source that changed. Each watched source is now classified as
