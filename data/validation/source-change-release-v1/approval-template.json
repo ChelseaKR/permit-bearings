@@ -1,0 +1,29 @@
+{
+  "claim_boundary": "This receipt is evidence metadata only. It does not clear a source-review hold, adopt source state, approve legal meaning, publish a build, or authenticate the declared reviewer authority or external evidence.",
+  "decision": {
+    "authority_receipt_id": null,
+    "decided_at": null,
+    "evidence_receipt_ids": null,
+    "outcome": null,
+    "reviewer_code": null,
+    "source_resolutions": null
+  },
+  "effects": {
+    "decision_ledger_clears_source_hold": false,
+    "decision_ledger_publishes": false,
+    "validator_authenticates_external_evidence": false,
+    "receipt_clears_source_hold": false,
+    "receipt_publishes": false
+  },
+  "receipt_id": "source-change-approval-template",
+  "receipt_type": "source_change_approval",
+  "release_binding": {
+    "decision_ledger_fingerprint": null,
+    "source_snapshot_fingerprint": null,
+    "source_snapshot_id": null,
+    "worklist_fingerprint": null,
+    "worklist_id": null
+  },
+  "schema_version": 1,
+  "status": "not_run"
+}

@@ -154,8 +154,8 @@ rule, prove comprehensive coverage, determine compliance or eligibility, or
 record human or jurisdiction approval. A `prepared_for_review` intake is an
 input to a future, separate fingerprint-bound review/authoring/publication
 workflow; it is not that workflow and is not bundled into the public browser.
-The empty template is also outside public/synthetic evidence export profile
-v1. The current schema records role IDs rather than people; a filled partner
+The empty template is also outside public/synthetic evidence export profiles
+v1 and v2. The current schema records role IDs rather than people; a filled partner
 intake could still contain unpublished candidate work and needs a separate
 data-classification and export-profile decision.
 
@@ -530,6 +530,35 @@ abstention path is a structured intake with no matching encoded rule.
   route. The separate decision ledger binds every entry to both worklist and
   item fingerprints. Assignment or resolution never changes source state,
   matching, verification level, or publication.
+- **Separate release receipts (implemented strict scaffold; not executed):**
+  `src/permit_pathways/source_release.py` validates approval, publication, and
+  rollback as three independent records. The CLI uses the same shared registry
+  context loader as the review-worklist CLI and includes every registered
+  workflow by default; it exposes no unregistered-path or single-workflow
+  release mode. Their common binding covers the exact
+  changed-source snapshot, generated worklist, and complete decision-ledger
+  fingerprints. A resolved ledger is necessary but never sufficient:
+  approval requires a declared reviewer code, authority-scope receipt ID, and
+  evidence receipt IDs plus one explicit digest-bound resolution for every
+  changed source. The release contract never infers source adoption from a
+  generic work-item disposition. Publication must bind that exact approval and
+  a separately re-derived `reviewed` publication source snapshot; rollback
+  must bind that exact publication and the separately re-derived restored
+  source snapshot. Timestamp, commit, URL, and hold-state
+  consistency fail closed, while fixed effects state that validation cannot
+  mutate, adopt, deploy, restore, or clear anything. The committed templates
+  carry null evidence and `not_run`; no rehearsal or human action is recorded.
+  Decision-ledger dates establish only calendar-date ordering relative to the
+  approval timestamp, not intraday order. Bounded, open-once strict JSON
+  loading rejects duplicate fields, non-finite values, malformed URLs,
+  non-UTF-8 data, symlinks, and non-file or oversized input. Source, rule, and
+  Golden inputs are raw-fingerprinted before and after context derivation so a
+  detected concurrent change fails closed; this is a stability check, not an
+  immutable snapshot or adversarial filesystem guarantee. Preparation
+  exclusively creates a new directory, durably writes each receipt, and writes
+  the durable completion marker last; consumers must reject an unmarked
+  package. Opaque IDs are format- and binding-checked, not authenticated,
+  and the validator does not retrieve Git objects or inspect a live deployment.
 - **Public trust surface:** bundle format 6 carries the adopted overlay, rule
   verification ledger, and strict program-availability record to the browser
   as distinct claims. Exact changed dependencies stale statewide rule cards and
@@ -748,8 +777,9 @@ This is an evidence-data portability mechanism for the selected versioned
 public and synthetic repository scope. Schema v1 is the frozen 58-file
 compatibility contract. Schema v2 adds registry-aware closure at 59 files.
 The later held-out evaluation planning artifact, beta-operations package, and
-any future cases, answer key, execution receipt, approval, or result are
-outside profiles v1 and v2; adding them requires a separately reviewed profile
+source-change release-receipt templates, and any future cases, answer key,
+execution receipt, approval, or result are outside profiles v1 and v2; adding
+them requires a separately reviewed profile
 version. It is not a
 sensitive-data export, applicant record, proof of authenticity,
 backup/disaster-recovery system, copyright or

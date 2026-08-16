@@ -39,7 +39,7 @@ from .readiness import (
     SourceBinding,
 )
 from .screening import Rule, screen
-from .source_state import SourceStateSnapshot
+from .source_state import SourceStateSnapshot, source_state_fingerprint
 
 WORKLIST_SCHEMA_VERSION = 2
 DECISIONS_SCHEMA_VERSION = 1
@@ -273,6 +273,11 @@ class ReviewDecisionLedger:
             "worklist_fingerprint": self.worklist_fingerprint,
             "entries": [entry.to_dict() for entry in self.entries],
         }
+
+    def fingerprint(self) -> str:
+        """Bind a release receipt to the exact complete decision ledger."""
+
+        return _fingerprint(self.to_dict())
 
     def summary(self) -> str:
         counts = {status: 0 for status in DECISION_STATUSES}
@@ -923,7 +928,7 @@ def build_review_worklist(
     return ReviewWorklist(
         worklist_id=f"source-reverification-{snapshot.snapshot_id}",
         source_snapshot_id=snapshot.snapshot_id,
-        source_snapshot_fingerprint=_fingerprint(snapshot.to_dict()),
+        source_snapshot_fingerprint=source_state_fingerprint(snapshot),
         checked_at=snapshot.checked_at,
         receipt_status=snapshot.receipt.status,
         changed_source_ids=snapshot.changed_source_ids,

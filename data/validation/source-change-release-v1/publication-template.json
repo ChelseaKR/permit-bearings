@@ -1,0 +1,37 @@
+{
+  "approval_receipt": {
+    "receipt_fingerprint": null,
+    "receipt_id": null
+  },
+  "claim_boundary": "This receipt records separately verified publication evidence. Validation does not mutate the repository, adopt source state, deploy, or clear a hold; hold state is derived from the separately supplied published source receipt, and Git, the deployment URL, and external receipt IDs are not authenticated.",
+  "effects": {
+    "validator_adopts_source_state": false,
+    "validator_authenticates_external_evidence": false,
+    "validator_clears_source_hold": false,
+    "validator_deploys": false,
+    "validator_mutates_repository": false
+  },
+  "publication": {
+    "actor_code": null,
+    "baseline_commit_sha": null,
+    "completed_at": null,
+    "hold_state": null,
+    "published_commit_sha": null,
+    "published_source_snapshot_fingerprint": null,
+    "published_source_snapshot_id": null,
+    "published_url": null,
+    "started_at": null,
+    "verification_receipt_id": null
+  },
+  "receipt_id": "source-change-publication-template",
+  "receipt_type": "source_change_publication",
+  "release_binding": {
+    "decision_ledger_fingerprint": null,
+    "source_snapshot_fingerprint": null,
+    "source_snapshot_id": null,
+    "worklist_fingerprint": null,
+    "worklist_id": null
+  },
+  "schema_version": 1,
+  "status": "not_run"
+}
