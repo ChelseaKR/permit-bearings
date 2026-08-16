@@ -34,6 +34,19 @@ published a versioned release.
   whitespace without trimming, so an excerpt could be published with a
   leading or trailing space the validated scanner strips. The port now
   matches.
+- The HCD HAU letters drift check now says what moved and stops filing a new
+  issue every week for the same unresolved condition. It reported a
+  difference between two row totals, which is not a count of letters: HCD
+  edits published rows in place, so a run can add rows, remove rows and edit
+  rows at once, and an edit that leaves the row count unchanged was reported
+  as a bare "CHANGED". The check now reports rows added, rows removed, and
+  which jurisdictions had rows on both sides (edited) versus only added
+  (new). A dashboard that cannot be read now exits `2` as unverifiable with a
+  workflow warning, matching the source-currency watcher's rule that a failed
+  fetch is evidence about the network and never a change; previously it
+  raised and the step was silent. The drift step now comments on the one open
+  drift issue instead of opening another, and the fetch sends an identifying
+  User-Agent.
 
 - The source-currency watcher no longer reports a source it could not
   download as a source that changed. Each watched source is now classified as
