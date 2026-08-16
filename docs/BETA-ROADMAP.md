@@ -111,7 +111,7 @@ or permitting-outcome claims.
 
 ### Now — autonomous foundations
 
-This roadmap tranche completes nine machine-testable foundations without
+This roadmap tranche completes ten machine-testable foundations without
 changing the product's maturity claim:
 
 - the Statewide Coverage Navigator is deployed as orientation, not statewide
@@ -120,6 +120,12 @@ changing the product's maturity claim:
   candidate, unresolved, no-route, and source-review-hold outcomes;
 - source changes can produce exact fingerprint-bound rule, Golden, readiness,
   remedy, packet, and journey work plus a separate blank decision ledger; and
+- separate strict approval, publication, and rollback receipt schemas can bind
+  the exact changed-source snapshot, worklist, decision ledger, preceding
+  receipt, and reviewed publication/restoration source state without allowing
+  any validator or decision ledger to mutate state. The committed templates
+  keep every evidence field null and remain `not_run`; no rehearsal, approval,
+  publication, or rollback is claimed; and
 - a repeatable deployment smoke command checks the five public routes and the
   generated 541-profile/17-rule artifact contract; and
 - a pinned canonical ZIP can package, verify, and inertly restore the selected
@@ -176,10 +182,11 @@ The remaining autonomous work is:
 
 1. Derive a pilot-neutral beta gate from the existing specialized ledgers;
    validate every aggregate and prevent a hand-edited status promotion.
-2. Exercise the new exact affected-output worklist in a controlled rehearsal;
-   complete assignments and dispositions with authorized people, and add
-   separate approval, publication, and rollback receipts without allowing the
-   decision ledger to clear a hold by itself.
+2. Exercise the exact affected-output worklist and strict release-receipt
+   schemas in a controlled rehearsal; complete assignments and dispositions
+   with authorized people, then record separate approval, publication, and
+   rollback evidence. The implemented validators cannot supply that human or
+   deployment evidence and the decision ledger cannot clear a hold by itself.
 3. After independent source collection, two-reviewer adjudication, and freeze
    custody are available, execute the held-out scanner contract with frozen
    cases and answer key; generate blind pair-level predictions before

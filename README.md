@@ -137,6 +137,7 @@ PYTHONPATH=src python3 -m permit_pathways.readiness_cli \
 PYTHONPATH=src python3 -m permit_pathways.review_queue_cli  # read-only source-change worklist
 PYTHONPATH=src python3 -m permit_pathways.local_source_onboarding_cli \
   validate                                      # validates the empty not_run template
+PYTHONPATH=src python3 -m permit_pathways.source_release_cli validate-templates
 PYTHONPATH=src python3 -m permit_pathways.deployment_smoke # live static-route/artifact smoke check
 PYTHONPATH=src python3 -m permit_pathways.beta_operations  # validates PREPARED / NOT APPROVED only
 PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli build \
@@ -157,6 +158,35 @@ queue with human work remaining, and `2` for invalid input or output. Neither
 its worklist nor its separate decision ledger changes the adopted source state
 or publishes anything. The deployment-smoke command returns only an
 availability/artifact-shape result.
+
+The source-release CLI validates three separate approval, publication, and
+rollback receipt schemas. It loads the canonical workflow registry and binds
+every registered readiness workflow, packet, remedy set, and journey by
+default; it has no unregistered-path or single-workflow release mode. The
+committed examples keep every evidence field
+null and remain `not_run`. A generated prepared set binds the exact
+changed-source snapshot, worklist, and complete decision-ledger fingerprints;
+it still records no approval or execution. A completed approval requires every
+exact work item to have a resolved evidence-bound disposition and separately
+records one explicit digest-bound source resolution (`restore_recorded`,
+`adopt_observed`, or `retain_hold`) for every changed source. Generic work-item
+dispositions never imply source adoption. Publication and rollback then require
+their own later receipt, exact upstream-receipt fingerprint, ordered UTC
+timestamps, and a separately re-derived `reviewed` source-state snapshot.
+Work-item decisions are date-only in this schema, so the approval check proves
+calendar-date ordering but not intraday order. Receipt parsing opens one regular
+file descriptor, is bounded, and rejects duplicate fields, non-finite values,
+malformed URLs, non-UTF-8 data, symlinks, and oversized input. Preparation
+exclusively creates a new output directory, durably writes each receipt, and
+writes a durable completion marker last. Consumers must reject a package
+without that marker. The CLI reports the approval outcome and source-hold
+state; a rejection or retained hold is valid evidence but not a publishable
+success. The validators never run or authenticate Git, inspect a live
+deployment, authenticate opaque authority/evidence receipt IDs, adopt source
+state, clear a hold, deploy, or roll back. Schema-v1 template fingerprints are
+pinned in the validator and by regression tests; changing their schema-v1
+semantics requires a new schema version. These templates are outside export
+profiles v1 and v2 pending an explicit profile review.
 
 The beta-operations validator returns `0` only when the exact pilot-neutral
 planning package remains `prepared_not_approved`, every deployment and
@@ -196,7 +226,7 @@ still needs a person.
 | Internationalization | Applies. `make verify` enforces English/Spanish catalog shape, stable option identifiers, formatter arity, static and formatter placeholders, nonblank singular/plural output, and a copy-leaf pseudo-expansion transform. This is structural automation only: it does not generate or render a complete pseudolocale catalog, and mixed-language acceptance and native Spanish semantic review remain pre-pilot work in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes public Python tests with branch-aware coverage, 29/29 Golden cases, browser checks, and seven Lighthouse page states, plus dependency audits, source-currency output, the exact re-verification worklist, the deployment-smoke contract, the applicant-copy structural contract, local illustration path/format/size/accessibility checks, the strict workflow-registry boundary, the deterministic evidence-export round trip, adversarial no-storage operations-package checks, and the local-source onboarding contract. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts; duplicate-ID, portable-path, raw-registry, and input-fingerprint workflow-registry states; and distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, illustration-decoding/tablet-hierarchy, and multi-route accessible-name states. Python registry tests separately inventory canonical directories and reject orphan or linked files. Exact current counts and coverage come from CI rather than this prose. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, local-source intake, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes public Python tests with branch-aware coverage, 29/29 Golden cases, browser checks, and seven Lighthouse page states, plus dependency audits, source-currency output, the exact re-verification worklist, strict non-promoting source-release receipt checks, the deployment-smoke contract, the applicant-copy structural contract, local illustration path/format/size/accessibility checks, the strict workflow-registry boundary, the deterministic evidence-export round trip, adversarial no-storage operations-package checks, and the local-source onboarding contract. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts; duplicate-ID, portable-path, raw-registry, and input-fingerprint workflow-registry states; and distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, illustration-decoding/tablet-hierarchy, and multi-route accessible-name states. Python registry tests separately inventory canonical directories, reject orphan or linked files, and prove that both the worklist and source-release CLIs bind two distinct registered workflow contexts. Exact current counts and coverage come from CI rather than this prose. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, source release, local-source intake, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -450,7 +480,7 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 |---|---|
 | Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, a temporary grouped result packet, citations, uncertainty routing, and one generated synthetic Woodland packet-presence future-state simulation are implemented. The official program page currently says its preapproved plan list is coming soon, so this is not an applicant-ready workflow. The sample uses 25 source-bound checklist requirements, two fabricated values tied to official parcel-layer fields, and review-pending AI-assisted action drafts. Live parcel retrieval, file inspection, parcel-specific packet completeness, reviewed remedies, and reviewed translation are planned. |
 | Scenario 2 (B): supporting internal review | Not targeted in v1. |
-| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, proposed run receipts, deliberate snapshot adoption, exact rule/Golden and bounded packet-context worklists, applicant-output invalidation, separate fingerprint-bound decision templates, and an HCD-letter dataset are implemented in bounded form. Search, new-law discovery, automatic adoption/publication, completed staffed assignments, comparable-jurisdiction research, and substantive approval history are planned. |
+| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, proposed run receipts, deliberate snapshot adoption, exact rule/Golden and bounded packet-context worklists, applicant-output invalidation, separate fingerprint-bound decision templates, strict `not_run` approval/publication/rollback receipt tooling, and an HCD-letter dataset are implemented in bounded form. Search, new-law discovery, automatic adoption/publication, completed staffed assignments or receipts, comparable-jurisdiction research, and substantive approval history are planned. |
 
 ## Design commitments (from the challenge statement's cross-cutting requirements)
 
@@ -460,7 +490,8 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
   schema-v1 compatibility set or the current 59-file, registry-aware schema-v2
   public and synthetic evidence set without vendor-only storage. The held-out
   evaluation planning artifact, beta-operations ADR/runbook/ledger/tooling,
-  and any future cases, answer key, execution receipt, approval, or result are
+  source-change release-receipt templates, and any future cases, answer key,
+  execution receipt, approval, or result are
   outside export profiles v1 and v2 and require a separately reviewed future
   profile version. This is not a production applicant-data export,
   contractual ownership/offboarding,
@@ -607,7 +638,7 @@ never accepts a reviewed, approved, encoded, or published
 state, cannot change matching, and does not authenticate a publisher or create
 a real local layer. The committed template contains no jurisdiction or source
 data and all owner, cadence, review, and approval fields remain null/`not_run`.
-It is outside evidence export profile v1; a filled partner copy needs a
+It is outside evidence export profiles v1 and v2; a filled partner copy needs a
 separate data-classification and export decision.
 
 A changed dependency in the adopted source-state receipt visibly places its
@@ -716,6 +747,11 @@ explanation sidecar and keeps a separate `/trust` route.
 - `src/permit_pathways/local_source_onboarding.py` and
   `local_source_onboarding_cli.py`: strict read-only validation for a portable
   local-source intake whose maximum state is `prepared_for_review`
+- `src/permit_pathways/source_release.py` and `source_release_cli.py`: strict,
+  read-only approval, publication, and rollback receipt contracts bound to the
+  exact source snapshot, worklist, decision ledger, upstream receipt, and
+  separately reviewed publication/restoration source states; committed
+  templates keep every evidence field null and remain `not_run`
 - `src/permit_pathways/deployment_smoke.py`: read-only public-route and
   generated-coverage-index deployment check
 - `src/permit_pathways/conformance_evaluation.py`: strict `not_run` manifest

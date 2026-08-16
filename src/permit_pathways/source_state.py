@@ -104,6 +104,18 @@ class SourceStateSnapshot:
         return payload
 
 
+def source_state_fingerprint(snapshot: SourceStateSnapshot) -> str:
+    """Return the canonical semantic fingerprint for one validated snapshot."""
+
+    encoded = json.dumps(
+        snapshot.to_dict(),
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return "sha256:" + hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
 def source_registry_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -476,6 +488,27 @@ def load_source_state_snapshot(
     """Load and re-derive a snapshot's exact dependency impact."""
 
     payload = _load_payload(path)
+    return validate_source_state_payload(
+        payload,
+        sources_path,
+        rules_path,
+        golden_path,
+        require_reviewed=require_reviewed,
+    )
+
+
+def validate_source_state_payload(
+    payload: dict[str, Any],
+    sources_path: Path,
+    rules_path: Path,
+    golden_path: Path,
+    *,
+    require_reviewed: bool = False,
+) -> SourceStateSnapshot:
+    """Re-derive a source-state payload against one explicit corpus."""
+
+    if set(payload) != _TOP_LEVEL_KEYS:
+        raise ValueError("source-state snapshot has invalid fields")
     snapshot_id, checked, expected_digest = _snapshot_header(payload, sources_path)
     receipt = _load_receipt(payload, require_reviewed=require_reviewed)
     observations = _load_observations(payload, _watched_sources(sources_path))
@@ -501,6 +534,27 @@ def load_source_state_snapshot(
         unaffected_rule_ids=unaffected,
         affected_golden_case_ids=affected_cases,
         unaffected_golden_case_ids=unaffected_cases,
+    )
+
+
+def validate_source_state_snapshot(
+    snapshot: SourceStateSnapshot,
+    sources_path: Path,
+    rules_path: Path,
+    golden_path: Path,
+    *,
+    require_reviewed: bool = False,
+) -> SourceStateSnapshot:
+    """Re-derive a caller-supplied snapshot instead of trusting its dataclass."""
+
+    if not isinstance(snapshot, SourceStateSnapshot):
+        raise ValueError("source-state snapshot has invalid type")
+    return validate_source_state_payload(
+        snapshot.to_dict(),
+        sources_path,
+        rules_path,
+        golden_path,
+        require_reviewed=require_reviewed,
     )
 
 

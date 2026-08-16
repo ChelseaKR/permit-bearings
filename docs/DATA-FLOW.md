@@ -164,6 +164,8 @@ Proposed JSON receipt + exact run URL/commit
     +--> scheduled workflow retains artifact for 30 days
     +--> receipt with changed source IDs derives exact worklist + blank
     |    decision template and retains the three-file package for 30 days
+    +--> optional release-receipt preparation binds that exact source-state,
+    |    worklist, and decision-ledger fingerprint; every stage remains not_run
     +--> stale-only or Golden-regression-only run opens an issue without a
     |    misleading source-change package
     +--> automation never edits the public snapshot
@@ -198,7 +200,18 @@ Golden, readiness requirement, source-backed field, linked remedy, packet, and
 configured journey nodes from explicit IDs and fingerprints; an unverifiable
 source creates none. New-law discovery, automatic adoption/publication,
 authorized owner selection, filled dispositions, and approval remain outside
-this flow.
+the automated flow. `src/permit_pathways/source_release.py` adds strict,
+read-only evidence contracts for those later boundaries: a completed approval
+requires every exact work item to have a resolved evidence-bound disposition;
+publication then binds that exact approval and a separately validated
+`reviewed` publication source-state snapshot; rollback binds that exact
+publication and a separately validated restored snapshot. The validator
+derives whether the target hold remains from those supplied source-state
+records. It does not edit `current.json`, adopt state, run Git, deploy, or
+restore anything. It also does not authenticate Git objects, reviewer
+authority, a live deployment, or opaque external receipt IDs. The committed
+receipt templates keep every evidence field null and remain `not_run`, so no
+rehearsal or human action is recorded.
 
 The source-state record is an overlay. It does not rewrite the historical rule,
 Golden, journey, readiness, or evidence-manifest records. The browser derives
@@ -424,7 +437,9 @@ explicitly requests a historical `--as-of` replay. The CLI itself does not
 store the result. A person who redirects that output creates a local file
 outside the CLI's storage behavior. `review_queue_cli.py` builds contexts for
 every registered workflow by default and can narrow to one registered ID; it
-cannot infer or activate an unregistered workflow.
+cannot infer or activate an unregistered workflow. `source_release_cli.py`
+uses the same context loader but always binds every registered workflow; it
+cannot create a repository-wide release receipt from a single selected entry.
 
 ### Build and browser rendering
 
@@ -560,8 +575,9 @@ reproducibility records, not signatures, copyright ownership, partner
 acceptance, a backup, or a CPRA/sensitive-data export. The exact operational
 contract is in [`EXPORT-RESTORE.md`](EXPORT-RESTORE.md).
 
-The later held-out evaluation contract and the beta-operations ADR, runbook,
-ledger, validator, and tests are outside both the pinned 58-file export
+The later held-out evaluation contract, the source-change release-receipt
+templates and tooling, and the beta-operations ADR, runbook, ledger, validator,
+and tests are outside both the pinned 58-file export
 profile v1 and the registry-aware 59-file profile v2. Their presence in the
 repository does not make either fixed package incomplete. A reviewed future
 profile version must classify and add them before an evidence handoff can
