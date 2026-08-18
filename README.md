@@ -86,6 +86,21 @@ process request or operational metadata and require deployment-specific
 review. See
 [`docs/BETA-OPERATIONS-RUNBOOK.md`](docs/BETA-OPERATIONS-RUNBOOK.md).
 
+**Pilot-neutral beta aggregate gate:** **PREPARED / TESTED BETA NOT RUN**.
+The strict read-only gate binds 12 existing specialized ledgers and artifacts
+at fixed canonical paths by raw SHA-256, captures every direct and transitive
+validator input in one private mutation-evident snapshot, inventories the
+complete `data/` tree and exact rule-directory membership, pins every not-run
+ledger byte, and validates dynamic source-state arrays through their strict
+semantic loader. It rebuilds the registry-selected packet and journey from
+canonical inputs, reconciles program availability and adopted source
+dependencies, and recomputes current source/rule/reference currency plus all
+14 beta exit categories as `not_run`.
+Its committed schema has no passing, approval, or `proceed` state. The
+Woodland reference remains a synthetic future-state prototype and cannot fill
+the empty pilot scope. See
+[`data/validation/pilot-beta-gate.json`](data/validation/pilot-beta-gate.json).
+
 **Made-up Woodland future-state route-to-packet simulation** (answer the
 applicability question to continue only if the availability record passes):
 https://chelseakr.github.io/permit-pathways/check.html?sample=adu
@@ -140,6 +155,7 @@ PYTHONPATH=src python3 -m permit_pathways.local_source_onboarding_cli \
 PYTHONPATH=src python3 -m permit_pathways.source_release_cli validate-templates
 PYTHONPATH=src python3 -m permit_pathways.deployment_smoke # live static-route/artifact smoke check
 PYTHONPATH=src python3 -m permit_pathways.beta_operations  # validates PREPARED / NOT APPROVED only
+PYTHONPATH=src python3 -m permit_pathways.beta_gate_cli validate # recomputes PREPARED / TESTED BETA NOT RUN
 PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli build \
   --output /tmp/permit-bearings-evidence.zip \
   --freeze-id public-synthetic-evidence-2026-08-09 \
@@ -198,6 +214,18 @@ deployment, partner decision, privacy/security posture, records workflow, or
 legal compliance. A later execution or approval requires a separately
 reviewed schema.
 
+The pilot-beta aggregate CLI returns `0` only when the exact prepared record,
+its canonical role paths and raw artifact digests, complete mutation-evident
+input snapshot tree, independently pinned not-run ledgers, strict dynamic
+schemas, specialized pending-state contracts, shared lock and
+prototype identity, current source/rule/reference currency calculation, and
+every derived `not_run` category agree. Its default record is resolved under
+the selected repository root. It returns `2` for drift or attempted
+promotion.
+Exit `0` is aggregate integrity evidence only; it is not an active pilot,
+tested beta, human review, deployment approval, partner decision, or external
+validation result. Schema v1 cannot record any of those outcomes.
+
 The evidence-export `build` command returns `0` only after its selected files
 are verified against Git `HEAD`, packaged in the single canonical ZIP
 representation, and checked against the pinned public/synthetic profile.
@@ -226,7 +254,7 @@ still needs a person.
 | Internationalization | Applies. `make verify` enforces English/Spanish catalog shape, stable option identifiers, formatter arity, static and formatter placeholders, nonblank singular/plural output, and a copy-leaf pseudo-expansion transform. This is structural automation only: it does not generate or render a complete pseudolocale catalog, and mixed-language acceptance and native Spanish semantic review remain pre-pilot work in `docs/I18N.md`. |
 | AI Evaluation | Applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
 | Documentation | Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
-| Quality & Metrics | Automated evidence includes public Python tests with branch-aware coverage, 29/29 Golden cases, browser checks, and seven Lighthouse page states, plus dependency audits, source-currency output, the exact re-verification worklist, strict non-promoting source-release receipt checks, the deployment-smoke contract, the applicant-copy structural contract, local illustration path/format/size/accessibility checks, the strict workflow-registry boundary, the deterministic evidence-export round trip, adversarial no-storage operations-package checks, and the local-source onboarding contract. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts; duplicate-ID, portable-path, raw-registry, and input-fingerprint workflow-registry states; and distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, illustration-decoding/tablet-hierarchy, and multi-route accessible-name states. Python registry tests separately inventory canonical directories, reject orphan or linked files, and prove that both the worklist and source-release CLIs bind two distinct registered workflow contexts. Exact current counts and coverage come from CI rather than this prose. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, source release, local-source intake, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
+| Quality & Metrics | Automated evidence includes public Python tests with branch-aware coverage, 29/29 Golden cases, browser checks, and seven Lighthouse page states, plus dependency audits, source-currency output, the exact re-verification worklist, strict non-promoting source-release receipt checks, the deployment-smoke contract, the applicant-copy structural contract, local illustration path/format/size/accessibility checks, the strict workflow-registry boundary, the deterministic evidence-export round trip, adversarial no-storage operations-package checks, the local-source onboarding contract, and the pilot-neutral aggregate beta-gate contract. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts; duplicate-ID, portable-path, raw-registry, and input-fingerprint workflow-registry states; and distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, illustration-decoding/tablet-hierarchy, and multi-route accessible-name states. Python registry tests separately inventory canonical directories, reject orphan or linked files, and prove that both the worklist and source-release CLIs bind two distinct registered workflow contexts. Exact current counts and coverage come from CI rather than this prose. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, source release, local-source intake, aggregate gate, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Versioned release | N/A — this remains a branch-deployed showcase with no published package, container, action, or signed release. The trigger for replacing this N/A is recorded in `docs/adr/0001-no-versioned-release.md`. |
 
 ## How the project check works
@@ -490,8 +518,9 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
   schema-v1 compatibility set or the current 59-file, registry-aware schema-v2
   public and synthetic evidence set without vendor-only storage. The held-out
   evaluation planning artifact, beta-operations ADR/runbook/ledger/tooling,
-  source-change release-receipt templates, and any future cases, answer key,
-  execution receipt, approval, or result are
+  source-change release-receipt templates, pilot-neutral aggregate gate and
+  validator, and any future cases, answer key, execution receipt, approval, or
+  result are
   outside export profiles v1 and v2 and require a separately reviewed future
   profile version. This is not a production applicant-data export,
   contractual ownership/offboarding,
@@ -766,6 +795,10 @@ explanation sidecar and keeps a separate `/trust` route.
 - `src/permit_pathways/beta_operations.py`: strict validator/CLI for the
   pilot-neutral `prepared_not_approved` operating ledger; it rejects filled
   deployment, approval, rehearsal, and receipt fields
+- `src/permit_pathways/beta_gate.py` and `beta_gate_cli.py`: read-only,
+  canonical-path/raw-digest-bound pilot-neutral aggregate that validates one
+  immutable repository snapshot, current currency, and 14 conservative beta
+  exit categories while accepting only `prepared` / `not_run`
 - `src/permit_pathways/rule_verification.py`: schema-v2
   machine-linked/human-reviewed/jurisdiction-approved claim evaluation for
   rule citations and full-rule records
@@ -784,6 +817,9 @@ explanation sidecar and keeps a separate `/trust` route.
 - `data/onboarding/local-source-intake-template.json`: generic `not_run`
   local-source collection template with no jurisdiction, source, owner,
   review, or approval evidence
+- `data/validation/pilot-beta-gate.json`: strict aggregate planning record;
+  pilot scope is empty, all 14 exit categories are `not_run`, and the current
+  Woodland artifacts are bound only as a synthetic prototype reference
 - `data/availability/woodland-preapproved-adu-program.json`: official-page
   evidence and recheck boundary for the future-state Woodland simulation
 - `data/workflows/registry.json`: one registered prototype workflow and the

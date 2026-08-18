@@ -235,7 +235,7 @@
       "problem_evidence",
       "review_levels"
     ],
-    "artifact_set_fingerprint": "sha256:1d50634b5083b5b86476dd169963065614187ef8da41f0e334fe1a08c3130be4",
+    "artifact_set_fingerprint": "sha256:e60f2cc927335de97386764b30b3eba734b63f1b64b07667d7216f2c53676248",
     "supports_tested_beta_claim": false,
     "supports_statewide_beta_claim": false,
     "supports_human_review_claim": false,
