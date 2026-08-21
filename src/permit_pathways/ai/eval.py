@@ -23,7 +23,8 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
-import subprocess
+import shutil
+import subprocess  # nosec B404
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -379,9 +380,14 @@ def run_grounding_eval(
 
 
 def git_commit(root: Path) -> str:
+    """The HEAD commit of ``root``, or ``"unknown"``. Runs the resolved Git
+    executable with a fixed argument list and no shell."""
+    git = shutil.which("git")
+    if git is None:
+        return "unknown"
     try:
-        completed = subprocess.run(  # noqa: S603 - fixed argv, no shell
-            ["git", "-C", str(root), "rev-parse", "HEAD"],  # noqa: S607
+        completed = subprocess.run(  # noqa: S603  # nosec B603
+            [git, "-C", str(root), "rev-parse", "HEAD"],
             capture_output=True,
             text=True,
             check=True,
