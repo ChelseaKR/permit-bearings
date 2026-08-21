@@ -140,6 +140,32 @@ dependency edges over substring matching.
   **consistency/compliance review** (the proposal satisfies applicable
   standards). Do not use one as a proxy for the other.
 
+Runtime AI (ADR 0004) adds these rules for `permit_pathways.ai`:
+
+- The model structures input and narrates output. It never evaluates a rule
+  criterion, never produces a match, and never sees an unmatched rule as
+  something to decide. `screening.py` and its browser port stay untouched
+  by AI work.
+- An extracted fact is a draft until the applicant confirms it in the form.
+  Enforce the allowed-value list and require a verbatim supporting quote
+  from the applicant's text; downgrade anything else to `unknown`. Absence
+  is reported as "could not tell", never filled in.
+- Every substantive generated claim must cite corpus text, and the service
+  must verify the quote against the extracted text of the named source
+  before display. Drop what does not resolve and count it visibly. A
+  verified citation is evidence that the passage exists, not that the
+  sentence quoting it is correct.
+- Label every runtime output AI-generated and keep the non-advice,
+  non-eligibility, non-approval disclaimers beside it. Record the prompt
+  version and model with the output.
+- Store and log no applicant content in the service. Read the provider
+  credential only from the environment; never write it to a file.
+- Commit measured evaluation numbers only from a recorded live run that
+  names provider, model, date, and commit; otherwise mark the result
+  `not_run`. Never copy RAG or LLM code from another repository into this
+  one; write against the public SDK.
+- The static site must keep working with the service absent.
+
 ## Privacy, records, and public-sector posture
 
 Use public, synthetic, or properly redacted project material in the
@@ -147,7 +173,9 @@ repository and demo. Do not commit applicant PII, credentials, private permit
 files, or model-provider payloads.
 
 The current public demo persists no applicant data. Before adding storage,
-accounts, telemetry, uploads, or external model calls, document:
+accounts, telemetry, uploads, or external model calls, document (the optional
+AI service's inventory is in `docs/DATA-FLOW.md`, "Optional runtime AI
+service path"):
 
 - collected fields and purpose;
 - data flow and subprocessors;

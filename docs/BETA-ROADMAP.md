@@ -37,6 +37,10 @@ rehearsals, execution receipts, and partner decisions remain null/`not_run`.
 Host request metadata and every deployment-specific privacy, security,
 records, access, accessibility, language, support, and hosting decision remain
 external work.
+That package describes the static-only deployment shape. ADR 0004
+(2026-08-21) directs a separate optional runtime AI service; a beta that
+includes it needs its own operations package, subprocessor record, and
+approvals, none of which exists.
 
 A separate pilot-neutral aggregate is also **PREPARED / TESTED BETA NOT
 RUN**. It digest-binds the current specialized artifacts, reconciles their

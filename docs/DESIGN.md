@@ -309,8 +309,9 @@ record is retained, so the artifact does not support a model-performance or
 reproduction claim.
 Completed review metadata would have to name the reviewer, method, date,
 exact version, and reviewed content fingerprint. No such review is recorded.
-No model runs in the evaluator, CLI, build, or public browser, and no applicant
-data is stored or sent to a model.
+No model runs in the evaluator, CLI, build, or packet page, and the packet
+sample sends no applicant data to a model. (The optional runtime AI service
+under ADR-0004 serves the project-check page; see section 3.)
 
 This future-state slice compares reported item presence against one checklist. Two
 fabricated parcel values demonstrate how exact public dataset fields and
@@ -405,16 +406,42 @@ to prove build, browser-policy, and review-queue traversal,
 but registry infrastructure is not multiple active workflows, broader local
 coverage, external validation, applicant readiness, or jurisdiction approval.
 
-### 3. Citation-grounded Q&A (planned)
+### 3. Runtime AI at the edges (planned under ADR-0004; not yet implemented)
 
-For free-text questions the deterministic core can't answer, a retrieval layer
-over the jurisdiction's corpus (state law, HCD guidance, local zoning/municipal
-code) answers **only from retrieved text, with the citation inline**. Abstention
-is a first-class outcome: no supporting passage → "this needs staff review,"
-with a routing hint. Bilingual output (EN/ES) from the same grounded passage.
+ADR-0004 records the owner's decision to add runtime AI in three bounded
+roles through a separate optional service, `permit_pathways.ai`, that the
+static site calls only when it is running:
 
-No free-text Q&A or live LLM/NLP layer is currently implemented. The existing
-abstention path is a structured intake with no matching encoded rule.
+- **Intake extraction.** The applicant describes the project in English or
+  Spanish. The model returns a draft of the same structured facts the
+  deterministic matcher consumes — nothing outside that vocabulary — and for
+  each value a quoted span of the applicant's text that supports it. The
+  service enforces the allowed-value list and the quote binding; a value
+  without a verbatim supporting quote becomes `unknown`. Unanswered fields
+  are returned as "could not tell from what you wrote". The draft pre-fills
+  the existing form; the applicant confirms; only confirmed values reach
+  `screen()`.
+- **Grounded explanation.** The service re-runs the Python matcher on the
+  confirmed facts and refuses to explain a rule set that disagrees with the
+  browser's. It retrieves passages from the `corpus/` documents the matched
+  rules already depend on (scoped by `source_dependencies`, ranked
+  lexically), and asks the model for a plain-language explanation in the
+  applicant's language in which each claim cites passage IDs and quotes
+  them. Every quote is then checked against the extracted corpus text for
+  the named source; a claim with an unverifiable citation is withheld and
+  the withheld count is displayed beside the explanation.
+- **Staff questions.** Drafted the same way, tailored to the applicant's
+  unresolved facts, matched rules, and whether the jurisdiction has a local
+  record; labeled drafts.
+
+Free-text question answering stays out of scope; anchoring to a matched rule
+set is what makes the citation check exact. The static site with the service
+absent is unchanged: zero network requests beyond its origin, deterministic
+screening, sidecar explanations, and AI controls disabled with a visible
+"needs the service running" note. Evaluation artifacts (bilingual intake
+cases with gold extractions scored on exact match and abstention; a
+citation-grounding measure) are part of the same series. This section is
+updated to describe implemented behavior when the code lands.
 
 ### 4. Currency & verification harness (prototype differentiator)
 

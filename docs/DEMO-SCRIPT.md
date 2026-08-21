@@ -157,7 +157,9 @@ evidence.
   fingerprints, but provider, model, and a reproducible run record were not
   retained.
 - Name the runtime and privacy boundary: no model runs in the Python evaluator,
-  CLI, build, or public browser; the bundled sample stores no applicant data.
+  CLI, build, or packet page; the bundled sample stores no applicant data.
+  (If the optional ADR 0004 AI service is part of the demo, say so
+  separately and show its labels; it serves the project-check page only.)
   The evaluator does not open files, query or verify a live parcel, determine
   legal sufficiency, certify completeness, limit staff requests, or predict
   approval.
