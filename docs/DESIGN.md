@@ -406,42 +406,55 @@ to prove build, browser-policy, and review-queue traversal,
 but registry infrastructure is not multiple active workflows, broader local
 coverage, external validation, applicant readiness, or jurisdiction approval.
 
-### 3. Runtime AI at the edges (planned under ADR-0004; not yet implemented)
+### 3. Runtime AI at the edges (prototype under ADR-0004)
 
 ADR-0004 records the owner's decision to add runtime AI in three bounded
-roles through a separate optional service, `permit_pathways.ai`, that the
-static site calls only when it is running:
+roles through a separate optional service, `permit_pathways.ai`
+(`make serve-ai`; FastAPI on `127.0.0.1:8787`; provider through the public
+`anthropic` SDK, default `claude-sonnet-5`, or Amazon Bedrock), that the
+static site calls only when the applicant asks for it:
 
-- **Intake extraction.** The applicant describes the project in English or
-  Spanish. The model returns a draft of the same structured facts the
-  deterministic matcher consumes — nothing outside that vocabulary — and for
-  each value a quoted span of the applicant's text that supports it. The
-  service enforces the allowed-value list and the quote binding; a value
-  without a verbatim supporting quote becomes `unknown`. Unanswered fields
-  are returned as "could not tell from what you wrote". The draft pre-fills
-  the existing form; the applicant confirms; only confirmed values reach
-  `screen()`.
-- **Grounded explanation.** The service re-runs the Python matcher on the
-  confirmed facts and refuses to explain a rule set that disagrees with the
-  browser's. It retrieves passages from the `corpus/` documents the matched
-  rules already depend on (scoped by `source_dependencies`, ranked
-  lexically), and asks the model for a plain-language explanation in the
-  applicant's language in which each claim cites passage IDs and quotes
-  them. Every quote is then checked against the extracted corpus text for
-  the named source; a claim with an unverifiable citation is withheld and
-  the withheld count is displayed beside the explanation.
-- **Staff questions.** Drafted the same way, tailored to the applicant's
-  unresolved facts, matched rules, and whether the jurisdiction has a local
-  record; labeled drafts.
+- **Intake extraction** (`intake.py`, `POST /intake/extract`). The applicant
+  describes the project in English or Spanish. The model returns a draft of
+  the same structured facts the deterministic matcher consumes — the
+  vocabulary in `facts.py`, nothing outside it — and for each value a quoted
+  span of the applicant's text that supports it. The service enforces the
+  allowed-value list and the quote binding; a value without a verbatim
+  supporting quote becomes `unknown`. Unanswered fields are returned as
+  "could not tell from what you wrote". The jurisdiction name is resolved
+  against the registry deterministically. The draft pre-fills the existing
+  form; the applicant confirms; only confirmed values reach `screen()`.
+- **Grounded explanation** (`explain.py`, `POST /explain`). The service
+  re-runs the Python matcher on the confirmed facts and refuses (409) a rule
+  set that disagrees with the browser's. It indexes the corpus documents
+  `data/sources.json` binds (`corpus.py`: leginfo HTML via the stdlib
+  parser, PDFs via pypdf, paragraph-bounded passages), offers the model
+  passages only from the matched rules' `source_dependencies` (a rule's
+  own located excerpt plus lexical BM25 matches, interleaved across rules),
+  and asks for claims that cite passage IDs with verbatim quotes. Every
+  quote is then checked against the extracted text of the named document
+  after typography, case, and whitespace folding, with a minimum length; a
+  claim with an unverifiable citation is withheld and the withheld count is
+  displayed beside the explanation.
+- **Staff questions** (`staff_questions.py`, `POST /staff-questions`).
+  Drafted for the applicant's unresolved facts, matched rules, and whether
+  the jurisdiction has a local record; pointers that do not resolve are
+  dropped; labeled drafts.
+
+The browser side is `assets/ai.js`, loaded after `demo.js` on `check.html`
+and inert until the applicant presses "Use AI assistance". Only then does the
+page probe `/health`, render the free-text field, and — on the next explicit
+action — send anything. With the service absent the page makes no request
+beyond its origin, the pinned form fields are exactly what ADR-0002's ledger
+describes, and the AI controls show "needs the service running". The
+service URL is the `permit-ai-service` meta tag and the page's
+`connect-src`; a hosted deployment changes both.
 
 Free-text question answering stays out of scope; anchoring to a matched rule
-set is what makes the citation check exact. The static site with the service
-absent is unchanged: zero network requests beyond its origin, deterministic
-screening, sidecar explanations, and AI controls disabled with a visible
-"needs the service running" note. Evaluation artifacts (bilingual intake
-cases with gold extractions scored on exact match and abstention; a
-citation-grounding measure) are part of the same series. This section is
-updated to describe implemented behavior when the code lands.
+set is what makes the citation check exact. The evaluation set and harness
+are in `evals/ai/`; the capability matrix carries the measured numbers and
+their limits. Nothing in this layer is imported by the matcher, the
+readiness evaluator, the build, or the bundle.
 
 ### 4. Currency & verification harness (prototype differentiator)
 
