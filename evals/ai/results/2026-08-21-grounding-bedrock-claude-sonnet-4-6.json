@@ -1,0 +1,1025 @@
+{
+  "run": {
+    "status": "recorded_live_run",
+    "kind": "grounding",
+    "run_on": "2026-08-21",
+    "provider": "bedrock",
+    "model": "global.anthropic.claude-sonnet-4-6",
+    "prompt_versions": {
+      "intake": "intake-v1",
+      "explain": "explain-v1",
+      "staff_questions": "staff-questions-v1"
+    },
+    "commit": "358206a6b2d066316ebeb4194828c768a624fed3",
+    "scoring": {
+      "field_exact_match": "predicted value equals gold, including unknown==unknown",
+      "abstained_when_should": "gold is unknown and the model returned unknown",
+      "filled_when_unknown": "gold is unknown and the model returned a concrete value (the defect)",
+      "claims_all_citations_verified": "claim shown only if every cited quote occurs verbatim in the named corpus document"
+    }
+  },
+  "cases_file": "evals/ai/grounding-cases.json",
+  "summary": {
+    "cases": 8,
+    "claims_generated": 59,
+    "claims_shown": 59,
+    "claims_withheld": 0,
+    "fraction_claims_with_verified_citations": 1.0,
+    "cases_with_no_withheld_claims": 1.0,
+    "mean_claims_shown_per_case": 7.38
+  },
+  "staff_questions_summary": {
+    "cases": 8,
+    "questions": 50,
+    "fraction_with_resolvable_pointer": 0.98
+  },
+  "cases": [
+    {
+      "case_id": "davis-adu-detached-en",
+      "language": "en",
+      "rule_ids": [
+        "davis-local-adu-process",
+        "adu-ministerial-review",
+        "adu-protected-minimum",
+        "adu-height-standards",
+        "adu-size-allowances",
+        "adu-parking-limits",
+        "adu-no-owner-occupancy-rental"
+      ],
+      "offered_passages": 18,
+      "claims_generated": 8,
+      "claims_shown": 8,
+      "claims_withheld": 0,
+      "claims_all_citations_verified": 1.0,
+      "citations_on_shown_claims": 15,
+      "withheld_reasons": [],
+      "withheld_citation_failures": 0,
+      "claims": [
+        {
+          "text": "The City of Davis uses three processing categories for ADU applications, and which category applies to your project is a question you must confirm with City staff.",
+          "citations": [
+            {
+              "passage_id": "davis-adu-handout-2026#0",
+              "quote": "In Davis, there are three categories for processing ADUs depending on square footage and configuration. These Guidelines summarize each level of review as follows: (1) State Exempt ADUs, (2) Ministerial ADUs, and (3) Non-Ministerial ADUs."
+            }
+          ]
+        },
+        {
+          "text": "A caution about local rules: HCD's October 2025 technical-assistance letter noted that the most recent Davis ADU ordinance on file with HCD dates to 2019 and may be outdated; if an ordinance does not meet state law requirements, it becomes null and void and state standards apply instead.",
+          "citations": [
+            {
+              "passage_id": "hcd-davis-adu-ta-2025#1",
+              "quote": "The most recent ADU ordinance on file for City of Davis with the California Department of Housing and Community Development (HCD) is from 2019. Given the numerous changes to State ADU Law since the adoption of the ordinance, the ordinance may be outdated and out of compliance with State ADU Law."
+            },
+            {
+              "passage_id": "hcd-davis-adu-ta-2025#11",
+              "quote": "If an existing ADU ordinance fails to meet the requirements of State ADU Law, the ordinance is \"null and void\" and the local jurisdiction must apply the standards set forth in State ADU Law until it adopts an ordinance that complies with state law (Gov. Code, § 66316)."
+            }
+          ]
+        },
+        {
+          "text": "Under state law, your ADU permit application must be reviewed ministerially — meaning without a discretionary hearing — and the city must tell you in writing whether your application is complete within 15 business days of receiving it.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66317#1",
+              "quote": "A permit application for an accessory dwelling unit shall be considered and approved ministerially without discretionary review or a hearing, notwithstanding Section 65901 or 65906 or any local ordinance regulating the issuance of variances or special use permits."
+            },
+            {
+              "passage_id": "ca-gov-66317#1",
+              "quote": "A permitting agency shall determine whether an application to create or serve an accessory dwelling unit is complete and provide written notice of this determination to the applicant not later than 15 business days after the permitting agency received the application."
+            }
+          ]
+        },
+        {
+          "text": "Because there is an existing single-family dwelling on your lot, the city must approve or deny your completed ADU application within 60 calendar days; if it does not act in time, the application is deemed approved.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66317#4",
+              "quote": "The permitting agency shall either approve or deny the application to create or serve an accessory dwelling unit within 60 days from the date the permitting agency receives a completed application if there is an existing single-family or multifamily dwelling on the lot."
+            },
+            {
+              "passage_id": "ca-gov-66317#4",
+              "quote": "If the local agency has not approved or denied the completed application within 60 days, the application shall be deemed approved."
+            }
+          ]
+        },
+        {
+          "text": "For your new detached ADU on a lot with an existing single-family dwelling, state law sets a baseline protected height of 16 feet; if your lot is within one-half mile walking distance of a major transit stop or high-quality transit corridor, the protected height rises to 18 feet, with an additional 2 feet available if the ADU roof pitch aligns with the primary dwelling's roof pitch.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66321#3",
+              "quote": "A height of 16 feet for a detached accessory dwelling unit on a lot with an existing or proposed single family or multifamily dwelling unit."
+            },
+            {
+              "passage_id": "ca-gov-66321#3",
+              "quote": "A height of 18 feet for a detached accessory dwelling unit on a lot with an existing or proposed single family or multifamily dwelling unit that is within one-half of one mile walking distance of a major transit stop or a high-quality transit corridor, as those terms are defined in Section 21155 of the Public Resources Code.\nA local agency shall also allow an additional two feet in height to\naccommodate a roof pitch on the accessory dwelling unit that is aligned with the roof pitch of the primary dwelling unit."
+            }
+          ]
+        },
+        {
+          "text": "Local size rules cannot prevent you from building a detached ADU of at least 800 square feet with four-foot side and rear setbacks; separately, any local maximum size rule must still allow at least 850 square feet of interior livable space, or 1,000 square feet if your ADU has more than one bedroom.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66321#2",
+              "quote": "Any requirement for a zoning clearance or separate zoning review or any other minimum or maximum size for an accessory dwelling unit, size based upon a percentage of the proposed or existing primary dwelling, or limits on lot coverage, floor area ratio, open space, front setbacks, and minimum lot size, for either attached or detached dwellings that does not permit an accessory dwelling unit with at least 800 square feet of interior livable space and with four-foot side and rear yard setbacks to be constructed in compliance with all other\nlocal development standards."
+            },
+            {
+              "passage_id": "ca-gov-66321#2",
+              "quote": "Eight hundred fifty square feet of interior livable space."
+            },
+            {
+              "passage_id": "ca-gov-66321#2",
+              "quote": "One thousand square feet of interior livable space for an accessory dwelling unit that provides more than one bedroom."
+            }
+          ]
+        },
+        {
+          "text": "The city cannot require you, as owner, to live on the property, and cannot restrict rentals to terms shorter than 30 days; it may require a minimum 30-day rental term but not a longer one.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66315#1",
+              "quote": "Section 66314 establishes the maximum standards that a local agency shall use to evaluate a proposed accessory dwelling unit on a lot that includes a proposed or existing single-family dwelling. No additional standards, other than those provided in Section 66314, shall be used or imposed, including an owner-occupant requirement, except that a local agency may require that the property may be used for rentals of terms 30 days or longer."
+            }
+          ]
+        },
+        {
+          "text": "No ADU parking requirement may be imposed if your ADU is within one-half mile walking distance of public transit; other exemptions apply for historic districts, ADUs within the primary residence, lack of on-street permit availability to the ADU occupant, or a car-share vehicle within one block.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66322#1",
+              "quote": "A local agency shall not impose any parking standards for an accessory dwelling unit in any of the following instances:\n\n(1) Where the accessory dwelling unit is located within one-half of one mile walking distance of public transit."
+            },
+            {
+              "passage_id": "ca-gov-66322#2",
+              "quote": "Where the accessory dwelling unit is located within an architecturally and historically significant historic district.\n\n(3) Where the accessory\ndwelling unit is part of the proposed or existing primary residence or an accessory structure.\n\n(4) When on-street parking permits are required but not offered to the occupant of the accessory dwelling unit.\n\n(5) When there is a car share vehicle located within one block of the accessory dwelling unit."
+            }
+          ]
+        }
+      ],
+      "withheld_texts": [],
+      "input_tokens": 7035,
+      "output_tokens": 1718
+    },
+    {
+      "case_id": "davis-adu-detached-es-unknown-permits",
+      "language": "es",
+      "rule_ids": [
+        "davis-local-adu-process",
+        "adu-ministerial-review",
+        "adu-protected-minimum",
+        "adu-height-standards",
+        "adu-size-allowances",
+        "adu-parking-limits",
+        "adu-no-owner-occupancy-rental"
+      ],
+      "offered_passages": 18,
+      "claims_generated": 8,
+      "claims_shown": 8,
+      "claims_withheld": 0,
+      "claims_all_citations_verified": 1.0,
+      "citations_on_shown_claims": 12,
+      "withheld_reasons": [],
+      "withheld_citation_failures": 0,
+      "claims": [
+        {
+          "text": "En Davis, la Ciudad publica tres categorías para procesar una ADU (unidad de vivienda accesoria): ADU Exenta Estatal (solo permiso de construcción), ADU Ministerial y ADU No Ministerial. El solicitante debe consultar directamente al personal de la Ciudad para saber cuál categoría le corresponde a su proyecto.",
+          "citations": [
+            {
+              "passage_id": "davis-adu-handout-2026#0",
+              "quote": "In Davis, there are three categories for processing ADUs depending on square footage and configuration. These Guidelines summarize each level of review as follows: (1) State Exempt ADUs, (2) Ministerial ADUs, and (3) Non-Ministerial ADUs."
+            }
+          ]
+        },
+        {
+          "text": "La ordenanza de ADU más reciente que tiene registrada el Departamento de Vivienda y Desarrollo Comunitario de California (HCD) para la Ciudad de Davis es del año 2019 y puede estar desactualizada o fuera de cumplimiento con la ley estatal. Si una ordenanza local no cumple con la ley estatal, esa ordenanza es nula y sin efecto, y la ciudad debe aplicar los estándares de la ley estatal.",
+          "citations": [
+            {
+              "passage_id": "hcd-davis-adu-ta-2025#1",
+              "quote": "The most recent ADU ordinance on file for City of Davis with the California Department of Housing and Community Development (HCD) is from 2019. Given the numerous changes to State ADU Law since the adoption of the ordinance, the ordinance may be outdated and out of compliance with State ADU Law."
+            },
+            {
+              "passage_id": "hcd-davis-adu-ta-2025#11",
+              "quote": "If an existing ADU ordinance fails to meet the requirements of State ADU Law, the ordinance is \"null and void\" and the local jurisdiction must apply the standards set forth in State ADU Law until it adopts an ordinance that complies with state law (Gov. Code, § 66316)."
+            }
+          ]
+        },
+        {
+          "text": "Bajo la ley estatal (Gov. Code § 66317), la solicitud de permiso para una ADU debe ser aprobada o denegada de manera ministerial —es decir, sin revisión discrecional ni audiencia pública—. Además, la agencia tiene un plazo de 15 días hábiles para notificar al solicitante por escrito si la solicitud está completa o incompleta.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66317#1",
+              "quote": "A permit application for an accessory dwelling unit shall be considered and approved ministerially without discretionary review or a hearing, notwithstanding Section 65901 or 65906 or any local ordinance regulating the issuance of variances or special use permits."
+            },
+            {
+              "passage_id": "ca-gov-66317#1",
+              "quote": "A permitting agency shall determine whether an application to create or serve an accessory dwelling unit is complete and provide written notice of this determination to the applicant not later than 15 business days after the permitting agency received the application."
+            }
+          ]
+        },
+        {
+          "text": "Dado que el solicitante ya tiene una vivienda unifamiliar existente en el lote, la agencia tiene 60 días calendario a partir de recibir la solicitud completa para aprobar o denegar el permiso. Si la agencia no actúa dentro de ese plazo, la solicitud se considera aprobada automáticamente.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66317#4",
+              "quote": "The permitting agency shall either approve or deny the application to create or serve an accessory dwelling unit within 60 days from the date the permitting agency receives a completed application if there is an existing single-family or multifamily dwelling on the lot."
+            },
+            {
+              "passage_id": "ca-gov-66317#4",
+              "quote": "If the local agency has not approved or denied the completed application within 60 days, the application shall be deemed approved."
+            }
+          ]
+        },
+        {
+          "text": "La ley estatal protege la posibilidad de construir una ADU de al menos 800 pies cuadrados de espacio habitable interior con retiros laterales y traseros de cuatro pies. Las reglas locales sobre cobertura de lote, relación de área de piso (floor-area ratio), espacio abierto, retiros frontales y tamaño mínimo de lote no pueden impedir esta opción protegida.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66321#2",
+              "quote": "Any requirement for a zoning clearance or separate zoning review or any other minimum or maximum size for an accessory dwelling unit, size based upon a percentage of the proposed or existing primary dwelling, or limits on lot coverage, floor area ratio, open space, front setbacks, and minimum lot size, for either attached or detached dwellings that does not permit an accessory dwelling unit with at least 800 square feet of interior livable space and with four-foot side and rear yard setbacks to be constructed in compliance with all other local development standards."
+            }
+          ]
+        },
+        {
+          "text": "Para una ADU separada (detached) como la del solicitante, la ley estatal establece una altura base protegida de 16 pies. Si el lote está dentro de media milla caminando de una parada de tránsito mayor o un corredor de tránsito de alta calidad, la altura protegida sube a 18 pies y puede aumentar dos pies adicionales si el techo de la ADU se alinea con el de la vivienda principal. El solicitante no ha confirmado si el lote cumple la condición de proximidad al tránsito, por lo que aún no se puede determinar cuál altura aplica.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66321#3",
+              "quote": "A height of 16 feet for a detached accessory dwelling unit on a lot with an existing or proposed single family or multifamily dwelling unit."
+            },
+            {
+              "passage_id": "ca-gov-66321#3",
+              "quote": "A height of 18 feet for a detached accessory dwelling unit on a lot with an existing or proposed single family or multifamily dwelling unit that is within one-half of one mile walking distance of a major transit stop or a high-quality transit corridor, as those terms are defined in Section 21155 of the Public Resources Code.\nA local agency shall also allow an additional two feet in height to\naccommodate a roof pitch on the accessory dwelling unit that is aligned with the roof pitch of the primary dwelling unit."
+            }
+          ]
+        },
+        {
+          "text": "La ley estatal prohíbe que la Ciudad imponga un requisito de ocupación por parte del propietario para una ADU en un lote con una vivienda unifamiliar existente. La Ciudad sí puede exigir que la propiedad se use para arrendamientos de al menos 30 días, pero no puede requerir un período mínimo mayor a 30 días.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66315#1",
+              "quote": "No additional standards, other than those provided in Section 66314, shall be used or imposed, including an owner-occupant requirement, except that a local agency may require that the property may be used for rentals of terms 30 days or longer."
+            }
+          ]
+        },
+        {
+          "text": "El solicitante no confirmó si existe alguna estructura no permitida en el lote ('unpermitted_existing' es desconocido). Este dato puede ser relevante porque la posibilidad de convertir estructuras existentes bajo ciertos supuestos —incluyendo si están sujetas a límites de tamaño— depende de hechos que aún no han sido verificados. El solicitante debe confirmar este hecho con el personal de la Ciudad antes de presentar su solicitud.",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#147",
+              "quote": "maximum unit sizes are 1,200 square feet of interior livable space for a new detached ADU (Gov. Code, § 66314, subd. (d)(4)) and up to 50 percent of the floor area of the existing primary dwelling for an attached ADU (at least 800 square feet of interior livable space) (Gov. Code, §§ 66314, subd. (d)(5); 66321, subd. (b)(3))."
+            }
+          ]
+        }
+      ],
+      "withheld_texts": [],
+      "input_tokens": 7039,
+      "output_tokens": 1940
+    },
+    {
+      "case_id": "woodland-adu-conversion-legalize-en",
+      "language": "en",
+      "rule_ids": [
+        "adu-ministerial-review",
+        "adu-protected-minimum",
+        "adu-height-standards",
+        "adu-size-allowances",
+        "adu-parking-limits",
+        "adu-no-owner-occupancy-rental",
+        "adu-conversion-exemptions",
+        "adu-unpermitted-legalization",
+        "woodland-adu-ordinance-2026"
+      ],
+      "offered_passages": 18,
+      "claims_generated": 8,
+      "claims_shown": 8,
+      "claims_withheld": 0,
+      "claims_all_citations_verified": 1.0,
+      "citations_on_shown_claims": 12,
+      "withheld_reasons": [],
+      "withheld_citation_failures": 0,
+      "claims": [
+        {
+          "text": "The City of Woodland adopted amendments to its ADU ordinance on February 17, 2026, but the CEQA notice that records this adoption does not contain the operative ordinance requirements or a current application checklist; applicants should review the current text of Municipal Code § 17.84.030 and current city application materials.",
+          "citations": [
+            {
+              "passage_id": "woodland-ceqa-2026020683#1",
+              "quote": "On February 17, 2026, the Woodland City Council adopted an ordinance amending Section 17.84.030, Accessory Dwelling Units, of the City Zoning Ordinance in the Woodland Municipal Code to update regulations for accessory dwelling units (ADUs) and junior accessory dwelling units (JADUs) to conform with state law."
+            }
+          ]
+        },
+        {
+          "text": "Your ADU application will receive ministerial review — meaning no discretionary review or hearing — and the City of Woodland must give you written notice of whether your application is complete within 15 business days of receiving it; because an existing single-family dwelling is on your lot, the City must approve or deny a completed application within 60 calendar days.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66317#1",
+              "quote": "A permit application for an accessory dwelling unit shall be considered and approved ministerially without discretionary review or a hearing, notwithstanding Section 65901 or 65906 or any local ordinance regulating the issuance of variances or special use permits."
+            },
+            {
+              "passage_id": "ca-gov-66317#4",
+              "quote": "The permitting agency shall either approve or deny the application to create or serve an accessory dwelling unit within 60 days from the date the permitting agency receives a completed application if there is an existing single-family or multifamily dwelling on the lot."
+            }
+          ]
+        },
+        {
+          "text": "Because your project is a conversion of existing space, no setback is required; state law bars any setback from side or rear lot lines for a structure converted to an ADU within an existing living area or accessory structure.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66314#6",
+              "quote": "No setback shall be required for an existing living area or accessory structure or a structure constructed in the same location and to the same dimensions as an existing structure that is converted to an accessory dwelling unit or to a portion of an accessory dwelling unit"
+            },
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#155",
+              "quote": "ADU conversions are not subject to setback requirements because they are created within an existing living area or are constructed in the same location and to the same dimensions as an existing structure."
+            }
+          ]
+        },
+        {
+          "text": "As a conversion, your project is also exempt from local objective standards related to height, lot coverage, landscape, design, development, and architectural standards; however, all applicable building, health and safety, and fire standards for dwellings still apply.",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#155",
+              "quote": "Objective standards related to height, lot coverage, landscape, design, development, and architectural standards in the local ADU ordinance do not apply to ADU conversions. However, since ADU conversions are created within an existing structure, the height of ADU conversions are limited to the dimension of the original structure."
+            },
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#155",
+              "quote": "ADU conversions are subject to all applicable building, health and safety, and fire standards for dwellings."
+            }
+          ]
+        },
+        {
+          "text": "Because the unit was built before January 1, 2020 without permits, state law limits the City's ability to deny your legalization permit: denial cannot rest solely on violations of building standards or certain other listed conditions, unless the building is deemed substandard under Health and Safety Code § 17920.3.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66311-7#1",
+              "quote": "a local agency shall not deny a permit for an unpermitted accessory dwelling unit or an unpermitted junior accessory dwelling unit that was constructed before January 1, 2020, due to either of the following: (1) The accessory dwelling unit or junior accessory dwelling unit is in violation of building standards pursuant to Article 1 (commencing with Section 17960) of Chapter 5 of Part 1.5 of Division 13 of the Health and Safety Code."
+            }
+          ]
+        },
+        {
+          "text": "For the unpermitted pre-2020 unit, impact fees and connection or capacity charges generally cannot be required, with a narrow exception when utility infrastructure is needed to comply with Health and Safety Code § 17920.3 and the fee is otherwise authorized by law.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66311-7#4",
+              "quote": "A homeowner applying for a permit for a previously unpermitted accessory dwelling unit or junior accessory dwelling unit constructed before January 1, 2020, shall not be required to pay impact fees or connection or capacity charges except when utility infrastructure is required to comply with Section 17920.3 of the Health and Safety Code and when the fee is authorized by subdivision (e) of Section 66311.5."
+            }
+          ]
+        },
+        {
+          "text": "Because your lot has an existing single-family dwelling, the City cannot impose an owner-occupancy condition on your ADU; the City may require that the unit be rented for terms of at least 30 days, but state law does not allow a requirement for any term longer than 30 days.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66315#1",
+              "quote": "No additional standards, other than those provided in Section 66314, shall be used or imposed, including an owner-occupant requirement, except that a local agency may require that the property may be used for rentals of terms 30 days or longer."
+            }
+          ]
+        },
+        {
+          "text": "Local rules cannot require more than one parking space per ADU or bedroom (whichever is fewer), and no parking standard at all may be imposed if your ADU falls within one-half mile walking distance of public transit or is part of the existing primary residence or an accessory structure — whether either of those conditions applies to your specific property is a fact you would need to confirm.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66322#1",
+              "quote": "A local agency shall not impose any parking standards for an accessory dwelling unit in any of the following instances: (1) Where the accessory dwelling unit is located within one-half of one mile walking distance of public transit."
+            },
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#126",
+              "quote": "ADUs that are part of the proposed or existing primary residence or an accessory structure."
+            }
+          ]
+        }
+      ],
+      "withheld_texts": [],
+      "input_tokens": 7406,
+      "output_tokens": 1493
+    },
+    {
+      "case_id": "fresno-adu-multifamily-es",
+      "language": "es",
+      "rule_ids": [
+        "adu-ministerial-review",
+        "adu-protected-minimum",
+        "adu-height-standards",
+        "adu-size-allowances",
+        "adu-parking-limits",
+        "adu-conversion-exemptions",
+        "adu-multifamily-66323"
+      ],
+      "offered_passages": 18,
+      "claims_generated": 7,
+      "claims_shown": 7,
+      "claims_withheld": 0,
+      "claims_all_citations_verified": 1.0,
+      "citations_on_shown_claims": 14,
+      "withheld_reasons": [],
+      "withheld_citation_failures": 0,
+      "claims": [
+        {
+          "text": "La solicitud de permiso para esta unidad de vivienda accesoria (ADU, por sus siglas en inglés) será revisada de forma ministerial, es decir, sin revisión discrecional ni audiencia pública.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66317#1",
+              "quote": "A permit application for an accessory dwelling unit shall be considered and approved ministerially without discretionary review or a hearing, notwithstanding Section 65901 or 65906 or any local ordinance regulating the issuance of variances or special use permits."
+            }
+          ]
+        },
+        {
+          "text": "La agencia permisora tiene un plazo de 15 días hábiles para notificar por escrito si la solicitud está completa; si está incompleta, debe proporcionar una lista de los elementos faltantes y una descripción de cómo completarla. Después de recibir una solicitud completa, la agencia tiene 60 días calendario para aprobar o denegar la solicitud, dado que ya existe una vivienda multifamiliar en el lote; si no actúa dentro de ese plazo, la solicitud se considera aprobada.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66317#1",
+              "quote": "A permitting agency shall determine whether an application to create or serve an accessory dwelling unit is complete and provide written notice of this determination to the applicant not later than 15 business days after the permitting agency received the application."
+            },
+            {
+              "passage_id": "ca-gov-66317#4",
+              "quote": "The permitting agency shall either approve or deny the application to create or serve an accessory dwelling unit within 60 days from the date the permitting agency receives a completed application if there is an existing single-family or multifamily dwelling on the lot."
+            },
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#50",
+              "quote": "If an application is determined to be incomplete, the permitting agency must provide the applicant with a list of incomplete items and a description of how the application can be made complete in the written notice"
+            }
+          ]
+        },
+        {
+          "text": "Dado que el proyecto consiste en una conversión dentro de una estructura existente, no se puede exigir retiro de linderos (setback) para la ADU; además, las normas objetivas locales sobre altura, cobertura de lote, paisajismo y estándares arquitectónicos no aplican a conversiones de ADU.",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#155",
+              "quote": "Objective standards related to height, lot coverage, landscape, design, development, and architectural standards in the local ADU ordinance do not apply to ADU conversions."
+            },
+            {
+              "passage_id": "ca-gov-66314#6",
+              "quote": "No setback shall be required for an existing living area or accessory structure or a structure constructed in the same location and to the same dimensions as an existing structure that is converted to an accessory dwelling unit or to a portion of an accessory dwelling unit"
+            }
+          ]
+        },
+        {
+          "text": "Aunque las normas de desarrollo local no aplican a esta conversión, sí continúan aplicando los requisitos de construcción, salud y seguridad, e incendios.",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#155",
+              "quote": "ADU conversions are subject to all applicable building, health and safety, and fire standards for dwellings."
+            }
+          ]
+        },
+        {
+          "text": "Para propiedades multifamiliares existentes, la regla aplicable permite convertir áreas no habitables del edificio en al menos una ADU y hasta el 25 por ciento del número de unidades existentes; además, se pueden agregar hasta ocho ADUs independientes (detached) en el lote, sin exceder el número de unidades ya existentes.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66323#4",
+              "quote": "A local agency shall allow at least one accessory dwelling unit within an existing multifamily dwelling and shall allow up to 25 percent of the existing multifamily dwelling units."
+            },
+            {
+              "passage_id": "ca-gov-66323#4",
+              "quote": "On a lot with an existing multifamily dwelling, not more than eight detached accessory dwelling units. However, the number of accessory dwelling units allowable pursuant to this clause shall not exceed the number of existing units on the lot."
+            }
+          ]
+        },
+        {
+          "text": "Si la ADU de conversión tuviera más de un dormitorio, ninguna ordenanza local puede fijar un tamaño máximo interior menor a 1,000 pies cuadrados de espacio habitable; para una ADU de un dormitorio o estudio, ese límite máximo no puede ser menor a 850 pies cuadrados.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66321#2",
+              "quote": "Eight hundred fifty square feet of interior livable space."
+            },
+            {
+              "passage_id": "ca-gov-66321#2",
+              "quote": "One thousand square feet of interior livable space for an accessory dwelling unit that provides more than one bedroom."
+            },
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#147",
+              "quote": "maximum unit size requirements must allow an ADU of at least 850 square feet of interior livable space, or 1,000 square feet of interior livable space for ADUs with more than one bedroom."
+            }
+          ]
+        },
+        {
+          "text": "No se puede exigir estacionamiento para esta ADU si se cumple alguna de las siguientes condiciones: la ADU está a menos de media milla caminando de transporte público; está dentro de un distrito histórico; forma parte de la residencia principal o de una estructura accesoria; se requieren permisos de estacionamiento en la calle pero no se ofrecen al ocupante; o existe un vehículo de car share a menos de una cuadra.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66322#1",
+              "quote": "A local agency shall not impose any parking standards for an accessory dwelling unit in any of the following instances: (1) Where the accessory dwelling unit is located within one-half of one mile walking distance of public transit."
+            },
+            {
+              "passage_id": "ca-gov-66322#2",
+              "quote": "Where the accessory dwelling unit is located within an architecturally and historically significant historic district. (3) Where the accessory dwelling unit is part of the proposed or existing primary residence or an accessory structure. (4) When on-street parking permits are required but not offered to the occupant of the accessory dwelling unit. (5) When there is a car share vehicle located within one block of the accessory dwelling unit."
+            }
+          ]
+        }
+      ],
+      "withheld_texts": [],
+      "input_tokens": 6873,
+      "output_tokens": 1516
+    },
+    {
+      "case_id": "davis-jadu-en",
+      "language": "en",
+      "rule_ids": [
+        "davis-local-adu-process",
+        "jadu-standards",
+        "jadu-ministerial-review"
+      ],
+      "offered_passages": 10,
+      "claims_generated": 7,
+      "claims_shown": 7,
+      "claims_withheld": 0,
+      "claims_all_citations_verified": 1.0,
+      "citations_on_shown_claims": 12,
+      "withheld_reasons": [],
+      "withheld_citation_failures": 0,
+      "claims": [
+        {
+          "text": "A JADU (junior accessory dwelling unit) is defined as a unit that must be no more than 500 square feet of interior livable space and must be contained entirely within a single-family residence.",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#102",
+              "quote": "a unit that is no more than 500 square feet of interior livable space in size and contained entirely within a single-family residence"
+            }
+          ]
+        },
+        {
+          "text": "The JADU must be built within the walls of the existing single-family residence, and a separate entrance from the main entrance of the residence is required.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66333#3",
+              "quote": "Require a permitted junior accessory dwelling unit to be constructed within the walls of the proposed or existing single-family residence"
+            },
+            {
+              "passage_id": "ca-gov-66333#3",
+              "quote": "Require a permitted junior accessory dwelling unit to include a separate entrance from the main entrance to the proposed or existing single-family residence"
+            }
+          ]
+        },
+        {
+          "text": "A deed restriction (a recorded legal document that runs with the land and binds future owners) must be filed with the permitting agency; it must prohibit separate sale of the JADU and restrict the JADU's size and attributes to what state law allows.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66333#3",
+              "quote": "A prohibition on the sale of the junior accessory dwelling unit separate from the sale of the single-family residence, including a statement that the deed restriction may be enforced against future purchasers"
+            },
+            {
+              "passage_id": "ca-gov-66333#3",
+              "quote": "A restriction on the size and attributes of the junior accessory dwelling unit that conforms with this article"
+            }
+          ]
+        },
+        {
+          "text": "If the JADU shares sanitation facilities with the main home, the owner must occupy either the main home or the JADU; owner-occupancy is not required if the JADU has its own separate sanitation facilities.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66333#2",
+              "quote": "If the junior accessory dwelling unit has shared sanitation facilities with the existing structure, require owner-occupancy in the single family residence in which the junior accessory dwelling unit will be permitted"
+            },
+            {
+              "passage_id": "ca-gov-66333#2",
+              "quote": "Owner-occupancy shall not be required if the junior accessory dwelling unit has separate sanitation facilities, or if the owner is another governmental agency, land trust, or housing organization"
+            }
+          ]
+        },
+        {
+          "text": "Because an existing single-family dwelling is confirmed on the lot, the matched rule states the permitting agency must approve or deny the JADU application within 60 calendar days from the date it receives a completed application.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66335#3",
+              "quote": "The permitting agency shall either approve or deny the application to create or serve a junior accessory dwelling unit within 60 days from the date the local agency receives a completed application if there is an existing single-family dwelling on the lot"
+            }
+          ]
+        },
+        {
+          "text": "The agency must first decide whether the application is complete and give the applicant written notice of that decision no later than 15 business days after receiving the application; if the application is incomplete or denied, the agency must provide a written list of missing items and an appeal process.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66335#1",
+              "quote": "A permitting agency shall determine whether an application to create or serve a junior accessory dwelling unit is complete and provide written notice of this determination to the applicant not later than 15 business days after the permitting agency received the application"
+            },
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#131",
+              "quote": "If it is determined that an application is incomplete, the permitting agency is required to provide the applicant with a list of incomplete items and a description of how the application can be made complete in the written notice"
+            }
+          ]
+        },
+        {
+          "text": "Regarding local processing rules, the City of Davis January 2026 handout describes three processing categories — State Exempt, Ministerial, and Non-Ministerial — but an HCD technical-assistance letter dated October 8, 2025 noted that the Davis ADU ordinance on file with HCD was from 2019 and that it 'may be outdated and out of compliance with State ADU Law'; applicants should confirm with City staff which current category and standards apply.",
+          "citations": [
+            {
+              "passage_id": "davis-adu-handout-2026#0",
+              "quote": "In Davis, there are three categories for processing ADUs depending on square footage and configuration. These Guidelines summarize each level of review as follows: (1) State Exempt ADUs, (2) Ministerial ADUs, and (3) Non-Ministerial ADUs"
+            },
+            {
+              "passage_id": "hcd-davis-adu-ta-2025#1",
+              "quote": "the ordinance may be outdated and out of compliance with State ADU Law"
+            }
+          ]
+        }
+      ],
+      "withheld_texts": [],
+      "input_tokens": 3757,
+      "output_tokens": 1106
+    },
+    {
+      "case_id": "sacramento-two-unit-en",
+      "language": "en",
+      "rule_ids": [
+        "sb9-two-unit-ministerial",
+        "sb9-adu-interaction"
+      ],
+      "offered_passages": 6,
+      "claims_generated": 7,
+      "claims_shown": 7,
+      "claims_withheld": 0,
+      "claims_all_citations_verified": 1.0,
+      "citations_on_shown_claims": 10,
+      "withheld_reasons": [],
+      "withheld_citation_failures": 0,
+      "claims": [
+        {
+          "text": "The matched rule (Gov. Code § 65852.21) applies to single-family zoned parcels in urbanized areas, and because the applicant has confirmed all of the required conditions — single-family zoning, urbanized location, no protected site, no demolition of protected housing, no Ellis Act withdrawal in the last 15 years, no contributing historic structure, and no individually listed historic property — none of the encoded exclusions appear to block this route based on the confirmed facts.",
+          "citations": [
+            {
+              "passage_id": "hcd-sb9-fact-sheet-2026-04#11",
+              "quote": "A parcel where units were withdrawn from the rental market pursuant to the Ellis Act in the last 15 years"
+            },
+            {
+              "passage_id": "ca-gov-65852-21#4",
+              "quote": "A contributing structure within a historic district included on the State Historic Resources Inventory, as defined in Section 5020.1 of the Public Resources Code, or historic property or district pursuant to a city or county ordinance"
+            }
+          ]
+        },
+        {
+          "text": "Under this route, the applicant may propose up to two primary housing units on the parcel; these units must be approved ministerially (meaning without discretionary review or a hearing) by the local agency.",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#139",
+              "quote": "These primary units are distinct from ADUs and JADUs created under ADU Law and must be approved ministerially"
+            }
+          ]
+        },
+        {
+          "text": "Local objective standards — such as zoning, subdivision, or design rules — cannot have the effect of physically preventing the construction of up to two units on the parcel.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-65852-21#5",
+              "quote": "The local agency shall not impose objective zoning standards, objective subdivision standards, and objective design standards that would have the effect of physically precluding the construction of up to two units"
+            }
+          ]
+        },
+        {
+          "text": "Neither of the two units can be reduced below 800 square feet in floor area by any local objective standard.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-65852-21#5",
+              "quote": "physically preclude either of the two units from being at least 800 square feet in floor area"
+            }
+          ]
+        },
+        {
+          "text": "For setbacks specifically, no setback may be required for an existing structure or one built in the same location and to the same dimensions as an existing structure; in all other situations, a local agency may require a setback of up to four feet from the side and rear lot lines.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-65852-21#5",
+              "quote": "no setback shall be required for an existing structure or a structure constructed in the same location and to the same dimensions as an existing structure"
+            },
+            {
+              "passage_id": "ca-gov-65852-21#5",
+              "quote": "a local agency may require a setback of up to four feet from the side and rear lot lines"
+            }
+          ]
+        },
+        {
+          "text": "Because no SB 9 lot split is being sought here, the parcel is also eligible to receive whatever combination of ADUs (accessory dwelling units) and JADUs (junior accessory dwelling units) it would otherwise be entitled to under State ADU Law, potentially resulting in more total units than either SB 9 or ADU Law would allow on its own.",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#140",
+              "quote": "the lot is eligible to receive up to two primary units under SB 9, as well as whatever combination of ADUs and JADUs it would otherwise be entitled to under ADU Law if SB 9 was not being used"
+            },
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#140",
+              "quote": "In some instances, this may result in a total number of units on the parcel that is greater than what either SB 9 or ADU Law would allow on its own"
+            }
+          ]
+        },
+        {
+          "text": "However, if ADU Law is used alone or together with SB 9 to create more than four total units on the lot, the local agency is not required to approve a lot split under SB 9 — this limit applies if a lot split were later sought in addition to the ADU units.",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#140",
+              "quote": "if ADU Law is used on its own or in combination with SB 9 to create more than four total units on the lot, a local agency is not required to approve a lot split under SB 9"
+            }
+          ]
+        }
+      ],
+      "withheld_texts": [],
+      "input_tokens": 2671,
+      "output_tokens": 1010
+    },
+    {
+      "case_id": "sacramento-two-unit-es",
+      "language": "es",
+      "rule_ids": [
+        "sb9-two-unit-ministerial",
+        "sb9-adu-interaction"
+      ],
+      "offered_passages": 6,
+      "claims_generated": 7,
+      "claims_shown": 7,
+      "claims_withheld": 0,
+      "claims_all_citations_verified": 1.0,
+      "citations_on_shown_claims": 9,
+      "withheld_reasons": [],
+      "withheld_citation_failures": 0,
+      "claims": [
+        {
+          "text": "La vía SB 9 de dos unidades se aplica a su proyecto porque usted confirmó que el terreno está en zona residencial unifamiliar, se encuentra en un área urbanizada, no está en un sitio protegido, no implica demolición de vivienda protegida, no ha tenido retiro del mercado bajo la Ley Ellis en los últimos 15 años, no ha estado ocupado por inquilinos en los últimos tres años, y la propiedad no tiene carácter histórico calificante.",
+          "citations": [
+            {
+              "passage_id": "hcd-sb9-fact-sheet-2026-04#11",
+              "quote": "Has been occupied by a tenant in the last three years. SB 9 provisions also do not apply to:  A parcel where units were withdrawn from the rental market pursuant to the Ellis Act\nin the last 15 years."
+            },
+            {
+              "passage_id": "ca-gov-65852-21#4",
+              "quote": "A contributing structure within a historic district included on the State Historic Resources Inventory, as defined in Section 5020.1 of the Public Resources Code, or historic property or district pursuant to a city or county ordinance."
+            }
+          ]
+        },
+        {
+          "text": "La regla coincidente establece que las normas objetivas de zonificación, subdivisión y diseño no pueden tener el efecto de impedir físicamente la construcción de hasta dos unidades.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-65852-21#5",
+              "quote": "The local agency shall not impose objective zoning standards, objective subdivision standards, and objective design standards that would have the effect of physically precluding the construction of up to two units or that would physically preclude either of the two units from being at least 800 square feet in floor area."
+            }
+          ]
+        },
+        {
+          "text": "Cada unidad tiene derecho a tener al menos 800 pies cuadrados de superficie habitable; ninguna norma local puede impedir que se alcance ese tamaño mínimo.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-65852-21#5",
+              "quote": "that would physically preclude either of the two units from being at least 800 square feet in floor area."
+            }
+          ]
+        },
+        {
+          "text": "Respecto a retranqueos (distancias mínimas al lindero), no se puede exigir retranqueo para una estructura existente o para una estructura construida en el mismo lugar y con las mismas dimensiones que la estructura existente; en los demás casos, el municipio puede exigir hasta cuatro pies desde los linderos laterales y traseros.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-65852-21#5",
+              "quote": "no setback shall be required for an existing structure or a structure constructed in the same location and to the same dimensions as an existing structure."
+            },
+            {
+              "passage_id": "ca-gov-65852-21#5",
+              "quote": "a local agency may require a setback of up to four feet from the side and rear lot lines."
+            }
+          ]
+        },
+        {
+          "text": "Si no se realiza una división de lote bajo SB 9, la regla de interacción indica que el terreno puede recibir hasta dos unidades principales bajo SB 9, además de las ADU (unidades de vivienda accesoria) y JADU (unidades de vivienda accesoria junior) que la ley de ADU permitiría de forma independiente.",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#140",
+              "quote": "When an SB 9 lot split has not occurred, the lot is eligible to receive up to two primary units\nunder SB 9, as well as whatever combination of ADUs and JADUs it would otherwise be\nentitled to under ADU Law if SB 9 was not being used."
+            }
+          ]
+        },
+        {
+          "text": "Esta combinación puede resultar en un número total de unidades en el terreno mayor al que permitiría cualquiera de las dos leyes por separado; sin embargo, si se superan cuatro unidades en total, el municipio no estaría obligado a aprobar una división de lote bajo SB 9.",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#140",
+              "quote": "if ADU Law is used on its own or in combination with SB 9 to create\nmore than four total units on the lot, a local agency is not required to approve a lot split under\nSB 9."
+            }
+          ]
+        },
+        {
+          "text": "Las unidades principales creadas bajo SB 9 son distintas de las ADU y JADU y deben ser aprobadas de forma ministerial (es decir, sin discreción por parte de la autoridad local, solo verificando el cumplimiento de los requisitos objetivos).",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#139",
+              "quote": "These\nprimary units are distinct from ADUs and JADUs created under ADU Law and must be\napproved ministerially."
+            }
+          ]
+        }
+      ],
+      "withheld_texts": [],
+      "input_tokens": 2671,
+      "output_tokens": 1160
+    },
+    {
+      "case_id": "san-jose-lot-split-en",
+      "language": "en",
+      "rule_ids": [
+        "sb9-urban-lot-split",
+        "sb9-lot-split-adu-interaction"
+      ],
+      "offered_passages": 6,
+      "claims_generated": 7,
+      "claims_shown": 7,
+      "claims_withheld": 0,
+      "claims_all_citations_verified": 1.0,
+      "citations_on_shown_claims": 10,
+      "withheld_reasons": [],
+      "withheld_citation_failures": 0,
+      "claims": [
+        {
+          "text": "The matched rule allows San Jose to approve a lot split ministerially — meaning without discretionary review — if all statutory conditions are met.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66411-7#1",
+              "quote": "a local agency shall ministerially approve, as set forth in this section, a parcel map for an urban lot split only if the local agency determines that the parcel map for the urban lot split meets all the following requirements"
+            }
+          ]
+        },
+        {
+          "text": "The confirmed facts satisfy the lot-size condition: neither resulting lot may be smaller than 40 percent of the original parcel's area.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66411-7#1",
+              "quote": "one parcel shall not be smaller than 40 percent of the lot area of the original parcel proposed for subdivision"
+            }
+          ]
+        },
+        {
+          "text": "The confirmed facts also satisfy the history-of-ownership conditions: the parcel was not itself created by a prior SB 9 split, and no related party has previously split an adjacent parcel under SB 9.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66411-7#5",
+              "quote": "The parcel has not been established through prior exercise of an urban lot split as provided for in this section."
+            },
+            {
+              "passage_id": "ca-gov-66411-7#5",
+              "quote": "Neither the owner of the parcel being subdivided nor any person acting in concert with the owner has previously subdivided an adjacent parcel using an urban lot split as provided for in this section."
+            }
+          ]
+        },
+        {
+          "text": "The confirmed facts also satisfy several site-protection conditions: the parcel is not on a protected site, no protected housing would be demolished, no Ellis Act withdrawal occurred in the last 15 years, and the parcel has not been tenant-occupied in the last three years.",
+          "citations": [
+            {
+              "passage_id": "hcd-sb9-fact-sheet-2026-04#11",
+              "quote": "Has been occupied by a tenant in the last three years. SB 9 provisions also do not apply to:  A parcel where units were withdrawn from the rental market pursuant to the Ellis Act in the last 15 years."
+            }
+          ]
+        },
+        {
+          "text": "The confirmed facts satisfy the historic-resource conditions: the parcel is not a historic landmark site, and the proposal does not alter a contributing structure or exterior structural wall in a historic district.",
+          "citations": [
+            {
+              "passage_id": "ca-gov-66411-7#5",
+              "quote": "A contributing structure located within either a historic district that is included on the California Register of Historical Resources or within a historic district listed or designated pursuant to a city or county ordinance."
+            },
+            {
+              "passage_id": "ca-gov-66411-7#5",
+              "quote": "An existing exterior structural wall of a structure located within either a historic district that is included on the California Register of Historical Resources or within a historic district listed or designated pursuant to a city or county ordinance."
+            }
+          ]
+        },
+        {
+          "text": "If a qualifying lot split does occur, each of the two resulting parcels is capped at two total units; those two units may be a combination of primary units, ADUs (accessory dwelling units), and JADUs (junior accessory dwelling units, which are units of no more than 500 square feet contained entirely within a single-family residence).",
+          "citations": [
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#139",
+              "quote": "SB 9 requires the local agency to approve up to two units on each parcel but specifically states that only two units are allowed per parcel, despite what ADU Law would otherwise allow. Those two units could be two primary \"SB 9 units,\" or one primary unit and one ADU, or one primary unit and one JADU. But in no case is a local agency required to permit more than two units on either of the two parcels resulting from an SB 9 lot split."
+            },
+            {
+              "passage_id": "hcd-adu-handbook-2026-03#102",
+              "quote": "A \"junior accessory dwelling unit\" or JADU is a unit that is no more than 500 square feet of interior livable space in size and contained entirely within a single-family residence."
+            }
+          ]
+        },
+        {
+          "text": "The matched rule notes that the applicant must generally sign a principal-residence affidavit; the source passage describes SB 9 as requiring such owner-occupancy commitments as part of the lot-split pathway, and the applicant should confirm with San Jose whether a signed affidavit will be required at the time of application.",
+          "citations": [
+            {
+              "passage_id": "hcd-sb9-fact-sheet-2026-04#11",
+              "quote": "Parcels previously created under SB 9 lot split provisions are not eligible for further lot splits."
+            }
+          ]
+        }
+      ],
+      "withheld_texts": [],
+      "input_tokens": 2884,
+      "output_tokens": 1053
+    }
+  ],
+  "staff_questions": [
+    {
+      "case_id": "davis-adu-detached-en",
+      "language": "en",
+      "questions": 7,
+      "with_rule_or_fact_pointer": 7,
+      "local_record": true,
+      "texts": [
+        "Does the City confirm which of the three processing categories—State Exempt, Ministerial, or Non-Ministerial—applies to my proposed new detached ADU on an existing single-family lot, and which specific application forms and checklists I should submit?",
+        "Has the City adopted a post-2019 ADU ordinance that has been accepted by HCD, and if so, can staff provide a copy so I can confirm which standards govern my project?",
+        "Does the City apply the state-protected 16-foot height limit for my detached ADU, or does my parcel qualify for the 18-foot allowance based on proximity to a major transit stop or high-quality transit corridor?",
+        "Does the City require off-street parking for my new detached ADU, and does my parcel qualify for any of the no-parking conditions—such as being within a half-mile walking distance of public transit or within one block of a car-share vehicle?",
+        "Does the City confirm that it will not impose an owner-occupancy requirement on my single-family lot, and what, if any, minimum rental-term condition does the City require for the ADU?",
+        "Does the City confirm that local lot-coverage, floor-area-ratio, or open-space standards will not prevent me from building a detached ADU of at least 800 square feet with four-foot side and rear setbacks?",
+        "After I submit a complete application for my new detached ADU, does the City confirm it will issue a written completeness determination within 15 business days and a final approval or denial decision within 60 calendar days?"
+      ]
+    },
+    {
+      "case_id": "davis-adu-detached-es-unknown-permits",
+      "language": "es",
+      "questions": 7,
+      "with_rule_or_fact_pointer": 7,
+      "local_record": true,
+      "texts": [
+        "¿Cuál de las tres categorías de procesamiento de la Ciudad de Davis (State Exempt, Ministerial o Non-Ministerial) se aplica a mi proyecto de unidad de vivienda accesoria (ADU) nueva y separada en un lote con una vivienda unifamiliar existente, y qué formulario de solicitud, lista de requisitos y tarifas corresponden a esa categoría según la guía de enero de 2026?",
+        "¿Cuenta la Ciudad de Davis con una ordenanza de ADU adoptada y presentada ante HCD después de la carta de asistencia técnica del 8 de octubre de 2025, y es esa ordenanza la norma vigente que rige mi solicitud?",
+        "Si mi solicitud de ADU está completa, ¿confirma la Ciudad que tomará una decisión de aprobación o denegación dentro del plazo de 60 días calendario que establece el Código de Gobierno, dado que ya existe una vivienda unifamiliar en el lote?",
+        "Para una ADU separada de nueva construcción en este lote, ¿cuál es la altura máxima que la Ciudad permite actualmente, y reconoce la Ciudad la protección estatal de al menos 16 pies, o de 18 pies si el lote está a media milla a pie de una parada de tránsito mayor o un corredor de tránsito de alta calidad?",
+        "¿Cuál es el tamaño máximo de superficie habitable interior que la Ciudad permite para una ADU separada en este lote, y confirma la Ciudad que al menos se permiten 850 pies cuadrados para una ADU de un dormitorio o estudio, y 1,000 pies cuadrados para una de dos o más dormitorios?",
+        "¿Exige la Ciudad algún espacio de estacionamiento para esta ADU separada, o aplica alguna de las condiciones de exención estatal —como estar a media milla a pie de transporte público— que eliminaría ese requisito?",
+        "¿Hay en el lote alguna unidad de vivienda construida sin permisos que yo deba declarar o regularizar antes o durante el trámite de esta nueva ADU, y cuenta la Ciudad con un proceso específico para la legalización de unidades no permitidas construidas antes del 1 de enero de 2020?"
+      ]
+    },
+    {
+      "case_id": "woodland-adu-conversion-legalize-en",
+      "language": "en",
+      "questions": 7,
+      "with_rule_or_fact_pointer": 7,
+      "local_record": true,
+      "texts": [
+        "Does the City have the current adopted text of Municipal Code § 17.84.030 and a complete application checklist available at the counter, given that the February 2026 ADU ordinance amendments were recently adopted?",
+        "Does the City offer the optional confidential pre-application inspection for an unpermitted ADU built before January 1, 2020, and where is the substandard-condition checklist published?",
+        "Will the City confirm in writing which specific violations, if any, it believes prevent ministerial approval of the unpermitted conversion, so that I can understand what remediation is needed?",
+        "Does the City treat my project as an existing-space conversion eligible for no-setback treatment under state law, and what building, health-and-safety, or fire corrections will it require before issuing permits?",
+        "Does the City impose any parking requirement for this conversion ADU, and does it consider the property to satisfy any of the state no-parking conditions, such as being within one-half mile walking distance of public transit?",
+        "Does the City require that the ADU be rented for a minimum term, and if so, what is the minimum rental period it imposes?",
+        "What is the current fee schedule for an ADU legalization or conversion application, and does the City charge any utility connection or capacity fees for this type of project?"
+      ]
+    },
+    {
+      "case_id": "fresno-adu-multifamily-es",
+      "language": "es",
+      "questions": 7,
+      "with_rule_or_fact_pointer": 6,
+      "local_record": false,
+      "texts": [
+        "¿Tiene la Ciudad de Fresno una ordenanza local vigente sobre ADUs, y podría proporcionarme el formulario de solicitud, la lista de verificación de documentos requeridos y el programa de tarifas actuales?",
+        "¿Cuántos días hábiles tarda la Ciudad de Fresno en emitir la determinación escrita de completitud de una solicitud de ADU, y cuál es el proceso de apelación en caso de denegación?",
+        "Para una conversión de espacio no habitable dentro de un edificio multifamiliar existente, ¿aplica la Ciudad de Fresno retiros laterales y traseros de cuatro pies, o exige retiros distintos?",
+        "¿Permite la Ciudad de Fresno añadir hasta ocho ADUs separados en el mismo lote multifamiliar, y cuáles son los estándares de altura que aplica localmente a esas unidades separadas?",
+        "¿Cuántas unidades no habitables del edificio multifamiliar existente reconoce la Ciudad de Fresno como elegibles para conversión a ADU, y cómo documenta o verifica ese recuento?",
+        "Para los ADUs de conversión dentro de la propiedad multifamiliar, ¿exige la Ciudad de Fresno espacios de estacionamiento adicionales, o reconoce alguna de las condiciones de exención de estacionamiento previstas en la ley estatal?",
+        "¿Aplica la Ciudad de Fresno un límite máximo de superficie habitable inferior a 850 pies cuadrados para ADUs de una habitación o inferior a 1,000 pies cuadrados para ADUs de dos o más habitaciones en propiedades multifamiliares?"
+      ]
+    },
+    {
+      "case_id": "davis-jadu-en",
+      "language": "en",
+      "questions": 7,
+      "with_rule_or_fact_pointer": 7,
+      "local_record": true,
+      "texts": [
+        "Does the City classify a JADU application on an existing single-family lot under the 'State Exempt,' 'Ministerial,' or 'Non-Ministerial' processing category as described in the January 2026 handout?",
+        "Can City staff confirm which ADU ordinance is currently operative — specifically whether a post-2019 ordinance has been adopted and accepted by HCD, superseding the 2019 version flagged in HCD's October 2025 letter?",
+        "Does the City confirm that once my JADU application is deemed complete, the 60-calendar-day approval-or-denial period applies given that an existing single-family dwelling is already on my lot?",
+        "What specific application forms and submittal checklist does the City currently require for a JADU on an existing single-family residence?",
+        "Does the City prepare or require the recorded deed restriction limiting the JADU to no more than 500 square feet and prohibiting separate sale, or is that the applicant's responsibility to record?",
+        "Does the City require a separate entrance and an efficiency kitchen for the JADU to meet local standards, and are there any local specifications for those features beyond the state minimums?",
+        "If my application is deemed incomplete or is denied, what written notice and appeal process does the City provide under its current procedures?"
+      ]
+    },
+    {
+      "case_id": "sacramento-two-unit-en",
+      "language": "en",
+      "questions": 5,
+      "with_rule_or_fact_pointer": 5,
+      "local_record": false,
+      "texts": [
+        "Does the City of Sacramento have a current local ADU and SB 9 ordinance, and can staff provide the official application form, submittal checklist, and fee schedule for a two-unit SB 9 project?",
+        "Does the City of Sacramento apply any local objective development standards to SB 9 two-unit projects, and if so, can staff confirm those standards would not physically prevent two units or prevent either unit from reaching 800 square feet on this parcel?",
+        "Does the City of Sacramento require any local historic-district determination or locally designated landmark review as part of the SB 9 ministerial application process, even if the parcel is not individually listed?",
+        "Does the City of Sacramento accept a combined SB 9 two-unit application alongside an ADU or JADU application on the same parcel, and does it process them together on the same 60-day ministerial timeline?",
+        "Does the City of Sacramento impose any local owner-occupancy requirement or any rental-duration condition beyond the state minimum of rentals longer than 30 days for units created under SB 9?"
+      ]
+    },
+    {
+      "case_id": "sacramento-two-unit-es",
+      "language": "es",
+      "questions": 5,
+      "with_rule_or_fact_pointer": 5,
+      "local_record": false,
+      "texts": [
+        "¿Puede proporcionarme la ordenanza local vigente de Sacramento sobre SB 9, el formulario de solicitud oficial, la lista de verificación de requisitos y el programa de tarifas aplicable a un proyecto de dos unidades?",
+        "¿Confirma la Ciudad que mi predio en zona residencial unifamiliar califica para la aprobación ministerial de dos unidades bajo SB 9 (Gov. Code § 65852.21) una vez verificados los datos del sitio en sus registros internos?",
+        "¿Existen estándares objetivos locales de Sacramento —tales como retiros, altura, cobertura de lote o acceso— que la Ciudad aplicaría a este proyecto de dos unidades bajo SB 9?",
+        "¿Permite Sacramento combinar las dos unidades de SB 9 con una ADU y una JADU adicionales en el mismo lote sin necesidad de una división de lote, conforme a la interacción entre SB 9 y la ley estatal de ADU?",
+        "¿Cuál es el proceso de revisión del departamento de planificación para una solicitud ministerial de SB 9 en Sacramento y ante qué ventanilla o funcionario debo presentarla?"
+      ]
+    },
+    {
+      "case_id": "san-jose-lot-split-en",
+      "language": "en",
+      "questions": 5,
+      "with_rule_or_fact_pointer": 5,
+      "local_record": false,
+      "texts": [
+        "Does the City of San José have a current local SB 9 ordinance, and can staff provide the official application form, submittal checklist, and fee schedule for an urban lot split?",
+        "Does the City of San José require the SB 9 principal-residence affidavit to be submitted with the initial application, or at a later stage in the approval process?",
+        "Does the City of San José have a locally adopted minimum lot size for SB 9 urban lot splits that differs from the state default, and if so, what is that minimum?",
+        "Does the City of San José's planning counter process SB 9 urban lot-split applications ministerially without discretionary review, and is there any locally required pre-application meeting?",
+        "After an SB 9 lot split is recorded, does the City of San José allow each resulting parcel to utilize the state ADU and JADU rules to reach the two-unit maximum, or does the City apply additional local restrictions on unit combinations?"
+      ]
+    }
+  ],
+  "errors": []
+}

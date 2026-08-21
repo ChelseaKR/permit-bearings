@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "description": "Confirmed-fact intakes used to measure citation grounding of generated explanations and the shape of drafted staff questions. Each case is run through the deterministic matcher, then the explanation prompt; the score is how many of the model's claims carry citations that resolve verbatim against the committed corpus. All facts are synthetic.",
+  "cases": [
+    {
+      "case_id": "davis-adu-detached-en",
+      "language": "en",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "davis-adu-detached-es-unknown-permits",
+      "language": "es",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "unknown"
+      }
+    },
+    {
+      "case_id": "woodland-adu-conversion-legalize-en",
+      "language": "en",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "woodland",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "yes"
+      }
+    },
+    {
+      "case_id": "fresno-adu-multifamily-es",
+      "language": "es",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "fresno",
+        "primary_dwelling_status": "existing_multifamily",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "davis-jadu-en",
+      "language": "en",
+      "intake": {
+        "project_type": "jadu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "sacramento-two-unit-en",
+      "language": "en",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      }
+    },
+    {
+      "case_id": "sacramento-two-unit-es",
+      "language": "es",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      }
+    },
+    {
+      "case_id": "san-jose-lot-split-en",
+      "language": "en",
+      "intake": {
+        "project_type": "lot_split",
+        "jurisdiction": "san-jose",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "lot_split_on_historic_landmark_site": "no",
+        "lot_split_alters_historic_district_resource": "no",
+        "parcel_created_by_sb9_split": "no",
+        "adjacent_sb9_split_same_actor": "no",
+        "proposed_lot_ratio_compliant": "yes",
+        "proposed_lot_size_compliant": "yes"
+      }
+    }
+  ]
+}

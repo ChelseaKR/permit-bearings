@@ -228,7 +228,9 @@ _NAME_NOISE = re.compile(
 
 
 def normalize_jurisdiction_name(value: str) -> str:
-    value = unicodedata.normalize("NFKC", value).strip().strip(".,;:")
+    decomposed = unicodedata.normalize("NFKD", value)
+    value = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+    value = value.strip().strip(".,;:")
     value = _NAME_NOISE.sub("", value)
     value = re.sub(r"\s+", " ", value)
     return value.casefold()

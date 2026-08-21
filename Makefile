@@ -54,4 +54,16 @@ evidence-export-check:
 serve-ai:
 	PYTHONPATH=src .venv/bin/python -m permit_pathways.ai
 
+# Live evaluation of the runtime AI layer; needs a configured provider.
+# Results are dated and name the provider/model so a committed number is
+# always traceable to one run (see evals/ai/README.md).
+AI_EVAL_PREFIX ?= $(shell date -u +%Y-%m-%d)-$(or $(PERMIT_AI_PROVIDER),anthropic)-$(subst .,-,$(or $(PERMIT_AI_MODEL),claude-sonnet-5))
+ai-eval:
+	PYTHONPATH=src .venv/bin/python -m permit_pathways.ai.eval intake \
+		--cases evals/ai/intake-cases.json \
+		--output evals/ai/results/$(AI_EVAL_PREFIX)-intake.json
+	PYTHONPATH=src .venv/bin/python -m permit_pathways.ai.eval grounding \
+		--cases evals/ai/grounding-cases.json \
+		--output evals/ai/results/$(AI_EVAL_PREFIX)-grounding.json
+
 verify: install lint type test security bundle-check copy-check evidence-export-check

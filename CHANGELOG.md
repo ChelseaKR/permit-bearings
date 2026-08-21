@@ -7,6 +7,32 @@ published a versioned release.
 
 ### Added
 
+- An evaluation harness for the runtime AI layer, `python -m
+  permit_pathways.ai.eval` (`make ai-eval`), with two committed case sets
+  under `evals/ai/`: 40 synthetic bilingual natural-language intake cases
+  (25 English, 15 Spanish; ADU, JADU, SB 9 two-unit and lot split; including
+  deliberately underspecified and inference-tempting descriptions) with gold
+  extractions, scored per field on exact match and separately on abstention
+  versus gap-filling; and 8 confirmed-fact cases scored on how many
+  generated claims carry citations that verify verbatim against the corpus.
+  A result file records provider, model, prompt versions, UTC date, and Git
+  commit, and a test refuses a result without that provenance. Two recorded
+  live runs on Amazon Bedrock `global.anthropic.claude-sonnet-4-6` (the
+  model this AWS account can invoke; Sonnet 5 is not enabled on it) are
+  committed: intake 40/40 project types and jurisdictions, 97.0% per-field
+  exact match, 96.6% abstention where the text did not say, 3.4% gap-filling
+  (4 of 116), 0% wrong values, 85% of cases fully correct; grounding 59 of
+  59 claims shown with verified citations and 0 withheld, 50 staff questions
+  with 98% carrying a resolvable pointer. Building the harness surfaced two
+  fixes that ship with it: jurisdiction names are matched without diacritics
+  (`Los Ángeles`, `San José`), and grounding passages are now interleaved
+  across matched rules so a long match list cannot starve the last rules of
+  source text (two earlier runs the same day withheld 2 and 3 of about 60
+  claims for exactly that reason, each a citation the verifier correctly
+  rejected). Withheld-claim reasons now include the offending quote.
+
+### Added
+
 - The optional runtime AI service directed by ADR 0004, as the new
   `permit_pathways.ai` package behind the `ai` extra (`uv sync --extra ai`;
   `make serve-ai`). `facts.py` pins the intake vocabulary to the matcher's
