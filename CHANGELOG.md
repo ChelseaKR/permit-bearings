@@ -7,6 +7,20 @@ published a versioned release.
 
 ### Fixed
 
+- The required `standards` check passes again on a repository whose only
+  change was its GitHub name. The repo was renamed from `permit-pathways` to
+  `permit-bearings`; the pinned conformance checker resolved the private
+  applicability entry by checkout basename, found nothing, defaulted the
+  publication state to `restricted`, and scored a release-workflow control the
+  entry marks N/A. `.github/workflows/standards.yml` now pins the head of
+  portfolio-standards PR #97 (current main plus the key rename). That newer
+  checker also enforces DOC-11, so the README's Standards Conformance table
+  gained a `State and evidence` header, an explicit `Applies —` / `N/A —` state
+  on every row, and rows for Performance, AI Development Measurement, Incident
+  Response, and Data Governance that state what exists and what does not. The
+  remaining items in issue #74 (tag pin, `.standards-version`) wait on that PR
+  merging.
+
 - The published San Diego ordinance scan now matches the checks that produced
   it. `data/conformance/results/san-diego.json` was generated on 2026-07-27
   and copied the `size-cap-conflict` check's `state_law` text; that check was

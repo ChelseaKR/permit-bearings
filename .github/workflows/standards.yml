@@ -27,7 +27,10 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ChelseaKR/portfolio-standards
-          ref: 225bfbb6fe011539616309395deb78259f2571fc
+          # Pinned to the head of portfolio-standards PR #97 (main + the
+          # applicability key rename for this repo's GitHub rename). Re-pin to a
+          # released tag once that PR merges; see issue #74.
+          ref: 9ef3ba10d7c2b3abffc9d16d86dc204f6c95c6db
           ssh-key: ${{ secrets.STANDARDS_DEPLOY_KEY }}
           path: .standards
           persist-credentials: false
