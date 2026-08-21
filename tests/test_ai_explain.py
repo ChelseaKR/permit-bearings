@@ -119,8 +119,8 @@ def test_explanation_keeps_verified_claims_and_withholds_the_rest() -> None:
     assert explanation.claims[0].citations[0].url.startswith("https://")
     reasons = {w.text: w.reasons for w in explanation.withheld}
     assert any("does not occur" in r for r in reasons["Two citations, one altered."])
-    assert reasons["Cites something never offered."] == (
-        "ca-gov-66315#0: passage was not offered",
+    assert reasons["Cites something never offered."][0].startswith(
+        "ca-gov-66315#0: passage was not offered (quote: "
     )
     assert reasons["No citation at all."] == ("no citation",)
     assert ("", ("empty claim",)) in [(w.text, w.reasons) for w in explanation.withheld]

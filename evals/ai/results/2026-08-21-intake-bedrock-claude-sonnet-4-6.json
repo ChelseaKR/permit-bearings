@@ -1,0 +1,2092 @@
+{
+  "run": {
+    "status": "recorded_live_run",
+    "kind": "intake",
+    "run_on": "2026-08-21",
+    "provider": "bedrock",
+    "model": "global.anthropic.claude-sonnet-4-6",
+    "prompt_versions": {
+      "intake": "intake-v1",
+      "explain": "explain-v1",
+      "staff_questions": "staff-questions-v1"
+    },
+    "commit": "358206a6b2d066316ebeb4194828c768a624fed3",
+    "scoring": {
+      "field_exact_match": "predicted value equals gold, including unknown==unknown",
+      "abstained_when_should": "gold is unknown and the model returned unknown",
+      "filled_when_unknown": "gold is unknown and the model returned a concrete value (the defect)",
+      "claims_all_citations_verified": "claim shown only if every cited quote occurs verbatim in the named corpus document"
+    }
+  },
+  "cases_file": "evals/ai/intake-cases.json",
+  "summary": {
+    "all": {
+      "cases": 40,
+      "project_type_accuracy": 1.0,
+      "jurisdiction_accuracy": 1.0,
+      "fields_scored": 201,
+      "field_exact_match": 0.9701,
+      "gold_unknown_fields": 116,
+      "abstained_when_should": 0.9655,
+      "filled_when_unknown": 0.0345,
+      "gold_known_fields": 85,
+      "known_field_exact": 0.9765,
+      "known_field_missed": 0.0235,
+      "known_field_wrong": 0.0,
+      "cases_fully_correct": 0.85
+    },
+    "by_language": {
+      "en": {
+        "cases": 25,
+        "project_type_accuracy": 1.0,
+        "jurisdiction_accuracy": 1.0,
+        "fields_scored": 128,
+        "field_exact_match": 0.9688,
+        "gold_unknown_fields": 75,
+        "abstained_when_should": 0.96,
+        "filled_when_unknown": 0.04,
+        "gold_known_fields": 53,
+        "known_field_exact": 0.9811,
+        "known_field_missed": 0.0189,
+        "known_field_wrong": 0.0,
+        "cases_fully_correct": 0.84
+      },
+      "es": {
+        "cases": 15,
+        "project_type_accuracy": 1.0,
+        "jurisdiction_accuracy": 1.0,
+        "fields_scored": 73,
+        "field_exact_match": 0.9726,
+        "gold_unknown_fields": 41,
+        "abstained_when_should": 0.9756,
+        "filled_when_unknown": 0.0244,
+        "gold_known_fields": 32,
+        "known_field_exact": 0.9688,
+        "known_field_missed": 0.0312,
+        "known_field_wrong": 0.0,
+        "cases_fully_correct": 0.8667
+      }
+    }
+  },
+  "cases": [
+    {
+      "case_id": "en-adu-detached-davis-bus-stop",
+      "language": "en",
+      "tags": [
+        "adu",
+        "unmapped-details",
+        "abstain"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "davis",
+        "predicted": "davis",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_detached",
+          "predicted": "new_detached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [
+        "600 sq ft",
+        "lot is 5,000 sq ft",
+        "there's a bus stop two blocks away"
+      ],
+      "input_tokens": 4204,
+      "output_tokens": 409
+    },
+    {
+      "case_id": "en-adu-garage-conversion-woodland",
+      "language": "en",
+      "tags": [
+        "adu",
+        "conversion"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "woodland",
+        "predicted": "woodland",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "conversion",
+          "predicted": "conversion",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4194,
+      "output_tokens": 385
+    },
+    {
+      "case_id": "en-adu-unpermitted-2015-sacramento",
+      "language": "en",
+      "tags": [
+        "adu",
+        "legalization"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "sacramento",
+        "predicted": "sacramento",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "unknown",
+          "predicted": "conversion",
+          "outcome": "filled_when_unknown"
+        },
+        "unpermitted_existing": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [
+        "studio over my garage",
+        "built in 2015"
+      ],
+      "input_tokens": 4196,
+      "output_tokens": 386
+    },
+    {
+      "case_id": "en-adu-attached-county-unincorporated",
+      "language": "en",
+      "tags": [
+        "adu",
+        "county"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "yolo-county",
+        "predicted": "yolo-county",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_attached",
+          "predicted": "new_attached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4199,
+      "output_tokens": 394
+    },
+    {
+      "case_id": "en-adu-no-jurisdiction",
+      "language": "en",
+      "tags": [
+        "adu",
+        "abstain-jurisdiction"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": null,
+        "predicted": null,
+        "status": "unknown",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_detached",
+          "predicted": "new_detached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4185,
+      "output_tokens": 363
+    },
+    {
+      "case_id": "en-adu-out-of-state-city",
+      "language": "en",
+      "tags": [
+        "adu",
+        "abstain-jurisdiction",
+        "trap"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": null,
+        "predicted": null,
+        "status": "unresolved",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "adu_project_form": {
+          "gold": "new_detached",
+          "predicted": "new_detached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4187,
+      "output_tokens": 373
+    },
+    {
+      "case_id": "en-adu-multifamily-existing",
+      "language": "en",
+      "tags": [
+        "adu",
+        "multifamily"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "fresno",
+        "predicted": "fresno",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_multifamily",
+          "predicted": "existing_multifamily",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "conversion",
+          "predicted": "conversion",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [
+        "fourplex",
+        "two ADUs",
+        "storage rooms on the ground floor"
+      ],
+      "input_tokens": 4199,
+      "output_tokens": 408
+    },
+    {
+      "case_id": "en-adu-proposed-primary",
+      "language": "en",
+      "tags": [
+        "adu",
+        "proposed"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "elk-grove",
+        "predicted": "elk-grove",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "proposed_single_family",
+          "predicted": "proposed_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_detached",
+          "predicted": "new_detached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "unknown",
+          "outcome": "missed"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4197,
+      "output_tokens": 379
+    },
+    {
+      "case_id": "en-adu-same-footprint-rebuild",
+      "language": "en",
+      "tags": [
+        "adu",
+        "rebuild"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "chico",
+        "predicted": "chico",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "adu_project_form": {
+          "gold": "same_footprint_rebuild",
+          "predicted": "same_footprint_rebuild",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "unknown",
+          "predicted": "no",
+          "outcome": "filled_when_unknown"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4201,
+      "output_tokens": 386
+    },
+    {
+      "case_id": "en-jadu-bedroom-davis",
+      "language": "en",
+      "tags": [
+        "jadu"
+      ],
+      "project_type": {
+        "gold": "jadu",
+        "predicted": "jadu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "davis",
+        "predicted": "davis",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4200,
+      "output_tokens": 386
+    },
+    {
+      "case_id": "en-jadu-unpermitted-abstain",
+      "language": "en",
+      "tags": [
+        "jadu",
+        "abstain"
+      ],
+      "project_type": {
+        "gold": "jadu",
+        "predicted": "jadu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "santa-rosa",
+        "predicted": "santa-rosa",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [
+        "about 450 square feet",
+        "using the back bedroom"
+      ],
+      "input_tokens": 4189,
+      "output_tokens": 376
+    },
+    {
+      "case_id": "en-two-unit-sb9-basic",
+      "language": "en",
+      "tags": [
+        "two_unit",
+        "sb9"
+      ],
+      "project_type": {
+        "gold": "two_unit",
+        "predicted": "two_unit",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "sacramento",
+        "predicted": "sacramento",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "sf_zone": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "two_unit_contributing_historic_location": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "two_unit_individually_listed_historic_property": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [
+        "owner-occupied for 10 years"
+      ],
+      "input_tokens": 4232,
+      "output_tokens": 419
+    },
+    {
+      "case_id": "en-two-unit-tenant-history",
+      "language": "en",
+      "tags": [
+        "two_unit",
+        "sb9",
+        "tenant"
+      ],
+      "project_type": {
+        "gold": "two_unit",
+        "predicted": "two_unit",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "berkeley",
+        "predicted": "berkeley",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_contributing_historic_location": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_individually_listed_historic_property": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4203,
+      "output_tokens": 376
+    },
+    {
+      "case_id": "en-two-unit-ellis-historic",
+      "language": "en",
+      "tags": [
+        "two_unit",
+        "sb9",
+        "ellis",
+        "historic"
+      ],
+      "project_type": {
+        "gold": "two_unit",
+        "predicted": "two_unit",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "pasadena",
+        "predicted": "pasadena",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_contributing_historic_location": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_individually_listed_historic_property": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4209,
+      "output_tokens": 391
+    },
+    {
+      "case_id": "en-lot-split-ratio-and-size",
+      "language": "en",
+      "tags": [
+        "lot_split",
+        "sb9"
+      ],
+      "project_type": {
+        "gold": "lot_split",
+        "predicted": "lot_split",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "san-jose",
+        "predicted": "san-jose",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_on_historic_landmark_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_alters_historic_district_resource": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "parcel_created_by_sb9_split": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "adjacent_sb9_split_same_actor": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "proposed_lot_ratio_compliant": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "proposed_lot_size_compliant": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [
+        "10,000 square foot single-family lot",
+        "two roughly equal lots, about 5,000 each"
+      ],
+      "input_tokens": 4229,
+      "output_tokens": 454
+    },
+    {
+      "case_id": "en-lot-split-prior-sb9-split",
+      "language": "en",
+      "tags": [
+        "lot_split",
+        "sb9",
+        "prior-split"
+      ],
+      "project_type": {
+        "gold": "lot_split",
+        "predicted": "lot_split",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "oakland",
+        "predicted": "oakland",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_on_historic_landmark_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_alters_historic_district_resource": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "parcel_created_by_sb9_split": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "adjacent_sb9_split_same_actor": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "proposed_lot_ratio_compliant": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "proposed_lot_size_compliant": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [
+        "two years ago"
+      ],
+      "input_tokens": 4202,
+      "output_tokens": 386
+    },
+    {
+      "case_id": "en-lot-split-adjacent-same-owner",
+      "language": "en",
+      "tags": [
+        "lot_split",
+        "sb9",
+        "adjacent"
+      ],
+      "project_type": {
+        "gold": "lot_split",
+        "predicted": "lot_split",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "long-beach",
+        "predicted": "long-beach",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "yes",
+          "outcome": "filled_when_unknown"
+        },
+        "sf_zone": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_on_historic_landmark_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_alters_historic_district_resource": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "parcel_created_by_sb9_split": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "adjacent_sb9_split_same_actor": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "proposed_lot_ratio_compliant": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "proposed_lot_size_compliant": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [
+        "One new lot would be about 30% of the original"
+      ],
+      "input_tokens": 4209,
+      "output_tokens": 398
+    },
+    {
+      "case_id": "en-ambiguous-second-unit",
+      "language": "en",
+      "tags": [
+        "ambiguous",
+        "abstain-project-type"
+      ],
+      "project_type": {
+        "gold": "unknown",
+        "predicted": "unknown",
+        "outcome": "abstained_correctly"
+      },
+      "jurisdiction": {
+        "gold": "davis",
+        "predicted": "davis",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {},
+      "unmapped_details": [],
+      "input_tokens": 4186,
+      "output_tokens": 348
+    },
+    {
+      "case_id": "en-underspecified-backyard",
+      "language": "en",
+      "tags": [
+        "ambiguous",
+        "abstain-project-type"
+      ],
+      "project_type": {
+        "gold": "unknown",
+        "predicted": "unknown",
+        "outcome": "abstained_correctly"
+      },
+      "jurisdiction": {
+        "gold": "modesto",
+        "predicted": "modesto",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {},
+      "unmapped_details": [
+        "maybe a shed or a room"
+      ],
+      "input_tokens": 4193,
+      "output_tokens": 359
+    },
+    {
+      "case_id": "en-inference-trap-suburban",
+      "language": "en",
+      "tags": [
+        "two_unit",
+        "trap",
+        "abstain"
+      ],
+      "project_type": {
+        "gold": "two_unit",
+        "predicted": "two_unit",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "roseville",
+        "predicted": "roseville",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_contributing_historic_location": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_individually_listed_historic_property": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [
+        "normal suburban neighborhood"
+      ],
+      "input_tokens": 4193,
+      "output_tokens": 370
+    },
+    {
+      "case_id": "en-adu-irrelevant-noise",
+      "language": "en",
+      "tags": [
+        "adu",
+        "noise"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "davis",
+        "predicted": "davis",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_detached",
+          "predicted": "new_detached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [
+        "Our house was built in 1962"
+      ],
+      "input_tokens": 4221,
+      "output_tokens": 393
+    },
+    {
+      "case_id": "en-adu-mixed-signals",
+      "language": "en",
+      "tags": [
+        "adu",
+        "ambiguous-form"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "stockton",
+        "predicted": "stockton",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "adu_project_form": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "unpermitted_existing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4189,
+      "output_tokens": 362
+    },
+    {
+      "case_id": "es-adu-garaje-woodland-sin-permisos",
+      "language": "es",
+      "tags": [
+        "adu",
+        "conversion",
+        "legalization"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "woodland",
+        "predicted": "woodland",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "conversion",
+          "predicted": "conversion",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [
+        "construimos nosotros en 2015"
+      ],
+      "input_tokens": 4209,
+      "output_tokens": 409
+    },
+    {
+      "case_id": "es-adu-casita-patio-davis",
+      "language": "es",
+      "tags": [
+        "adu",
+        "abstain"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "davis",
+        "predicted": "davis",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_detached",
+          "predicted": "new_detached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [
+        "unos 55 metros cuadrados"
+      ],
+      "input_tokens": 4200,
+      "output_tokens": 389
+    },
+    {
+      "case_id": "es-adu-condado-yolo",
+      "language": "es",
+      "tags": [
+        "adu",
+        "county"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "yolo-county",
+        "predicted": "yolo-county",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_attached",
+          "predicted": "new_attached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [
+        "zona no incorporada del Condado de Yolo"
+      ],
+      "input_tokens": 4214,
+      "output_tokens": 420
+    },
+    {
+      "case_id": "es-adu-sin-ciudad",
+      "language": "es",
+      "tags": [
+        "adu",
+        "abstain-jurisdiction"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": null,
+        "predicted": null,
+        "status": "unknown",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_detached",
+          "predicted": "new_detached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4202,
+      "output_tokens": 372
+    },
+    {
+      "case_id": "es-adu-edificio-multifamiliar",
+      "language": "es",
+      "tags": [
+        "adu",
+        "multifamily"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "los-angeles",
+        "predicted": "los-angeles",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_multifamily",
+          "predicted": "existing_multifamily",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "conversion",
+          "predicted": "conversion",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [
+        "edificio de seis apartamentos",
+        "cuarto de lavandería"
+      ],
+      "input_tokens": 4218,
+      "output_tokens": 423
+    },
+    {
+      "case_id": "es-jadu-recamara",
+      "language": "es",
+      "tags": [
+        "jadu"
+      ],
+      "project_type": {
+        "gold": "jadu",
+        "predicted": "jadu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "fresno",
+        "predicted": "fresno",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4206,
+      "output_tokens": 393
+    },
+    {
+      "case_id": "es-jadu-abstain-permisos",
+      "language": "es",
+      "tags": [
+        "jadu",
+        "abstain"
+      ],
+      "project_type": {
+        "gold": "jadu",
+        "predicted": "jadu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "salinas",
+        "predicted": "salinas",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [
+        "el cuarto del fondo"
+      ],
+      "input_tokens": 4189,
+      "output_tokens": 378
+    },
+    {
+      "case_id": "es-two-unit-sb9",
+      "language": "es",
+      "tags": [
+        "two_unit",
+        "sb9"
+      ],
+      "project_type": {
+        "gold": "two_unit",
+        "predicted": "two_unit",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "sacramento",
+        "predicted": "sacramento",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_contributing_historic_location": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "two_unit_individually_listed_historic_property": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4227,
+      "output_tokens": 406
+    },
+    {
+      "case_id": "es-two-unit-inquilinos",
+      "language": "es",
+      "tags": [
+        "two_unit",
+        "sb9",
+        "tenant"
+      ],
+      "project_type": {
+        "gold": "two_unit",
+        "predicted": "two_unit",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "oakland",
+        "predicted": "oakland",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_contributing_historic_location": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_individually_listed_historic_property": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4201,
+      "output_tokens": 372
+    },
+    {
+      "case_id": "es-lot-split-proporcion",
+      "language": "es",
+      "tags": [
+        "lot_split",
+        "sb9"
+      ],
+      "project_type": {
+        "gold": "lot_split",
+        "predicted": "lot_split",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "san-jose",
+        "predicted": "san-jose",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "yes",
+          "predicted": "unknown",
+          "outcome": "missed"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_on_historic_landmark_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_alters_historic_district_resource": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "parcel_created_by_sb9_split": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        },
+        "adjacent_sb9_split_same_actor": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "proposed_lot_ratio_compliant": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "proposed_lot_size_compliant": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [
+        "lote unifamiliar de 900 metros cuadrados",
+        "dos lotes de aproximadamente la mitad cada uno"
+      ],
+      "input_tokens": 4212,
+      "output_tokens": 430
+    },
+    {
+      "case_id": "es-lot-split-humedal",
+      "language": "es",
+      "tags": [
+        "lot_split",
+        "sb9",
+        "protected-site"
+      ],
+      "project_type": {
+        "gold": "lot_split",
+        "predicted": "lot_split",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "santa-cruz",
+        "predicted": "santa-cruz",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "yes",
+          "outcome": "filled_when_unknown"
+        },
+        "sf_zone": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "lot_split_on_historic_landmark_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_alters_historic_district_resource": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "parcel_created_by_sb9_split": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "adjacent_sb9_split_same_actor": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "proposed_lot_ratio_compliant": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "proposed_lot_size_compliant": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4196,
+      "output_tokens": 382
+    },
+    {
+      "case_id": "es-ambiguo-segunda-unidad",
+      "language": "es",
+      "tags": [
+        "ambiguous",
+        "abstain-project-type"
+      ],
+      "project_type": {
+        "gold": "unknown",
+        "predicted": "unknown",
+        "outcome": "abstained_correctly"
+      },
+      "jurisdiction": {
+        "gold": "davis",
+        "predicted": "davis",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {},
+      "unmapped_details": [],
+      "input_tokens": 4191,
+      "output_tokens": 348
+    },
+    {
+      "case_id": "es-trampa-colonia",
+      "language": "es",
+      "tags": [
+        "two_unit",
+        "trap",
+        "abstain"
+      ],
+      "project_type": {
+        "gold": "two_unit",
+        "predicted": "two_unit",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "bakersfield",
+        "predicted": "bakersfield",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_contributing_historic_location": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_individually_listed_historic_property": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4201,
+      "output_tokens": 373
+    },
+    {
+      "case_id": "es-adu-ciudad-fuera-de-california",
+      "language": "es",
+      "tags": [
+        "adu",
+        "abstain-jurisdiction",
+        "trap"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": null,
+        "predicted": null,
+        "status": "unresolved",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_detached",
+          "predicted": "new_detached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4192,
+      "output_tokens": 388
+    },
+    {
+      "case_id": "mixed-spanglish-adu",
+      "language": "es",
+      "tags": [
+        "adu",
+        "mixed-language"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "riverside",
+        "predicted": "riverside",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_detached",
+          "predicted": "new_detached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4195,
+      "output_tokens": 383
+    },
+    {
+      "case_id": "en-adu-duplicate-city-county-name",
+      "language": "en",
+      "tags": [
+        "adu",
+        "jurisdiction-ambiguity"
+      ],
+      "project_type": {
+        "gold": "adu",
+        "predicted": "adu",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "sacramento-county",
+        "predicted": "sacramento-county",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "primary_dwelling_status": {
+          "gold": "existing_single_family",
+          "predicted": "existing_single_family",
+          "outcome": "exact"
+        },
+        "adu_project_form": {
+          "gold": "new_detached",
+          "predicted": "new_detached",
+          "outcome": "exact"
+        },
+        "unpermitted_existing": {
+          "gold": "no",
+          "predicted": "no",
+          "outcome": "exact"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4189,
+      "output_tokens": 377
+    },
+    {
+      "case_id": "en-two-unit-affordable-demolition",
+      "language": "en",
+      "tags": [
+        "two_unit",
+        "sb9",
+        "protected-housing"
+      ],
+      "project_type": {
+        "gold": "two_unit",
+        "predicted": "two_unit",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "alameda",
+        "predicted": "alameda",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "demolishes_protected_housing": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_contributing_historic_location": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "two_unit_individually_listed_historic_property": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4197,
+      "output_tokens": 374
+    },
+    {
+      "case_id": "en-lot-split-historic-district",
+      "language": "en",
+      "tags": [
+        "lot_split",
+        "sb9",
+        "historic"
+      ],
+      "project_type": {
+        "gold": "lot_split",
+        "predicted": "lot_split",
+        "outcome": "exact"
+      },
+      "jurisdiction": {
+        "gold": "sacramento",
+        "predicted": "sacramento",
+        "status": "extracted",
+        "correct": true
+      },
+      "fields": {
+        "in_urbanized_area": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "sf_zone": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "demolishes_protected_housing": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "tenant_occupied_last_3_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "ellis_withdrawal_last_15_years": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "on_protected_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_on_historic_landmark_site": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "lot_split_alters_historic_district_resource": {
+          "gold": "yes",
+          "predicted": "yes",
+          "outcome": "exact"
+        },
+        "parcel_created_by_sb9_split": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "adjacent_sb9_split_same_actor": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "proposed_lot_ratio_compliant": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        },
+        "proposed_lot_size_compliant": {
+          "gold": "unknown",
+          "predicted": "unknown",
+          "outcome": "abstained_correctly"
+        }
+      },
+      "unmapped_details": [],
+      "input_tokens": 4195,
+      "output_tokens": 365
+    }
+  ],
+  "errors": []
+}

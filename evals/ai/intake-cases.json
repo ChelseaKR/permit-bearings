@@ -1,0 +1,740 @@
+{
+  "schema_version": 1,
+  "description": "Natural-language intake cases with gold structured extractions. Gold follows the extraction policy in permit_pathways.ai.intake: ordinary-meaning readings are allowed ('my house' is an existing single-family home; 'backyard cottage' is a new detached ADU), but a fact the text does not state stays 'unknown'. Fields listed in gold are the material fields for the gold project type; 'unknown' in gold means the model should abstain. jurisdiction is the registry slug or null. All text is synthetic; no real applicant.",
+  "cases": [
+    {
+      "case_id": "en-adu-detached-davis-bus-stop",
+      "language": "en",
+      "tags": [
+        "adu",
+        "unmapped-details",
+        "abstain"
+      ],
+      "text": "I want to build a 600 sq ft detached unit behind my house in Davis, lot is 5,000 sq ft, there's a bus stop two blocks away.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "unknown"
+      }
+    },
+    {
+      "case_id": "en-adu-garage-conversion-woodland",
+      "language": "en",
+      "tags": [
+        "adu",
+        "conversion"
+      ],
+      "text": "We'd like to convert our detached garage into a rental apartment. The house is in Woodland. Nothing has been built without permits.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "woodland",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "en-adu-unpermitted-2015-sacramento",
+      "language": "en",
+      "tags": [
+        "adu",
+        "legalization"
+      ],
+      "text": "There's a studio over my garage in Sacramento that the previous owner built in 2015 without a permit. I want to make it legal.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "sacramento",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "unknown",
+        "unpermitted_existing": "yes"
+      }
+    },
+    {
+      "case_id": "en-adu-attached-county-unincorporated",
+      "language": "en",
+      "tags": [
+        "adu",
+        "county"
+      ],
+      "text": "Planning an attached in-law addition on the side of our single-family home in unincorporated Yolo County. No existing unpermitted construction.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "yolo-county",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_attached",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "en-adu-no-jurisdiction",
+      "language": "en",
+      "tags": [
+        "adu",
+        "abstain-jurisdiction"
+      ],
+      "text": "I'd like a backyard cottage for my mother behind our home. How do I start?",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": null,
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "unknown"
+      }
+    },
+    {
+      "case_id": "en-adu-out-of-state-city",
+      "language": "en",
+      "tags": [
+        "adu",
+        "abstain-jurisdiction",
+        "trap"
+      ],
+      "text": "Detached ADU on our lot in Reno. We haven't built anything without permits.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": null,
+        "primary_dwelling_status": "unknown",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "en-adu-multifamily-existing",
+      "language": "en",
+      "tags": [
+        "adu",
+        "multifamily"
+      ],
+      "text": "I own a fourplex in Fresno and want to add two ADUs by converting the storage rooms on the ground floor. Everything on site was permitted.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "fresno",
+        "primary_dwelling_status": "existing_multifamily",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "en-adu-proposed-primary",
+      "language": "en",
+      "tags": [
+        "adu",
+        "proposed"
+      ],
+      "text": "We're building a new single-family house on an empty lot in Elk Grove and want to include a detached ADU in the same plans.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "elk-grove",
+        "primary_dwelling_status": "proposed_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "en-adu-same-footprint-rebuild",
+      "language": "en",
+      "tags": [
+        "adu",
+        "rebuild"
+      ],
+      "text": "Our old detached workshop in Chico is falling apart. We want to tear it down and rebuild it in exactly the same spot and size as a small dwelling unit.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "chico",
+        "primary_dwelling_status": "unknown",
+        "adu_project_form": "same_footprint_rebuild",
+        "unpermitted_existing": "unknown"
+      }
+    },
+    {
+      "case_id": "en-jadu-bedroom-davis",
+      "language": "en",
+      "tags": [
+        "jadu"
+      ],
+      "text": "Can I turn a spare bedroom inside my house in Davis into a small junior unit with its own entrance and a kitchenette? Nothing was ever built without permits.",
+      "gold": {
+        "project_type": "jadu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "en-jadu-unpermitted-abstain",
+      "language": "en",
+      "tags": [
+        "jadu",
+        "abstain"
+      ],
+      "text": "Junior ADU inside our existing home in Santa Rosa, about 450 square feet, using the back bedroom.",
+      "gold": {
+        "project_type": "jadu",
+        "jurisdiction": "santa-rosa",
+        "primary_dwelling_status": "existing_single_family",
+        "unpermitted_existing": "unknown"
+      }
+    },
+    {
+      "case_id": "en-two-unit-sb9-basic",
+      "language": "en",
+      "tags": [
+        "two_unit",
+        "sb9"
+      ],
+      "text": "We want to build a second house on our single-family zoned lot in the City of Sacramento under SB 9. The lot is inside city limits. No tenants have lived there; it's been owner-occupied for 10 years. It's not historic and there are no wetlands or hazards.",
+      "gold": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      }
+    },
+    {
+      "case_id": "en-two-unit-tenant-history",
+      "language": "en",
+      "tags": [
+        "two_unit",
+        "sb9",
+        "tenant"
+      ],
+      "text": "Two-unit SB 9 project in Berkeley. The existing house would stay. We rented it to a family until last year. The zoning is R-1.",
+      "gold": {
+        "project_type": "two_unit",
+        "jurisdiction": "berkeley",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "yes",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "unknown",
+        "two_unit_contributing_historic_location": "unknown",
+        "two_unit_individually_listed_historic_property": "unknown"
+      }
+    },
+    {
+      "case_id": "en-two-unit-ellis-historic",
+      "language": "en",
+      "tags": [
+        "two_unit",
+        "sb9",
+        "ellis",
+        "historic"
+      ],
+      "text": "SB 9 duplex on my lot in Pasadena. The house is individually listed as a city landmark. We used the Ellis Act to take the rental off the market in 2018.",
+      "gold": {
+        "project_type": "two_unit",
+        "jurisdiction": "pasadena",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "unknown",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "unknown",
+        "ellis_withdrawal_last_15_years": "yes",
+        "on_protected_site": "unknown",
+        "two_unit_contributing_historic_location": "unknown",
+        "two_unit_individually_listed_historic_property": "yes"
+      }
+    },
+    {
+      "case_id": "en-lot-split-ratio-and-size",
+      "language": "en",
+      "tags": [
+        "lot_split",
+        "sb9"
+      ],
+      "text": "I want to split my 10,000 square foot single-family lot in San Jose into two roughly equal lots, about 5,000 each. The parcel has never been split before and neither have the neighbors' lots. No tenants in the last three years, no Ellis Act history.",
+      "gold": {
+        "project_type": "lot_split",
+        "jurisdiction": "san-jose",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "unknown",
+        "lot_split_on_historic_landmark_site": "unknown",
+        "lot_split_alters_historic_district_resource": "unknown",
+        "parcel_created_by_sb9_split": "no",
+        "adjacent_sb9_split_same_actor": "no",
+        "proposed_lot_ratio_compliant": "yes",
+        "proposed_lot_size_compliant": "yes"
+      }
+    },
+    {
+      "case_id": "en-lot-split-prior-sb9-split",
+      "language": "en",
+      "tags": [
+        "lot_split",
+        "sb9",
+        "prior-split"
+      ],
+      "text": "Our parcel in Oakland was itself created by an SB 9 urban lot split two years ago. Can we split it again? It's single-family zoned.",
+      "gold": {
+        "project_type": "lot_split",
+        "jurisdiction": "oakland",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "unknown",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "unknown",
+        "lot_split_on_historic_landmark_site": "unknown",
+        "lot_split_alters_historic_district_resource": "unknown",
+        "parcel_created_by_sb9_split": "yes",
+        "adjacent_sb9_split_same_actor": "unknown",
+        "proposed_lot_ratio_compliant": "unknown",
+        "proposed_lot_size_compliant": "unknown"
+      }
+    },
+    {
+      "case_id": "en-lot-split-adjacent-same-owner",
+      "language": "en",
+      "tags": [
+        "lot_split",
+        "sb9",
+        "adjacent"
+      ],
+      "text": "Urban lot split in Long Beach. I already split the lot next door under SB 9 last year and want to do this one too. One new lot would be about 30% of the original.",
+      "gold": {
+        "project_type": "lot_split",
+        "jurisdiction": "long-beach",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "unknown",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "unknown",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "unknown",
+        "lot_split_on_historic_landmark_site": "unknown",
+        "lot_split_alters_historic_district_resource": "unknown",
+        "parcel_created_by_sb9_split": "unknown",
+        "adjacent_sb9_split_same_actor": "yes",
+        "proposed_lot_ratio_compliant": "no",
+        "proposed_lot_size_compliant": "unknown"
+      }
+    },
+    {
+      "case_id": "en-ambiguous-second-unit",
+      "language": "en",
+      "tags": [
+        "ambiguous",
+        "abstain-project-type"
+      ],
+      "text": "I want to add a second unit on my property in Davis. Not sure what the options are.",
+      "gold": {
+        "project_type": "unknown",
+        "jurisdiction": "davis"
+      }
+    },
+    {
+      "case_id": "en-underspecified-backyard",
+      "language": "en",
+      "tags": [
+        "ambiguous",
+        "abstain-project-type"
+      ],
+      "text": "Thinking about doing something in the backyard in Modesto, maybe a shed or a room. What permits do I need?",
+      "gold": {
+        "project_type": "unknown",
+        "jurisdiction": "modesto"
+      }
+    },
+    {
+      "case_id": "en-inference-trap-suburban",
+      "language": "en",
+      "tags": [
+        "two_unit",
+        "trap",
+        "abstain"
+      ],
+      "text": "We're in a normal suburban neighborhood in Roseville and want to put a second home on the lot under SB 9.",
+      "gold": {
+        "project_type": "two_unit",
+        "jurisdiction": "roseville",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "unknown",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "unknown",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "unknown",
+        "two_unit_contributing_historic_location": "unknown",
+        "two_unit_individually_listed_historic_property": "unknown"
+      }
+    },
+    {
+      "case_id": "en-adu-irrelevant-noise",
+      "language": "en",
+      "tags": [
+        "adu",
+        "noise"
+      ],
+      "text": "Hi! Long story. We moved to Davis in 2019, love the farmers market. Anyway, we want a little detached studio in the back for my dad. Our house was built in 1962 and we've pulled permits for everything. Thanks!!",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "en-adu-mixed-signals",
+      "language": "en",
+      "tags": [
+        "adu",
+        "ambiguous-form"
+      ],
+      "text": "We might convert the garage or build new in the yard, haven't decided. Property is in Stockton.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "stockton",
+        "primary_dwelling_status": "unknown",
+        "adu_project_form": "unknown",
+        "unpermitted_existing": "unknown"
+      }
+    },
+    {
+      "case_id": "es-adu-garaje-woodland-sin-permisos",
+      "language": "es",
+      "tags": [
+        "adu",
+        "conversion",
+        "legalization"
+      ],
+      "text": "Quiero convertir mi garaje en una vivienda pequeña para mi mamá. La casa está en Woodland y la construimos nosotros en 2015 sin permisos.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "woodland",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "yes"
+      }
+    },
+    {
+      "case_id": "es-adu-casita-patio-davis",
+      "language": "es",
+      "tags": [
+        "adu",
+        "abstain"
+      ],
+      "text": "Queremos construir una casita independiente en el patio trasero de nuestra casa en Davis, de unos 55 metros cuadrados.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "unknown"
+      }
+    },
+    {
+      "case_id": "es-adu-condado-yolo",
+      "language": "es",
+      "tags": [
+        "adu",
+        "county"
+      ],
+      "text": "Vivimos en una zona no incorporada del Condado de Yolo. Queremos agregar una unidad pegada a la casa, como una ampliación. Todo lo que hay está con permisos.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "yolo-county",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_attached",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "es-adu-sin-ciudad",
+      "language": "es",
+      "tags": [
+        "adu",
+        "abstain-jurisdiction"
+      ],
+      "text": "Tengo un terreno con mi casa y quiero poner una unidad separada atrás para rentarla. ¿Qué necesito?",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": null,
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "unknown"
+      }
+    },
+    {
+      "case_id": "es-adu-edificio-multifamiliar",
+      "language": "es",
+      "tags": [
+        "adu",
+        "multifamily"
+      ],
+      "text": "Soy dueño de un edificio de seis apartamentos en Los Ángeles y quiero convertir el cuarto de lavandería en una unidad más. Nunca hemos construido nada sin permiso.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "los-angeles",
+        "primary_dwelling_status": "existing_multifamily",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "es-jadu-recamara",
+      "language": "es",
+      "tags": [
+        "jadu"
+      ],
+      "text": "Me gustaría convertir una recámara dentro de mi casa en Fresno en una unidad junior pequeña con su propia entrada. La casa tiene todos sus permisos.",
+      "gold": {
+        "project_type": "jadu",
+        "jurisdiction": "fresno",
+        "primary_dwelling_status": "existing_single_family",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "es-jadu-abstain-permisos",
+      "language": "es",
+      "tags": [
+        "jadu",
+        "abstain"
+      ],
+      "text": "Unidad junior dentro de nuestra casa actual en Salinas, usando el cuarto del fondo.",
+      "gold": {
+        "project_type": "jadu",
+        "jurisdiction": "salinas",
+        "primary_dwelling_status": "existing_single_family",
+        "unpermitted_existing": "unknown"
+      }
+    },
+    {
+      "case_id": "es-two-unit-sb9",
+      "language": "es",
+      "tags": [
+        "two_unit",
+        "sb9"
+      ],
+      "text": "Queremos construir una segunda casa en nuestro lote unifamiliar en la Ciudad de Sacramento bajo la ley SB 9. Siempre hemos vivido ahí nosotros, nunca se ha rentado. No es una propiedad histórica.",
+      "gold": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "unknown",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      }
+    },
+    {
+      "case_id": "es-two-unit-inquilinos",
+      "language": "es",
+      "tags": [
+        "two_unit",
+        "sb9",
+        "tenant"
+      ],
+      "text": "Proyecto de dos unidades SB 9 en Oakland. La casa existente se queda. Tuvimos inquilinos hasta el año pasado.",
+      "gold": {
+        "project_type": "two_unit",
+        "jurisdiction": "oakland",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "unknown",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "yes",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "unknown",
+        "two_unit_contributing_historic_location": "unknown",
+        "two_unit_individually_listed_historic_property": "unknown"
+      }
+    },
+    {
+      "case_id": "es-lot-split-proporcion",
+      "language": "es",
+      "tags": [
+        "lot_split",
+        "sb9"
+      ],
+      "text": "Quiero dividir mi lote unifamiliar de 900 metros cuadrados en San José en dos lotes de aproximadamente la mitad cada uno. El lote nunca se ha dividido antes.",
+      "gold": {
+        "project_type": "lot_split",
+        "jurisdiction": "san-jose",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "unknown",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "unknown",
+        "lot_split_on_historic_landmark_site": "unknown",
+        "lot_split_alters_historic_district_resource": "unknown",
+        "parcel_created_by_sb9_split": "no",
+        "adjacent_sb9_split_same_actor": "unknown",
+        "proposed_lot_ratio_compliant": "yes",
+        "proposed_lot_size_compliant": "unknown"
+      }
+    },
+    {
+      "case_id": "es-lot-split-humedal",
+      "language": "es",
+      "tags": [
+        "lot_split",
+        "sb9",
+        "protected-site"
+      ],
+      "text": "División de lote urbano en Santa Cruz. Parte del terreno es un humedal protegido. Es zona unifamiliar.",
+      "gold": {
+        "project_type": "lot_split",
+        "jurisdiction": "santa-cruz",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "unknown",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "yes",
+        "lot_split_on_historic_landmark_site": "unknown",
+        "lot_split_alters_historic_district_resource": "unknown",
+        "parcel_created_by_sb9_split": "unknown",
+        "adjacent_sb9_split_same_actor": "unknown",
+        "proposed_lot_ratio_compliant": "unknown",
+        "proposed_lot_size_compliant": "unknown"
+      }
+    },
+    {
+      "case_id": "es-ambiguo-segunda-unidad",
+      "language": "es",
+      "tags": [
+        "ambiguous",
+        "abstain-project-type"
+      ],
+      "text": "Quiero agregar otra unidad en mi propiedad en Davis pero no sé qué opciones hay.",
+      "gold": {
+        "project_type": "unknown",
+        "jurisdiction": "davis"
+      }
+    },
+    {
+      "case_id": "es-trampa-colonia",
+      "language": "es",
+      "tags": [
+        "two_unit",
+        "trap",
+        "abstain"
+      ],
+      "text": "Estamos en una colonia normal de casas en Bakersfield y queremos poner una segunda casa en el lote con la SB 9.",
+      "gold": {
+        "project_type": "two_unit",
+        "jurisdiction": "bakersfield",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "unknown",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "unknown",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "unknown",
+        "two_unit_contributing_historic_location": "unknown",
+        "two_unit_individually_listed_historic_property": "unknown"
+      }
+    },
+    {
+      "case_id": "es-adu-ciudad-fuera-de-california",
+      "language": "es",
+      "tags": [
+        "adu",
+        "abstain-jurisdiction",
+        "trap"
+      ],
+      "text": "Quiero una casita independiente detrás de mi casa en Tijuana. Todo está con permisos.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": null,
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "mixed-spanglish-adu",
+      "language": "es",
+      "tags": [
+        "adu",
+        "mixed-language"
+      ],
+      "text": "Queremos hacer un ADU detached en el backyard, la casa está en Riverside. No hay nada sin permiso.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "riverside",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "en-adu-duplicate-city-county-name",
+      "language": "en",
+      "tags": [
+        "adu",
+        "jurisdiction-ambiguity"
+      ],
+      "text": "Detached ADU behind our house in Sacramento County, outside any city. We've never built without permits.",
+      "gold": {
+        "project_type": "adu",
+        "jurisdiction": "sacramento-county",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      }
+    },
+    {
+      "case_id": "en-two-unit-affordable-demolition",
+      "language": "en",
+      "tags": [
+        "two_unit",
+        "sb9",
+        "protected-housing"
+      ],
+      "text": "SB 9 two-unit in Alameda. The existing structure is a deed-restricted affordable unit that we would have to demolish.",
+      "gold": {
+        "project_type": "two_unit",
+        "jurisdiction": "alameda",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "unknown",
+        "demolishes_protected_housing": "yes",
+        "tenant_occupied_last_3_years": "unknown",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "unknown",
+        "two_unit_contributing_historic_location": "unknown",
+        "two_unit_individually_listed_historic_property": "unknown"
+      }
+    },
+    {
+      "case_id": "en-lot-split-historic-district",
+      "language": "en",
+      "tags": [
+        "lot_split",
+        "sb9",
+        "historic"
+      ],
+      "text": "Lot split in Sacramento. The property is in a locally designated historic district and the split would require removing an exterior wall of the contributing house.",
+      "gold": {
+        "project_type": "lot_split",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "unknown",
+        "sf_zone": "unknown",
+        "demolishes_protected_housing": "unknown",
+        "tenant_occupied_last_3_years": "unknown",
+        "ellis_withdrawal_last_15_years": "unknown",
+        "on_protected_site": "unknown",
+        "lot_split_on_historic_landmark_site": "unknown",
+        "lot_split_alters_historic_district_resource": "yes",
+        "parcel_created_by_sb9_split": "unknown",
+        "adjacent_sb9_split_same_actor": "unknown",
+        "proposed_lot_ratio_compliant": "unknown",
+        "proposed_lot_size_compliant": "unknown"
+      }
+    }
+  ]
+}

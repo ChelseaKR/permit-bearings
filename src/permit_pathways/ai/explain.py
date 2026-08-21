@@ -186,12 +186,16 @@ def grounding_passages(
     """Passages from the matched rules' own source documents, most relevant first.
 
     Each rule contributes the passage holding its recorded excerpt (when that
-    excerpt verifies against the corpus) and the top lexical matches for the
-    rule's pathway, citation, and notes. Scope is the rules' declared
+    excerpt locates in the corpus) and the top lexical matches for the rule's
+    pathway, citation, and notes. Scope is the rules' declared
     ``source_dependencies``; nothing outside those documents is offered.
+    The ``limit`` is filled round-robin across rules — every rule's first
+    passage before any rule's second — so a long match list cannot starve
+    the last rules of grounding text.
     """
-    chosen: dict[str, Passage] = {}
+    per_rule_lists: list[list[Passage]] = []
     for rule in rules:
+        ordered: dict[str, Passage] = {}
         candidates = corpus.passages_for(rule.source_dependencies)
         excerpt = rule.citation.excerpt
         if excerpt:
@@ -200,7 +204,7 @@ def grounding_passages(
                 if match and match.passage_id:
                     passage = corpus.passage(match.passage_id)
                     if passage:
-                        chosen.setdefault(passage.passage_id, passage)
+                        ordered.setdefault(passage.passage_id, passage)
                     break
         query = " ".join(
             [
@@ -211,7 +215,14 @@ def grounding_passages(
             ]
         )
         for ranked in rank_passages(query, candidates, per_rule):
-            chosen.setdefault(ranked.passage.passage_id, ranked.passage)
+            ordered.setdefault(ranked.passage.passage_id, ranked.passage)
+        per_rule_lists.append(list(ordered.values()))
+    chosen: dict[str, Passage] = {}
+    depth = max((len(lst) for lst in per_rule_lists), default=0)
+    for position in range(depth):
+        for lst in per_rule_lists:
+            if position < len(lst):
+                chosen.setdefault(lst[position].passage_id, lst[position])
     return list(chosen.values())[:limit]
 
 
@@ -236,7 +247,9 @@ def _verify_claim(
         citation = _verify_citation(item, offered, corpus)
         citations.append(citation)
         if not citation.verified:
-            reasons.append(f"{citation.passage_id}: {citation.reason}")
+            reasons.append(
+                f"{citation.passage_id}: {citation.reason} (quote: {citation.quote[:120]!r})"
+            )
     if reasons:
         return WithheldClaim(text, tuple(reasons))
     return Claim(text, tuple(citations))
