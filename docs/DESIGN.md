@@ -439,7 +439,15 @@ static site calls only when the applicant asks for it:
 - **Staff questions** (`staff_questions.py`, `POST /staff-questions`).
   Drafted for the applicant's unresolved facts, matched rules, and whether
   the jurisdiction has a local record; pointers that do not resolve are
-  dropped; labeled drafts.
+  dropped; labeled drafts. Offered alone on the "needs staff review" state.
+- **Follow-up answers** (`explain.answer_question`, `POST /ask`). One
+  question, answered only from the matched rules' cited passages with the
+  same verifier; abstains with a staff question when they do not settle it.
+- **Budget** (`budget.py`). Every model-backed route is metered: a
+  per-client sliding window and a hard daily cap (in memory locally; a
+  DynamoDB conditional update when hosted). 429 `budget_exhausted` leaves the
+  deterministic result untouched. The provider marks the system prompt
+  cacheable so the stable prefix is reused across requests.
 - **Ordinance-to-rule drafting** (`rule_drafts.py`, CLI only, not a
   service endpoint). Proposes rule entries from one ordinance text; keeps a
   proposal only if its excerpt occurs verbatim in that text, its criteria
@@ -449,15 +457,19 @@ static site calls only when the applicant asks for it:
 
 The browser side is `assets/ai.js`, loaded after `demo.js` on `check.html`
 and inert until the applicant presses "Use AI assistance". Only then does the
-page probe `/health`, render the free-text field, and — on the next explicit
-action — send anything. With the service absent the page makes no request
-beyond its origin, the pinned form fields are exactly what ADR-0002's ledger
-describes, and the AI controls show "needs the service running". The
-service URL is the `permit-ai-service` meta tag and the page's
-`connect-src`; a hosted deployment changes both.
+page probe `/health` on each candidate origin in the `permit-ai-service`
+meta tag in order (local development first, then a hosted service), render
+the free-text field, and, on the next explicit action, send anything. Each
+citation links into the official source with a text fragment for the quoted
+words where the source is HTML. With the service absent the page makes no
+request beyond its origin, the pinned form fields are exactly what ADR-0002's
+ledger describes, and the AI controls show "needs the service running". The
+service URL list is the `permit-ai-service` meta tag and the page's
+`connect-src`; a hosted deployment adds to both. `deploy/ai-service/` holds
+a prepared AWS Lambda shape with a hard daily cap.
 
-Free-text question answering stays out of scope; anchoring to a matched rule
-set is what makes the citation check exact. The evaluation set and harness
+Open-ended question answering stays out of scope; the follow-up box answers
+only within a matched result, which is what keeps the citation check exact. The evaluation set and harness
 are in `evals/ai/`; the capability matrix carries the measured numbers and
 their limits. Nothing in this layer is imported by the matcher, the
 readiness evaluator, the build, or the bundle.

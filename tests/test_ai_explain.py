@@ -272,3 +272,116 @@ def test_staff_questions_without_local_record_and_error_paths() -> None:
             language="en",
             expected_rule_ids=["nope"],
         )
+
+
+def test_answer_question_grounds_abstains_and_validates() -> None:
+    from permit_pathways.ai.explain import (
+        answer_question,
+        answer_schema,
+        question_passages,
+    )
+
+    matched = matched_rules(DAVIS_ADU, RULES, None)
+    passages = question_passages("how many days does the city have", matched, CORPUS)
+    allowed = {s for r in matched for s in r.source_dependencies}
+    assert passages and all(p.source_id in allowed for p in passages)
+    good = _real_quote(passages[0].passage_id)
+    reply = json.dumps(
+        {
+            "claims": [
+                {
+                    "text": "Supported.",
+                    "citations": [
+                        {"passage_id": passages[0].passage_id, "quote": good}
+                    ],
+                },
+                {
+                    "text": "Unsupported.",
+                    "citations": [
+                        {
+                            "passage_id": passages[0].passage_id,
+                            "quote": "not in there at all whatsoever really",
+                        }
+                    ],
+                },
+            ],
+            "abstain": False,
+            "staff_question": "ignored when answered",
+        }
+    )
+    provider = ScriptedProvider([reply])
+    answer = answer_question(
+        question="  How many   days? ",
+        intake=DAVIS_ADU,
+        rules=RULES,
+        corpus=CORPUS,
+        provider=provider,
+        language="en",
+    )
+    assert answer.question == "How many days?"
+    assert [c.text for c in answer.claims] == ["Supported."] and len(
+        answer.withheld
+    ) == 1
+    assert (
+        answer.abstained is False and answer.staff_question == "ignored when answered"
+    )
+    assert answer.to_dict()["withheld_count"] == 1 and answer.prompt_version == "ask-v1"
+    assert "Applicant's question: How many days?" in provider.calls[0].user
+    assert provider.calls[0].schema == answer_schema()
+    abstain = answer_question(
+        question="What are the fees?",
+        intake=DAVIS_ADU,
+        rules=RULES,
+        corpus=CORPUS,
+        provider=ScriptedProvider(
+            ['{"claims": [], "abstain": true, "staff_question": "Ask about fees."}']
+        ),
+        language="es",
+    )
+    assert abstain.abstained is True and abstain.staff_question == "Ask about fees."
+    no_match = answer_question(
+        question="Anything?",
+        intake={"project_type": "two_unit", "jurisdiction": "davis", "sf_zone": "no"},
+        rules=RULES,
+        corpus=CORPUS,
+        provider=ScriptedProvider([]),
+        language="en",
+    )
+    assert no_match.abstained is True and no_match.rule_ids == ()
+    for bad_question, message in (("   ", "empty"), ("x" * 501, "longer than")):
+        with pytest.raises(ExplainError, match=message):
+            answer_question(
+                question=bad_question,
+                intake=DAVIS_ADU,
+                rules=RULES,
+                corpus=CORPUS,
+                provider=ScriptedProvider([]),
+                language="en",
+            )
+    with pytest.raises(ExplainError, match="language"):
+        answer_question(
+            question="q",
+            intake=DAVIS_ADU,
+            rules=RULES,
+            corpus=CORPUS,
+            provider=ScriptedProvider([]),
+            language="fr",
+        )
+    with pytest.raises(ExplainError, match="did not return JSON"):
+        answer_question(
+            question="q",
+            intake=DAVIS_ADU,
+            rules=RULES,
+            corpus=CORPUS,
+            provider=ScriptedProvider(["?"]),
+            language="en",
+        )
+    with pytest.raises(ExplainError, match="claims list"):
+        answer_question(
+            question="q",
+            intake=DAVIS_ADU,
+            rules=RULES,
+            corpus=CORPUS,
+            provider=ScriptedProvider(['{"claims": 1}']),
+            language="en",
+        )

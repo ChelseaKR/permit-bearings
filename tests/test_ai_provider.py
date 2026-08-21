@@ -105,6 +105,10 @@ def test_sdk_provider_returns_text_and_usage() -> None:
     assert completion.model == "served-model"
     assert provider.name == "anthropic" and provider.model == "m"
     call = provider._client.messages.calls[0]  # type: ignore[attr-defined]
+    assert call["system"] == [
+        {"type": "text", "text": "s", "cache_control": {"type": "ephemeral"}}
+    ]
+    assert completion.cache_read_input_tokens == 0
     assert call["output_config"]["format"]["type"] == "json_schema"
     assert call["output_config"]["effort"] == "medium"
     assert call["messages"] == [{"role": "user", "content": "u"}]

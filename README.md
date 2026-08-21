@@ -342,9 +342,11 @@ still needs a person.
     **Explain this result** control asks the service for a labeled
     plain-language explanation whose citations were verified against
     `corpus/`, with the withheld count shown, and for AI-drafted staff
-    questions. The matcher in this page is still the only thing that
-    produces the result; the service re-runs its own copy and refuses to
-    explain a different rule set.
+    questions; a follow-up question box answers only from those same cited
+    passages or hands back a question for staff. When material facts are
+    unknown, only the staff-question draft is offered. The matcher in this
+    page is still the only thing that produces the result; the service
+    re-runs its own copy and refuses to explain a different rule set.
 12. For the active, unedited made-up Woodland sample only, the browser checks
     the generated journey, route, readiness, fingerprint, source-review, and
     strict program-availability contracts. A missing, malformed, or expired
@@ -878,6 +880,9 @@ explanation sidecar and keeps a separate `/trust` route.
   is its browser side
 - `evals/ai/`: committed intake and grounding cases, results of recorded
   live runs, and the scoring contract
+- `deploy/ai-service/`: prepared AWS Lambda deployment of the AI service
+  with a hard daily request cap (Terraform; prototype showcase shape, not
+  the reviewed beta)
 - `src/permit_pathways/harness/`: verification runner and CLI
 - `data/rules/`: the cited rule base; `data/golden/`: Golden cases with
   explicit positive and negative rule-dependency IDs

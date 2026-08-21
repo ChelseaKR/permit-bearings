@@ -37,6 +37,8 @@ class Completion:
     input_tokens: int
     output_tokens: int
     stop_reason: str
+    cache_read_input_tokens: int = 0
+    cache_creation_input_tokens: int = 0
 
 
 class Provider(Protocol):
@@ -84,7 +86,17 @@ class SDKProvider:
             response = self._client.messages.create(
                 model=self._model,
                 max_tokens=max_tokens,
-                system=system,
+                # The system prompt is the stable prefix of every call of a
+                # kind; marking it cacheable lets the provider reuse it across
+                # requests (prefixes under the provider's minimum simply do not
+                # cache). Applicant content never enters the cached block.
+                system=[
+                    {
+                        "type": "text",
+                        "text": system,
+                        "cache_control": {"type": "ephemeral"},
+                    }
+                ],
                 messages=[{"role": "user", "content": user}],
                 output_config=output_config,
             )
@@ -114,6 +126,12 @@ class SDKProvider:
             input_tokens=int(getattr(usage, "input_tokens", 0) or 0),
             output_tokens=int(getattr(usage, "output_tokens", 0) or 0),
             stop_reason=stop_reason,
+            cache_read_input_tokens=int(
+                getattr(usage, "cache_read_input_tokens", 0) or 0
+            ),
+            cache_creation_input_tokens=int(
+                getattr(usage, "cache_creation_input_tokens", 0) or 0
+            ),
         )
 
 

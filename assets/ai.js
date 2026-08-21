@@ -15,19 +15,25 @@
   "use strict";
   if (typeof pageIs !== "function" || !pageIs("project")) return;
   const serviceMeta = document.querySelector('meta[name="permit-ai-service"]');
-  const SERVICE_URL = (serviceMeta?.content || "").replace(/\/+$/, "");
+  // One or more candidate origins, comma-separated, probed in order: the
+  // local development service first, then a hosted one. The first that
+  // answers /health is used for the rest of the page's life.
+  const SERVICE_CANDIDATES = (serviceMeta?.content || "")
+    .split(",").map(url => url.trim().replace(/\/+$/, "")).filter(Boolean);
   const panel = document.getElementById("aiAssist");
-  if (!SERVICE_URL || !panel) return;
+  if (!SERVICE_CANDIDATES.length || !panel) return;
 
   const REQUEST_TIMEOUT_MS = 120000;
+  const PROBE_TIMEOUT_MS = 4000;
+  let SERVICE_URL = null;
   let serviceHealth = null;
   let lastDraft = null;
 
   const t = () => STRINGS[lang].ai;
 
-  function fetchJsonWithTimeout(url, init) {
+  function fetchJsonWithTimeout(url, init, timeoutMs = REQUEST_TIMEOUT_MS) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     return fetch(url, {...init, signal: controller.signal, credentials: "omit"})
       .then(async response => {
         const body = await response.json().catch(() => null);
@@ -42,6 +48,21 @@
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(payload),
     });
+  }
+
+  function failureMessage(result) {
+    if (result.status === 429) return t().budgetExhausted;
+    if (result.status === 409) return t().matcherDisagreement;
+    return t().serviceError;
+  }
+
+  function sourceLink(citation) {
+    if (!citation.url) return "";
+    const isHtml = !/\.pdf(?:$|[?#])/i.test(citation.url);
+    const words = citation.quote.split(/\s+/).slice(0, 8).join(" ");
+    const href = isHtml ? `${citation.url}#:~:text=${encodeURIComponent(words)}` : citation.url;
+    const label = isHtml ? t().openSourceAt : t().openSource;
+    return ` <a href="${esc(href)}" rel="noopener noreferrer" target="_blank">${esc(label)}</a>`;
   }
 
   function valueLabel(name, value) {
@@ -75,12 +96,20 @@
     const button = document.getElementById("aiEnable");
     button.disabled = true;
     status.textContent = t().checking;
-    try {
-      const health = await fetchJsonWithTimeout(`${SERVICE_URL}/health`, {method: "GET"});
-      if (!health.ok || health.body?.status !== "ok") throw new Error("unhealthy");
-      serviceHealth = health.body;
-    } catch {
-      serviceHealth = null;
+    serviceHealth = null;
+    for (const candidate of SERVICE_CANDIDATES) {
+      try {
+        const health = await fetchJsonWithTimeout(`${candidate}/health`, {method: "GET"}, PROBE_TIMEOUT_MS);
+        if (health.ok && health.body?.status === "ok") {
+          serviceHealth = health.body;
+          SERVICE_URL = candidate;
+          break;
+        }
+      } catch {
+        // try the next candidate
+      }
+    }
+    if (!serviceHealth) {
       status.textContent = t().unavailable;
       button.disabled = false;
       return;
@@ -119,7 +148,7 @@
     }
     button.disabled = false;
     if (!result.ok) {
-      status.textContent = t().serviceError;
+      status.textContent = failureMessage(result);
       return;
     }
     status.textContent = "";
@@ -193,13 +222,15 @@
       <dd><strong>${esc(value)}</strong>${quote ? ` <span class="small">${esc(t().draftFrom(quote))}</span>` : ""}</dd></div>`;
   }
 
-  function resultPanelMarkup() {
+  function resultPanelMarkup(unresolvedOnly) {
+    const label = unresolvedOnly ? t().questionsOnly : t().explain;
     return `<div class="ai-result ca-box" id="aiResultPanel" lang="${lang}">
         <p class="ai-actions"><button class="ca-button ca-button-outline" type="button"
-          id="aiExplainButton">${esc(t().explain)}</button></p>
+          id="aiExplainButton">${esc(label)}</button></p>
         <p class="small" id="aiExplainStatus" role="status" aria-live="polite"></p>
         <div id="aiExplanation"></div>
         <div id="aiQuestions"></div>
+        <div id="aiAsk"></div>
       </div>`;
   }
 
@@ -208,8 +239,31 @@
     const results = document.getElementById("results");
     if (!results || document.getElementById("aiResultPanel")) return;
     if (!LAST_INTAKE || !results.querySelector("#resultsHeading")) return;
-    results.insertAdjacentHTML("beforeend", resultPanelMarkup());
-    document.getElementById("aiExplainButton").addEventListener("click", explainResult);
+    const unresolvedOnly = !Array.isArray(LAST_RESULTS);
+    results.insertAdjacentHTML("beforeend", resultPanelMarkup(unresolvedOnly));
+    document.getElementById("aiExplainButton").addEventListener(
+      "click", unresolvedOnly ? draftQuestionsOnly : explainResult);
+  }
+
+  async function draftQuestionsOnly() {
+    const button = document.getElementById("aiExplainButton");
+    const status = document.getElementById("aiExplainStatus");
+    button.disabled = true;
+    status.textContent = t().questionsLoading;
+    let questions;
+    try {
+      questions = await post("/staff-questions", {intake: {...LAST_INTAKE}, language: lang});
+    } catch {
+      questions = {ok: false};
+    }
+    if (!questions.ok) {
+      status.textContent = failureMessage(questions);
+      button.disabled = false;
+      return;
+    }
+    status.textContent = "";
+    renderQuestions(questions.body);
+    button.hidden = true;
   }
 
   async function explainResult() {
@@ -226,7 +280,7 @@
       explanation = {ok: false};
     }
     if (!explanation.ok) {
-      status.textContent = explanation.status === 409 ? t().matcherDisagreement : t().serviceError;
+      status.textContent = failureMessage(explanation);
       button.disabled = false;
       return;
     }
@@ -238,9 +292,76 @@
     } catch {
       questions = {ok: false};
     }
-    status.textContent = questions.ok ? "" : t().serviceError;
+    status.textContent = questions.ok ? "" : failureMessage(questions);
     if (questions.ok) renderQuestions(questions.body);
     button.hidden = true;
+    renderAskBox();
+  }
+
+  function renderAskBox() {
+    const out = document.getElementById("aiAsk");
+    if (!out) return;
+    out.lang = lang;
+    out.innerHTML = `<ca-field>
+        <label for="aiQuestion">${esc(t().askLabel)}</label>
+        <p class="small" id="aiQuestionHelp">${esc(t().askHelp)}</p>
+        <input id="aiQuestion" type="text" maxlength="500" aria-describedby="aiQuestionHelp">
+      </ca-field>
+      <p class="ai-actions"><button class="ca-button ca-button-outline" type="button" id="aiAskButton">${esc(t().ask)}</button></p>
+      <p class="small" id="aiAskStatus" role="status" aria-live="polite"></p>
+      <div id="aiAnswer"></div>`;
+    document.getElementById("aiAskButton").addEventListener("click", askQuestion);
+    document.getElementById("aiQuestion").addEventListener("keydown", event => {
+      if (event.key === "Enter") { event.preventDefault(); askQuestion(); }
+    });
+  }
+
+  async function askQuestion() {
+    const input = document.getElementById("aiQuestion");
+    const button = document.getElementById("aiAskButton");
+    const status = document.getElementById("aiAskStatus");
+    const question = input.value.trim();
+    if (!question) { input.focus(); return; }
+    button.disabled = true;
+    status.textContent = t().asking;
+    const matchedIds = Array.isArray(LAST_RESULTS) ? LAST_RESULTS.map(rule => rule.rule_id) : null;
+    let answer;
+    try {
+      answer = await post("/ask", {intake: {...LAST_INTAKE}, language: lang, matched_rule_ids: matchedIds, question});
+    } catch {
+      answer = {ok: false};
+    }
+    button.disabled = false;
+    if (!answer.ok) {
+      status.textContent = failureMessage(answer);
+      return;
+    }
+    status.textContent = "";
+    renderAnswer(answer.body);
+  }
+
+  function renderAnswer(body) {
+    const out = document.getElementById("aiAnswer");
+    const claims = body.claims.map(claim => {
+      const citations = claim.citations.map(c => `<li class="small">
+          <span class="ai-citation-label">${esc(t().citationSource)}</span>
+          ${esc(c.source_label || c.source_id)} (${esc(c.passage_id)}):
+          <q>${esc(c.quote)}</q>${sourceLink(c)}
+        </li>`).join("");
+      return `<li><p>${esc(claim.text)}</p><ul class="ai-citations">${citations}</ul></li>`;
+    }).join("");
+    const staffQuestion = body.staff_question
+      ? `<p><strong>${esc(t().askStaffQuestion)}</strong> ${esc(body.staff_question)}</p>` : "";
+    const body_ = body.abstained
+      ? `<p class="small ai-withheld">${esc(t().askAbstained)}</p>${staffQuestion}`
+      : `<ol class="ai-claims">${claims}</ol>${body.withheld_count
+          ? `<p class="small ai-withheld">${esc(t().withheld(body.withheld_count))}</p>` : ""}${staffQuestion}`;
+    out.innerHTML = `<h4 id="aiAnswerHeading" tabindex="-1">${esc(t().askHeading)}</h4>
+      <p class="small"><q>${esc(body.question)}</q></p>
+      <p class="small ai-label">${esc(body.label)}</p>
+      ${body_}
+      <p class="small">${esc(t().modelLine(body.model, body.prompt_version))}</p>`;
+    document.getElementById("aiAnswerHeading").focus();
   }
 
   function renderExplanation(body) {
@@ -249,8 +370,7 @@
       const citations = claim.citations.map(c => `<li class="small">
           <span class="ai-citation-label">${esc(t().citationSource)}</span>
           ${esc(c.source_label || c.source_id)} (${esc(c.passage_id)}):
-          <q>${esc(c.quote)}</q>
-          ${c.url ? ` <a href="${esc(c.url)}" rel="noopener noreferrer" target="_blank">${esc(t().openSource)}</a>` : ""}
+          <q>${esc(c.quote)}</q>${sourceLink(c)}
         </li>`).join("");
       return `<li><p>${esc(claim.text)}</p><ul class="ai-citations">${citations}</ul></li>`;
     }).join("");

@@ -22,6 +22,7 @@ from . import explain as explain_module
 from . import facts
 from . import intake as intake_module
 from . import staff_questions as staff_module
+from .budget import Budget, BudgetExhausted, budget_from_env
 from .corpus import CorpusIndex
 from .intake import IntakeError
 from .provider import Provider, ProviderError, ProviderSettings, provider_from_settings
@@ -48,6 +49,7 @@ class ServiceContext:
     registry: tuple[intake_module.JurisdictionEntry, ...]
     provider: Provider
     allowed_origins: tuple[str, ...]
+    budget: Budget | None = None
 
     @classmethod
     def load(
@@ -56,6 +58,7 @@ class ServiceContext:
         root: Path,
         provider: Provider,
         allowed_origins: tuple[str, ...] = DEFAULT_ORIGINS,
+        budget: Budget | None = None,
     ) -> "ServiceContext":
         import json
 
@@ -67,7 +70,7 @@ class ServiceContext:
             )
         )
         registry = intake_module.load_jurisdictions(registry_payload["jurisdictions"])
-        return cls(root, rules, corpus, registry, provider, allowed_origins)
+        return cls(root, rules, corpus, registry, provider, allowed_origins, budget)
 
     def health(self) -> dict[str, Any]:
         return {
@@ -78,8 +81,10 @@ class ServiceContext:
             "prompt_versions": {
                 "intake": intake_module.PROMPT_VERSION,
                 "explain": explain_module.PROMPT_VERSION,
+                "ask": explain_module.ASK_PROMPT_VERSION,
                 "staff_questions": staff_module.PROMPT_VERSION,
             },
+            "daily_cap": self.budget.daily_cap if self.budget else None,
             "rules": len(self.rules),
             "corpus_documents": len(self.corpus.documents),
             "corpus_skipped": sorted(self.corpus.skipped),
@@ -138,6 +143,14 @@ def guarded(
         raise _http_error(exception_type, 400, exc, "invalid_request") from exc
     except ProviderError as exc:
         raise _http_error(exception_type, 502, exc, "provider_unavailable") from exc
+    except BudgetExhausted as exc:
+        raise _http_error(exception_type, 429, exc, "budget_exhausted") from exc
+
+
+def charge(context: ServiceContext, client_id: str) -> None:
+    """Consume one model-backed request from the budget, if one is configured."""
+    if context.budget is not None:
+        context.budget.charge(client_id)
 
 
 def run_intake(context: ServiceContext, text: str, language: str) -> dict[str, Any]:
@@ -165,6 +178,24 @@ def run_explain(
     ).to_dict()
 
 
+def run_ask(
+    context: ServiceContext,
+    question: str,
+    intake: Mapping[str, Any],
+    language: str,
+    matched_rule_ids: list[str] | None,
+) -> dict[str, Any]:
+    return explain_module.answer_question(
+        question=question,
+        intake=validate_intake(intake),
+        rules=context.rules,
+        corpus=context.corpus,
+        provider=context.provider,
+        language=language,
+        expected_rule_ids=matched_rule_ids,
+    ).to_dict()
+
+
 def run_staff_questions(
     context: ServiceContext,
     intake: Mapping[str, Any],
@@ -183,7 +214,7 @@ def run_staff_questions(
 def create_app(context: ServiceContext) -> Any:
     """Build the FastAPI app around a loaded context. FastAPI is imported
     lazily so the rest of the package works without the `ai` extra."""
-    from fastapi import FastAPI, HTTPException
+    from fastapi import FastAPI, HTTPException, Request
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
 
@@ -195,6 +226,17 @@ def create_app(context: ServiceContext) -> Any:
         intake: dict[str, str]
         language: str = "en"
         matched_rule_ids: list[str] | None = None
+
+    class AskRequest(ResultRequest):
+        question: str = Field(
+            min_length=1, max_length=explain_module.MAX_QUESTION_CHARS
+        )
+
+    def client_id(request: Request) -> str:
+        forwarded = request.headers.get("x-forwarded-for", "")
+        if forwarded:
+            return forwarded.split(",")[0].strip()
+        return request.client.host if request.client else "unknown"
 
     app = FastAPI(
         title="Permit Bearings AI service",
@@ -213,28 +255,48 @@ def create_app(context: ServiceContext) -> Any:
     def health() -> dict[str, Any]:
         return context.health()
 
+    def metered(http: Request, compute: Callable[[], dict[str, Any]]) -> dict[str, Any]:
+        def charged() -> dict[str, Any]:
+            charge(context, client_id(http))
+            return compute()
+
+        return guarded(charged, HTTPException)
+
     @app.post("/intake/extract")
-    def intake_extract(request: IntakeRequest) -> dict[str, Any]:
-        return guarded(
-            lambda: run_intake(context, request.text, request.language), HTTPException
+    def intake_extract(request: IntakeRequest, http: Request) -> dict[str, Any]:
+        return metered(
+            http, lambda: run_intake(context, request.text, request.language)
         )
 
     @app.post("/explain")
-    def explain(request: ResultRequest) -> dict[str, Any]:
-        return guarded(
+    def explain(request: ResultRequest, http: Request) -> dict[str, Any]:
+        return metered(
+            http,
             lambda: run_explain(
                 context, request.intake, request.language, request.matched_rule_ids
             ),
-            HTTPException,
+        )
+
+    @app.post("/ask")
+    def ask(request: AskRequest, http: Request) -> dict[str, Any]:
+        return metered(
+            http,
+            lambda: run_ask(
+                context,
+                request.question,
+                request.intake,
+                request.language,
+                request.matched_rule_ids,
+            ),
         )
 
     @app.post("/staff-questions")
-    def staff_questions(request: ResultRequest) -> dict[str, Any]:
-        return guarded(
+    def staff_questions(request: ResultRequest, http: Request) -> dict[str, Any]:
+        return metered(
+            http,
             lambda: run_staff_questions(
                 context, request.intake, request.language, request.matched_rule_ids
             ),
-            HTTPException,
         )
 
     return app
@@ -247,6 +309,7 @@ def load_context_from_env(environ: Mapping[str, str] | None = None) -> ServiceCo
         root=repository_root(),
         provider=provider,
         allowed_origins=allowed_origins_from_env(environ),
+        budget=budget_from_env(environ),
     )
 
 
