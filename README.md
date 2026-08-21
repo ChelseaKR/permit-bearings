@@ -188,6 +188,11 @@ PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
 python3 scripts/build_demo_bundle.py                # after canonical JSON changes
 PERMIT_AI_PROVIDER=anthropic make serve-ai          # optional AI service (ADR 0004), needs ANTHROPIC_API_KEY
 PERMIT_AI_PROVIDER=bedrock PERMIT_AI_MODEL=global.anthropic.claude-sonnet-4-6 make serve-ai  # via AWS credentials
+make ai-eval                                        # live intake + grounding evaluation; writes evals/ai/results/
+PYTHONPATH=src .venv/bin/python -m permit_pathways.ai.rule_drafts \
+  --ordinance corpus/ordinances/capitola.txt --jurisdiction capitola \
+  --source-id capitola-muni-code-17-74 --source-label "Capitola Municipal Code, Ch. 17.74" \
+  --url https://www.codepublishing.com/CA/Capitola/html/Capitola17/Capitola1774.html  # unreviewed drafts to ai-drafts/
 ```
 
 The review-worklist CLI returns `0` for a valid clear queue, `1` for a valid
@@ -868,7 +873,9 @@ explanation sidecar and keeps a separate `/trust` route.
   fact vocabulary, corpus text index and citation verifier, lexical
   retrieval, provider adapter over the public `anthropic` SDK, intake
   extraction, grounded explanation, staff-question drafting, the FastAPI
-  app, and the evaluation harness; `assets/ai.js` is its browser side
+  app, the evaluation harness, and the ordinance-to-rule drafting CLI
+  whose output can only land in Git-ignored `ai-drafts/`; `assets/ai.js`
+  is its browser side
 - `evals/ai/`: committed intake and grounding cases, results of recorded
   live runs, and the scoring contract
 - `src/permit_pathways/harness/`: verification runner and CLI

@@ -7,6 +7,20 @@ published a versioned release.
 
 ### Added
 
+- `python -m permit_pathways.ai.rule_drafts`: the stretch item in ADR 0004,
+  as a CLI only. It asks the model for candidate rule entries in the
+  `data/rules` schema from one ordinance text and keeps a proposal only if
+  its `citation.excerpt` occurs verbatim in that text, its criteria use only
+  the intake vocabulary, and it loads through the real `screening.load_rules`
+  validator; rejections keep their reason. Output is a wrapper object marked
+  `unreviewed_ai_draft` in Git-ignored `ai-drafts/`, refused under
+  `data/rules`, with `verified_on` always null. A live trial on the
+  committed Capitola chapter accepted 3 proposals and rejected 3 whose
+  excerpts were not exact text. Nothing here is reviewed, registered, or
+  loadable by the matcher.
+
+### Added
+
 - The project-check page can now use the optional AI service (ADR 0004)
   without changing its static path. `assets/ai.js`, loaded after `demo.js`,
   renders a closed "Describe your project in your own words" disclosure above

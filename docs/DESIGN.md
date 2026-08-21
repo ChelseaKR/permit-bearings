@@ -440,6 +440,12 @@ static site calls only when the applicant asks for it:
   Drafted for the applicant's unresolved facts, matched rules, and whether
   the jurisdiction has a local record; pointers that do not resolve are
   dropped; labeled drafts.
+- **Ordinance-to-rule drafting** (`rule_drafts.py`, CLI only, not a
+  service endpoint). Proposes rule entries from one ordinance text; keeps a
+  proposal only if its excerpt occurs verbatim in that text, its criteria
+  use the intake vocabulary, and it loads through `screening.load_rules`;
+  writes a wrapper object marked `unreviewed_ai_draft` to Git-ignored
+  `ai-drafts/` and refuses `data/rules`. A person authors any real rule.
 
 The browser side is `assets/ai.js`, loaded after `demo.js` on `check.html`
 and inert until the applicant presses "Use AI assistance". Only then does the
