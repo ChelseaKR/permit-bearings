@@ -7,6 +7,33 @@ published a versioned release.
 
 ### Added
 
+- The project-check page can now use the optional AI service (ADR 0004)
+  without changing its static path. `assets/ai.js`, loaded after `demo.js`,
+  renders a closed "Describe your project in your own words" disclosure above
+  the form that does nothing until the applicant presses "Use AI assistance";
+  only then does the page probe the service named in the `permit-ai-service`
+  meta tag. If the service answers, a free-text field appears and "Draft my
+  answers" writes an AI draft of the same structured answers into the
+  ordinary form, each shown with the quote from the description it came
+  from, with unanswered questions left as "I'm not sure" under "I couldn't
+  tell from what you wrote" and details no question uses listed separately;
+  the applicant reviews and submits as before. After a result, "Explain this
+  result in plain language (AI-generated)" shows a labeled explanation whose
+  every statement cites verified source text, the count of withheld
+  statements, and AI-drafted staff questions. If the service is absent, the
+  control reports that and the page is the static experience it always was;
+  a browser check proves the page makes no request beyond its origin until
+  asked and exactly one failed probe afterwards. English and Spanish strings
+  live in the existing catalog. `check.html` and the reference server allow
+  `connect-src` to `127.0.0.1:8787` / `localhost:8787` only; a hosted
+  service changes both. The capability matrix now lists natural-language
+  intake, grounded explanation, and tailored staff questions as `Prototype`
+  with the measured numbers and their limits, `docs/DESIGN.md` section 3
+  describes the implemented layer, and `docs/DATA-FLOW.md`,
+  `docs/ACCESSIBILITY.md`, and `docs/I18N.md` record its boundaries.
+
+### Added
+
 - An evaluation harness for the runtime AI layer, `python -m
   permit_pathways.ai.eval` (`make ai-eval`), with two committed case sets
   under `evals/ai/`: 40 synthetic bilingual natural-language intake cases

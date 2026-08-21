@@ -3628,6 +3628,89 @@ tr:last-child td {
   margin: 0.45in;
 }
 
+/* Optional runtime AI assistance (ADR 0004). Rendered only on request. */
+.ai-assist-region {
+  margin: var(--s-4) 0;
+  max-width: var(--reading);
+}
+
+.ai-assist summary {
+  cursor: pointer;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0.5rem 0;
+}
+
+.ai-assist textarea {
+  border: 2px solid var(--black);
+  display: block;
+  font: inherit;
+  max-width: 100%;
+  min-height: 7rem;
+  padding: 0.6rem;
+  width: 100%;
+}
+
+.ai-actions {
+  margin: 0.8rem 0;
+}
+
+.ai-draft,
+.ai-result {
+  border-left: 0.3rem solid var(--primary-900);
+  margin: 1.2rem 0 0;
+  padding: 0.8rem 1rem;
+}
+
+.ai-draft-fields {
+  margin: 0.8rem 0;
+}
+
+.ai-draft-field {
+  margin: 0 0 0.6rem;
+}
+
+.ai-draft-field dt {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.ai-draft-field dd {
+  margin: 0.1rem 0 0;
+}
+
+.ai-label {
+  border-left: 0.3rem solid var(--yellow);
+  color: var(--ink-soft);
+  padding-left: 0.8rem;
+}
+
+.ai-claims > li,
+.ai-questions > li {
+  margin: 0 0 1rem;
+}
+
+.ai-citations {
+  list-style: none;
+  margin: 0.3rem 0 0;
+  padding: 0;
+}
+
+.ai-citations li {
+  border-left: 0.2rem solid var(--gray-300, #c9c9c9);
+  margin: 0.3rem 0;
+  padding-left: 0.6rem;
+}
+
+.ai-citation-label {
+  font-weight: 600;
+}
+
+.ai-withheld {
+  border-left: 0.3rem solid var(--yellow);
+  padding-left: 0.8rem;
+}
+
 @media print {
   body[data-page="project"] {
     background: #fff !important;

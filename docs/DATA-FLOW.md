@@ -610,11 +610,11 @@ applicant uses it, a model runs outside the browser, in that service's
 provider call. That path is described next; it still never runs a model inside
 the matcher, the evaluator, or the build.
 
-## Optional runtime AI service path (ADR 0004; planned, not yet in this repository)
+## Optional runtime AI service path (ADR 0004; prototype)
 
 `AGENTS.md` requires this inventory before an external model call is added.
-It describes the service as designed; when the implementation lands, the
-capability matrix will say what of it exists.
+It describes `permit_pathways.ai` as implemented; the capability matrix in
+`docs/PRODUCT-CONTEXT.md` carries status and measurements.
 
 ```text
 Applicant browser (check.html)
@@ -623,8 +623,8 @@ Applicant browser (check.html)
     |  "explain" control, and only if the service answered a health probe;
     |  otherwise the page is the static experience above and makes no request
     v
-Permit Bearings AI service (permit_pathways.ai; local by default,
-host to be decided)
+Permit Bearings AI service (permit_pathways.ai; 127.0.0.1:8787 by
+default, host to be decided)
     |   request body held in process memory for one request
     |   applicant content written to disk or logs: none
     |   applicant record store: none

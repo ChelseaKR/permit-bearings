@@ -9,19 +9,21 @@ relevant standards, cited official sources, and questions for local staff. The
 matcher is deterministic. Separate English and Spanish explanations are
 AI-assisted, review-pending drafts.
 
-**Runtime AI direction (ADR 0004, owner-directed, 2026-08-21):** the owner
-has decided to add AI to the applicant's path — natural-language intake that
-drafts the structured facts for the applicant to confirm, a grounded
-plain-language explanation whose every claim must cite a passage verified
-against the committed `corpus/`, and tailored questions for local staff —
-as a separate optional service that the static site calls when it is running.
-The deterministic matcher is not changed by that direction. As of this commit
-the service is **Planned**: the decision and its boundaries are recorded in
-[`docs/adr/0004-runtime-ai-at-the-edges.md`](docs/adr/0004-runtime-ai-at-the-edges.md)
-and the data flow in `docs/DATA-FLOW.md`; no runtime model call exists in
-this repository yet. Earlier statements that the project makes "no runtime
-external model calls" described a guarantee that is being deliberately
-retired; they now describe only the static site.
+**Runtime AI (ADR 0004, owner-directed, 2026-08-21) — Prototype:** an
+optional service, `permit_pathways.ai` (`make serve-ai`), adds AI at the
+edges of the applicant path: natural-language intake that drafts the
+matcher's own structured facts for the applicant to confirm, a plain-language
+explanation whose every statement must cite a passage the service verifies
+against the committed `corpus/` before display, and questions for local staff
+drafted for this applicant. The deterministic matcher is unchanged and is
+the only thing that produces a result. With the service absent, `check.html`
+is the static experience it always was and makes no request beyond its
+origin; with it running, the applicant turns the assistance on explicitly.
+Decision, boundaries, and what is still pending are in
+[`docs/adr/0004-runtime-ai-at-the-edges.md`](docs/adr/0004-runtime-ai-at-the-edges.md);
+the data flow in `docs/DATA-FLOW.md`; the measured evaluation in
+`evals/ai/`. Earlier statements that the project makes "no runtime external
+model calls" now describe only the static site.
 
 ## Quickstart
 
@@ -271,7 +273,7 @@ still needs a person.
 | Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. The proposed no-storage beta runbook still requires host request-metadata and operational-system review because those records sit outside application telemetry. Storage, telemetry, uploads, or external model calls would trigger a new architecture and operational review; the optional AI service directed by ADR 0004 is exactly such a change and will need its own operational review before any hosted deployment. |
 | Accessibility | Applies — Axe runs on all five public pages plus populated candidate-route and valid packet states; Lighthouse covers seven public page states. Browser tests also check 320px and 390px reflow, compact mobile navigation, the Spanish handoff language boundary, labeled mobile evidence records, document-level overflow, and the print summary's isolated print-media layout. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps physical-device, virtual-keyboard, keyboard, screen-reader, zoom, forced-colors, printed-output, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
 | Internationalization | Applies — `make verify` enforces English/Spanish catalog shape, stable option identifiers, formatter arity, static and formatter placeholders, nonblank singular/plural output, and a copy-leaf pseudo-expansion transform. This is structural automation only: it does not generate or render a complete pseudolocale catalog, and mixed-language acceptance and native Spanish semantic review remain pre-pilot work in `docs/I18N.md`. |
-| AI Evaluation | Applies — applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
+| AI Evaluation | Applies — the offline AI-assisted rule/explanation workflow has model-independent fixtures, and the runtime AI layer (ADR 0004) has a committed bilingual intake evaluation scored on per-field exact match and on abstention versus gap-filling, plus a citation-grounding evaluation counting claims whose quotes verify against the corpus (`evals/ai/`, harness `python -m permit_pathways.ai.eval`). Results are committed only from recorded live runs that name provider, model, date, and commit. Natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from any of these. |
 | Documentation | Applies — Capability status and public claims are maintained in the README, product context, design, demo script, accessibility notes, and ADR log. |
 | Quality & Metrics | Applies — Automated evidence includes public Python tests with branch-aware coverage, 29/29 Golden cases, browser checks, and seven Lighthouse page states, plus dependency audits, source-currency output, the exact re-verification worklist, strict non-promoting source-release receipt checks, the deployment-smoke contract, the applicant-copy structural contract, local illustration path/format/size/accessibility checks, the strict workflow-registry boundary, the deterministic evidence-export round trip, adversarial no-storage operations-package checks, the local-source onboarding contract, and the pilot-neutral aggregate beta-gate contract. Browser contracts cover canonical, changed, unrelated, and unverifiable adopted source-state receipts; duplicate-ID, portable-path, raw-registry, and input-fingerprint workflow-registry states; and distinct statewide-coverage, decision-boundary, route-first, collapsed/expanded support, keyboard, reflow, illustration-decoding/tablet-hierarchy, and multi-route accessible-name states. Python registry tests separately inventory canonical directories, reject orphan or linked files, and prove that both the worklist and source-release CLIs bind two distinct registered workflow contexts. Exact current counts and coverage come from CI rather than this prose. The harness reports `automated source/regression checks: pass`; this means those bounded checks passed, not that the law, interpretations, workflow, operating package, source release, local-source intake, aggregate gate, or deployment are approved. The public evidence page exposes the rule-review level: all 19 rules are `machine_linked`, with zero named human reviews or jurisdiction approvals. |
 | Performance | Applies — `npm run test:perf` runs Lighthouse against seven public page states and enforces category budgets in `scripts/lighthouse-budget.mjs`; the static pages load no third-party script and the data-driven pages load one generated bundle. Budgets are automated CI evidence on a lab runner, not field measurement from real applicants or devices. |
@@ -327,7 +329,18 @@ still needs a person.
     browser handles Print or Save as PDF; the app does not upload or store the
     receipt. It is not a complete local checklist, parcel verification,
     eligibility or completeness finding, or approval prediction.
-11. For the active, unedited made-up Woodland sample only, the browser checks
+11. Optionally, before step 1, the applicant can press **Use AI assistance**.
+    Only then does the page probe the local AI service; if it answers, a
+    free-text field appears and an AI draft of the same structured answers
+    is written into the form, each tied to a quote from the description,
+    with unanswered questions left as "I'm not sure". After a result, an
+    **Explain this result** control asks the service for a labeled
+    plain-language explanation whose citations were verified against
+    `corpus/`, with the withheld count shown, and for AI-drafted staff
+    questions. The matcher in this page is still the only thing that
+    produces the result; the service re-runs its own copy and refuses to
+    explain a different rule set.
+12. For the active, unedited made-up Woodland sample only, the browser checks
     the generated journey, route, readiness, fingerprint, source-review, and
     strict program-availability contracts. A missing, malformed, or expired
     availability record blocks the handoff. If those checks pass, it asks one
@@ -851,6 +864,13 @@ explanation sidecar and keeps a separate `/trust` route.
 - `src/permit_pathways/rule_verification.py`: schema-v2
   machine-linked/human-reviewed/jurisdiction-approved claim evaluation for
   rule citations and full-rule records
+- `src/permit_pathways/ai/`: the optional runtime AI service (ADR 0004):
+  fact vocabulary, corpus text index and citation verifier, lexical
+  retrieval, provider adapter over the public `anthropic` SDK, intake
+  extraction, grounded explanation, staff-question drafting, the FastAPI
+  app, and the evaluation harness; `assets/ai.js` is its browser side
+- `evals/ai/`: committed intake and grounding cases, results of recorded
+  live runs, and the scoring contract
 - `src/permit_pathways/harness/`: verification runner and CLI
 - `data/rules/`: the cited rule base; `data/golden/`: Golden cases with
   explicit positive and negative rule-dependency IDs

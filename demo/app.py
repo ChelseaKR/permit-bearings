@@ -1119,7 +1119,8 @@ class Handler(BaseHTTPRequestHandler):
             "Content-Security-Policy",
             "default-src 'none'; script-src 'self' 'unsafe-inline'; "
             "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
-            "connect-src 'self'; base-uri 'none'; form-action 'self'; "
+            "connect-src 'self' http://127.0.0.1:8787 http://localhost:8787; "
+            "base-uri 'none'; form-action 'self'; "
             "frame-ancestors 'none'",
         )
         self.send_header("Referrer-Policy", "no-referrer")

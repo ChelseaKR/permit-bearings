@@ -1099,3 +1099,45 @@ test("conformant control text stays quiet on the review screen", async ({ page }
   await expectNoAutomatedWcagViolations(page);
   await expectBrowserStorageEmpty(page);
 });
+
+test("AI assistance stays inert until requested and degrades to the static form without the service", async ({
+  page,
+}) => {
+  const offOrigin = [];
+  const baseHost = new URL(test.info().project.use.baseURL).host;
+  page.on("request", request => {
+    if (new URL(request.url()).host !== baseHost) offOrigin.push(request.url());
+  });
+  // Nothing listens on the service port during this suite; abort the probe
+  // the way a closed port would, so the page must take its fallback path.
+  await page.route("http://127.0.0.1:8787/**", route => route.abort("connectionrefused"));
+  await page.goto("/check.html");
+
+  const panel = page.locator("#aiAssistDetails");
+  await expectClosedDisclosure(panel, panel.locator("#aiEnable"));
+  await expect(page.locator("#aiDescription")).toHaveCount(0);
+  expect(offOrigin).toEqual([]);
+  await expectNoAutomatedWcagViolations(page);
+
+  await expandDisclosureWithKeyboard(panel, "Enter");
+  await page.locator("#aiEnable").click();
+  await expect(page.locator("#aiStatus")).toContainText("need the Permit Bearings AI service running");
+  await expect(page.locator("#aiDescription")).toHaveCount(0);
+  expect(offOrigin.filter(url => url.startsWith("http://127.0.0.1:8787/health"))).toHaveLength(1);
+  await expect(page.locator("#aiEnable")).toBeEnabled();
+  await expectNoAutomatedWcagViolations(page);
+
+  // The structured form is untouched and still screens deterministically.
+  await page.locator("#jurisInput").fill("Davis (Yolo Co.)");
+  await page.locator('input[name="project_type"][value="jadu"]').check();
+  await page.locator('input[name="primary_dwelling_status"][value="existing_single_family"]').check();
+  await page.locator('input[name="unpermitted_existing"][value="no"]').check();
+  await page.locator("#t-submit").click();
+  await expect(page.locator("#resultsHeading")).toBeVisible();
+  await expect(page.locator("#aiResultPanel")).toHaveCount(0);
+  expect(offOrigin).toHaveLength(1);
+
+  await page.locator("#langToggle").click();
+  await expect(page.locator("#aiAssistHeading")).toHaveText("Describa su proyecto con sus propias palabras");
+  await expectNoDocumentOverflow(page);
+});

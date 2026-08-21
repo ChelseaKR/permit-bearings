@@ -174,6 +174,19 @@ suites on pull requests, default-branch pushes, and weekly. A first performance
 sample below the 0.90 budget triggers two confirmation samples and evaluates
 their median; the budget itself is unchanged.
 
+On 2026-08-21 the optional runtime AI panel (ADR 0004) was added to
+`check.html` as a closed native `details` disclosure above the form. Its
+controls are native buttons with 44px targets, its status lines are
+`role="status"` live regions, the drafted answers render as a labeled
+definition list inside a region with a focusable heading, and the
+explanation and staff-question blocks are headed sections appended after the
+result. A browser check confirms the panel starts closed, makes no request
+until the applicant enables it, shows the "service not running" fallback
+without altering the structured form, survives the language toggle, and
+passes the axe scan in both states. The human/assistive-technology pass
+below has not covered this panel either; the live-region timing of a 20-40
+second model call is untested with a screen reader.
+
 These automated results cover only rules the tools can evaluate. They do not
 establish WCAG conformance, substitute for the remaining keyboard and
 screen-reader work, or promote the Spanish machine drafts to reviewed copy.
