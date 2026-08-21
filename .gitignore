@@ -14,3 +14,6 @@ dist/
 
 # Runtime-fetched private portfolio standards; never commit their contents.
 .standards/
+
+# Unreviewed AI rule drafts (permit_pathways.ai.rule_drafts); never commit.
+ai-drafts/
