@@ -650,7 +650,8 @@ Collected fields and purpose:
 | Field | Sent to | Purpose | Retained by the service |
 |---|---|---|---|
 | Free-text project description (EN/ES) | service → provider | draft the structured facts the applicant then confirms | no |
-| Confirmed structured facts (the existing 19 names) and jurisdiction slug | service → matcher (local) and → provider | re-run the deterministic matcher; ground the explanation and staff questions | no |
+| Confirmed structured facts (the existing 19 names) and jurisdiction slug | service → matcher (local) and → provider | re-run the deterministic matcher; ground the explanation, follow-up answer, and staff questions | no |
+| Free-text follow-up question (≤500 characters) | service → provider | answer only from the matched rules' cited passages, or abstain with a staff question | no |
 | Interface language | service → provider | choose the output language | no |
 | Matched rule IDs computed by the browser | service | parity check against the Python matcher; a mismatch refuses the request | no |
 
@@ -659,15 +660,28 @@ browser identifiers. The free-text field is the one place an applicant could
 volunteer personal information; the interface tells them not to and the
 service does not retain it, but a provider receives whatever was typed.
 
-Data flow and subprocessors: browser → service → one model provider. The
-provider, region, account, and retention terms are deployment facts and are
-`not_run` until a deployment records them.
+Data flow and subprocessors: browser → service → one model provider. For
+the prepared AWS deployment in `deploy/ai-service/` the facts are: the
+service runs as an AWS Lambda function in `us-west-2` in the owner's
+account; the provider is Amazon Bedrock, model
+`global.anthropic.claude-sonnet-4-6` through a global inference profile,
+which may route the request to another AWS region; Bedrock does not retain
+prompts or completions for training and model-invocation logging is off;
+CloudWatch keeps request paths and status codes for 14 days and never
+bodies; a DynamoDB table keeps one request count per UTC day and nothing
+else. No human has signed off on this record; it is what the Terraform
+configuration provisions.
 
 Access controls and security boundary: the service binds to localhost by
 default and allows only configured origins; the provider credential is read
-from the environment and never written. A hosted deployment needs transport
-security, origin policy, request-size limits, rate limiting, abuse handling,
-and a cost ceiling, all of which are pending decisions.
+from the environment and never written. The prepared hosted deployment adds
+HTTPS (Function URL), a CORS allowlist of the static site's origin, request
+size limits (4,000-character description, 500-character question), a
+per-client limit of 6 model-backed requests per minute, a hard daily cap
+(default 100, all clients combined) enforced atomically in DynamoDB, and
+reserved concurrency of 2. It does not authenticate callers, so anyone who
+reaches the URL can spend the day's budget; that is the accepted trade for a
+page that keeps no secret. Threat model and abuse review are not done.
 
 Retention and deletion: the service retains nothing, so there is nothing to
 delete on the application side. Provider-side retention is governed by the

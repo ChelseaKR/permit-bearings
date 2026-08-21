@@ -7,6 +7,30 @@ published a versioned release.
 
 ### Added
 
+- A second wave of runtime AI under ADR 0004. `POST /ask` answers one
+  follow-up question (up to 500 characters) only from the matched rules'
+  cited corpus passages, with the same verbatim-citation verifier; when the
+  passages do not settle it the model abstains, and a one-sentence question
+  for staff is returned whenever any part is unsettled. The project-check
+  page gains the "Ask a question about this result" box after an
+  explanation, offers the AI staff-question draft on its own when the result
+  is "needs staff review", links each citation into the official source with
+  a text fragment for the quoted words where the source is HTML, and probes
+  a comma-separated list of service origins in order (local development
+  first, hosted second). Every model-backed route is now metered by
+  `permit_pathways.ai.budget`: a per-client sliding window and a hard daily
+  cap (`PERMIT_AI_DAILY_CAP`, default 300 locally), in memory or as a
+  DynamoDB conditional update when `PERMIT_AI_BUDGET_TABLE` is set; a 429
+  `budget_exhausted` leaves the deterministic result untouched. The provider
+  marks the system prompt cacheable and reports cache usage. `deploy/ai-service/`
+  holds a prepared AWS Lambda deployment (Terraform: arm64 function, Function
+  URL with CORS limited to the static site, reserved concurrency 2, DynamoDB
+  daily-cap table, least-privilege Bedrock access to one model, 14-day logs
+  without bodies, default cap 100/day) plus `build.sh` and a README stating
+  what the shape does and does not provide; it has been planned but not
+  applied. `docs/DATA-FLOW.md` records the subprocessor facts that shape
+  would create. No evaluation set covers `/ask` yet.
+
 - `python -m permit_pathways.ai.rule_drafts`: the stretch item in ADR 0004,
   as a CLI only. It asks the model for candidate rule entries in the
   `data/rules` schema from one ordinance text and keeps a proposal only if

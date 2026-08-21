@@ -3641,6 +3641,7 @@ tr:last-child td {
   padding: 0.5rem 0;
 }
 
+.ai-result input[type="text"],
 .ai-assist textarea {
   border: 2px solid var(--black);
   display: block;

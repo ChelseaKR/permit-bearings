@@ -92,8 +92,10 @@ def test_health_reports_boundary_and_versions() -> None:
     assert body["prompt_versions"] == {
         "intake": "intake-v1",
         "explain": "explain-v1",
+        "ask": "ask-v1",
         "staff_questions": "staff-questions-v1",
     }
+    assert body["daily_cap"] is None
     assert body["corpus_skipped"] == [
         "davis-code-40-26-450",
         "yolo-public-parcels-layer",
@@ -204,3 +206,111 @@ def test_load_context_from_env_uses_provider_settings(
     monkeypatch.setattr(service_module, "provider_from_settings", failing)
     with pytest.raises(ProviderError):
         service_module.load_context_from_env({})
+
+
+def test_ask_endpoint_answers_abstains_and_validates() -> None:
+    from permit_pathways.ai.corpus import CorpusIndex
+
+    corpus = CorpusIndex.load(ROOT)
+    passage = corpus.documents["ca-gov-66317"].passages[1]
+    quote = " ".join(passage.text.split()[:12])
+    answer = json.dumps(
+        {
+            "claims": [
+                {
+                    "text": "Within 60 days.",
+                    "citations": [{"passage_id": passage.passage_id, "quote": quote}],
+                }
+            ],
+            "abstain": False,
+            "staff_question": "",
+        }
+    )
+    abstain = json.dumps(
+        {"claims": [], "abstain": True, "staff_question": "Ask staff about fees."}
+    )
+    client = _client([answer, abstain])
+    ok = client.post(
+        "/ask",
+        json={
+            "intake": DAVIS_ADU,
+            "language": "en",
+            "question": "How long does review take?",
+        },
+    )
+    assert ok.status_code == 200
+    body = ok.json()
+    assert (
+        body["abstained"] is False
+        and body["claims"][0]["citations"][0]["verified"] is True
+    )
+    assert body["prompt_version"] == "ask-v1" and body["withheld_count"] == 0
+    abstained = client.post(
+        "/ask",
+        json={"intake": DAVIS_ADU, "language": "es", "question": "¿Cuánto cuesta?"},
+    )
+    assert abstained.status_code == 200
+    assert abstained.json()["abstained"] is True
+    assert abstained.json()["staff_question"] == "Ask staff about fees."
+    assert (
+        client.post(
+            "/ask", json={"intake": DAVIS_ADU, "language": "en", "question": ""}
+        ).status_code
+        == 422
+    )
+    assert (
+        client.post(
+            "/ask", json={"intake": DAVIS_ADU, "language": "en", "question": "x" * 501}
+        ).status_code
+        == 422
+    )
+
+
+def test_budget_limits_model_backed_routes_only() -> None:
+    from permit_pathways.ai.budget import Budget, MemoryCounter
+
+    context = ServiceContext.load(
+        root=ROOT,
+        provider=ScriptedProvider(['{"claims": []}'] * 5),
+        budget=Budget(daily_cap=2, per_client_per_minute=5, counter=MemoryCounter()),
+    )
+    client = TestClient(create_app(context))
+    assert client.get("/health").json()["daily_cap"] == 2
+    assert (
+        client.post(
+            "/explain", json={"intake": DAVIS_ADU, "language": "en"}
+        ).status_code
+        == 200
+    )
+    assert (
+        client.post(
+            "/explain", json={"intake": DAVIS_ADU, "language": "en"}
+        ).status_code
+        == 200
+    )
+    refused = client.post("/explain", json={"intake": DAVIS_ADU, "language": "en"})
+    assert refused.status_code == 429
+    assert refused.json()["detail"]["error"] == "budget_exhausted"
+    assert client.get("/health").status_code == 200
+    per_client = ServiceContext.load(
+        root=ROOT,
+        provider=ScriptedProvider(['{"claims": []}'] * 5),
+        budget=Budget(daily_cap=50, per_client_per_minute=1, counter=MemoryCounter()),
+    )
+    forwarded = TestClient(create_app(per_client))
+    first = forwarded.post(
+        "/explain",
+        json={"intake": DAVIS_ADU, "language": "en"},
+        headers={"X-Forwarded-For": "203.0.113.9, 10.0.0.1"},
+    )
+    second = forwarded.post(
+        "/explain",
+        json={"intake": DAVIS_ADU, "language": "en"},
+        headers={"X-Forwarded-For": "203.0.113.9"},
+    )
+    other = forwarded.post(
+        "/explain",
+        json={"intake": DAVIS_ADU, "language": "en"},
+        headers={"X-Forwarded-For": "198.51.100.2"},
+    )
+    assert (first.status_code, second.status_code, other.status_code) == (200, 429, 200)

@@ -1,0 +1,77 @@
+"""Request budget: per-client sliding window and the daily cap."""
+
+from __future__ import annotations
+
+from typing import Any
+
+import pytest
+
+from permit_pathways.ai.budget import (
+    DEFAULT_DAILY_CAP,
+    Budget,
+    BudgetExhausted,
+    DynamoCounter,
+    MemoryCounter,
+    budget_from_env,
+)
+
+
+def test_memory_counter_caps_per_day_and_resets_on_a_new_day() -> None:
+    counter = MemoryCounter()
+    assert [counter.increment("2026-08-21", 2) for _ in range(2)] == [1, 2]
+    with pytest.raises(BudgetExhausted):
+        counter.increment("2026-08-21", 2)
+    assert counter.increment("2026-08-22", 2) == 1
+
+
+def test_budget_sliding_window_per_client() -> None:
+    budget = Budget(daily_cap=100, per_client_per_minute=2, counter=MemoryCounter())
+    assert budget.charge("a", now=0.0)["daily_used"] == 1
+    budget.charge("a", now=10.0)
+    with pytest.raises(BudgetExhausted, match="too many"):
+        budget.charge("a", now=20.0)
+    budget.charge("b", now=20.0)
+    assert budget.charge("a", now=61.0)["daily_used"] == 4
+    budget.charge("c")
+
+
+def test_budget_from_env_defaults_and_table() -> None:
+    default = budget_from_env({})
+    assert default.daily_cap == DEFAULT_DAILY_CAP and isinstance(
+        default.counter, MemoryCounter
+    )
+    custom = budget_from_env(
+        {"PERMIT_AI_DAILY_CAP": "7", "PERMIT_AI_PER_CLIENT_PER_MINUTE": "3"}
+    )
+    assert (custom.daily_cap, custom.per_client_per_minute) == (7, 3)
+
+
+class _FakeDynamo:
+    def __init__(self, fail: bool = False) -> None:
+        self.fail = fail
+        self.calls: list[dict[str, Any]] = []
+
+    def update_item(self, **kwargs: Any) -> dict[str, Any]:
+        self.calls.append(kwargs)
+        if self.fail:
+            raise RuntimeError("ConditionalCheckFailedException: cap")
+        return {"Attributes": {"count": {"N": "5"}}}
+
+
+def test_dynamo_counter_uses_a_conditional_update() -> None:
+    fake = _FakeDynamo()
+    counter = DynamoCounter("permit-ai-budget", client=fake)
+    assert counter.increment("2026-08-21", 10) == 5
+    call = fake.calls[0]
+    assert call["TableName"] == "permit-ai-budget"
+    assert call["Key"] == {"day": {"S": "2026-08-21"}}
+    assert call["ExpressionAttributeValues"][":cap"] == {"N": "10"}
+    with pytest.raises(BudgetExhausted):
+        DynamoCounter("t", client=_FakeDynamo(fail=True)).increment("2026-08-21", 10)
+
+    class _Broken:
+        def update_item(self, **kwargs: Any) -> dict[str, Any]:
+            raise RuntimeError("network")
+
+    with pytest.raises(RuntimeError, match="network"):
+        DynamoCounter("t", client=_Broken()).increment("2026-08-21", 10)

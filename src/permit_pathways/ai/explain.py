@@ -31,7 +31,10 @@ from .provider import Provider
 from .retrieval import rank_passages
 
 PROMPT_VERSION = "explain-v1"
+ASK_PROMPT_VERSION = "ask-v1"
 MAX_OUTPUT_TOKENS = 4000
+MAX_QUESTION_CHARS = 500
+QUESTION_PASSAGES = 6
 PASSAGES_PER_RULE = 3
 MAX_PASSAGES = 18
 LANGUAGES = ("en", "es")
@@ -372,6 +375,154 @@ def explain_result(
         provider=completion.provider,
         model=completion.model,
         prompt_version=PROMPT_VERSION,
+        input_tokens=completion.input_tokens,
+        output_tokens=completion.output_tokens,
+    )
+
+
+@dataclass(frozen=True)
+class Answer:
+    language: str
+    question: str
+    rule_ids: tuple[str, ...]
+    claims: tuple[Claim, ...]
+    withheld: tuple[WithheldClaim, ...]
+    abstained: bool
+    staff_question: str | None
+    offered_passage_ids: tuple[str, ...]
+    label: str
+    provider: str
+    model: str
+    prompt_version: str
+    input_tokens: int
+    output_tokens: int
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = asdict(self)
+        payload["withheld_count"] = len(self.withheld)
+        return payload
+
+
+_ASK_SYSTEM_PROMPT = """You answer one follow-up question from a California housing applicant about a deterministic screening result, using only the source passages provided. The screening tool has already decided which candidate rules match; you do not re-evaluate anything.
+
+Hard rules:
+1. Answer only with claims you can support from the provided passages. Each claim must cite one or more passages by passage_id with a verbatim quote of at least eight consecutive words from that exact passage. Do not alter or paraphrase inside a quote. An inexact quote causes the whole claim to be withheld.
+2. If the passages do not answer the question (for example fees, forms, timelines, or local standards they do not state), return an empty claims list and set "abstain" to true. Always fill "staff_question": if any part of the question is not settled by the passages, one sentence the applicant can ask their planning counter, in the requested language; otherwise an empty string. Do not answer from memory, and do not guess local rules, fees, or deadlines.
+3. Never give advice, predict approval, or say the project qualifies. Describe what the cited passage provides and what still depends on unconfirmed facts.
+4. Plain language, short sentences, at most five claims, in the requested language. Quotes stay in the source language.
+"""
+
+
+def answer_schema() -> dict[str, Any]:
+    schema = explanation_schema()
+    schema["properties"]["abstain"] = {"type": "boolean"}
+    schema["properties"]["staff_question"] = {"type": "string"}
+    schema["required"] = ["claims", "abstain", "staff_question"]
+    return schema
+
+
+def question_passages(
+    question: str, rules: Sequence[Rule], corpus: CorpusIndex
+) -> list[Passage]:
+    """The rule-scoped grounding set plus the passages that best match the
+    question itself, still only from the matched rules' source documents."""
+    chosen = {p.passage_id: p for p in grounding_passages(rules, corpus)}
+    candidates: dict[str, Passage] = {}
+    for rule in rules:
+        for passage in corpus.passages_for(rule.source_dependencies):
+            candidates.setdefault(passage.passage_id, passage)
+    for ranked in rank_passages(question, list(candidates.values()), QUESTION_PASSAGES):
+        chosen.setdefault(ranked.passage.passage_id, ranked.passage)
+    return list(chosen.values())[: MAX_PASSAGES + QUESTION_PASSAGES]
+
+
+def answer_question(
+    *,
+    question: str,
+    intake: dict[str, Any],
+    rules: Sequence[Rule],
+    corpus: CorpusIndex,
+    provider: Provider,
+    language: str,
+    expected_rule_ids: Sequence[str] | None = None,
+) -> Answer:
+    if language not in LANGUAGES:
+        raise ExplainError(f"language must be one of {', '.join(LANGUAGES)}")
+    cleaned = " ".join(question.split())
+    if not cleaned:
+        raise ExplainError("the question is empty")
+    if len(cleaned) > MAX_QUESTION_CHARS:
+        raise ExplainError(
+            f"the question is longer than {MAX_QUESTION_CHARS} characters"
+        )
+    matched = matched_rules(intake, rules, expected_rule_ids)
+    rule_ids = tuple(rule.rule_id for rule in matched)
+    unresolved = unresolved_facts(intake)
+    if not matched:
+        return Answer(
+            language,
+            cleaned,
+            (),
+            (),
+            (),
+            True,
+            None,
+            (),
+            AI_LABEL[language],
+            provider.name,
+            provider.model,
+            ASK_PROMPT_VERSION,
+            0,
+            0,
+        )
+    passages = question_passages(cleaned, matched, corpus)
+    offered = {p.passage_id: p for p in passages}
+    language_name = "Spanish" if language == "es" else "English"
+    user = "\n\n".join(
+        [
+            f"Answer in {language_name}.",
+            f"Applicant's question: {cleaned}",
+            _rules_block(matched),
+            _facts_block(intake, unresolved),
+            _passages_block(passages, corpus),
+        ]
+    )
+    completion = provider.complete_json(
+        system=_ASK_SYSTEM_PROMPT,
+        user=user,
+        schema=answer_schema(),
+        max_tokens=MAX_OUTPUT_TOKENS,
+    )
+    try:
+        parsed = json.loads(completion.text)
+    except ValueError as exc:
+        raise ExplainError("the model did not return JSON") from exc
+    if not isinstance(parsed, dict) or not isinstance(parsed.get("claims"), list):
+        raise ExplainError("the model did not return a claims list")
+    claims: list[Claim] = []
+    withheld: list[WithheldClaim] = []
+    for raw in parsed["claims"][:5]:
+        outcome = _verify_claim(raw, offered, corpus)
+        if isinstance(outcome, Claim):
+            claims.append(outcome)
+        else:
+            withheld.append(outcome)
+    staff_question = parsed.get("staff_question")
+    staff_text = staff_question.strip() if isinstance(staff_question, str) else ""
+    abstained = not claims
+    return Answer(
+        language=language,
+        question=cleaned,
+        rule_ids=rule_ids,
+        claims=tuple(claims),
+        withheld=tuple(withheld),
+        abstained=abstained,
+        staff_question=staff_text or None,
+        offered_passage_ids=tuple(offered),
+        label=AI_LABEL[language],
+        provider=completion.provider,
+        model=completion.model,
+        prompt_version=ASK_PROMPT_VERSION,
         input_tokens=completion.input_tokens,
         output_tokens=completion.output_tokens,
     )

@@ -13,19 +13,25 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_check_page_names_the_service_once_and_allows_only_its_origin() -> None:
     html = (ROOT / "check.html").read_text(encoding="utf-8")
     meta = re.findall(r'<meta name="permit-ai-service" content="([^"]+)">', html)
-    assert meta == ["http://127.0.0.1:8787"]
+    assert len(meta) == 1
+    candidates = [c.strip() for c in meta[0].split(",")]
+    assert candidates[0] == "http://127.0.0.1:8787"
+    assert all(
+        c.startswith(("http://127.0.0.1:8787", "http://localhost:8787", "https://"))
+        for c in candidates
+    )
     csp = re.search(r'content="(default-src [^"]+)"', html)
     assert csp is not None
     connect = re.search(r"connect-src ([^;]+);", csp.group(1))
     assert connect is not None
-    assert connect.group(1).split() == [
-        "'self'",
-        "http://127.0.0.1:8787",
-        "http://localhost:8787",
-    ]
-    assert "https://" not in connect.group(1)
+    allowed = connect.group(1).split()
+    assert allowed[:3] == ["'self'", "http://127.0.0.1:8787", "http://localhost:8787"]
+    # Every hosted candidate in the meta tag must be allowed by the CSP, and
+    # the CSP must not allow an origin the page does not name.
+    hosted = {c for c in candidates if c.startswith("https://")}
+    assert set(allowed[3:]) == hosted
     server = (ROOT / "demo" / "app.py").read_text(encoding="utf-8")
-    assert "connect-src 'self' http://127.0.0.1:8787 http://localhost:8787; " in server
+    assert "connect-src 'self' http://127.0.0.1:8787 http://localhost:8787" in server
     for other in ("index.html", "prepare.html", "review.html", "evidence.html"):
         assert "permit-ai-service" not in (ROOT / other).read_text(encoding="utf-8")
 
@@ -51,6 +57,8 @@ def test_static_application_makes_no_service_call_itself() -> None:
     assert "8787" not in application
     assert "document.querySelector('meta[name=\"permit-ai-service\"]')" in ai_module
     assert ai_module.count("fetch(") == 1
+    assert "SERVICE_CANDIDATES" in ai_module and '.split(",")' in ai_module
+    assert "#:~:text=" in ai_module
     assert "localStorage" not in ai_module and "sessionStorage" not in ai_module
     assert 'credentials: "omit"' in ai_module
     for key in (
