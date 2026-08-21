@@ -1,7 +1,7 @@
-.PHONY: install verify lint type test security bundle-check copy-check evidence-export-check
+.PHONY: install verify lint type test security bundle-check copy-check evidence-export-check serve-ai ai-eval
 
 install:
-	uv sync --locked --python 3.12 --group dev
+	uv sync --locked --python 3.12 --group dev --extra ai
 
 lint:
 	.venv/bin/ruff check src tests
@@ -18,7 +18,7 @@ security:
 	@set -eu; \
 		runtime_requirements=$$(mktemp "$${TMPDIR:-/tmp}/permit-pathways-runtime.XXXXXX"); \
 		trap 'rm -f "$$runtime_requirements"' EXIT; \
-		UV_CACHE_DIR=/tmp/permit-pathways-uv-cache uv export --frozen --no-dev \
+		UV_CACHE_DIR=/tmp/permit-pathways-uv-cache uv export --frozen --no-dev --extra ai \
 			--no-emit-project --format requirements-txt \
 			--output-file "$$runtime_requirements" >/dev/null; \
 		.venv/bin/pip-audit --requirement "$$runtime_requirements" \
@@ -50,5 +50,8 @@ evidence-export-check:
 			--archive "$$archive" \
 			--destination "$$restored" >/dev/null; \
 		printf '%s\n' 'evidence export round trip: pass'
+
+serve-ai:
+	PYTHONPATH=src .venv/bin/python -m permit_pathways.ai
 
 verify: install lint type test security bundle-check copy-check evidence-export-check

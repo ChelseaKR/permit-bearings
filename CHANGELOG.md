@@ -5,6 +5,38 @@ published a versioned release.
 
 ## [Unreleased]
 
+### Added
+
+- The optional runtime AI service directed by ADR 0004, as the new
+  `permit_pathways.ai` package behind the `ai` extra (`uv sync --extra ai`;
+  `make serve-ai`). `facts.py` pins the intake vocabulary to the matcher's
+  own 19 fact names and allowed values and is tested against the rule
+  criteria, the browser form, and the beta-operations field pin. `corpus.py`
+  indexes every text document `data/sources.json` binds to `corpus/` (12
+  leginfo statutes as HTML, the HCD handbook and SB 9 fact sheet as PDF via
+  pypdf, the Davis and Woodland PDFs, the CEQA notice) into passages and
+  verifies a quoted string against the whole extracted document after
+  typography, case, and whitespace folding, with a minimum length so a
+  trivial phrase cannot pass as a citation. `intake.py` asks the model for
+  the matcher's facts and nothing else, then re-checks every value against
+  the allowed list and every supporting quote against the applicant's text,
+  downgrading anything unsupported to `unknown`; the jurisdiction name is
+  resolved deterministically against the registry. `explain.py` re-runs the
+  Python matcher, refuses a caller-asserted rule set that differs, offers the
+  model passages only from the matched rules' `source_dependencies`, and
+  withholds any claim whose citation does not verify, reporting the withheld
+  count. `staff_questions.py` drafts labeled questions tied to unresolved
+  facts and matched rules, dropping pointers that do not resolve.
+  `provider.py` reaches the Anthropic API or Amazon Bedrock through the
+  public `anthropic` SDK only, default model `claude-sonnet-5`, credential
+  from the environment only. `service.py` is the FastAPI app (`/health`,
+  `/intake/extract`, `/explain`, `/staff-questions`) bound to localhost with
+  an origin allowlist; it stores and logs no applicant content. Tests run
+  against a scripted provider and make no network call. A data finding from
+  building the verifier: 12 of the 19 committed rule excerpts contain
+  editorial elisions (`[...]`, `[must]`) and are not verbatim source text;
+  the grounding step locates them fragment by fragment, and 16 of 19 resolve.
+
 ### Changed
 
 - Recorded an owner-directed change of direction in
