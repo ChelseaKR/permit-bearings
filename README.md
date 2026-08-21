@@ -184,6 +184,8 @@ PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
 # The Python server exposes the landing at /index.html and tools at
 # /check.html, /prepare.html, /review.html, and /evidence.html.
 python3 scripts/build_demo_bundle.py                # after canonical JSON changes
+PERMIT_AI_PROVIDER=anthropic make serve-ai          # optional AI service (ADR 0004), needs ANTHROPIC_API_KEY
+PERMIT_AI_PROVIDER=bedrock PERMIT_AI_MODEL=global.anthropic.claude-sonnet-4-6 make serve-ai  # via AWS credentials
 ```
 
 The review-worklist CLI returns `0` for a valid clear queue, `1` for a valid
