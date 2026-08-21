@@ -1,7 +1,7 @@
 .PHONY: install verify lint type test security bundle-check copy-check evidence-export-check
 
 install:
-	uv sync --frozen --python 3.12 --group dev
+	uv sync --locked --python 3.12 --group dev
 
 lint:
 	.venv/bin/ruff check src tests
