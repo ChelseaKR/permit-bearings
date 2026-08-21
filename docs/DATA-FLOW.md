@@ -1,13 +1,14 @@
 # Current prototype data flow
 
-Status: 2026-08-09. This describes the executable repository and public demo,
+Status: 2026-08-21. This describes the executable repository and public demo,
 not a production deployment or a compliance assessment.
 
 ## Boundary summary
 
 The public static site has no accounts, uploads, telemetry, applicant-data
-store, external model call, parcel connection, or permitting-system
-integration. The applicant routing form keeps submitted facts only in current
+store, parcel connection, or permitting-system integration, and makes no
+model call on its own. ADR 0004 directs a separate optional AI service; its
+data flow is recorded in "Optional runtime AI service path" below. The applicant routing form keeps submitted facts only in current
 page memory. The route-to-packet link contains only a public journey ID and
 version; it carries no project facts. The packet-presence page uses a
 committed synthetic record and does not accept applicant input.
@@ -602,7 +603,87 @@ No model runs in:
 - the readiness CLI;
 - the static bundle build;
 - the applicant routing matcher; or
-- the public browser.
+- the public browser when the optional AI service is absent or not used.
+
+When the optional AI service directed by ADR 0004 is running and the
+applicant uses it, a model runs outside the browser, in that service's
+provider call. That path is described next; it still never runs a model inside
+the matcher, the evaluator, or the build.
+
+## Optional runtime AI service path (ADR 0004; planned, not yet in this repository)
+
+`AGENTS.md` requires this inventory before an external model call is added.
+It describes the service as designed; when the implementation lands, the
+capability matrix will say what of it exists.
+
+```text
+Applicant browser (check.html)
+    |
+    |  only when the applicant opens the AI intake control or presses the
+    |  "explain" control, and only if the service answered a health probe;
+    |  otherwise the page is the static experience above and makes no request
+    v
+Permit Bearings AI service (permit_pathways.ai; local by default,
+host to be decided)
+    |   request body held in process memory for one request
+    |   applicant content written to disk or logs: none
+    |   applicant record store: none
+    |   rate limiting / abuse controls: deployment-specific, not_run
+    v
+Model provider (Anthropic API, or Amazon Bedrock via the same SDK)
+    |   subprocessor; retention per the provider's terms for the deployment's
+    |   account — to be recorded before any hosted deployment: not_run
+    v
+Service: deterministic checks on the model output
+    - extracted facts: allowed-value check; supporting quote must occur in
+      the applicant's text, else the field becomes `unknown`
+    - explanation: every cited quote must occur in the extracted corpus text
+      for the named source; unverifiable claims withheld and counted
+    - staff questions: labeled drafts
+    v
+Browser: drafted facts shown in the editable form for confirmation; labeled
+AI-generated explanation with its verified citations; withheld-claim count
+```
+
+Collected fields and purpose:
+
+| Field | Sent to | Purpose | Retained by the service |
+|---|---|---|---|
+| Free-text project description (EN/ES) | service → provider | draft the structured facts the applicant then confirms | no |
+| Confirmed structured facts (the existing 19 names) and jurisdiction slug | service → matcher (local) and → provider | re-run the deterministic matcher; ground the explanation and staff questions | no |
+| Interface language | service → provider | choose the output language | no |
+| Matched rule IDs computed by the browser | service | parity check against the Python matcher; a mismatch refuses the request | no |
+
+Not collected: name, address, APN, contact details, files, account, or
+browser identifiers. The free-text field is the one place an applicant could
+volunteer personal information; the interface tells them not to and the
+service does not retain it, but a provider receives whatever was typed.
+
+Data flow and subprocessors: browser → service → one model provider. The
+provider, region, account, and retention terms are deployment facts and are
+`not_run` until a deployment records them.
+
+Access controls and security boundary: the service binds to localhost by
+default and allows only configured origins; the provider credential is read
+from the environment and never written. A hosted deployment needs transport
+security, origin policy, request-size limits, rate limiting, abuse handling,
+and a cost ceiling, all of which are pending decisions.
+
+Retention and deletion: the service retains nothing, so there is nothing to
+delete on the application side. Provider-side retention is governed by the
+provider's terms and must be documented per deployment.
+
+Jurisdiction ownership and export: no applicant record exists to own or
+export. Prompts, the evaluation set, and the corpus index are repository
+files.
+
+CPRA and records: a hosted service creates request metadata at the host and
+the provider. Whether any of it is a public record in a given deployment is a
+deployment-specific determination; nothing here asserts one.
+
+Deployment-specific review needs: host and subprocessor inventory, privacy
+review of the free-text field, threat model, cost envelope, operations
+package, and the approvals ADR 0002 lists — none has been started.
 
 AI-assisted copy cannot create or change a readiness finding. The evaluator
 does not import the remedy sidecar. The browser recomputes its content
@@ -630,5 +711,7 @@ that:
   workflow.
 
 Any future use of real applicant facts, document files, accounts, telemetry,
-external models, parcel services, or permitting-system data would create a
-different data flow and require deployment-specific documentation and review.
+parcel services, or permitting-system data would create a different data flow
+and require deployment-specific documentation and review. The optional AI
+service path above is the one such flow this repository has designed; its
+hosted deployment is still subject to that review.

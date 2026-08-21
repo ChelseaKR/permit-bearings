@@ -9,6 +9,20 @@ relevant standards, cited official sources, and questions for local staff. The
 matcher is deterministic. Separate English and Spanish explanations are
 AI-assisted, review-pending drafts.
 
+**Runtime AI direction (ADR 0004, owner-directed, 2026-08-21):** the owner
+has decided to add AI to the applicant's path — natural-language intake that
+drafts the structured facts for the applicant to confirm, a grounded
+plain-language explanation whose every claim must cite a passage verified
+against the committed `corpus/`, and tailored questions for local staff —
+as a separate optional service that the static site calls when it is running.
+The deterministic matcher is not changed by that direction. As of this commit
+the service is **Planned**: the decision and its boundaries are recorded in
+[`docs/adr/0004-runtime-ai-at-the-edges.md`](docs/adr/0004-runtime-ai-at-the-edges.md)
+and the data flow in `docs/DATA-FLOW.md`; no runtime model call exists in
+this repository yet. Earlier statements that the project makes "no runtime
+external model calls" described a guarantee that is being deliberately
+retired; they now describe only the static site.
+
 ## Quickstart
 
 Open `index.html` directly, or run
@@ -81,7 +95,9 @@ pilot-neutral public/static boundary with no accounts, uploads,
 application-managed applicant storage, browser persistence, application
 telemetry, runtime external model calls, or permitting-system writeback. Every
 deployment field, human approval, records rehearsal, and partner decision is
-still null/`not_run`. Static hosts and operational systems may separately
+still null/`not_run`. That package describes the static-only deployment
+shape; the optional AI service directed by ADR 0004 is outside it and has no
+operations package yet. Static hosts and operational systems may separately
 process request or operational metadata and require deployment-specific
 review. See
 [`docs/BETA-OPERATIONS-RUNBOOK.md`](docs/BETA-OPERATIONS-RUNBOOK.md).
@@ -250,7 +266,7 @@ still needs a person.
 | Code Quality | Applies — Python 3.12 and development dependencies are locked; Ruff, strict mypy, 85% branch coverage, generated-data parity, and 29 golden cases run through `make verify`. Ruff enforces complexity 10 across the Python codebase; the former `WVR-007` loader/evaluator waiver has been retired. |
 | Security & Supply-Chain | Applies — Event-armed CodeQL, Bandit, pip-audit, gitleaks, zizmor, Dependabot, and Scorecard; all workflow actions are pinned to full commit SHAs and use scoped token permissions. |
 | CI/CD | Applies — Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. |
-| Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. The proposed no-storage beta runbook still requires host request-metadata and operational-system review because those records sit outside application telemetry. Storage, telemetry, uploads, or external model calls would trigger a new architecture and operational review. |
+| Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. The proposed no-storage beta runbook still requires host request-metadata and operational-system review because those records sit outside application telemetry. Storage, telemetry, uploads, or external model calls would trigger a new architecture and operational review; the optional AI service directed by ADR 0004 is exactly such a change and will need its own operational review before any hosted deployment. |
 | Accessibility | Applies — Axe runs on all five public pages plus populated candidate-route and valid packet states; Lighthouse covers seven public page states. Browser tests also check 320px and 390px reflow, compact mobile navigation, the Spanish handoff language boundary, labeled mobile evidence records, document-level overflow, and the print summary's isolated print-media layout. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps physical-device, virtual-keyboard, keyboard, screen-reader, zoom, forced-colors, printed-output, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
 | Internationalization | Applies — `make verify` enforces English/Spanish catalog shape, stable option identifiers, formatter arity, static and formatter placeholders, nonblank singular/plural output, and a copy-leaf pseudo-expansion transform. This is structural automation only: it does not generate or render a complete pseudolocale catalog, and mixed-language acceptance and native Spanish semantic review remain pre-pilot work in `docs/I18N.md`. |
 | AI Evaluation | Applies — applies to the offline AI-assisted rule/explanation workflow. Deterministic matching has model-independent fixtures; natural-language legal fidelity, applicant comprehension, and Spanish semantic parity remain unreviewed and are not inferred from those tests. |
@@ -396,8 +412,10 @@ and coverage profile do not change those boundaries.
    metadata binds the exact checklist and
    parcel-schema source digests and records that provider, model, and a
    reproducible run record are unknown or were not retained.
-11. No model runs in the CLI, build evaluator, or public browser. The public
-   sample is bundled synthetic data, and the page stores no applicant record.
+11. No model runs in the readiness CLI, build evaluator, or the packet page.
+   The public sample is bundled synthetic data, and the page stores no
+   applicant record. (The separate runtime AI service directed by ADR 0004
+   serves the project-check page, not this packet sample.)
 
 The sample reports item presence against one checklist and demonstrates
 source-shaped parcel evidence with fabricated values. It does not query or

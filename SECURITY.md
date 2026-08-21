@@ -1,9 +1,14 @@
 # Security policy
 
 Permit Bearings is a pre-release public-sector prototype. The public static
-demo has no accounts, uploads, telemetry, runtime model call, or applicant-data
-store. The Python reference server accepts a request only long enough to render
-a response and does not persist it.
+demo has no accounts, uploads, telemetry, or applicant-data store, and makes
+no model call on its own. The Python reference server accepts a request only
+long enough to render a response and does not persist it. ADR 0004 directs an
+optional runtime AI service that, when it is running and the applicant opts
+in, sends the applicant's project description and confirmed facts to a model
+provider for one request; it stores and logs no applicant content. Report a
+suspected leak of applicant content through that path the same way as any
+other vulnerability.
 
 ## Reporting a vulnerability
 

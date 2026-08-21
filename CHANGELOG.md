@@ -5,6 +5,26 @@ published a versioned release.
 
 ## [Unreleased]
 
+### Changed
+
+- Recorded an owner-directed change of direction in
+  `docs/adr/0004-runtime-ai-at-the-edges.md`: Permit Bearings will add AI to
+  the applicant's path — natural-language intake that drafts the structured
+  facts for the applicant to confirm, a grounded plain-language explanation
+  whose every claim must cite a passage verified against the committed
+  corpus, and tailored staff questions — as a separate optional service,
+  while the deterministic matcher stays unchanged. The README, `SECURITY.md`,
+  `docs/DATA-FLOW.md`, `docs/PRODUCT-CONTEXT.md`, `docs/DESIGN.md`, and
+  `AGENTS.md` no longer state "no runtime external model calls" as a
+  repository guarantee; they state it for the static site only and point at
+  the ADR. `docs/DATA-FLOW.md` gains the collected-field, subprocessor,
+  access, retention, ownership, records, and review inventory that
+  `AGENTS.md` requires before an external model call is added. The
+  capability matrix lists the four runtime-AI capabilities as `Planned`;
+  nothing in this change executes a model. ADR 0002 and the beta operations
+  runbook are unchanged and still describe the static-only deployment, which
+  remains the only shape with a prepared operations package.
+
 ### Fixed
 
 - The required `standards` check passes again on a repository whose only

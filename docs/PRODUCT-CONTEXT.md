@@ -1,6 +1,6 @@
 # Product context and opportunity map
 
-Status: 2026-08-09. This is the canonical product and claim context for the
+Status: 2026-08-21. This is the canonical product and claim context for the
 repository. It summarizes the supplied California AI Permitting Innovation
 Showcase challenge statement; the original challenge remains authoritative.
 
@@ -98,7 +98,11 @@ Status meanings are defined in `AGENTS.md`.
 | Shareable hypothetical ADU sample | Implemented surface for prototype data | `check.html?sample=adu` resolves the existing `woodland-new-detached-adu-local-layer` golden fixture, fills the normal intake, and submits through the same validation and matcher path as manual answers. The result cover sheet labels the facts as made up. While that sample remains active and unedited, a valid current availability record and an explicit applicability answer can expose or withhold the versioned future-state packet simulation. Editing a prefilled fact removes the sample URL state and clears the old result before recalculation. It is not a currently available City plan, real parcel, applicant-ready workflow, applicant record, pilot, or external validation result. |
 | English/Spanish experience | Prototype | Intake, interface controls, applicant-facing result titles, and plain-language result explanations have English/Spanish variants. `scripts/check_applicant_copy.mjs` strictly checks catalog key order, nested shapes, stable option identifiers, formatter arity, static and formatter placeholders, nonblank singular/plural outputs, and a copy-leaf pseudo-expansion transform. It does not generate or render a complete pseudolocale catalog or review meaning. Spanish explanation copy remains an unreviewed machine draft; canonical pathway labels, rule notes, document hints, source excerpts, and much dashboard content remain English; no semantic-parity review has been completed. |
 | Accessibility | Prototype | Static/code audit targets WCAG 2.2 AAA. Forty-five automated browser checks cover all five initial pages, 320px and 390px reflow without document overflow, compact mobile navigation, populated route-first results, collapsed/expanded support disclosures, representative statewide-handoff profiles, labeled mobile evidence records, valid/invalid journey-summary disclosure, and isolated no-overflow print-media states. Result states expose a semantic decision-boundary note with labeled definition-list rows for what the result shows, what remains unconfirmed, and the next staff step; browser contracts cover candidate, unresolved-fact, no-route, and source-review-hold copy. The Statewide Coverage Navigator has native outer/nested disclosure, list, and note semantics, a 64px outer and 44px HCD-disclosure target, and HCD links with programmatic jurisdiction/date/authority context. Its browser checks cover keyboard expansion, zero-HCD, linked-HCD, limited-local-layer, `Not encoded`, changed-statewide, and changed-local profiles; they include axe scans, storage boundaries, and no-overflow assertions. It is not human assistive-technology or physical-device evidence. `docs/MANUAL-VALIDATION.md` defines the signoff-required human test matrix, but physical-device, virtual-keyboard, screen-reader, keyboard, zoom, forced-colors, printed-output, and Spanish-pronunciation rows remain `not_run`. |
-| Free-text grounded Q&A | Planned | Described as an architectural direction; no executable question-answering surface exists. |
+| Natural-language intake extraction (runtime AI) | Planned — directed by ADR 0004 | An applicant will be able to describe the project in English or Spanish; a model drafts the same 19 structured facts the deterministic matcher consumes, each value allowed-listed and bound to a quoted span of the applicant's text, with unanswered fields returned as "could not tell from what you wrote" rather than guessed. The draft pre-fills the existing form; the applicant confirms and submits; the matcher runs only on confirmed values. No implementation exists in this commit. |
+| Grounded runtime explanation with corpus-verified citations (runtime AI) | Planned — directed by ADR 0004 | Given the matched rules, a model will narrate a plain-language explanation in the applicant's language in which every substantive claim cites a passage from the committed `corpus/` documents those rules depend on; the service verifies each quote against the extracted corpus text and withholds claims whose citations do not resolve, showing the withheld count. Labeled AI-generated; not human-reviewed. No implementation exists in this commit. |
+| Tailored staff questions (runtime AI) | Planned — directed by ADR 0004 | Draft questions for local staff tailored to the applicant's unresolved facts, matched rules, and local-coverage status, replacing the generic trio with labeled drafts. No implementation exists in this commit. |
+| Ordinance-to-rule drafting (runtime AI, stretch) | Planned — directed by ADR 0004 | Pasted ordinance text → proposed rule entries in the `data/rules` schema, written only as explicitly unreviewed drafts outside `data/rules/` for a person to review; never loaded by the matcher. No implementation exists in this commit. |
+| Free-text grounded Q&A | Not targeted in this series | Open-ended question answering remains out of scope; ADR 0004 anchors runtime explanation to a matched rule set instead, which keeps retrieval scoped to cited documents and the citation check exact. |
 | Scenario B staff workflows | Not targeted in v1 | No live status integration, report/letter drafting, plan check, or comment-resolution workflow exists. |
 | Applicant-data privacy | Implemented for the no-storage demo; proposed beta operating controls not approved | The current browser/server demo does not persist submissions. The proposed beta package pins an empty service field/purpose inventory, exact current-page fields, no applicant-answer network submission, and role-based retention, deletion, CPRA routing, incident, support, release, and rollback procedures. It also states that a static host and external operational systems may separately process metadata. Every deployment inventory, rehearsal, approval, and partner decision is still null/`not_run`. The evidence ZIP's pinned profile excludes known sensitive material and is neither a privacy classifier nor a sensitive-record export. No CPRA, Information Practices Act, SAM, SIMM, privacy, or security compliance claim is made. |
 
@@ -181,6 +185,15 @@ These are implementation defects or evidence gaps, not general roadmap ideas:
    catch missing links, same-day citation drift, malformed review metadata,
    and selected wording boundaries, but no named reviewer has evaluated legal
    fidelity, comprehension, or English/Spanish semantic parity.
+9. **Runtime AI output cannot be pre-reviewed.** Under ADR 0004 the service
+   will generate explanations and staff questions per request. The only
+   review that can exist at that moment is mechanical: allowed-value and
+   quote-binding checks on extracted facts, and corpus-text verification of
+   every citation. Those checks bound fabrication of values and citations;
+   they do not establish legal fidelity, completeness, or translation
+   quality, and a verified citation can still be quoted in support of a
+   mistaken sentence. The committed evaluation set measures extraction
+   accuracy, abstention, and citation resolution, not legal correctness.
 
 ## Product strategy
 
@@ -278,7 +291,15 @@ inspectable:
 
 Objective eligibility and completeness rules remain deterministic. AI output
 must cite evidence, expose uncertainty, and abstain when evidence is absent or
-conflicting. The public readiness sample makes no runtime model call. Its
+conflicting.
+
+ADR 0004 (2026-08-21) changes the runtime posture by owner direction: the
+model is allowed at the edges of the applicant path — structuring a
+free-text description into the matcher's own facts for the applicant to
+confirm, narrating a matched result with citations that the service verifies
+against the committed corpus, and drafting staff questions — through a
+separate optional service. The matcher, the evaluator, and the build still
+run no model. The public readiness sample makes no runtime model call. Its
 AI-assisted mapping and remedies are versioned, fingerprint-bound drafts with
 no named human, planner, counsel, applicant, or jurisdiction review. Mapping
 metadata records exact input-source fingerprints but no retained provider,
