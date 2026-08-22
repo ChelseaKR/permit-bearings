@@ -42,7 +42,7 @@ from .screening import Rule, screen
 from .source_state import SourceStateSnapshot, source_state_fingerprint
 
 WORKLIST_SCHEMA_VERSION = 2
-DECISIONS_SCHEMA_VERSION = 1
+DECISIONS_SCHEMA_VERSION = 2
 WORKLIST_STATUSES = ("clear", "open")
 DECISION_STATUSES = ("unassigned", "assigned", "resolved")
 DECISION_DISPOSITIONS = ("retain", "revise", "suppress", "route_to_staff")
@@ -243,13 +243,22 @@ class ReviewWorklist:
 
 @dataclass(frozen=True)
 class ReviewDecision:
-    """A human-maintained ledger entry bound to one generated work item."""
+    """A human-maintained ledger entry bound to one generated work item.
+
+    ``assignee_role`` is a named role from the maintainer's own role
+    vocabulary (a stable lowercase identifier), and ``due_on`` is the
+    calendar date the assignment is due. Both are bookkeeping for
+    accountability only: neither can clear a source hold, change matching,
+    promote verification, or publish anything.
+    """
 
     item_id: str
     item_fingerprint: str
     status: str
     owner_code: str | None
     assigned_on: str | None
+    assignee_role: str | None
+    due_on: str | None
     disposition: str | None
     decided_on: str | None
     evidence_receipt_id: str | None
@@ -991,7 +1000,11 @@ def load_review_worklist(
 
 
 def decision_template(worklist: ReviewWorklist) -> ReviewDecisionLedger:
-    """Return a complete, explicitly unassigned decision ledger template."""
+    """Return a complete, explicitly unassigned decision ledger template.
+
+    Entries start unassigned with no owner, role, or due date; assignment is
+    a maintainer bookkeeping act that still cannot clear any hold.
+    """
 
     return ReviewDecisionLedger(
         worklist_id=worklist.worklist_id,
@@ -1003,6 +1016,8 @@ def decision_template(worklist: ReviewWorklist) -> ReviewDecisionLedger:
                 status="unassigned",
                 owner_code=None,
                 assigned_on=None,
+                assignee_role=None,
+                due_on=None,
                 disposition=None,
                 decided_on=None,
                 evidence_receipt_id=None,
@@ -1030,6 +1045,8 @@ def _optional_text(value: Any, field: str) -> str | None:
 class _DecisionMetadata:
     owner_code: str | None
     assigned_on: str | None
+    assignee_role: str | None
+    due_on: str | None
     disposition: str | None
     decided_on: str | None
     evidence_receipt_id: str | None
@@ -1076,6 +1093,20 @@ def _decision_metadata(
         if assigned_on_raw is not None
         else None
     )
+    assignee_role = _optional_text(record["assignee_role"], f"{field}.assignee_role")
+    if assignee_role is not None and not _IDENTIFIER.fullmatch(assignee_role):
+        raise ValueError(f"{field}.assignee_role: expected a stable role identifier")
+    due_on_raw = record["due_on"]
+    # A due date is naturally allowed to be in the future; only its calendar
+    # shape is validated here. Overdue assignments stay visible, not invalid.
+    if due_on_raw is not None:
+        if not isinstance(due_on_raw, str) or not _DATE.fullmatch(due_on_raw):
+            raise ValueError(f"{field}.due_on: expected YYYY-MM-DD")
+        try:
+            date.fromisoformat(due_on_raw)
+        except ValueError as error:
+            raise ValueError(f"{field}.due_on: invalid calendar date") from error
+    due_on = due_on_raw
     disposition = _optional_text(record["disposition"], f"{field}.disposition")
     if disposition is not None and disposition not in DECISION_DISPOSITIONS:
         raise ValueError(f"{field}.disposition: unsupported value {disposition!r}")
@@ -1095,6 +1126,8 @@ def _decision_metadata(
     return _DecisionMetadata(
         owner_code=owner_code,
         assigned_on=assigned_on,
+        assignee_role=assignee_role,
+        due_on=due_on,
         disposition=disposition,
         decided_on=decided_on,
         evidence_receipt_id=evidence_receipt_id,
@@ -1109,6 +1142,8 @@ def _validate_decision_status(
     values = (
         metadata.owner_code,
         metadata.assigned_on,
+        metadata.assignee_role,
+        metadata.due_on,
         metadata.disposition,
         metadata.decided_on,
         metadata.evidence_receipt_id,
@@ -1116,9 +1151,15 @@ def _validate_decision_status(
     if status == "unassigned" and any(values):
         raise ValueError(f"{field}: unassigned entries cannot carry decision metadata")
     if status == "assigned":
-        if metadata.owner_code is None or metadata.assigned_on is None:
+        if (
+            metadata.owner_code is None
+            or metadata.assigned_on is None
+            or metadata.assignee_role is None
+            or metadata.due_on is None
+        ):
             raise ValueError(
-                f"{field}: assigned entries require owner_code and assigned_on"
+                f"{field}: assigned entries require an owner code, assignment "
+                "date, named assignee role, and due date"
             )
         if any(
             (
@@ -1128,17 +1169,26 @@ def _validate_decision_status(
             )
         ):
             raise ValueError(f"{field}: assigned entries cannot carry a disposition")
+        if metadata.due_on < metadata.assigned_on:
+            raise ValueError(f"{field}: due_on cannot predate assigned_on")
     if status == "resolved":
         if not all(values):
             raise ValueError(
                 f"{field}: resolved entries require assignment, disposition, and evidence"
             )
+        assigned_on, decided_on, due_on = (
+            metadata.assigned_on,
+            metadata.decided_on,
+            metadata.due_on,
+        )
         if (
-            metadata.assigned_on is not None
-            and metadata.decided_on is not None
-            and metadata.decided_on < metadata.assigned_on
+            assigned_on is not None
+            and decided_on is not None
+            and decided_on < assigned_on
         ):
             raise ValueError(f"{field}: decided_on cannot predate assigned_on")
+        if assigned_on is not None and due_on is not None and due_on < assigned_on:
+            raise ValueError(f"{field}: due_on cannot predate assigned_on")
 
 
 def _decision_entry(
@@ -1157,6 +1207,8 @@ def _decision_entry(
             "status",
             "owner_code",
             "assigned_on",
+            "assignee_role",
+            "due_on",
             "disposition",
             "decided_on",
             "evidence_receipt_id",
@@ -1173,6 +1225,8 @@ def _decision_entry(
         status=status,
         owner_code=metadata.owner_code,
         assigned_on=metadata.assigned_on,
+        assignee_role=metadata.assignee_role,
+        due_on=metadata.due_on,
         disposition=metadata.disposition,
         decided_on=metadata.decided_on,
         evidence_receipt_id=metadata.evidence_receipt_id,

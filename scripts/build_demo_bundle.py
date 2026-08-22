@@ -100,13 +100,17 @@ def _validate_readiness_ids(
     if workflow.workflow_id != entry.workflow_id:
         raise ValueError(f"{entry.workflow_id}: registered workflow ID does not match")
     if packet.workflow_id != entry.workflow_id:
-        raise ValueError(f"{entry.workflow_id}: registered packet workflow ID does not match")
+        raise ValueError(
+            f"{entry.workflow_id}: registered packet workflow ID does not match"
+        )
     if packet.packet_id != entry.packet_id:
         raise ValueError(f"{entry.workflow_id}: registered packet ID does not match")
     if workflow.jurisdiction != entry.jurisdiction:
         raise ValueError(f"{entry.workflow_id}: registered jurisdiction does not match")
     if packet.jurisdiction != entry.jurisdiction:
-        raise ValueError(f"{entry.workflow_id}: registered packet jurisdiction does not match")
+        raise ValueError(
+            f"{entry.workflow_id}: registered packet jurisdiction does not match"
+        )
 
 
 def _registered_program_availability(
@@ -194,8 +198,7 @@ def _canonical_readiness_records(
         evaluation_date = date.fromisoformat(canonical_evaluated_on)
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError(
-            f"{selected.artifacts.readiness_packet.path}: "
-            "invalid packet.evaluated_on"
+            f"{selected.artifacts.readiness_packet.path}: invalid packet.evaluated_on"
         ) from error
     workflow, packet, result = load_and_evaluate_readiness(
         workflow_path,
@@ -480,7 +483,18 @@ def build_bundle(
         root / "data" / "explanations" / "plain-language.json",
         rules,
     )
-    load_rule_verifications(root / INPUTS["rule_verification"], rules)
+    from permit_pathways.reviewer_roster import load_reviewer_roster
+
+    # Build-time promotion gate: a promoted ledger entry must name a
+    # currently attested roster member. The roster file is required here so
+    # deleting it cannot silently remove the gate. The committed template
+    # has zero members and the committed ledger has zero promotions, so
+    # this is a structural tripwire, not a present-tense review claim.
+    load_rule_verifications(
+        root / INPUTS["rule_verification"],
+        rules,
+        roster=load_reviewer_roster(root / "reviewer-roster.json"),
+    )
 
     payload: dict[str, object] = {}
     digests: dict[str, str] = {}
@@ -491,8 +505,8 @@ def build_bundle(
     payload["rules"] = aggregate_rules
     payload["rule_manifest"] = rule_manifest(root)
     payload["coverage_index"] = build_coverage_index_payload(root)
-    default_readiness, default_journey, workflow_digests = (
-        _build_registered_payloads(root, registry, records)
+    default_readiness, default_journey, workflow_digests = _build_registered_payloads(
+        root, registry, records
     )
     digests.update(workflow_digests)
     payload["readiness"] = default_readiness

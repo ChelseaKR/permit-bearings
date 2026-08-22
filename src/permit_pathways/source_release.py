@@ -836,6 +836,10 @@ def _validate_context_decision(entry: ReviewDecision) -> None:
         raise ValueError("decision ledger contains an invalid status")
     if entry.owner_code is not None:
         _owner_code(entry.owner_code, "decision ledger owner code")
+    if entry.assignee_role is not None and not _IDENTIFIER.fullmatch(
+        entry.assignee_role
+    ):
+        raise ValueError("decision ledger contains an invalid assignee role identifier")
     if entry.disposition is not None and entry.disposition not in DECISION_DISPOSITIONS:
         raise ValueError("decision ledger contains an invalid disposition")
     if entry.evidence_receipt_id is not None:
@@ -843,10 +847,13 @@ def _validate_context_decision(entry: ReviewDecision) -> None:
             entry.evidence_receipt_id, "decision ledger evidence receipt ID"
         )
     assigned = _ledger_date(entry.assigned_on, "assigned_on")
+    due = _ledger_date(entry.due_on, "due_on")
     decided = _ledger_date(entry.decided_on, "decided_on")
     values = (
         entry.owner_code,
         entry.assigned_on,
+        entry.assignee_role,
+        entry.due_on,
         entry.disposition,
         entry.decided_on,
         entry.evidence_receipt_id,
@@ -854,11 +861,20 @@ def _validate_context_decision(entry: ReviewDecision) -> None:
     if entry.status == "unassigned" and any(values):
         raise ValueError("unassigned decision ledger entry carries metadata")
     if entry.status == "assigned" and (
-        entry.owner_code is None or assigned is None or any(values[2:])
+        entry.owner_code is None
+        or assigned is None
+        or entry.assignee_role is None
+        or due is None
+        or any(values[4:])
+        or (assigned is not None and due is not None and due < assigned)
     ):
         raise ValueError("assigned decision ledger entry has invalid metadata")
     if entry.status == "resolved" and (
-        not all(values) or assigned is None or decided is None or decided < assigned
+        not all(values)
+        or assigned is None
+        or decided is None
+        or decided < assigned
+        or (due is not None and assigned is not None and due < assigned)
     ):
         raise ValueError("resolved decision ledger entry has invalid metadata")
 
