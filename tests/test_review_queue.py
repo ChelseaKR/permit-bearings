@@ -500,6 +500,8 @@ def test_decision_template_is_complete_and_supports_bound_assignment_and_resolut
             "status": "assigned",
             "owner_code": "MAINTAINER_1",
             "assigned_on": "2026-08-09",
+            "assignee_role": "rule-steward",
+            "due_on": "2026-08-23",
         }
     )
     payload["entries"][1].update(
@@ -507,6 +509,8 @@ def test_decision_template_is_complete_and_supports_bound_assignment_and_resolut
             "status": "resolved",
             "owner_code": "REVIEWER_1",
             "assigned_on": "2026-08-08",
+            "assignee_role": "rule-steward",
+            "due_on": "2026-08-15",
             "disposition": "revise",
             "decided_on": "2026-08-09",
             "evidence_receipt_id": "review-receipt-1",
@@ -516,9 +520,104 @@ def test_decision_template_is_complete_and_supports_bound_assignment_and_resolut
 
     ledger = load_review_decisions(path, worklist, today=AS_OF)
     assert [entry.status for entry in ledger.entries[:2]] == ["assigned", "resolved"]
+    assert ledger.entries[0].assignee_role == "rule-steward"
+    assert ledger.entries[0].due_on == "2026-08-23"
     assert worklist.status == "open"
     assert worklist.fingerprint() == template.worklist_fingerprint
     assert "cannot clear source-state holds" in ledger.summary()
+
+
+def test_decisions_schema_v2_requires_role_and_due_date_on_assignment(tmp_path):
+    worklist = _worklist(changed="ca-gov-66317")
+    template = decision_template(worklist)
+    assert template.to_dict()["schema_version"] == 2
+    assert all(
+        entry["assignee_role"] is None and entry["due_on"] is None
+        for entry in template.to_dict()["entries"]
+    )
+
+    missing_role = copy.deepcopy(template.to_dict())
+    missing_role["entries"][0].update(
+        {
+            "status": "assigned",
+            "owner_code": "MAINTAINER_1",
+            "assigned_on": "2026-08-09",
+            "due_on": "2026-08-23",
+        }
+    )
+    with pytest.raises(ValueError, match="named assignee role"):
+        load_review_decisions(
+            _write_json(tmp_path, "no-role.json", missing_role),
+            worklist,
+            today=AS_OF,
+        )
+
+    missing_due = copy.deepcopy(template.to_dict())
+    missing_due["entries"][0].update(
+        {
+            "status": "assigned",
+            "owner_code": "MAINTAINER_1",
+            "assigned_on": "2026-08-09",
+            "assignee_role": "rule-steward",
+        }
+    )
+    with pytest.raises(ValueError, match="due date"):
+        load_review_decisions(
+            _write_json(tmp_path, "no-due.json", missing_due), worklist, today=AS_OF
+        )
+
+
+@pytest.mark.parametrize("status", ["assigned", "resolved"])
+def test_due_date_cannot_predate_the_assignment_date(tmp_path, status):
+    worklist = _worklist(changed="ca-gov-66317")
+    payload = decision_template(worklist).to_dict()
+    entry_update = {
+        "owner_code": "REVIEWER_1",
+        "assigned_on": "2026-08-09",
+        "assignee_role": "rule-steward",
+        "due_on": "2026-08-08",
+    }
+    if status == "resolved":
+        entry_update.update(
+            {
+                "disposition": "retain",
+                "decided_on": "2026-08-09",
+                "evidence_receipt_id": "receipt-1",
+            }
+        )
+    payload["entries"][0].update({"status": status, **entry_update})
+    with pytest.raises(ValueError, match="due_on cannot predate assigned_on"):
+        load_review_decisions(
+            _write_json(tmp_path, f"late-{status}.json", payload),
+            worklist,
+            today=AS_OF,
+        )
+
+
+def test_resolved_entry_may_be_resolved_after_its_due_date(tmp_path):
+    # An overdue assignment that is later resolved stays honest: the due
+    # date is bookkeeping, never a validity constraint on the resolution.
+    worklist = _worklist(changed="ca-gov-66317")
+    payload = decision_template(worklist).to_dict()
+    payload["entries"][0].update(
+        {
+            "status": "resolved",
+            "owner_code": "REVIEWER_1",
+            "assigned_on": "2026-08-01",
+            "assignee_role": "rule-steward",
+            "due_on": "2026-08-05",
+            "disposition": "revise",
+            "decided_on": "2026-08-09",
+            "evidence_receipt_id": "receipt-1",
+        }
+    )
+    ledger = load_review_decisions(
+        _write_json(tmp_path, "overdue-resolved.json", payload),
+        worklist,
+        today=AS_OF,
+    )
+    assert ledger.entries[0].status == "resolved"
+    assert ledger.entries[0].due_on == "2026-08-05"
 
 
 @pytest.mark.parametrize(
@@ -540,6 +639,8 @@ def test_decision_template_is_complete_and_supports_bound_assignment_and_resolut
                     "status": "assigned",
                     "owner_code": "person name",
                     "assigned_on": "2026-08-09",
+                    "assignee_role": "rule-steward",
+                    "due_on": "2026-08-23",
                 }
             ),
             "opaque uppercase owner code",
@@ -550,6 +651,8 @@ def test_decision_template_is_complete_and_supports_bound_assignment_and_resolut
                     "status": "resolved",
                     "owner_code": "R1",
                     "assigned_on": "2026-08-09",
+                    "assignee_role": "rule-steward",
+                    "due_on": "2026-08-15",
                     "disposition": "approved",
                     "decided_on": "2026-08-09",
                     "evidence_receipt_id": "receipt-1",
