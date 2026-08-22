@@ -81,7 +81,7 @@ def test_generated_woodland_journey_binds_one_route_and_packet_envelope():
         "adu-ministerial-review"
     ]
     assert journey["route_source_status"] == "current"
-    assert journey["route_source_status_as_of"] == "2026-07-30"
+    assert journey["route_source_status_as_of"] == "2026-08-11"
     assert journey["route_source_review_due_on"] == "2027-01-23"
     assert journey["screening_intake"] == {
         "project_type": "adu",
@@ -905,12 +905,12 @@ def test_packet_build_explicitly_replays_canonical_evaluation_date(
 
     readiness, _ = build_readiness_payload()
 
-    assert readiness["packet"]["evaluated_on"] == "2026-07-30"
-    assert readiness["result"]["evaluated_on"] == "2026-07-30"
+    assert readiness["packet"]["evaluated_on"] == "2026-08-11"
+    assert readiness["result"]["evaluated_on"] == "2026-08-11"
     assert readiness["result"]["source_status"] == "current"
-    assert readiness["result"]["source_status_as_of"] == "2026-07-30"
+    assert readiness["result"]["source_status_as_of"] == "2026-08-11"
     assert readiness["result"]["source_review_due_on"] == "2027-01-25"
-    assert readiness["evidence_manifest"]["source_status_as_of"] == ("2026-07-30")
+    assert readiness["evidence_manifest"]["source_status_as_of"] == ("2026-08-11")
     assert readiness["evidence_manifest"]["source_review_due_on"] == ("2027-01-25")
 
 

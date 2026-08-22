@@ -872,6 +872,8 @@ const WOODLAND_AVAILABILITY_POLICY =
   "woodland-preapproved-adu-plans-not-listed-v1";
 const GENERIC_PROTOTYPE_AVAILABILITY_POLICY =
   "prototype-generic-plans-not-listed-v1";
+const INTAKE_AVAILABILITY_POLICY =
+  "woodland-adu-preapproval-intake-available-v1";
 const GENERIC_PROTOTYPE_AVAILABILITY_BOUNDARY =
   "No currently listed plan was identified on the checked official program "
   + "page. This prototype observation is not evidence that a plan is available "
@@ -952,22 +954,40 @@ function normalizeWorkflowRegistry(payload, generatedFrom = null) {
     const programIds = new Set();
     const paths = new Set();
     for (const entry of payload.workflows) {
+      const journeyArtifacts = [
+        entry.artifacts?.journey,
+        entry.artifacts?.journey_evidence,
+      ];
+      const hasAnyJourneyArtifact = journeyArtifacts.some(
+        artifact => artifact !== undefined && artifact !== null,
+      );
+      const hasBothJourneyArtifacts = journeyArtifacts.every(
+        artifact => artifact !== undefined && artifact !== null,
+      );
       if (!hasExactKeys(
         entry,
         WORKFLOW_REGISTRY_ENTRY_KEYS,
         WORKFLOW_REGISTRY_ENTRY_KEYS,
       ) || !hasExactKeys(
         entry.artifacts,
-        WORKFLOW_REGISTRY_ARTIFACT_KEYS,
-        WORKFLOW_REGISTRY_ARTIFACT_KEYS,
-      ) || !validStableId(entry.workflow_id)
+        WORKFLOW_REGISTRY_ARTIFACT_KEYS.filter(name =>
+          name !== "journey" && name !== "journey_evidence"
+          || hasBothJourneyArtifacts),
+        WORKFLOW_REGISTRY_ARTIFACT_KEYS.filter(name =>
+          name !== "journey" && name !== "journey_evidence"
+          || hasBothJourneyArtifacts),
+      ) || (hasAnyJourneyArtifact && !hasBothJourneyArtifacts)
+        || ((entry.journey_id === null) === hasAnyJourneyArtifact)
+        || !(entry.journey_id === null
+          || validStableId(entry.journey_id))
+        || !validStableId(entry.workflow_id)
         || !validStableId(entry.packet_id)
-        || !validStableId(entry.journey_id)
         || !validStableId(entry.program_id)
         || !validStableId(entry.jurisdiction)
         || entry.status !== "prototype"
         || ![
           GENERIC_PROTOTYPE_AVAILABILITY_POLICY,
+          INTAKE_AVAILABILITY_POLICY,
           WOODLAND_AVAILABILITY_POLICY,
         ].includes(entry.availability_policy)
         || (entry.workflow_id === WOODLAND_WORKFLOW_ID
@@ -976,19 +996,27 @@ function normalizeWorkflowRegistry(payload, generatedFrom = null) {
           && entry.availability_policy === WOODLAND_AVAILABILITY_POLICY)
         || ids.has(entry.workflow_id)
         || packetIds.has(entry.packet_id)
-        || journeyIds.has(entry.journey_id)
+        || (entry.journey_id !== null && journeyIds.has(entry.journey_id))
         || programIds.has(entry.program_id)) return null;
       ids.add(entry.workflow_id);
       packetIds.add(entry.packet_id);
-      journeyIds.add(entry.journey_id);
+      if (entry.journey_id !== null) journeyIds.add(entry.journey_id);
       programIds.add(entry.program_id);
-      for (const [name, prefix] of Object.entries(WORKFLOW_INPUT_PATHS)) {
+      const inputPaths = Object.entries(WORKFLOW_INPUT_PATHS).filter(
+        ([name]) => hasBothJourneyArtifacts
+          || (name !== "journey"),
+      );
+      for (const [name, prefix] of inputPaths) {
         const artifact = entry.artifacts[name];
         if (!validWorkflowInputArtifact(artifact, prefix, generatedFrom)
             || paths.has(artifact.path)) return null;
         paths.add(artifact.path);
       }
-      for (const [name, prefix] of Object.entries(WORKFLOW_OUTPUT_PATHS)) {
+      const outputPaths = Object.entries(WORKFLOW_OUTPUT_PATHS).filter(
+        ([name]) => hasBothJourneyArtifacts
+          || (name !== "journey_evidence"),
+      );
+      for (const [name, prefix] of outputPaths) {
         const artifact = entry.artifacts[name];
         if (!validWorkflowOutputArtifact(artifact, prefix)
             || paths.has(artifact.path)) return null;

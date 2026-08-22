@@ -595,7 +595,7 @@ def _validate_declared_ids(registry: WorkflowRegistry, root: Path) -> None:
             entry.artifacts.program_availability,
             "availability",
         )
-        expected = (
+        expected: tuple[tuple[Any | None, str, str], ...] = (
             (workflow.get("workflow_id"), entry.workflow_id, "workflow.workflow_id"),
             (workflow.get("jurisdiction"), entry.jurisdiction, "workflow.jurisdiction"),
             (packet.get("workflow_id"), entry.workflow_id, "packet.workflow_id"),
@@ -618,7 +618,7 @@ def _validate_declared_ids(registry: WorkflowRegistry, root: Path) -> None:
                 "availability.jurisdiction",
             ),
         )
-        if entry.artifacts.journey is not None:
+        if entry.artifacts.journey is not None and entry.journey_id is not None:
             journey = _artifact_record(root, entry.artifacts.journey, "journey")
             expected += (
                 (journey.get("journey_id"), entry.journey_id, "journey.journey_id"),

@@ -43,6 +43,8 @@ from permit_pathways.source_state import (
     encoded_source_state,
     source_state_fingerprint,
 )
+from permit_pathways.workflow_context import load_registered_review_context
+from permit_pathways.workflow_registry import load_workflow_registry
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ROOT / "data" / "sources.json"
@@ -141,6 +143,16 @@ def _readiness_context() -> ReadinessReviewContext:
     )
 
 
+def _registered_readiness_contexts() -> tuple[ReadinessReviewContext, ...]:
+    """Mirror the CLIs: one context per registered workflow, in registry order."""
+
+    registry = load_workflow_registry(ROOT / "data/workflows/registry.json", root=ROOT)
+    return tuple(
+        load_registered_review_context(entry, ROOT, SOURCES)
+        for entry in registry.workflows
+    )
+
+
 def _worklist(snapshot):
     rules = load_rules(RULES, today=AS_OF)
     return build_review_worklist(
@@ -148,7 +160,7 @@ def _worklist(snapshot):
         load_sources(SOURCES, today=AS_OF),
         rules,
         load_golden(GOLDEN, rules),
-        readiness_contexts=(_readiness_context(),),
+        readiness_contexts=_registered_readiness_contexts(),
     )
 
 
@@ -160,7 +172,7 @@ def _build_context(snapshot, worklist, decisions):
         sources_path=SOURCES,
         rules_path=RULES,
         golden_path=GOLDEN,
-        readiness_contexts=(_readiness_context(),),
+        readiness_contexts=_registered_readiness_contexts(),
         as_of=AS_OF,
     )
 

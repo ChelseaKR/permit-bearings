@@ -666,7 +666,7 @@ def test_cli_uses_the_default_readiness_context_for_a_changed_checklist(
     assert exit_code == 1
     payload = json.loads(capsys.readouterr().out)
     assert len(payload["items"]) == 53
-    assert len(payload["readiness_contexts"]) == 1
+    assert len(payload["readiness_contexts"]) == 2
     assert {item["item_type"] for item in payload["items"]} >= {
         "readiness_requirement_reverification",
         "readiness_remedy_reverification",

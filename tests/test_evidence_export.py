@@ -27,12 +27,12 @@ from permit_pathways.evidence_export_cli import main as evidence_export_main
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 FREEZE_ID = "public-synthetic-evidence-freeze-2026-08-09"
-FREEZE_ON = "2026-08-09"
+FREEZE_ON = "2026-08-22"
 AS_OF = date.fromisoformat(FREEZE_ON)
 V1_PROFILE_PATH = Path("data/export/public-synthetic-evidence-v1.json")
 V2_PROFILE_PATH = Path("data/export/public-synthetic-evidence-v2.json")
 FROZEN_V1_PROFILE_SHA256 = (
-    "2e5153f1dae2f7b660dcae156ed2d0f84480eff7a02a163fa8426a5272314e9e"
+    "30a36dc43f9a52320e3085648a0f383ee2b641bbbe1f4b852651d2110e4d2fbf"
 )
 
 
@@ -216,7 +216,7 @@ def test_frozen_v1_profile_retains_exact_pre_registry_identity() -> None:
     assert hashlib.sha256(raw).hexdigest() == FROZEN_V1_PROFILE_SHA256
     payload = json.loads(raw)
     assert payload["schema_version"] == 1
-    assert len(payload["entries"]) == 58
+    assert len(payload["entries"]) == 59
     assert {entry["path"] for entry in payload["entries"]}.isdisjoint(
         {"data/workflows/registry.json"}
     )
@@ -241,7 +241,7 @@ def test_legacy_v1_archive_style_fixture_verifies_and_restores(
         today=AS_OF,
     )
     assert manifest["schema_version"] == 1
-    assert len(manifest["files"]) == 58
+    assert len(manifest["files"]) == 59
     assert all(
         item["path"] != "data/workflows/registry.json" for item in manifest["files"]
     )

@@ -98,9 +98,7 @@ def load_registered_review_context(
             journey.readiness_workflow_id != entry.workflow_id
             or journey.readiness_packet_id != entry.packet_id
         ):
-            raise ValueError(
-                "registered journey references do not match its workflow"
-            )
+            raise ValueError("registered journey references do not match its workflow")
     if (
         availability.workflow_id != entry.workflow_id
         or availability.program_id != entry.program_id

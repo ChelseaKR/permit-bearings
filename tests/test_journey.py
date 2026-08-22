@@ -126,11 +126,11 @@ def test_canonical_journey_resolution_is_deterministic_and_source_bound(
     assert [route["rule_id"] for route in routes] == ["adu-ministerial-review"]
     assert routes[0]["citation"]["verified_on"] == "2026-07-27"
     assert routes[0]["source_status"] == "current"
-    assert routes[0]["source_status_as_of"] == "2026-07-30"
+    assert routes[0]["source_status_as_of"] == "2026-08-11"
     assert routes[0]["source_review_due_on"] == "2027-01-23"
     assert routes[0]["rule_fingerprint"].startswith("sha256:")
     assert first["route_source_status"] == "current"
-    assert first["route_source_status_as_of"] == "2026-07-30"
+    assert first["route_source_status_as_of"] == "2026-08-11"
     assert first["route_source_review_due_on"] == "2027-01-23"
 
     facts = first["applicability_facts"]

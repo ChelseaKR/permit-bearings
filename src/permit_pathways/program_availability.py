@@ -52,8 +52,7 @@ INTAKE_SOURCE_ID = "woodland-adu-preapproval-intake-requirements"
 INTAKE_WORKFLOW_ID = "woodland-adu-preapproval-designer-submittal"
 INTAKE_URL = "https://www.cityofwoodland.gov/DocumentCenter/View/12371"
 INTAKE_EXCERPT = (
-    "Submit digital PDFs of the required documents to "
-    "cdd-building@cityofwoodland.gov."
+    "Submit digital PDFs of the required documents to cdd-building@cityofwoodland.gov."
 )
 INTAKE_BOUNDARY = (
     "The City of Woodland published requirements for submitting ADU plans for "
@@ -276,39 +275,48 @@ def _safe_https_url(value: Any, field: str) -> str:
     return value
 
 
-def _validate_policy_source_binding(
+def _validate_intake_source_binding(
+    field: str,
     *,
-    policy: str,
+    source_id: str,
+    url: str,
+    excerpt: str,
+) -> None:
+    if source_id != INTAKE_SOURCE_ID:
+        raise ValueError(f"{field}.source_id: expected {INTAKE_SOURCE_ID!r}")
+    if excerpt != INTAKE_EXCERPT:
+        raise ValueError(
+            f"{field}.excerpt: must match the submittals_accepted observation"
+        )
+    if url != INTAKE_URL:
+        raise ValueError(f"{field}.url: expected the published intake requirements URL")
+
+
+def _validate_woodland_source_binding(
+    field: str,
+    *,
+    source_id: str,
+    url: str,
+    excerpt: str,
+) -> None:
+    if source_id != SOURCE_ID:
+        raise ValueError(f"{field}.source_id: expected {SOURCE_ID!r}")
+    if excerpt != OFFICIAL_EXCERPT:
+        raise ValueError(
+            f"{field}.excerpt: must match the plans_not_listed observation"
+        )
+    if url != OFFICIAL_PROGRAM_URL:
+        raise ValueError(f"{field}.url: expected the official Woodland program URL")
+
+
+def _validate_generic_source_binding(
+    field: str,
+    *,
     program_id: str,
     source_id: str,
     url: str,
     excerpt: str,
 ) -> None:
-    field = "availability.source"
-    if policy == INTAKE_AVAILABILITY_POLICY:
-        if source_id != INTAKE_SOURCE_ID:
-            raise ValueError(f"{field}.source_id: expected {INTAKE_SOURCE_ID!r}")
-        if excerpt != INTAKE_EXCERPT:
-            raise ValueError(
-                f"{field}.excerpt: must match the submittals_accepted observation"
-            )
-        if url != INTAKE_URL:
-            raise ValueError(
-                f"{field}.url: expected the published intake requirements URL"
-            )
-        return
-
-    if policy == WOODLAND_AVAILABILITY_POLICY:
-        if source_id != SOURCE_ID:
-            raise ValueError(f"{field}.source_id: expected {SOURCE_ID!r}")
-        if excerpt != OFFICIAL_EXCERPT:
-            raise ValueError(
-                f"{field}.excerpt: must match the plans_not_listed observation"
-            )
-        if url != OFFICIAL_PROGRAM_URL:
-            raise ValueError(f"{field}.url: expected the official Woodland program URL")
-        return
-
     if source_id != f"{program_id}-page":
         raise ValueError(
             f"{field}.source_id: generic policy requires {program_id!r} source binding"
@@ -321,6 +329,32 @@ def _validate_policy_source_binding(
         raise ValueError(
             f"{field}.url: generic policy requires the exact program-ID path"
         )
+
+
+def _validate_policy_source_binding(
+    *,
+    policy: str,
+    program_id: str,
+    source_id: str,
+    url: str,
+    excerpt: str,
+) -> None:
+    field = "availability.source"
+    validators = {
+        INTAKE_AVAILABILITY_POLICY: _validate_intake_source_binding,
+        WOODLAND_AVAILABILITY_POLICY: _validate_woodland_source_binding,
+    }
+    validator = validators.get(policy)
+    if validator is not None:
+        validator(field, source_id=source_id, url=url, excerpt=excerpt)
+        return
+    _validate_generic_source_binding(
+        field,
+        program_id=program_id,
+        source_id=source_id,
+        url=url,
+        excerpt=excerpt,
+    )
 
 
 def _source(
@@ -380,6 +414,29 @@ def _source(
     )
 
 
+def _validate_policy_ids(
+    field: str,
+    *,
+    policy: str,
+    program_id: str,
+    workflow_id: str,
+    jurisdiction: str,
+) -> None:
+    if policy == WOODLAND_AVAILABILITY_POLICY and program_id != PROGRAM_ID:
+        raise ValueError(f"{field}.program_id: expected {PROGRAM_ID!r}")
+    if policy == INTAKE_AVAILABILITY_POLICY and program_id != INTAKE_PROGRAM_ID:
+        raise ValueError(f"{field}.program_id: expected {INTAKE_PROGRAM_ID!r}")
+    if policy == WOODLAND_AVAILABILITY_POLICY and workflow_id != WORKFLOW_ID:
+        raise ValueError(f"{field}.workflow_id: expected {WORKFLOW_ID!r}")
+    if policy == INTAKE_AVAILABILITY_POLICY and workflow_id != INTAKE_WORKFLOW_ID:
+        raise ValueError(f"{field}.workflow_id: expected {INTAKE_WORKFLOW_ID!r}")
+    if (
+        policy in (WOODLAND_AVAILABILITY_POLICY, INTAKE_AVAILABILITY_POLICY)
+        and jurisdiction != JURISDICTION
+    ):
+        raise ValueError(f"{field}.jurisdiction: expected {JURISDICTION!r}")
+
+
 def _availability(
     record: Any,
     *,
@@ -392,21 +449,15 @@ def _availability(
     _exact_keys(record, _AVAILABILITY_KEYS, field)
 
     program_id = _stable_id(record["program_id"], f"{field}.program_id")
-    if policy == WOODLAND_AVAILABILITY_POLICY and program_id != PROGRAM_ID:
-        raise ValueError(f"{field}.program_id: expected {PROGRAM_ID!r}")
-    if policy == INTAKE_AVAILABILITY_POLICY and program_id != INTAKE_PROGRAM_ID:
-        raise ValueError(f"{field}.program_id: expected {INTAKE_PROGRAM_ID!r}")
     workflow_id = _stable_id(record["workflow_id"], f"{field}.workflow_id")
-    if policy == WOODLAND_AVAILABILITY_POLICY and workflow_id != WORKFLOW_ID:
-        raise ValueError(f"{field}.workflow_id: expected {WORKFLOW_ID!r}")
-    if policy == INTAKE_AVAILABILITY_POLICY and workflow_id != INTAKE_WORKFLOW_ID:
-        raise ValueError(f"{field}.workflow_id: expected {INTAKE_WORKFLOW_ID!r}")
     jurisdiction = _stable_id(record["jurisdiction"], f"{field}.jurisdiction")
-    if (
-        policy in (WOODLAND_AVAILABILITY_POLICY, INTAKE_AVAILABILITY_POLICY)
-        and jurisdiction != JURISDICTION
-    ):
-        raise ValueError(f"{field}.jurisdiction: expected {JURISDICTION!r}")
+    _validate_policy_ids(
+        field,
+        policy=policy,
+        program_id=program_id,
+        workflow_id=workflow_id,
+        jurisdiction=jurisdiction,
+    )
 
     intake = policy == INTAKE_AVAILABILITY_POLICY
     expected_mode = "live_program" if intake else "future_state_simulation"

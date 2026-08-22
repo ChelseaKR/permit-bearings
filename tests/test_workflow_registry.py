@@ -97,6 +97,18 @@ def _add_second_registered_workflow(
     second_program_id = "second-prototype-program"
     registry_path = root / "data/workflows/registry.json"
     registry = _json(registry_path)
+    # This fixture exercises exactly two distinct journey-carrying workflows;
+    # the committed packet-only designer entry is out of scope here.
+    removed = [
+        entry for entry in registry["workflows"] if "journey" not in entry["artifacts"]
+    ]
+    for entry in removed:
+        for artifact in entry["artifacts"].values():
+            path = root / (artifact if isinstance(artifact, str) else artifact["path"])
+            path.unlink(missing_ok=True)
+    registry["workflows"] = [
+        entry for entry in registry["workflows"] if "journey" in entry["artifacts"]
+    ]
     template = copy.deepcopy(registry["workflows"][0])
     artifact_names = {
         "readiness_workflow": (
@@ -239,7 +251,7 @@ def _changed_snapshot(root: Path, source_id: str):
 def test_canonical_registry_selects_exactly_the_one_browser_workflow():
     registry = load_workflow_registry(REGISTRY_PATH, root=ROOT)
 
-    assert len(registry.workflows) == 1
+    assert len(registry.workflows) == 2
     entry = registry.select()
     assert entry.workflow_id == "woodland-preapproved-detached-adu"
     assert entry.packet_id == "woodland-preapproved-adu-hypothetical-001"
@@ -249,6 +261,11 @@ def test_canonical_registry_selects_exactly_the_one_browser_workflow():
     assert entry.artifacts.readiness_evidence.path == (
         "data/readiness/generated/woodland-preapproved-adu-evidence.json"
     )
+    packet_only = registry.workflows[1]
+    assert packet_only.workflow_id == ("woodland-adu-preapproval-designer-submittal")
+    assert packet_only.journey_id is None
+    assert packet_only.artifacts.journey is None
+    assert packet_only.artifacts.journey_evidence is None
     with pytest.raises(ValueError, match="unknown workflow ID"):
         registry.select("")
 
@@ -259,7 +276,7 @@ def test_bundle_uses_format_six_with_a_raw_registry_receipt_and_aliases():
 
     assert payload["_meta"]["format_version"] == 6
     assert json.loads(payload["workflow_registry_raw"]) == payload["workflow_registry"]
-    assert len(payload["workflow_registry"]["workflows"]) == 1
+    assert len(payload["workflow_registry"]["workflows"]) == 2
     assert len(payload["journeys"]) == 1
     assert payload["readiness"]["workflow"]["workflow_id"] == entry["workflow_id"]
     assert payload["journeys"][0]["journey_id"] == entry["journey_id"]

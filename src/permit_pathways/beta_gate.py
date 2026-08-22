@@ -170,7 +170,7 @@ _EXPORT_PROFILE_ID = "permit-bearings-public-synthetic-evidence-v1"
 _EXPORT_PROFILE_V2_ID = "permit-bearings-public-synthetic-evidence-v2"
 _EXPORT_PROFILE_V2_PATH = "data/export/public-synthetic-evidence-v2.json"
 _EXPORT_PROFILE_V2_SHA256 = (
-    "sha256:d70d33b67a48c854d0ba9f2e1ac924243481a27080836aed54a5c958dc724aef"
+    "sha256:1bc0ac1eb2adf76647562d70fa1efabba9d824c266d4e1c03a6c93be5faff2f3"
 )
 _EXPORT_EXCLUDED_PATHS = {
     DEFAULT_RECORD_PATH.as_posix(),
@@ -188,25 +188,25 @@ _NOT_RUN_ARTIFACT_SHA256 = {
         "sha256:858dad1191fd070eab4d3c2c168d77b6c61ac45553d0e968d4070e22075bf394"
     ),
     "content_review": (
-        "sha256:7110471ca09e6919dad42ef47990286f5530ba993d8840214a4f6e432b9d6abe"
+        "sha256:2a0bc698ff59018cc1d00a6fbdc8270965160edc2f652fade5ff93145aeb9805"
     ),
     "external_evidence_gate": (
-        "sha256:88f43375a80b0a0e02177e3605706c4e5251854cd00c94a0b18e42c773a33a7f"
+        "sha256:c4d70035aa841cdba24649ef56ed7ad50a1310e716f5dcae4c44048bdf018574"
     ),
     "heldout_evaluation": (
         "sha256:816bb414a09edbc024a2be7780761a1a2abb5f6cb2464c56e5790b58ad79e7b2"
     ),
     "manual_evidence": (
-        "sha256:db1c41cf2752f1517a608e2ae6523cc5cf5b53099bd0413458aee1da0004d8d9"
+        "sha256:41338e4d2a27a5a9fc03c94e6fb050cc563de3c542cacce43a8b44914e75b6d7"
     ),
     "participant_sessions": (
-        "sha256:28e564adf81ec942f7a74a5cb849972f9607c4701ce8921673e644924028ab0f"
+        "sha256:0294da0caf0861facc87e5da5a9bcd0fe4b1ce116d591350026c4ac2b768985b"
     ),
     "public_synthetic_export": (
-        "sha256:2e5153f1dae2f7b660dcae156ed2d0f84480eff7a02a163fa8426a5272314e9e"
+        "sha256:30a36dc43f9a52320e3085648a0f383ee2b641bbbe1f4b852651d2110e4d2fbf"
     ),
     "source_change_rehearsal": (
-        "sha256:f28de3e2d86022ec61e6c73bbc98b64a658543886d98344e69063cd3d3c7d1f1"
+        "sha256:233247e666a2f61eeebf7d9980a711019cd784170685e112ef2eaae97fb84700"
     ),
 }
 
@@ -1619,6 +1619,10 @@ def _validate_canonical_reference_outputs(
         validate_inventory=True,
     )
     entry = registry.select()
+    if entry.artifacts.journey is None or entry.artifacts.journey_evidence is None:
+        raise ValueError(
+            "browser-default workflow must register journey artifacts"
+        )
     _exact(
         entry.artifacts.readiness_evidence.path,
         bindings["reference_packet"].path,

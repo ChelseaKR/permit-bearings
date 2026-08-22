@@ -35,14 +35,14 @@ EVIDENCE_PATH = (
 )
 SOURCES_PATH = ROOT / "data" / "sources.json"
 AS_OF = date(2026, 8, 11)
-BASELINE_COMMIT = "18d6af3b72e83538c32fbad91e43a0c4636652a8"
+BASELINE_COMMIT = "9fd9595a8ca353d491513cd1652c3ab0b8210ab0"
 EXECUTION_COMMIT = "a" * 40
 DEPLOYED_URL = (
     "https://chelseakr.github.io/permit-pathways/"
     "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
 )
-FROZEN_ON = "2026-08-03"
-REVIEWED_ON = "2026-08-04"
+FROZEN_ON = "2026-08-23"
+REVIEWED_ON = "2026-08-24"
 
 ROOT_KEYS = {
     "schema_version",
@@ -252,7 +252,7 @@ def _validate_baseline(
     baseline = _exact_keys(value, BASELINE_KEYS, "baseline_provenance")
     if baseline["commit"] != BASELINE_COMMIT:
         raise ValueError("baseline_provenance.commit: provenance drifted")
-    if baseline["prepared_on"] != "2026-08-02":
+    if baseline["prepared_on"] != "2026-08-22":
         raise ValueError("baseline_provenance.prepared_on: provenance drifted")
     _validate_bindings(
         baseline["content_bindings"],
@@ -719,7 +719,7 @@ def _validate_manifest(
     } != {
         "schema_version": 2,
         "record_type": "woodland_content_review_evidence",
-        "prepared_on": "2026-08-02",
+        "prepared_on": "2026-08-22",
         "scoring_key_version": "1.0.0",
     }:
         raise ValueError("record: unsupported header")

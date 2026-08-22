@@ -19,9 +19,9 @@ SOURCES = ROOT / "data" / "sources.json"
 RULES = ROOT / "data" / "rules"
 GOLDEN = ROOT / "data" / "golden" / "example.json"
 CURRENT = ROOT / "data" / "source-status" / "current.json"
-CHECKED_AT = "2026-08-03T17:08:28Z"
-COMMIT_SHA = "8d841409dc5fd16fe56b52a8b57c826c07f176a6"
-RUN_URL = "https://github.com/ChelseaKR/permit-pathways/actions/runs/30835371749"
+CHECKED_AT = "2026-08-11T21:00:29Z"
+COMMIT_SHA = "a03141c37262767e73213070b0aa1b7b40d2d0bc"
+RUN_URL = "https://github.com/ChelseaKR/permit-pathways/actions/runs/31535778878"
 
 
 def _unchanged_watch() -> WatchResult:
@@ -72,7 +72,7 @@ def test_committed_snapshot_binds_the_exact_successful_watch_run():
     assert snapshot.checked_at == CHECKED_AT
     assert snapshot.receipt.run_url == RUN_URL
     assert snapshot.receipt.commit_sha == COMMIT_SHA
-    assert len(snapshot.observations) == 19
+    assert len(snapshot.observations) == 20
     assert snapshot.changed_source_ids == ()
     assert snapshot.unverifiable_source_ids == ()
     assert snapshot.affected_rule_ids == ()

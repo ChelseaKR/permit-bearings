@@ -858,8 +858,20 @@ def _validate_workflow_registry_closure(
         workflow = _require_object(raw_workflow, workflow_field)
         artifacts_field = f"{workflow_field}.artifacts"
         artifacts = _require_object(workflow.get("artifacts"), artifacts_field)
-        _require_exact_keys(artifacts, set(_WORKFLOW_ARTIFACT_ROLES), artifacts_field)
-        for artifact_name, required_role in _WORKFLOW_ARTIFACT_ROLES.items():
+        # A packet-only workflow registers no journey artifacts; a journey
+        # workflow must register both. This mirrors the registry loader.
+        journey_keys = {"journey", "journey_evidence"}
+        core_keys = set(_WORKFLOW_ARTIFACT_ROLES) - journey_keys
+        journey_present = journey_keys & set(artifacts)
+        if journey_present and journey_present != journey_keys:
+            raise ValueError(f"{artifacts_field}: invalid fields")
+        _require_exact_keys(
+            artifacts,
+            core_keys | journey_present,
+            artifacts_field,
+        )
+        for artifact_name in sorted(core_keys | journey_present):
+            required_role = _WORKFLOW_ARTIFACT_ROLES[artifact_name]
             _validate_exported_workflow_artifact(
                 artifacts.get(artifact_name),
                 artifact_name=artifact_name,
@@ -1897,6 +1909,9 @@ def _validate_v2_workflow_evidence(
             or availability.program_id != workflow_entry.program_id
         ):
             raise ValueError("restored availability does not match its registry entry")
+        if artifacts.journey is None or artifacts.journey_evidence is None:
+            # A packet-only workflow registers no journey to replay.
+            continue
         journey = resolve_journey(
             load_journey_config(artifacts.journey.resolve(repository)),
             data / "golden" / "example.json",

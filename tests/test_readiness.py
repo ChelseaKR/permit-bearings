@@ -933,8 +933,8 @@ def test_manifest_is_deterministic_and_matches_committed_evidence(
     workflow: ReadinessWorkflow,
     packet: ReadinessPacket,
 ):
-    first = evaluate_readiness(workflow, packet, today=DATA_AS_OF)
-    second = evaluate_readiness(workflow, packet, today=DATA_AS_OF)
+    first = evaluate_readiness(workflow, packet, today=AS_OF)
+    second = evaluate_readiness(workflow, packet, today=AS_OF)
     first_manifest = first.to_manifest(workflow, packet)
     second_manifest = second.to_manifest(workflow, packet)
 
@@ -961,7 +961,7 @@ def test_manifest_is_deterministic_and_matches_committed_evidence(
     assert first_manifest["packet_fingerprint"].startswith("sha256:")
     assert first_manifest["applicability_status"] == "applies"
     assert first_manifest["source_status"] == "current"
-    assert first_manifest["source_status_as_of"] == DATA_AS_OF.isoformat()
+    assert first_manifest["source_status_as_of"] == AS_OF.isoformat()
     assert first_manifest["source_review_due_on"] == "2027-01-25"
 
 
@@ -969,7 +969,7 @@ def test_default_loader_and_cli_use_current_date_for_source_currency(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ):
-    runtime_as_of = DATA_AS_OF + timedelta(days=181)
+    runtime_as_of = AS_OF + timedelta(days=181)
     monkeypatch.setattr(
         "permit_pathways.dates.utc_today",
         lambda: runtime_as_of,
@@ -981,7 +981,7 @@ def test_default_loader_and_cli_use_current_date_for_source_currency(
         SOURCES_PATH,
     )
 
-    assert packet.evaluated_on == DATA_AS_OF.isoformat()
+    assert packet.evaluated_on == AS_OF.isoformat()
     assert result.evaluated_on == runtime_as_of.isoformat()
     assert result.source_status_as_of == runtime_as_of.isoformat()
     assert result.source_review_due_on == "2027-01-25"

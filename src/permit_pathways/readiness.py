@@ -1456,9 +1456,7 @@ def evaluate_readiness(
             "linked public dataset; it does not query or verify a live parcel, "
         )
     else:
-        bindings = (
-            "It binds no parcel and queries no parcel dataset; it does not "
-        )
+        bindings = "It binds no parcel and queries no parcel dataset; it does not "
     boundary = (
         "This prototype checks reported item presence against one City "
         f"checklist. {bindings}inspect files, determine legal sufficiency, "

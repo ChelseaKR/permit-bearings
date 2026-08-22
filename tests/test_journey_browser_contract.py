@@ -60,7 +60,7 @@ const canonicalWorkflowRegistryRaw = bundle.workflow_registry_raw;
 SOURCE_STATE = bundle.source_state;
 
 const NativeDate = Date;
-let fixedNow = "2026-08-09T12:00:00Z";
+let fixedNow = "2026-08-12T12:00:00Z";
 class FixedDate extends NativeDate {
   constructor(...args) {
     super(...(args.length ? args : [fixedNow]));
@@ -512,7 +512,7 @@ const contractMutations = [
     readiness.ai_trace.output_remedy_version = "9.9.9";
   }],
   ["remedy update after evaluation", ({readiness}) => {
-    readiness.remedies.updated_on = "2026-07-31";
+    readiness.remedies.updated_on = "2026-08-12";
   }],
   ["review before remedy update", ({readiness}) => {
     readiness.remedies.review = {
@@ -529,7 +529,7 @@ const contractMutations = [
       status: "human_reviewed",
       reviewer: "Named test reviewer",
       method: "Compared every action with its bound requirement.",
-      reviewed_on: "2026-07-31",
+      reviewed_on: "2026-08-12",
       reviewed_version: readiness.remedies.version,
       content_fingerprint: readiness.remedies.content_fingerprint,
     };
@@ -667,7 +667,7 @@ check(
   "expired program status unlocked handoff",
 );
 noHref(expiredProgram, "expired program status");
-fixedNow = "2026-08-09T12:00:00Z";
+fixedNow = "2026-08-12T12:00:00Z";
 
 SOURCE_STATE = {...bundle.source_state, changed_source_ids: ["ca-gov-66317"]};
 const committedRouteChange = handoff("yes");
