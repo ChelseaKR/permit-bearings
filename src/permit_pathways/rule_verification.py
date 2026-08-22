@@ -38,6 +38,7 @@ from typing import Any, cast
 from .dates import resolve_today
 from .explanations import citation_fingerprint, rule_fingerprint
 from .harness.runner import DEFAULT_MAX_AGE_DAYS
+from .reviewer_roster import ReviewerRoster
 from .screening import Rule
 
 SCHEMA_VERSION = 2
@@ -270,6 +271,7 @@ def load_rule_verifications(
     require_complete: bool = True,
     strict: bool = True,
     today: date | None = None,
+    roster: ReviewerRoster | None = None,
 ) -> dict[str, RuleVerification]:
     """Load and validate the verification-level ledger against canonical rules.
 
@@ -280,6 +282,13 @@ def load_rule_verifications(
     no valid entry is simply absent from the returned mapping and callers
     should treat that as the ``machine_linked`` floor, exactly as
     :func:`effective_status` does.
+
+    When ``roster`` is supplied, every promoted entry must name a reviewer
+    who is a currently attested member of a roster role supporting that
+    level; otherwise the entry fails (strict) or is dropped (non-strict).
+    Callers that do not pass a roster get the historical, ungated behavior;
+    canonical build-time loading passes the repository roster so a promotion
+    cannot reach published surfaces without an attested reviewer.
     """
 
     as_of = resolve_today(today)
@@ -293,6 +302,16 @@ def load_rule_verifications(
     for index, record in enumerate(records):
         try:
             entry = _entry(record, index, rules_by_id, as_of)
+            if (
+                roster is not None
+                and entry.level in _REVIEWED_LEVELS
+                and not roster.allows(entry.reviewer, entry.level, today=as_of)
+            ):
+                raise ValueError(
+                    f"{entry.rule_id}: {entry.level} reviewer "
+                    f"{entry.reviewer!r} is not a currently attested member of "
+                    "a roster role supporting that level"
+                )
         except ValueError:
             if strict:
                 raise
