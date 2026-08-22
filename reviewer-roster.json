@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "roles": [
+    {
+      "role_id": "rule-content-reviewer",
+      "level": "human_reviewed"
+    },
+    {
+      "role_id": "jurisdiction-approver",
+      "level": "jurisdiction_approved"
+    }
+  ],
+  "members": []
+}

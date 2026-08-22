@@ -62,6 +62,8 @@ def _copy_full_root(tmp_path: Path) -> Path:
     root = tmp_path / "repository"
     shutil.copytree(ROOT / "data", root / "data")
     shutil.copytree(ROOT / "corpus", root / "corpus")
+    # The bundle build requires the reviewer-roster promotion gate.
+    shutil.copy2(ROOT / "reviewer-roster.json", root / "reviewer-roster.json")
     return root
 
 
