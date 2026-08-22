@@ -81,7 +81,7 @@ choose Print or Save as PDF. The app does not create, upload, or store a file,
 and direct, invalid, or unavailable packet entry withholds the summary with
 the underlying findings.
 
-**Live demo:** https://chelseakr.github.io/permit-pathways/
+**Live demo:** https://chelseakr.github.io/permit-bearings/
 
 **External evidence gate:** prepared, not run. The repository now binds future
 content review, same-version sessions, manual access/language checks, a timed
@@ -121,7 +121,7 @@ the empty pilot scope. See
 
 **Made-up Woodland future-state route-to-packet simulation** (answer the
 applicability question to continue only if the availability record passes):
-https://chelseakr.github.io/permit-pathways/check.html?sample=adu
+https://chelseakr.github.io/permit-bearings/check.html?sample=adu
 
 See [docs/PRODUCT-CONTEXT.md](docs/PRODUCT-CONTEXT.md) for the capability
 truth, challenge fit, and prioritized opportunity map. Repository-specific

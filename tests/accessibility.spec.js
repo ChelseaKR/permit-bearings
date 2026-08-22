@@ -1108,10 +1108,13 @@ test("AI assistance stays inert until requested and degrades to the static form 
   page.on("request", request => {
     if (new URL(request.url()).host !== baseHost) offOrigin.push(request.url());
   });
-  // Nothing listens on the service port during this suite; abort the probe
-  // the way a closed port would, so the page must take its fallback path.
-  await page.route("http://127.0.0.1:8787/**", route => route.abort("connectionrefused"));
+  // No service is reachable during this suite: abort every off-origin request
+  // the way a closed port would, so the page must take its fallback path
+  // whatever candidates the meta tag lists.
+  await page.route(url => new URL(url).host !== baseHost, route => route.abort("connectionrefused"));
   await page.goto("/check.html");
+  const candidates = (await page.getAttribute('meta[name="permit-ai-service"]', "content"))
+    .split(",").map(s => s.trim()).filter(Boolean);
 
   const panel = page.locator("#aiAssistDetails");
   await expectClosedDisclosure(panel, panel.locator("#aiEnable"));
@@ -1123,7 +1126,8 @@ test("AI assistance stays inert until requested and degrades to the static form 
   await page.locator("#aiEnable").click();
   await expect(page.locator("#aiStatus")).toContainText("need the Permit Bearings AI service running");
   await expect(page.locator("#aiDescription")).toHaveCount(0);
-  expect(offOrigin.filter(url => url.startsWith("http://127.0.0.1:8787/health"))).toHaveLength(1);
+  expect(offOrigin.filter(url => url.endsWith("/health"))).toHaveLength(candidates.length);
+  expect(offOrigin.every(url => candidates.some(c => url.startsWith(c)))).toBe(true);
   await expect(page.locator("#aiEnable")).toBeEnabled();
   await expectNoAutomatedWcagViolations(page);
 
@@ -1135,7 +1139,7 @@ test("AI assistance stays inert until requested and degrades to the static form 
   await page.locator("#t-submit").click();
   await expect(page.locator("#resultsHeading")).toBeVisible();
   await expect(page.locator("#aiResultPanel")).toHaveCount(0);
-  expect(offOrigin).toHaveLength(1);
+  expect(offOrigin).toHaveLength(candidates.length);
 
   await page.locator("#langToggle").click();
   await expect(page.locator("#aiAssistHeading")).toHaveText("Describa su proyecto con sus propias palabras");

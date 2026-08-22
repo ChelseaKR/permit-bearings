@@ -20,6 +20,14 @@ published a versioned release.
   answered by the application only because an edge CORS block duplicated the
   `Access-Control-Allow-Origin` header, which browsers reject. This remains a
   prototype showcase deployment, not the reviewed beta of ADR 0002.
+- Public links follow the repository rename: GitHub Pages now serves the
+  site at `https://chelseakr.github.io/permit-bearings/` and the old
+  `/permit-pathways/` path returns 404, so the README live-demo links, the
+  landing page's canonical/`og:url`/social-image URLs, the deployment-smoke
+  default, the remediation plan, and the social-card text now name the new
+  path. The no-service browser check aborts every off-origin request and
+  expects one probe per listed candidate, so it stays hermetic with a hosted
+  origin in the list.
 
 ### Added
 
