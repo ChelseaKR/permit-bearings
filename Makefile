@@ -40,8 +40,8 @@ evidence-export-check:
 		restored="$$evidence_directory/restored"; \
 		PYTHONPATH=src .venv/bin/python -m permit_pathways.evidence_export_cli build \
 			--output "$$archive" \
-			--freeze-id public-synthetic-evidence-freeze-2026-08-09 \
-			--frozen-on 2026-08-09 \
+			--freeze-id public-synthetic-evidence-freeze-2026-08-22 \
+			--frozen-on 2026-08-22 \
 			--repository-commit-sha "$$repository_commit_sha" >/dev/null; \
 		PYTHONPATH=src .venv/bin/python -m permit_pathways.evidence_export_cli verify \
 			--archive "$$archive" >/dev/null; \
