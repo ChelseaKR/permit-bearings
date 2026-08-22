@@ -1620,9 +1620,7 @@ def _validate_canonical_reference_outputs(
     )
     entry = registry.select()
     if entry.artifacts.journey is None or entry.artifacts.journey_evidence is None:
-        raise ValueError(
-            "browser-default workflow must register journey artifacts"
-        )
+        raise ValueError("browser-default workflow must register journey artifacts")
     _exact(
         entry.artifacts.readiness_evidence.path,
         bindings["reference_packet"].path,
