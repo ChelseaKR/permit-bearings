@@ -466,7 +466,7 @@ request beyond its origin, the pinned form fields are exactly what ADR-0002's
 ledger describes, and the AI controls show "needs the service running". The
 service URL list is the `permit-ai-service` meta tag and the page's
 `connect-src`; a hosted deployment adds to both. `deploy/ai-service/` holds
-a prepared AWS Lambda shape with a hard daily cap.
+the AWS Lambda shape, deployed 2026-08-21, with a hard daily cap (100/day).
 
 Open-ended question answering stays out of scope; the follow-up box answers
 only within a matched result, which is what keeps the citation check exact. The evaluation set and harness

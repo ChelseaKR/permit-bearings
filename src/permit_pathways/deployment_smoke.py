@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlsplit
 
-DEFAULT_BASE_URL = "https://chelseakr.github.io/permit-pathways/"
+DEFAULT_BASE_URL = "https://chelseakr.github.io/permit-bearings/"
 DEFAULT_TIMEOUT_SECONDS = 15.0
 DEFAULT_EXPECTED_JURISDICTIONS = 541
 DEFAULT_EXPECTED_STATEWIDE_RULES = 17

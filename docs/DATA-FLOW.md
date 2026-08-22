@@ -661,7 +661,7 @@ volunteer personal information; the interface tells them not to and the
 service does not retain it, but a provider receives whatever was typed.
 
 Data flow and subprocessors: browser → service → one model provider. For
-the prepared AWS deployment in `deploy/ai-service/` the facts are: the
+the AWS deployment in `deploy/ai-service/` (applied 2026-08-21) the facts are: the
 service runs as an AWS Lambda function in `us-west-2` in the owner's
 account; the provider is Amazon Bedrock, model
 `global.anthropic.claude-sonnet-4-6` through a global inference profile,

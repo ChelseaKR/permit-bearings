@@ -302,7 +302,7 @@ optional `permit_pathways.ai` service (`make serve-ai`). The matcher, the
 evaluator, and the build still run no model, and the static site makes no
 request until the applicant enables the assistance. The service's
 measurements and their limits are in `evals/ai/README.md`. A hosted shape
-(AWS Lambda with a hard daily cap) is prepared in `deploy/ai-service/` and
+(AWS Lambda with a hard daily cap of 100 requests per UTC day) is deployed from `deploy/ai-service/` (2026-08-21) and reachable from the public page; it
 is a prototype showcase deployment, not the reviewed beta of ADR 0002. The
 public readiness sample makes no runtime model call. Its
 AI-assisted mapping and remedies are versioned, fingerprint-bound drafts with

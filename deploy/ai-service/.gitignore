@@ -5,3 +5,4 @@ package.zip
 *.tfstate.backup
 .terraform.lock.hcl
 plan.out
+*.backup

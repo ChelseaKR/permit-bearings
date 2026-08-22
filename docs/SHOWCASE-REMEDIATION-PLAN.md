@@ -224,12 +224,12 @@ Do not infer production time or cost from the prototype CI or Pages timings.
 
 **Implemented**
 
-- The [public prototype](https://chelseakr.github.io/permit-pathways/) and
-  [hypothetical ADU route sample](https://chelseakr.github.io/permit-pathways/check.html?sample=adu)
+- The [public prototype](https://chelseakr.github.io/permit-bearings/) and
+  [hypothetical ADU route sample](https://chelseakr.github.io/permit-bearings/check.html?sample=adu)
   are available without sign-in.
 - The readable [packet sample page](../prepare.html) is published on `main`
   and reachable at
-  [prepare.html](https://chelseakr.github.io/permit-pathways/prepare.html),
+  [prepare.html](https://chelseakr.github.io/permit-bearings/prepare.html),
   verified 2026-08-01.
 
 **Next**

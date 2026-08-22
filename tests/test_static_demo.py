@@ -415,11 +415,11 @@ def test_public_brand_name_and_tagline_are_consistent():
     )
     assert (
         '<meta property="og:url" '
-        'content="https://chelseakr.github.io/permit-pathways/">' in landing
+        'content="https://chelseakr.github.io/permit-bearings/">' in landing
     )
     assert (
         '<meta property="og:image" content="https://chelseakr.github.io/'
-        'permit-pathways/assets/social-card.png">' in landing
+        'permit-bearings/assets/social-card.png">' in landing
     )
     assert '<meta name="twitter:card" content="summary_large_image">' in landing
     assert "Get your bearings before you file." in landing

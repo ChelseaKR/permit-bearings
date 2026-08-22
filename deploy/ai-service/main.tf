@@ -13,6 +13,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.60"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.2"
+    }
   }
 }
 
@@ -155,15 +159,47 @@ resource "aws_lambda_function" "service" {
 resource "aws_lambda_function_url" "service" {
   function_name      = aws_lambda_function.service.function_name
   authorization_type = "NONE"
-
-  cors {
-    allow_origins = var.allowed_origins
-    allow_methods = ["GET", "POST"]
-    allow_headers = ["content-type"]
-    max_age       = 300
-  }
+  # No CORS block here on purpose: the application's own CORS middleware
+  # (PERMIT_AI_ALLOWED_ORIGINS) answers preflights and sets the headers. Two
+  # layers would emit Access-Control-Allow-Origin twice, which browsers reject.
 }
 
 output "service_url" {
   value = aws_lambda_function_url.service.function_url
+}
+
+# A Function URL with authorization_type NONE still requires an explicit
+# resource policy before unauthenticated callers are accepted. Since October
+# 2025 that is two statements: InvokeFunctionUrl (auth type NONE) and
+# InvokeFunction restricted to calls that arrive through the URL.
+resource "aws_lambda_permission" "public_url" {
+  statement_id           = "AllowPublicFunctionUrl"
+  action                 = "lambda:InvokeFunctionUrl"
+  function_name          = aws_lambda_function.service.function_name
+  principal              = "*"
+  function_url_auth_type = "NONE"
+}
+
+# The AWS provider pinned here has no argument for the InvokedViaFunctionUrl
+# condition, so the InvokeFunction statement is added with the CLI (which
+# does) and recorded here as a null_resource so `terraform destroy` removes it.
+resource "null_resource" "public_url_invoke" {
+  triggers = {
+    function = aws_lambda_function.service.function_name
+    region   = var.region
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      aws lambda add-permission --region ${var.region} \
+        --function-name ${aws_lambda_function.service.function_name} \
+        --statement-id AllowPublicFunctionUrlInvoke \
+        --action lambda:InvokeFunction --principal '*' --invoked-via-function-url
+    EOT
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "aws lambda remove-permission --region ${self.triggers.region} --function-name ${self.triggers.function} --statement-id AllowPublicFunctionUrlInvoke || true"
+  }
 }

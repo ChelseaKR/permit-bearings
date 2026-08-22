@@ -12,7 +12,7 @@ reviewed beta deployment ADR 0002 describes; see "What this does not do".
 | Piece | Setting | Why |
 |---|---|---|
 | Lambda `permit-bearings-ai` | python3.12, arm64, 1024 MB, 120 s timeout, reserved concurrency 2 | one explanation call takes 20–40 s; two in flight is enough for a showcase and bounds burst cost |
-| Function URL | auth NONE, CORS `https://chelseakr.github.io` + localhost | the static page calls it directly from the browser; there is no secret a public page could keep |
+| Function URL | auth NONE; resource policy grants `InvokeFunctionUrl` and `InvokeFunction` scoped by `lambda:InvokedViaFunctionUrl`; CORS answered by the app, not the edge | the static page calls it directly from the browser; there is no secret a public page could keep; two CORS layers would duplicate `Access-Control-Allow-Origin`, which browsers reject |
 | DynamoDB `permit-bearings-ai-budget` | on-demand, TTL 3 days, one item per UTC day | atomic conditional update is the daily cap (`PERMIT_AI_DAILY_CAP`, default 100) |
 | IAM | `bedrock:InvokeModel` on one model/profile, `dynamodb:UpdateItem` on one table, logs | nothing else |
 | Model | `global.anthropic.claude-sonnet-4-6` via Bedrock | the model this account can invoke today; change `-var model=…` when Sonnet 5 is enabled |
@@ -43,7 +43,13 @@ the same change. Redeploy after any service change with `build.sh` and
 `terraform apply` (the zip's hash triggers the update).
 
 Terraform state is local to this directory and Git-ignored. A second
-operator needs the state file or a remote backend.
+operator needs the state file or a remote backend. The `InvokeFunction`
+statement is added through a `null_resource` running the AWS CLI because the
+pinned provider has no argument for the `InvokedViaFunctionUrl` condition;
+`terraform destroy` removes it.
+
+Applied 2026-08-21 in account `014248889144`; the URL is the second
+candidate in `check.html`'s `permit-ai-service` meta tag.
 
 ## Verify after deploy
 

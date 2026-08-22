@@ -205,5 +205,5 @@ def test_provider_from_settings_reports_missing_sdk(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setitem(sys.modules, "anthropic", None)
-    with pytest.raises(ProviderError, match="not installed"):
+    with pytest.raises(ProviderError, match="could not be imported"):
         provider_from_settings(ProviderSettings("anthropic", "m", None, None))
