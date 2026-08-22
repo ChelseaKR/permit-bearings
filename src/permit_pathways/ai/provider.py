@@ -217,7 +217,7 @@ def provider_from_settings(settings: ProviderSettings) -> Provider:
         import anthropic
     except ImportError as exc:
         raise ProviderError(
-            "the `anthropic` SDK is not installed; run `uv sync --extra ai`"
+            f"the `anthropic` SDK could not be imported ({exc}); run `uv sync --extra ai`"
         ) from exc
     try:
         if settings.provider == "bedrock":

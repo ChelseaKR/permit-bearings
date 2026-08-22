@@ -5,6 +5,22 @@ published a versioned release.
 
 ## [Unreleased]
 
+### Changed
+
+- The optional AI service is now hosted and reachable from the public page.
+  `deploy/ai-service/` was applied on 2026-08-21: one arm64 Lambda behind a
+  Function URL in `us-west-2`, DynamoDB daily cap of 100 model-backed
+  requests, reserved concurrency 2, Bedrock `global.anthropic.claude-sonnet-4-6`.
+  `check.html` lists the hosted origin as the second service candidate after
+  localhost and allows it in `connect-src`; `demo/app.py` allows the same
+  origin. Three deployment corrections were needed and are now in the
+  Terraform: the build keeps `*.dist-info` metadata (the SDK reads package
+  metadata at import), a public Function URL needs both `InvokeFunctionUrl`
+  and `InvokeFunction` scoped by `lambda:InvokedViaFunctionUrl`, and CORS is
+  answered by the application only because an edge CORS block duplicated the
+  `Access-Control-Allow-Origin` header, which browsers reject. This remains a
+  prototype showcase deployment, not the reviewed beta of ADR 0002.
+
 ### Added
 
 - A second wave of runtime AI under ADR 0004. `POST /ask` answers one

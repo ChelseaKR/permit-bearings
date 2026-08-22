@@ -36,6 +36,5 @@ for entry in json.loads((root / "data/sources.json").read_text()).values():
         shutil.copy2(root / local, target)
 PY
 find "$build" -name '__pycache__' -type d -prune -exec rm -rf {} +
-find "$build" -name '*.dist-info' -type d -prune -exec rm -rf {} +
 (cd "$build" && zip -qr -X "$here/package.zip" .)
 echo "package: $(du -h "$here/package.zip" | cut -f1) at $here/package.zip"

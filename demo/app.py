@@ -1119,7 +1119,8 @@ class Handler(BaseHTTPRequestHandler):
             "Content-Security-Policy",
             "default-src 'none'; script-src 'self' 'unsafe-inline'; "
             "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
-            "connect-src 'self' http://127.0.0.1:8787 http://localhost:8787; "
+            "connect-src 'self' http://127.0.0.1:8787 http://localhost:8787 "
+            "https://tb4ekoqybhbxbrbn447ln5ad3e0arlwx.lambda-url.us-west-2.on.aws; "
             "base-uri 'none'; form-action 'self'; "
             "frame-ancestors 'none'",
         )
