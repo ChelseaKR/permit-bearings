@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "generated_on": "2026-08-22",
+  "note": "Flesch Reading Ease (fre) and Flesch-Kincaid grade (fk) per rule over English explanation copy. Update only deliberately, with the diff reviewed as part of the change that moved the numbers.",
+  "per_rule": {
+    "adu-conversion-exemptions": {
+      "fre": 39.06,
+      "fk": 11.23
+    },
+    "adu-height-standards": {
+      "fre": 48.68,
+      "fk": 10.64
+    },
+    "adu-ministerial-review": {
+      "fre": 45.82,
+      "fk": 10.78
+    },
+    "adu-multifamily-66323": {
+      "fre": 47.29,
+      "fk": 10.12
+    },
+    "adu-multifamily-proposed-66323": {
+      "fre": 51.09,
+      "fk": 9.25
+    },
+    "adu-no-owner-occupancy-rental": {
+      "fre": 47.43,
+      "fk": 10.0
+    },
+    "adu-parking-limits": {
+      "fre": 43.48,
+      "fk": 10.72
+    },
+    "adu-protected-minimum": {
+      "fre": 53.49,
+      "fk": 9.46
+    },
+    "adu-size-allowances": {
+      "fre": 63.38,
+      "fk": 7.57
+    },
+    "adu-unpermitted-legalization": {
+      "fre": 33.8,
+      "fk": 11.24
+    },
+    "davis-local-adu-process": {
+      "fre": 27.26,
+      "fk": 13.33
+    },
+    "jadu-ministerial-review": {
+      "fre": 42.65,
+      "fk": 10.93
+    },
+    "jadu-standards": {
+      "fre": 40.07,
+      "fk": 10.83
+    },
+    "jadu-unpermitted-legalization": {
+      "fre": 37.4,
+      "fk": 10.85
+    },
+    "sb9-adu-interaction": {
+      "fre": 59.28,
+      "fk": 8.63
+    },
+    "sb9-lot-split-adu-interaction": {
+      "fre": 41.32,
+      "fk": 10.48
+    },
+    "sb9-two-unit-ministerial": {
+      "fre": 40.35,
+      "fk": 11.0
+    },
+    "sb9-urban-lot-split": {
+      "fre": 43.04,
+      "fk": 11.18
+    },
+    "woodland-adu-ordinance-2026": {
+      "fre": 35.99,
+      "fk": 10.38
+    }
+  }
+}

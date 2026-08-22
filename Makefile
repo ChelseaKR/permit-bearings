@@ -1,4 +1,4 @@
-.PHONY: install verify lint type test security bundle-check copy-check evidence-export-check serve-ai ai-eval
+.PHONY: install verify lint type test security bundle-check copy-check readability-check evidence-export-check serve-ai ai-eval
 
 install:
 	uv sync --locked --python 3.12 --group dev --extra ai
@@ -31,6 +31,12 @@ bundle-check:
 
 copy-check:
 	node scripts/check_applicant_copy.mjs
+
+# Enforced plain-language regression check: fails when English explanation
+# copy becomes harder to read than the reviewed baseline. A score can flag a
+# regression; it never replaces human readability review.
+readability-check:
+	.venv/bin/python scripts/readability_gate.py
 
 evidence-export-check:
 	@set -eu; \
@@ -66,4 +72,4 @@ ai-eval:
 		--cases evals/ai/grounding-cases.json \
 		--output evals/ai/results/$(AI_EVAL_PREFIX)-grounding.json
 
-verify: install lint type test security bundle-check copy-check evidence-export-check
+verify: install lint type test security bundle-check copy-check readability-check evidence-export-check
