@@ -195,7 +195,7 @@ def _default_fetch(url: str) -> str:
         headers={"User-Agent": "permit-bearings-program-watcher/1"},
     )
     # The URL has already been validated as canonical HTTPS at load time.
-    with urllib.request.urlopen(request, timeout=30) as response:  # noqa: S310
+    with urllib.request.urlopen(request, timeout=30) as response:  # noqa: S310  # nosec B310 - https-only by validation
         charset = response.headers.get_content_charset() or "utf-8"
         return str(response.read().decode(charset, errors="replace"))
 
