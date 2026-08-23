@@ -35,6 +35,23 @@ def test_budget_sliding_window_per_client() -> None:
     budget.charge("c")
 
 
+def test_budget_daily_cap_exhaustion_does_not_burn_client_window() -> None:
+    budget = Budget(daily_cap=1, per_client_per_minute=2, counter=MemoryCounter())
+    # First charge consumes the daily cap of 1
+    assert budget.charge("client-1", now=0.0)["daily_used"] == 1
+
+    # Client-1 retries 5 times while daily cap is exhausted
+    for t in [1.0, 2.0, 3.0, 4.0, 5.0]:
+        with pytest.raises(BudgetExhausted, match="daily request cap reached"):
+            budget.charge("client-1", now=t)
+
+    # If daily cap is now increased/replenished, client-1 should still have quota left
+    # and should NOT be rejected with "too many requests from this client"
+    budget.daily_cap = 10
+    res = budget.charge("client-1", now=6.0)
+    assert res["daily_used"] == 2
+
+
 def test_budget_from_env_defaults_and_table() -> None:
     default = budget_from_env({})
     assert default.daily_cap == DEFAULT_DAILY_CAP and isinstance(

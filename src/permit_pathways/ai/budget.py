@@ -118,12 +118,16 @@ class Budget:
                 raise BudgetExhausted(
                     "too many requests from this client; wait a minute"
                 )
+        used = self.counter.increment(_today(), self.daily_cap)
+        with self._lock:
+            window = self._windows.setdefault(client_id, deque())
+            while window and moment - window[0] >= 60:
+                window.popleft()
             window.append(moment)
             if len(self._windows) > 10_000:
                 self._windows = {
                     k: v for k, v in self._windows.items() if v and moment - v[-1] < 60
                 }
-        used = self.counter.increment(_today(), self.daily_cap)
         return {"daily_used": used, "daily_cap": self.daily_cap}
 
 
