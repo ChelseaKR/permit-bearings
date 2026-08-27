@@ -189,6 +189,7 @@ def _source_state_variant(
         observation["status"] = "unverifiable"
         observation["observed_sha256"] = None
         observation["reason"] = "controlled network failure"
+        observation["unverifiable_kind"] = "transport"
         state["changed_source_ids"] = []
         state["unverifiable_source_ids"] = [source_id]
 

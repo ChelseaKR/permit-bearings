@@ -8,9 +8,8 @@ in exactly one of three states:
 * ``changed``   — fetched, and the hash differs. The source has been
   revised; every rule citing it must be treated as stale until a person
   re-verifies the rule against the new text.
-* ``unverifiable`` — the fetch itself failed (network error, non-2xx
-  response, timeout, or a bot/WAF block). This is *not* evidence about the
-  content. The recorded hash and the last successful verification date
+* ``unverifiable`` — the fetch itself failed. This is *not* evidence about
+  the content. The recorded hash and the last successful verification date
   still stand, so dependent rules keep whatever status their own review
   dates give them and are never marked stale by a failed download.
 
@@ -19,6 +18,24 @@ avoid: a runner that gets rate-limited would otherwise report every
 statewide source as "changed" and flip every dependent rule to stale.
 Fetch failures are still reported, never swallowed — they are just
 reported as what they are.
+
+The same argument applies once more *inside* ``unverifiable``, so every
+failure also carries a ``kind``:
+
+* ``transport`` — no authoritative answer arrived. DNS, TLS, timeout,
+  connection reset, 5xx, throttling, a bot/WAF block. It says nothing
+  about the document or its address.
+* ``not_found`` — the server answered, and its answer was that the
+  document is not at that address (HTTP 404 or 410). That is still not
+  evidence that the law changed, and the retained copy and its recorded
+  hash still stand. It *is* evidence about the published address: the
+  citation this project prints for applicants no longer resolves, so a
+  reader who follows it gets nothing. Retrying an authoritative answer is
+  waste, so ``not_found`` short-circuits the retry budget.
+
+Reporting the two together is how a local certificate-store failure and a
+withdrawn city handout end up looking identical in a run summary. They are
+not the same finding and they have different owners.
 """
 
 from __future__ import annotations
@@ -32,7 +49,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Literal, cast
 from urllib.parse import urlsplit
 
 from ..dates import resolve_today
@@ -42,6 +59,13 @@ FETCH_TIMEOUT_SECONDS = 30
 FETCH_ATTEMPTS = 3
 FETCH_BACKOFF_SECONDS = 2.0
 USER_AGENT = "permit-pathways-currency-watch/0.1"
+
+UnverifiableKind = Literal["transport", "not_found"]
+UNVERIFIABLE_KINDS: tuple[UnverifiableKind, ...] = ("transport", "not_found")
+# The server answered about this exact address, and the answer was "no
+# document here". 404 and 410 only: a 403 is a refusal to say, a 5xx is the
+# server failing, and a 429 is throttling. Those are transport outcomes.
+NOT_FOUND_HTTP_STATUSES = frozenset({404, 410})
 _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _SOURCE_ID = re.compile(r"^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -69,10 +93,24 @@ def normalized_digest(content: bytes, mode: str | None) -> str:
 class FetchFailure(Exception):
     """A watched source could not be downloaded.
 
-    Raised only for transport-level outcomes. It never carries information
-    about whether the document's content changed, because a failed fetch
-    tells us nothing about the content.
+    Never carries information about whether the document's *content*
+    changed, because a failed fetch tells us nothing about the content.
+    ``kind`` records only how the fetch failed: ``transport`` for no
+    authoritative answer, ``not_found`` for a server that answered that the
+    document is not at that address.
     """
+
+    def __init__(
+        self,
+        reason: str,
+        *,
+        kind: UnverifiableKind = "transport",
+        attempts: int = 1,
+    ) -> None:
+        super().__init__(reason)
+        self.reason = reason
+        self.kind: UnverifiableKind = kind
+        self.attempts = attempts
 
 
 @dataclass(frozen=True)
@@ -82,12 +120,20 @@ class UnverifiableSource:
     ``last_verified_on`` is the date the recorded hash was captured, so the
     freshness claim degrades to "last confirmed on <date>" rather than
     flipping to an alarming and unsupported "changed".
+
+    ``kind`` separates a fetch that got no answer from one whose answer was
+    that the published address holds no document. Neither stales a rule.
     """
 
     source_id: str
     reason: str
     last_verified_on: str | None
     attempts: int
+    kind: UnverifiableKind = "transport"
+
+    @property
+    def is_not_found(self) -> bool:
+        return self.kind == "not_found"
 
     def describe(self) -> str:
         confirmed = (
@@ -95,6 +141,13 @@ class UnverifiableSource:
             if self.last_verified_on
             else "no recorded verification date"
         )
+        if self.kind == "not_found":
+            return (
+                f"the published address answered {self.reason}; no document is "
+                f"there; {confirmed}; the retained copy and its recorded hash "
+                "still stand and no dependent rule was marked stale, but the "
+                "citation link no longer resolves for a reader"
+            )
         return (
             f"could not fetch after {self.attempts} "
             f"attempt{'' if self.attempts == 1 else 's'} ({self.reason}); "
@@ -117,13 +170,43 @@ class WatchResult:
     def checked(self) -> int:
         return len(self.unchanged) + len(self.changed) + len(self.unverifiable)
 
-    def summary(self, labels: dict[str, str]) -> str:
+    @property
+    def not_found(self) -> list[str]:
+        """Watched sources whose published address answered "no document"."""
+
+        return sorted(
+            source_id
+            for source_id, failure in self.unverifiable.items()
+            if failure.is_not_found
+        )
+
+    @property
+    def unreachable(self) -> list[str]:
+        """Watched sources this run could not get an answer about at all."""
+
+        return sorted(
+            source_id
+            for source_id, failure in self.unverifiable.items()
+            if not failure.is_not_found
+        )
+
+    def _headline(self) -> list[str]:
         lines = [
-            "Source currency check",
             f"  {len(self.unchanged)} unchanged, {len(self.changed)} changed, "
             f"{len(self.unverifiable)} unverifiable "
-            f"(of {self.checked} watched sources)",
+            f"(of {self.checked} watched sources)"
         ]
+        if self.unverifiable:
+            not_found = len(self.not_found)
+            lines.append(
+                f"  of the unverifiable: {len(self.unreachable)} got no answer, "
+                f"{not_found} published address"
+                f'{"" if not_found == 1 else "es"} answered "not found"'
+            )
+        return lines
+
+    def summary(self, labels: dict[str, str]) -> str:
+        lines = ["Source currency check", *self._headline()]
         for source_id in self.unchanged:
             lines.append(
                 f"  unchanged:    {labels.get(source_id, source_id)} [{source_id}]"
@@ -135,8 +218,9 @@ class WatchResult:
                 f"re-verify dependent rules"
             )
         for source_id, unverifiable in self.unverifiable.items():
+            prefix = "NOT FOUND:   " if unverifiable.is_not_found else "unverifiable:"
             lines.append(
-                f"  unverifiable: {labels.get(source_id, source_id)} "
+                f"  {prefix} {labels.get(source_id, source_id)} "
                 f"[{source_id}] — {unverifiable.describe()}"
             )
         return "\n".join(lines)
@@ -252,20 +336,30 @@ def load_sources(
     return sources
 
 
-def _describe_fetch_error(error: BaseException) -> str:
-    """Render a transport failure as a short, factual reason."""
+def _classify_fetch_error(error: BaseException) -> tuple[str, UnverifiableKind]:
+    """Render a failed fetch as a short, factual reason and its kind.
+
+    Only an HTTP 404 or 410 is ``not_found``: the server answered about
+    this exact address and said no document is there. Everything else is a
+    ``transport`` outcome, including a 403 refusal and a 5xx, because those
+    say nothing about whether the document is published at that address.
+    """
 
     if isinstance(error, urllib.error.HTTPError):
-        return f"HTTP {error.code} {error.reason}"
+        kind: UnverifiableKind = (
+            "not_found" if error.code in NOT_FOUND_HTTP_STATUSES else "transport"
+        )
+        return f"HTTP {error.code} {error.reason}", kind
     if isinstance(error, urllib.error.URLError):
         reason = error.reason
         if isinstance(reason, TimeoutError):
-            return "timed out"
-        return f"network error: {reason}"
+            return "timed out", "transport"
+        return f"network error: {reason}", "transport"
     if isinstance(error, TimeoutError):
-        return "timed out"
+        return "timed out", "transport"
     text = str(error).strip()
-    return f"{type(error).__name__}: {text}" if text else type(error).__name__
+    label = f"{type(error).__name__}: {text}" if text else type(error).__name__
+    return label, "transport"
 
 
 def _fetch_once(source: SourceRecord) -> bytes:
@@ -283,7 +377,11 @@ def _fetch_once(source: SourceRecord) -> bytes:
             # Belt and braces: urlopen already raises HTTPError for non-2xx,
             # but a redirect handler can surface one here too. A non-2xx body
             # is an error page, never the statute text.
-            raise FetchFailure(f"HTTP {status}")
+            code = int(status)
+            raise FetchFailure(
+                f"HTTP {code}",
+                kind="not_found" if code in NOT_FOUND_HTTP_STATUSES else "transport",
+            )
         return cast(bytes, resp.read())
 
 
@@ -299,24 +397,32 @@ def fetch_digest(
     blip, throttle, or handshake failure does not get misread. Raises
     :class:`FetchFailure` once the budget is spent — the caller must treat
     that as *unverifiable*, never as changed content.
+
+    A 404 or 410 ends the loop on the first attempt. The server already
+    answered about that address; asking twice more cannot change the answer
+    and would only make a dead citation look like a flaky network.
     """
 
     budget = FETCH_ATTEMPTS if attempts is None else attempts
     backoff = FETCH_BACKOFF_SECONDS if backoff_seconds is None else backoff_seconds
     budget = max(1, budget)
     reason = "no attempt was made"
+    kind: UnverifiableKind = "transport"
+    attempt = 0
     for attempt in range(1, budget + 1):
         try:
             return normalized_digest(_fetch_once(source), source.normalize)
         except FetchFailure as error:
-            reason = str(error)
+            reason, kind = error.reason, error.kind
         except Exception as error:
             # Deliberately broad: one dead source must not end the run, and
-            # every transport outcome maps to "unverifiable", not "changed".
-            reason = _describe_fetch_error(error)
+            # no fetch outcome ever maps to "changed".
+            reason, kind = _classify_fetch_error(error)
+        if kind == "not_found":
+            break
         if attempt < budget:
             time.sleep(backoff * (2 ** (attempt - 1)))
-    raise FetchFailure(reason)
+    raise FetchFailure(reason, kind=kind, attempts=max(1, attempt))
 
 
 def check_sources(
@@ -330,6 +436,8 @@ def check_sources(
 
     One unreachable source never aborts the run and never contributes to
     ``changed``: the loop records it under ``unverifiable`` and moves on.
+    Each unverifiable record also carries its ``kind`` so a withdrawn
+    published address is not reported as a flaky network.
     """
 
     sources = load_sources(sources_path, today=resolve_today(today))
@@ -347,9 +455,10 @@ def check_sources(
         except FetchFailure as failure:
             result.unverifiable[source_id] = UnverifiableSource(
                 source_id=source_id,
-                reason=str(failure),
+                reason=failure.reason,
                 last_verified_on=source.fetched_on,
-                attempts=budget,
+                attempts=failure.attempts,
+                kind=failure.kind,
             )
             continue
         result.observed_digests[source_id] = digest

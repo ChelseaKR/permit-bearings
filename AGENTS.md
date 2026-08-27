@@ -122,6 +122,21 @@ law: report it as its own status with the last successful verification date,
 and do not mark anything stale on its account. Prefer explicit source IDs and
 dependency edges over substring matching.
 
+The same rule applies once more inside *unverifiable*, and ADR 0005 records
+it. A `transport` failure got no authoritative answer and is a fact about one
+run. A `not_found` failure means the server answered HTTP 404 or 410 about
+that exact address, so the document is no longer published where a citation
+points. Neither may stale a rule, change a match, suppress an excerpt or
+action copy, or move an exit code — the retained copy and its recorded hash
+still stand. Only `not_found` may change what the interface offers, and only
+the link: a rule whose own `citation.url` resolves to a `not_found` source
+must render its citation as text rather than an anchor, and must say that the
+official link did not open, where the quoted text came from, and that staff
+should be asked for the current document. Keep `assets/demo.js` and
+`demo/app.py` in agreement on that, and reject any unverifiable observation
+that does not say which kind it was rather than guessing one. Never repoint a
+citation URL to an address you have not retrieved.
+
 ## Decision-support and AI boundaries
 
 - Use deterministic rules for objective, testable standards.
