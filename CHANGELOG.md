@@ -5,6 +5,35 @@ published a versioned release.
 
 ## [Unreleased]
 
+### Added
+
+- A watched source that could not be fetched is now recorded by kind, and a
+  citation whose published address is gone stops being offered as a link.
+  `permit_pathways.harness.watch` classifies an HTTP 404 or 410 as
+  `not_found` (the server answered about that exact address) and every other
+  failure as `transport` (no authoritative answer arrived); a `not_found`
+  answer is not retried, because asking again cannot change it. The
+  source-state receipt requires `unverifiable_kind` on exactly an
+  unverifiable observation and rejects it anywhere else, so
+  `data/source-status/current.json` is byte-identical and keeps its
+  fingerprint. `source_state.withdrawn_citations` names each rule whose own
+  `citation.url` resolves to a `not_found` source; `python -m
+  permit_pathways.harness` reports that from the adopted receipt on every
+  run. `assets/demo.js` and `demo/app.py` both render such a citation as
+  text rather than an anchor, with a bilingual note saying the official link
+  did not open, that the quoted text is from the retained copy, and that
+  staff should be asked for the current document, and a test asserts the two
+  runtimes agree. The evidence page labels "published link not found"
+  separately from "could not re-fetch". Nothing here stales a rule, changes
+  a match, suppresses an excerpt or action copy, or moves an exit code.
+  Motivated by a live run on 2026-08-27 in which twelve leginfo sources
+  failed on a local certificate store and `davis-adu-handout-2026` returned
+  HTTP 404, both reported identically (issues #91 and #96). The Davis
+  citation URL itself is unchanged: the City site answers 403 to a
+  non-browser client, so no replacement address could be retrieved and
+  guessing one is not available to this repository. Recorded as
+  `docs/adr/0005-separate-a-withdrawn-citation-from-an-unreachable-source.md`.
+
 ### Changed
 
 - The optional AI service is now hosted and reachable from the public page.

@@ -44,6 +44,16 @@ function sourceStateFixture(status, sourceId) {
   } else if (status === "unverifiable") {
     observation.observed_sha256 = null;
     observation.reason = "HTTP 403 Forbidden";
+    observation.unverifiable_kind = "transport";
+    state.changed_source_ids = [];
+    state.unverifiable_source_ids = [sourceId];
+  } else if (status === "not_found") {
+    // The server answered about this address: the document is gone, and a
+    // reader who follows the printed citation gets nothing.
+    observation.status = "unverifiable";
+    observation.observed_sha256 = null;
+    observation.reason = "HTTP 404 Not Found";
+    observation.unverifiable_kind = "not_found";
     state.changed_source_ids = [];
     state.unverifiable_source_ids = [sourceId];
   } else {
@@ -678,6 +688,74 @@ test("decision boundary holds affected candidate guidance for source review", as
   await expect(page.locator(".result-route")).toHaveClass(/unverified/);
 });
 
+test("a cited address that answered not found stops being offered as a link", async ({
+  page,
+}) => {
+  // The Davis handout is the one rule whose own citation URL is a city
+  // document rather than a statute, and it matches every Davis ADU screen.
+  await serveSourceStateFixture(page, "not_found", "davis-adu-handout-2026");
+  await page.goto("/check.html");
+  await page.locator("#jurisInput").fill("Davis (Yolo Co.)");
+  await page.locator('input[name="project_type"][value="jadu"]').check();
+  await page.locator(
+    'input[name="primary_dwelling_status"][value="existing_single_family"]',
+  ).check();
+  await page.locator('input[name="unpermitted_existing"][value="no"]').check();
+  await page.locator("#t-submit").click();
+  await expect(page.locator("#resultsHeading")).toBeVisible();
+
+  const card = page.locator('article[data-rule-id="davis-local-adu-process"]');
+  await expect(card).toBeVisible();
+  // The link is withheld; nothing else about the card is.
+  await expect(card.locator(".source-basis a")).toHaveCount(0);
+  await expect(card.locator(".source-basis")).toContainText(
+    "City of Davis, Accessory Dwelling Units Guidelines",
+  );
+  const note = card.locator('[data-source-link="not-found"]');
+  await expect(note).toBeVisible();
+  await expect(note).toContainText("did not open");
+  await expect(note).toContainText("Ask local staff for the current document.");
+  // A withdrawn address is not a changed law: the record keeps its status.
+  await expect(card).not.toHaveClass(/unverified/);
+  await expect(page.locator("#decisionBoundary")).not.toHaveAttribute(
+    "data-boundary-state",
+    "source-review-hold",
+  );
+  // Statutes cited by other matched rules still link normally.
+  await expect(
+    page.locator('article[data-rule-id="jadu-standards"] .source-basis a'),
+  ).toHaveCount(1);
+  await expectNoAutomatedWcagViolations(page);
+  await expectBrowserStorageEmpty(page);
+});
+
+test("the evidence page separates a withdrawn address from a failed download", async ({
+  page,
+}) => {
+  await serveSourceStateFixture(page, "not_found", "davis-adu-handout-2026");
+  await page.goto("/evidence.html");
+
+  await expect(page.locator("#sourceSnapshotSummary")).toContainText(
+    "1 could not be re-fetched (1 because the published address answered "
+      + "that no document is there)",
+  );
+  await expect(page.locator("#sourceImpactQueue")).toContainText(
+    "Published link not found.",
+  );
+  await expect(page.locator("#sourceImpactQueue")).not.toContainText(
+    "Watch warning.",
+  );
+  await expect(page.locator("#sourceImpactQueue")).toContainText(
+    "No source-triggered review queue is open.",
+  );
+  const sourceRow = page.locator("#sourceTable tbody tr", {
+    hasText: "City of Davis Accessory Dwelling Units Guidelines",
+  });
+  await expect(sourceRow).toContainText("published link not found");
+  await expectNoAutomatedWcagViolations(page);
+  await expectBrowserStorageEmpty(page);
+});
+
 test("multi-route result headings expose distinct route identities", async ({
   page,
 }) => {
@@ -915,8 +993,9 @@ test("reviewed source-state receipt is visible and separate from rehearsal", asy
 
   await expect(page.locator("#sourceSnapshotSummary")).toHaveText(
     "Checked August 3, 2026: 19 unchanged; 0 changed; 0 could not be "
-      + "re-fetched. This repository-adopted receipt is the source-state "
-      + "overlay used by the applicant guide.",
+      + "re-fetched (0 because the published address answered that no "
+      + "document is there). This repository-adopted receipt is the "
+      + "source-state overlay used by the applicant guide.",
   );
   await expect(page.locator("#sourceSnapshotRun")).toHaveAttribute(
     "href",
@@ -985,6 +1064,9 @@ test("unverifiable source receipt warns without staling dependents", async ({
     hasText: "Gov. Code § 66317",
   });
   await expect(sourceRow).toContainText("could not re-fetch");
+  await expect(page.locator("#sourceImpactQueue")).not.toContainText(
+    "Published link not found.",
+  );
   const routeRow = page.getByRole("row", {
     name: /^ADU ministerial review and application timelines statewide/,
   });

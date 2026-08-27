@@ -40,6 +40,7 @@ RULES_PATH = ROOT / "data" / "rules"
 EXPLANATIONS_PATH = ROOT / "data" / "explanations" / "plain-language.json"
 GOLDEN_PATH = ROOT / "data" / "golden" / "example.json"
 SOURCE_STATE_PATH = ROOT / "data" / "source-status" / "current.json"
+SOURCES_PATH = ROOT / "data" / "sources.json"
 DATA_ROOT = (ROOT / "data").resolve()
 ASSETS_ROOT = (ROOT / "assets").resolve()
 MAX_BODY_BYTES = 64 * 1024
@@ -246,6 +247,12 @@ STRINGS = {
         "english_only": "English explanation shown because no valid Spanish draft "
                         "is available.",
         "verified": "source date on file",
+        "link_not_found": (
+            "The official link for this source did not open when it was "
+            "last checked: the website answered that no document is "
+            "there. The quoted text below is from the copy this project "
+            "saved. Ask local staff for the current document."
+        ),
         "stale": "SOURCE NEEDS A NEW CHECK",
         "unverified": "NO SOURCE DATE ON FILE",
         "back": "Start over",
@@ -404,6 +411,13 @@ STRINGS = {
         "english_only": "Se muestra la explicación en inglés porque no hay un "
                         "borrador válido en español.",
         "verified": "fecha de la fuente registrada",
+        "link_not_found": (
+            "El enlace oficial de esta fuente no abrió en la última "
+            "comprobación: el sitio web respondió que no hay ningún "
+            "documento allí. El texto citado abajo proviene de la copia "
+            "que este proyecto guardó. Pida al personal local el "
+            "documento actual."
+        ),
         "stale": "LA FUENTE NECESITA UNA NUEVA COMPROBACIÓN",
         "unverified": "SIN FECHA DE LA FUENTE",
         "back": "Empezar de nuevo",
@@ -701,6 +715,57 @@ def committed_changed_source_ids():
     return tuple(value for value in changed if isinstance(value, str))
 
 
+def _source_state_record():
+    try:
+        record = json.loads(SOURCE_STATE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return record if isinstance(record, dict) else {}
+
+
+def committed_not_found_source_ids():
+    """Watched sources whose published address answered "no document".
+
+    Same reading as ``notFoundSourceIds`` in ``assets/demo.js``, from the
+    same committed receipt, so the reference server does not offer a link
+    the browser withholds. It is a fact about the address, never about the
+    law: nothing here marks a rule stale.
+    """
+
+    observations = _source_state_record().get("observations")
+    if not isinstance(observations, list):
+        return ()
+    return tuple(
+        item["source_id"]
+        for item in observations
+        if isinstance(item, dict)
+        and item.get("status") == "unverifiable"
+        and item.get("unverifiable_kind") == "not_found"
+        and isinstance(item.get("source_id"), str)
+    )
+
+
+def citation_source_id(url):
+    """Map a rule's own citation URL to the watched source behind it."""
+
+    try:
+        registry = json.loads(SOURCES_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    record = registry.get(url) if isinstance(registry, dict) else None
+    if not isinstance(record, dict):
+        return None
+    source_id = record.get("source_id")
+    return source_id if isinstance(source_id, str) else None
+
+
+def citation_link_not_found(citation, not_found_source_ids=None):
+    if not_found_source_ids is None:
+        not_found_source_ids = committed_not_found_source_ids()
+    source_id = citation_source_id(citation.url)
+    return source_id is not None and source_id in set(not_found_source_ids)
+
+
 def _result_badge(result, strings, *, today=None, changed_source_ids=()):
     """Label one rule, using the same precedence as ``harness.runner``.
 
@@ -765,16 +830,25 @@ def render_result_card(
         for character in rule.rule_id
     )
     card_id = f"result-title-{safe_rule_id}"
-    source_url = _safe_external_url(citation.url)
+    link_not_found = citation_link_not_found(citation)
+    # Offering an anchor that resolves to nothing is the part this fixes.
+    # The citation text, the excerpt, the badge, and the match are untouched.
+    source_url = None if link_not_found else _safe_external_url(citation.url)
     source_record = (
         f"<a lang='en' href='{html.escape(source_url, quote=True)}' "
         f"rel='noopener'>{_ui_escape(citation.source)}</a>"
         if source_url
         else f"<span lang='en'>{_ui_escape(citation.source)}</span>"
     )
+    link_note = (
+        f"<p class='notice small source-link-missing' lang='{lang}' "
+        f"data-source-link='not-found'>{_ui_escape(s['link_not_found'])}</p>"
+        if link_not_found
+        else ""
+    )
     source = (
         f"<p class='source-basis'><b>{html.escape(s['source'])}:</b> "
-        f"{source_record}</p>"
+        f"{source_record}</p>{link_note}"
     )
     docs = "".join(
         f"<li>{_ui_escape(document)}</li>"

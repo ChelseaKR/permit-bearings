@@ -475,6 +475,28 @@ unverifiable fetch remains a visible warning and stales nothing. The separate
 state. New-law discovery, automatic adoption, staffed review assignment,
 approval history, and automatic publication remain planned.
 
+An unverifiable fetch is recorded by kind, because two very different things
+arrive under that one word. A `transport` failure got no authoritative
+answer: DNS, TLS, a timeout, a 5xx, throttling, a 403 refusal. A
+`not_found` failure means the server answered HTTP 404 or 410 about that
+exact address, so the document is no longer published where this project
+points. Neither is evidence that the law changed: the retained copy and its
+recorded hash still stand, no rule is marked stale, no excerpt or action copy
+is suppressed, and no exit code moves. The difference is the link. Where a
+rule's own `citation.url` resolves to a `not_found` source, the result card
+prints the citation as text instead of an anchor, alongside a sentence saying
+the official link did not open, that the quoted text comes from the copy this
+project retained, and that staff should be asked for the current document.
+`assets/demo.js` and `demo/app.py` derive that from the same committed
+receipt and a test asserts they agree; the harness reports the same finding
+from the adopted receipt on every run, and the evidence page labels
+"published link not found" separately from "could not re-fetch". A watcher
+receipt whose unverifiable observation does not say which kind it was is
+rejected by the Python loader and by the browser, because a failure the
+reader cannot describe honestly is not one to render. The decision, and what
+it deliberately does not do, is in
+[ADR 0005](docs/adr/0005-separate-a-withdrawn-citation-from-an-unreachable-source.md).
+
 The separate readiness tests cover positive, negative, boundary, unknown,
 wrong-workflow, changed-source, schema, fingerprint, review-metadata, manifest,
 and CLI behavior for the synthetic Woodland packet. These tests establish
@@ -837,8 +859,9 @@ explanation sidecar and keeps a separate `/trust` route.
   policy plus a conservative generic prototype policy whose exact negative
   excerpt, source/program IDs, canonical HTTPS program path, and fingerprint
   must agree; both are isolated from screening/readiness
-- `src/permit_pathways/source_state.py`: strict watcher-receipt validation and
-  exact rule/Golden dependency impact
+- `src/permit_pathways/source_state.py`: strict watcher-receipt validation,
+  exact rule/Golden dependency impact, and the withdrawn-citation derivation
+  that names each rule whose printed citation address answered "not found"
 - `src/permit_pathways/review_queue.py` and `review_queue_cli.py`: portable,
   fingerprint-bound source-change worklists and separate human decision
   ledgers that cannot clear holds or republish output
