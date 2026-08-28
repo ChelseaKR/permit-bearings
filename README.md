@@ -169,6 +169,8 @@ PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
 PYTHONPATH=src python3 -m permit_pathways.readiness_cli \
   --workflow-id woodland-preapproved-detached-adu --as-of 2026-07-30
 PYTHONPATH=src python3 -m permit_pathways.review_queue_cli  # read-only source-change worklist
+PYTHONPATH=src python3 -m permit_pathways.precedent kinds    # HCD letter kinds in the committed snapshot
+PYTHONPATH=src python3 -m permit_pathways.precedent for davis  # comparable-jurisdiction precedent
 PYTHONPATH=src python3 -m permit_pathways.local_source_onboarding_cli \
   validate                                      # validates the empty not_run template
 PYTHONPATH=src python3 -m permit_pathways.source_release_cli validate-templates
@@ -599,7 +601,7 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 |---|---|
 | Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, a temporary grouped result packet, citations, uncertainty routing, and one generated synthetic Woodland packet-presence future-state simulation are implemented. The official program page currently says its preapproved plan list is coming soon, so this is not an applicant-ready workflow. The sample uses 25 source-bound checklist requirements, two fabricated values tied to official parcel-layer fields, and review-pending AI-assisted action drafts. Live parcel retrieval, file inspection, parcel-specific packet completeness, reviewed remedies, and reviewed translation are planned. |
 | Scenario 2 (B): supporting internal review | Not targeted in v1. |
-| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, proposed run receipts, deliberate snapshot adoption, exact rule/Golden and bounded packet-context worklists, applicant-output invalidation, separate fingerprint-bound decision templates, strict `not_run` approval/publication/rollback receipt tooling, and an HCD-letter dataset are implemented in bounded form. Search, new-law discovery, automatic adoption/publication, completed staffed assignments or receipts, comparable-jurisdiction research, and substantive approval history are planned. |
+| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, proposed run receipts, deliberate snapshot adoption, exact rule/Golden and bounded packet-context worklists, applicant-output invalidation, separate fingerprint-bound decision templates, strict `not_run` approval/publication/rollback receipt tooling, and an HCD-letter dataset are implemented in bounded form. A read-only comparable-jurisdiction precedent CLI (`permit_pathways.precedent`) groups the committed 1,312-letter HCD snapshot by letter kind and authority so a reader can find documented precedent; it makes no compliance finding and fetches nothing. Search, new-law discovery, automatic adoption/publication, completed staffed assignments or receipts, and substantive approval history are planned. |
 
 ## Design commitments (from the challenge statement's cross-cutting requirements)
 
@@ -963,6 +965,10 @@ explanation sidecar and keeps a separate `/trust` route.
 - `scripts/build_demo_bundle.py`: rebuild/check the static data bundle
 - `src/permit_pathways/jurisdictions.py`: validates and builds the portable
   jurisdiction-coverage index used by the browser profile
+- `src/permit_pathways/precedent.py`: read-only comparable-jurisdiction
+  discovery over the committed HCD letter snapshot; groups by letter kind and
+  authority, fetches nothing, writes nothing, and carries its
+  not-a-compliance-finding boundary into every rendering
 - `docs/DESIGN.md`: architecture and demo plan
 - `docs/DATA-FLOW.md`: current build-time and browser data boundaries
 - `docs/DESIGN-SYSTEM.md`: California Web Standards alignment and local
