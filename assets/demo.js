@@ -568,7 +568,12 @@ function screen(intake) {
     (r.jurisdiction_scope === "statewide" || r.jurisdiction_scope === intake.jurisdiction)
     && matches(r, intake));
 }
-function ruleStatus(rule, changedSourceIds) {
+// `todayUtc` is midnight UTC of the evaluation day, as epoch milliseconds.
+// It defaults to the current UTC calendar day, mirroring dates.utc_today() on
+// the Python side so the two runtimes cannot disagree near local midnight.
+// The cross-runtime parity corpus passes its own pinned value, so its
+// verdicts do not silently depend on the day the suite happens to run.
+function ruleStatus(rule, changedSourceIds, todayUtc = null) {
   const c = rule.citation;
   const dependencies = Array.isArray(rule.source_dependencies)
     ? rule.source_dependencies : [];
@@ -576,11 +581,11 @@ function ruleStatus(rule, changedSourceIds) {
     return "stale";
   if (!validIsoDate(c.verified_on)) return "unverified";
   const now = new Date();
-  const todayUtc = Date.UTC(
-    now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()
-  );
+  const evaluatedUtc = todayUtc === null
+    ? Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+    : todayUtc;
   const verifiedUtc = Date.parse(`${c.verified_on}T00:00:00Z`);
-  const age = Math.floor((todayUtc - verifiedUtc) / 86400000);
+  const age = Math.floor((evaluatedUtc - verifiedUtc) / 86400000);
   return age < 0 || age > MAX_AGE_DAYS ? "stale" : "verified";
 }
 

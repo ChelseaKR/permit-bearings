@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "description": "Cross-runtime parity corpus for the deterministic matching core. Inputs only: the Python engine and the browser's pure-logic zone must independently compute identical verdicts over every case. Cases encode scalar equality, criterion operators, single-rule matching, jurisdiction screening, and staleness date math. Every staleness case pins its own evaluation date and both runtimes are given it, so no verdict depends on the day the suite runs. Cases marked expected_ill_shaped carry a criterion value the rule loader would reject; both runtimes must fail closed on them rather than raise or coerce. Extend deliberately: both runtimes are re-run on every change.",
+  "scalar_cases": [
+    {"case_id": "bool_true_vs_one", "left": true, "right": 1},
+    {"case_id": "one_vs_float_one", "left": 1, "right": 1.0},
+    {"case_id": "zero_vs_false", "left": 0, "right": false},
+    {"case_id": "string_one_vs_number_one", "left": "1", "right": 1},
+    {"case_id": "identical_unknown_strings", "left": "unknown", "right": "unknown"},
+    {"case_id": "empty_string_pair", "left": "", "right": ""},
+    {"case_id": "negative_int_pair", "left": -3, "right": -3},
+    {"case_id": "safe_int_boundary_pair", "left": 9007199254740991, "right": 9007199254740991},
+    {"case_id": "case_sensitive_strings", "left": "Davis", "right": "davis"},
+    {"case_id": "false_pair_is_equal", "left": false, "right": false}
+  ],
+  "criterion_cases": [
+    {"case_id": "eq_absent_actual", "op": "eq", "actual_absent": true, "expected": "adu"},
+    {"case_id": "eq_null_actual", "op": "eq", "actual": null, "expected": "unknown"},
+    {"case_id": "eq_bool_hit", "op": "eq", "actual": true, "expected": true},
+    {"case_id": "eq_bool_vs_one", "op": "eq", "actual": true, "expected": 1},
+    {"case_id": "eq_int_hit", "op": "eq", "actual": 3, "expected": 3},
+    {"case_id": "eq_int_miss", "op": "eq", "actual": 4, "expected": 3},
+    {"case_id": "eq_string_hit", "op": "eq", "actual": "existing_single_family", "expected": "existing_single_family"},
+    {"case_id": "eq_case_mismatch", "op": "eq", "actual": "ADU", "expected": "adu"},
+    {"case_id": "lte_boundary_equal", "op": "lte", "actual": 5, "expected": 5},
+    {"case_id": "lte_above", "op": "lte", "actual": 6, "expected": 5},
+    {"case_id": "lte_below", "op": "lte", "actual": 4, "expected": 5},
+    {"case_id": "lte_bool_actual", "op": "lte", "actual": false, "expected": 5},
+    {"case_id": "lte_float_actual", "op": "lte", "actual": 4.5, "expected": 5},
+    {"case_id": "gte_boundary_equal", "op": "gte", "actual": 120, "expected": 120},
+    {"case_id": "gte_below", "op": "gte", "actual": 119, "expected": 120},
+    {"case_id": "gte_negative_actual", "op": "gte", "actual": -2, "expected": -5},
+    {"case_id": "in_member", "op": "in", "actual": "adu", "expected": ["adu", "jadu"]},
+    {"case_id": "in_nonmember", "op": "in", "actual": "sb9", "expected": ["adu", "jadu"]},
+    {"case_id": "in_bool_against_numbers", "op": "in", "actual": true, "expected": [1, 2]},
+    {"case_id": "in_number_hit", "op": "in", "actual": 2, "expected": [1, 2]},
+    {"case_id": "in_null_actual", "op": "in", "actual": null, "expected": ["a"]},
+    {"case_id": "lte_string_expected_fails_closed", "op": "lte", "actual": 5, "expected": "5", "expected_ill_shaped": true},
+    {"case_id": "gte_null_expected_fails_closed", "op": "gte", "actual": 5, "expected": null, "expected_ill_shaped": true},
+    {"case_id": "lte_bool_expected_fails_closed", "op": "lte", "actual": 5, "expected": true, "expected_ill_shaped": true},
+    {"case_id": "in_string_expected_fails_closed", "op": "in", "actual": "a", "expected": "abc", "expected_ill_shaped": true},
+    {"case_id": "in_object_expected_fails_closed", "op": "in", "actual": "a", "expected": {"a": 1}, "expected_ill_shaped": true},
+    {"case_id": "eq_empty_list_expected_fails_closed", "op": "eq", "actual": "a", "expected": [], "expected_ill_shaped": true}
+  ],
+  "screen_cases": [
+    {
+      "case_id": "statewide_rule_matches_any_jurisdiction",
+      "intake": {"jurisdiction": "woodland", "project_type": "adu"},
+      "rules": [
+        {"rule_id": "r-state", "jurisdiction_scope": "statewide",
+         "criteria": [{"field": "project_type", "op": "eq", "value": "adu"}]}
+      ]
+    },
+    {
+      "case_id": "local_rule_excluded_for_other_jurisdiction",
+      "intake": {"jurisdiction": "davis", "project_type": "adu"},
+      "rules": [
+        {"rule_id": "r-local", "jurisdiction_scope": "woodland",
+         "criteria": [{"field": "project_type", "op": "eq", "value": "adu"}]}
+      ]
+    },
+    {
+      "case_id": "local_rule_matches_own_jurisdiction",
+      "intake": {"jurisdiction": "woodland", "project_type": "adu"},
+      "rules": [
+        {"rule_id": "r-local", "jurisdiction_scope": "woodland",
+         "criteria": [{"field": "project_type", "op": "eq", "value": "adu"}]}
+      ]
+    },
+    {
+      "case_id": "multiple_rules_sorted_output",
+      "intake": {"jurisdiction": "woodland", "project_type": "adu", "height_ft": 15},
+      "rules": [
+        {"rule_id": "b-second", "jurisdiction_scope": "woodland",
+         "criteria": [{"field": "height_ft", "op": "lte", "value": 16}]},
+        {"rule_id": "a-first", "jurisdiction_scope": "statewide",
+         "criteria": [{"field": "project_type", "op": "in", "value": ["adu", "jadu"]}]},
+        {"rule_id": "c-miss", "jurisdiction_scope": "statewide",
+         "criteria": [{"field": "height_ft", "op": "gte", "value": 20}]}
+      ]
+    },
+    {
+      "case_id": "missing_field_never_satisfies",
+      "intake": {"jurisdiction": "woodland"},
+      "rules": [
+        {"rule_id": "r-needs-field", "jurisdiction_scope": "statewide",
+         "criteria": [{"field": "unpermitted_existing", "op": "eq", "value": "no"}]}
+      ]
+    },
+    {
+      "case_id": "all_criteria_must_match",
+      "intake": {"jurisdiction": "woodland", "project_type": "adu", "height_ft": 99},
+      "rules": [
+        {"rule_id": "r-two-criteria", "jurisdiction_scope": "statewide",
+         "criteria": [
+           {"field": "project_type", "op": "eq", "value": "adu"},
+           {"field": "height_ft", "op": "lte", "value": 16}
+         ]}
+      ]
+    },
+    {
+      "case_id": "jurisdiction_match_is_case_sensitive",
+      "intake": {"jurisdiction": "Woodland", "project_type": "adu"},
+      "rules": [
+        {"rule_id": "r-local", "jurisdiction_scope": "woodland",
+         "criteria": [{"field": "project_type", "op": "eq", "value": "adu"}]}
+      ]
+    },
+    {
+      "case_id": "out_of_scope_rule_never_evaluates_criteria",
+      "intake": {"jurisdiction": "davis", "project_type": "adu"},
+      "rules": [
+        {"rule_id": "r-elsewhere", "jurisdiction_scope": "woodland",
+         "criteria": [{"field": "project_type", "op": "in", "value": ["adu", "jadu"]}]},
+        {"rule_id": "r-statewide-in", "jurisdiction_scope": "statewide",
+         "criteria": [{"field": "project_type", "op": "in", "value": ["adu", "jadu"]}]}
+      ]
+    }
+  ],
+  "staleness_cases": [
+    {"case_id": "verified_today", "verified_on": "2026-08-22", "today": "2026-08-22", "max_age_days": 180, "source_dependencies": [], "changed_source_ids": []},
+    {"case_id": "age_179_is_current", "verified_on": "2026-02-24", "today": "2026-08-22", "max_age_days": 180, "source_dependencies": [], "changed_source_ids": []},
+    {"case_id": "age_180_is_current", "verified_on": "2026-02-23", "today": "2026-08-22", "max_age_days": 180, "source_dependencies": [], "changed_source_ids": []},
+    {"case_id": "age_181_is_stale", "verified_on": "2026-02-22", "today": "2026-08-22", "max_age_days": 180, "source_dependencies": [], "changed_source_ids": []},
+    {"case_id": "future_verified_on_is_stale", "verified_on": "2027-01-01", "today": "2026-08-22", "max_age_days": 180, "source_dependencies": [], "changed_source_ids": []},
+    {"case_id": "missing_verification_is_unverified", "verified_on": null, "today": "2026-08-22", "max_age_days": 180, "source_dependencies": [], "changed_source_ids": []},
+    {"case_id": "changed_dependency_is_stale_even_when_fresh", "verified_on": "2026-08-22", "today": "2026-08-22", "max_age_days": 180, "source_dependencies": ["ca-gov-66321"], "changed_source_ids": ["ca-gov-66321"]},
+    {"case_id": "unrelated_changed_source_leaves_rule_current", "verified_on": "2026-08-22", "today": "2026-08-22", "max_age_days": 180, "source_dependencies": ["ca-gov-66321"], "changed_source_ids": ["ca-gov-66323"]},
+    {"case_id": "changed_dependency_outranks_missing_verification", "verified_on": null, "today": "2026-08-22", "max_age_days": 180, "source_dependencies": ["ca-gov-66321"], "changed_source_ids": ["ca-gov-66321"]},
+    {"case_id": "changed_dependency_outranks_stale_age", "verified_on": "2020-01-01", "today": "2026-08-22", "max_age_days": 180, "source_dependencies": ["ca-gov-66321"], "changed_source_ids": ["ca-gov-66321"]},
+    {"case_id": "no_dependencies_and_fresh_is_current", "verified_on": "2026-08-01", "today": "2026-08-22", "max_age_days": 180, "source_dependencies": [], "changed_source_ids": ["ca-gov-66321"]}
+  ]
+}
