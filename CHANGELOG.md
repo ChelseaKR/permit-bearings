@@ -7,6 +7,33 @@ published a versioned release.
 
 ### Added
 
+- `python -m permit_pathways.precedent`: read-only comparable-jurisdiction
+  discovery over the HCD accountability letter snapshot already committed at
+  `data/jurisdictions/hcd-letters.json`. Nothing is fetched. Three
+  subcommands: `kinds` lists letter kinds with how many jurisdictions
+  received each, `list --kind ... [--authority ...]` prints every letter of
+  one kind, and `for <slug>` shows one jurisdiction's letters and then the
+  other jurisdictions HCD wrote to about the same kind under the same
+  authority. Grouping by (kind, authority) is what makes it precedent rather
+  than a directory: two jurisdictions that both received an ADU-Law repeal
+  request are comparable in a way that two entries on the same list are not.
+  Of the 1,312 letters across 470 of the 541 registry entries, 205
+  jurisdictions have received a repeal-request technical assistance letter,
+  which `docs/findings/2026-08-15-multi-jurisdiction-adu-ordinance-scan.md`
+  had already noted was a priority list sitting in committed data.
+  Every rendering carries the boundary, and a test asserts it: HCD
+  correspondence is documented precedent, not controlling authority for
+  another jurisdiction and not a compliance finding, and a jurisdiction with
+  no row is one this dated snapshot linked no letter to, which is not
+  evidence of compliance or of no HCD activity. A capped listing always
+  reports the full group size. It reads correspondence metadata rather than
+  ordinance text, no watcher monitors an individual letter for later action,
+  and it ships as a CLI rather than a page, because
+  `docs/PRODUCT-CONTEXT.md` says not to add demo modules until the applicant
+  journey reads as one coherent flow and whether it does is not this
+  change's call to make. Addresses `AGENTS.md` priority 4,
+  comparable-jurisdiction discovery.
+
 - A watched source that could not be fetched is now recorded by kind, and a
   citation whose published address is gone stops being offered as a link.
   `permit_pathways.harness.watch` classifies an HTTP 404 or 410 as
