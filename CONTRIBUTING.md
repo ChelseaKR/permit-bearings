@@ -16,8 +16,21 @@ make verify
 
 That command installs the locked development environment and runs the same
 format, lint, strict type, test, branch-coverage, dependency, SAST,
-generated-bundle, and no-fetch verification gates used by CI. The separate CI
-secret-scan job checks full repository history.
+generated-bundle, browser-unit, and no-fetch verification gates used by CI.
+The separate CI secret-scan job checks full repository history.
+
+`make verify` needs **Node.js 24** as well as Python, and refuses to start
+without it. Eight cross-runtime contract tests execute `assets/demo.js` under
+Node, and the browser unit suite in `tests/browser/` runs the shipped browser
+file directly. Those used to be skipped silently when Node was absent, so the
+command could pass with the entire browser runtime untested. Use `make test`
+for the Python-only subset when that is genuinely what you want.
+
+Two coverage numbers are enforced, and they are not the same measurement:
+85% branch coverage of the `permit_pathways` package, and 20% line / 17%
+function coverage of `assets/demo.js`. The second is a ratchet on a file that
+had no coverage gate before. Raise it when you add browser tests; do not
+quote it as though it were the first.
 
 Before opening a pull request:
 

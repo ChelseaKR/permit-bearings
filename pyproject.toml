@@ -60,7 +60,10 @@ max-complexity = 10
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["src"]
+# `demo/app.py` is the third runtime and five scripts write committed data or
+# reach the network; leaving them out made "strict mypy" describe `src` while
+# reading as describing the repository.
+files = ["src", "scripts", "demo"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"

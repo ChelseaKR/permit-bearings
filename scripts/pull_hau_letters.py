@@ -22,13 +22,16 @@ and which jurisdictions had rows on both sides.
 If the resource key changes (HCD republishes the report), re-read the
 embed URL from the dashboard page and update RESOURCE_KEY.
 """
+
 import json
 import sys
 import urllib.error
 import urllib.request
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "corpus" / "hcd" / "hau-letters-raw.json"
@@ -39,61 +42,112 @@ RESOURCE_KEY = "049c27c4-70aa-45c0-8ebd-5a224d4b44ed"
 HOST = "https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net"
 MODEL_ID = 971938
 DATASET_ID = "5b74754d-30f9-4464-b563-44ee27833da2"
-COLS = ["u_jurisdiction_1_display_value", "U_DATE_completed_display_value",
-        "u_type_display_value", "u_type_of_request_display_value",
-        "u_hcd_authority_display_value", "u_statutory_references_display_value",
-        "u_keywords_display_value", "u_letter_url_display_value",
-        "u_executive_summary_display_value", "number_display_value"]
+COLS = [
+    "u_jurisdiction_1_display_value",
+    "U_DATE_completed_display_value",
+    "u_type_display_value",
+    "u_type_of_request_display_value",
+    "u_hcd_authority_display_value",
+    "u_statutory_references_display_value",
+    "u_keywords_display_value",
+    "u_letter_url_display_value",
+    "u_executive_summary_display_value",
+    "number_display_value",
+]
 
 
-def query():
-    select = [{"Column": {"Expression": {"SourceRef": {"Source": "s"}},
-                          "Property": c}, "Name": f"c{i}"}
-              for i, c in enumerate(COLS)]
+def query() -> dict[str, Any]:
+    select = [
+        {
+            "Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": c},
+            "Name": f"c{i}",
+        }
+        for i, c in enumerate(COLS)
+    ]
     payload = {
         "version": "1.0.0",
-        "queries": [{
-            "Query": {"Commands": [{"SemanticQueryDataShapeCommand": {
-                "Query": {"Version": 2,
-                          "From": [{"Name": "s", "Entity": "Source", "Type": 0}],
-                          "Select": select},
-                "Binding": {
-                    "Primary": {"Groupings": [{"Projections": list(range(len(COLS)))}]},
-                    "DataReduction": {"DataVolume": 6,
-                                      "Primary": {"Window": {"Count": 30000}}},
-                    "Version": 1}}}]},
-            "QueryId": "",
-            "ApplicationContext": {"DatasetId": DATASET_ID}}],
-        "cancelQueries": [], "modelId": MODEL_ID}
-    req = urllib.request.Request(
+        "queries": [
+            {
+                "Query": {
+                    "Commands": [
+                        {
+                            "SemanticQueryDataShapeCommand": {
+                                "Query": {
+                                    "Version": 2,
+                                    "From": [
+                                        {"Name": "s", "Entity": "Source", "Type": 0}
+                                    ],
+                                    "Select": select,
+                                },
+                                "Binding": {
+                                    "Primary": {
+                                        "Groupings": [
+                                            {"Projections": list(range(len(COLS)))}
+                                        ]
+                                    },
+                                    "DataReduction": {
+                                        "DataVolume": 6,
+                                        "Primary": {"Window": {"Count": 30000}},
+                                    },
+                                    "Version": 1,
+                                },
+                            }
+                        }
+                    ]
+                },
+                "QueryId": "",
+                "ApplicationContext": {"DatasetId": DATASET_ID},
+            }
+        ],
+        "cancelQueries": [],
+        "modelId": MODEL_ID,
+    }
+    # The one URL this script opens is built from the module constant HOST,
+    # a literal beginning "https://", and a literal path. No caller, argument,
+    # registry entry, or file supplies any part of it, so the `file:` and
+    # custom-scheme concern behind S310/B310 cannot arise here. Same decision
+    # as `permit_pathways.harness.watch._fetch_once`, which takes a URL from
+    # the registry and relies on the loader rejecting non-HTTPS ones; this
+    # call site has no variable URL at all. Waived inline rather than
+    # per-file, so the exemption stays next to the call it excuses.
+    req = urllib.request.Request(  # noqa: S310  # nosec B310
         HOST + "/public/reports/querydata?synchronous=true",
         data=json.dumps(payload).encode(),
-        headers={"X-PowerBI-ResourceKey": RESOURCE_KEY,
-                 "Content-Type": "application/json",
-                 "User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        return json.load(resp)
+        headers={
+            "X-PowerBI-ResourceKey": RESOURCE_KEY,
+            "Content-Type": "application/json",
+            "User-Agent": USER_AGENT,
+        },
+    )
+    with urllib.request.urlopen(req, timeout=120) as resp:  # noqa: S310  # nosec B310
+        # Shape is the dashboard's, not ours. `decode` indexes it and `main`
+        # reports a KeyError as unverifiable rather than as drift.
+        payload_back: dict[str, Any] = json.load(resp)
+    return payload_back
 
 
-def decode(data):
+def decode(data: dict[str, Any]) -> dict[str, Any]:
     dsr = data["results"][0]["result"]["data"]["dsr"]
     ds = dsr["DS"][0]
     dicts = ds.get("ValueDicts", {})
     rows_raw = ds["PH"][0]["DM0"]
     schema = rows_raw[0]["S"]
     n = len(schema)
-    prev, out = [None] * n, []
+    prev: list[Any] = [None] * n
+    out: list[list[Any]] = []
     for row in rows_raw:
         c = row.get("C", [])
         rbits, nbits = row.get("R", 0), row.get("Ø", 0)
-        vals, ci = [], 0
+        vals: list[Any] = []
+        ci = 0
         for i, col in enumerate(schema):
             if nbits >> i & 1:
                 vals.append(None)
             elif rbits >> i & 1:
                 vals.append(prev[i])
             else:
-                v = c[ci]; ci += 1
+                v = c[ci]
+                ci += 1
                 dn = col.get("DN")
                 if dn is not None and isinstance(v, int):
                     v = dicts[dn][v]
@@ -123,7 +177,7 @@ class Drift:
     def changed(self) -> bool:
         return bool(self.added or self.removed)
 
-    def _jurisdictions(self, rows):
+    def _jurisdictions(self, rows: list[list[object]]) -> set[str]:
         return {
             str(row[JURISDICTION_COLUMN])
             for row in rows
@@ -134,24 +188,30 @@ class Drift:
     def edited_jurisdictions(self) -> list[str]:
         """Jurisdictions with rows on both sides: an edit, or an edit plus a
         new letter. Never simply a new letter."""
-        return sorted(self._jurisdictions(self.added) & self._jurisdictions(self.removed))
+        return sorted(
+            self._jurisdictions(self.added) & self._jurisdictions(self.removed)
+        )
 
     @property
     def added_only_jurisdictions(self) -> list[str]:
-        return sorted(self._jurisdictions(self.added) - self._jurisdictions(self.removed))
+        return sorted(
+            self._jurisdictions(self.added) - self._jurisdictions(self.removed)
+        )
 
     @property
     def removed_only_jurisdictions(self) -> list[str]:
-        return sorted(self._jurisdictions(self.removed) - self._jurisdictions(self.added))
+        return sorted(
+            self._jurisdictions(self.removed) - self._jurisdictions(self.added)
+        )
 
 
-def _row_counter(rows):
+def _row_counter(rows: list[list[Any]]) -> Counter[str]:
     # Order-insensitive: the API's row order is not contractual. Counter, not
     # set, so a duplicated row is a difference rather than a silent match.
     return Counter(json.dumps(row, sort_keys=True) for row in rows)
 
 
-def classify(fresh_rows, current_rows) -> Drift:
+def classify(fresh_rows: list[list[Any]], current_rows: list[list[Any]]) -> Drift:
     fresh_counts = _row_counter(fresh_rows)
     current_counts = _row_counter(current_rows)
     added = [json.loads(row) for row in (fresh_counts - current_counts).elements()]
@@ -164,7 +224,7 @@ def classify(fresh_rows, current_rows) -> Drift:
     )
 
 
-def _listed(names):
+def _listed(names: list[str]) -> str:
     if len(names) <= MAX_LISTED:
         return ", ".join(names)
     return ", ".join(names[:MAX_LISTED]) + f", and {len(names) - MAX_LISTED} more"
@@ -201,13 +261,18 @@ def describe(drift: Drift) -> list[str]:
     return lines
 
 
-def committed_rows():
+def committed_rows() -> list[list[Any]]:
     if not RAW.exists():
         return []
-    return json.loads(RAW.read_text()).get("rows", [])
+    committed: dict[str, Any] = json.loads(RAW.read_text())
+    rows: list[list[Any]] = committed.get("rows", [])
+    return rows
 
 
-def main(argv=None, fetch=None) -> int:
+def main(
+    argv: list[str] | None = None,
+    fetch: Callable[[], dict[str, Any]] | None = None,
+) -> int:
     argv = sys.argv[1:] if argv is None else argv
     fetch = fetch or (lambda: decode(query()))
     check_only = "--check" in argv

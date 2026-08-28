@@ -28,6 +28,8 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "24"
+      # `make verify` now refuses to run without Node, so this really is the
+      # same command and the same scope a maintainer runs locally.
       - name: Run local-equivalent verification
         run: make verify
 
