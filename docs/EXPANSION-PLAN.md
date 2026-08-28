@@ -1,8 +1,10 @@
 # Multiyear expansion plan
 
-Status: 2026-08-27. This is a plan. One phase of it is built; the rest is not.
-Nothing here changes a capability status, and nothing here is a commitment on
-behalf of any jurisdiction, reviewer, or partner.
+Status: 2026-08-27. Four of the eight phases are built and are open as
+separate pull requests. The other four are blocked on people outside this
+repository, and the "Planned versus built" table at the end says exactly what
+blocks each one. Nothing here is a commitment on behalf of any jurisdiction,
+reviewer, or partner, and only the built phases changed anything.
 
 `docs/PRODUCT-CONTEXT.md` remains the canonical capability inventory and
 `docs/BETA-ROADMAP.md` remains the evidence gate. This document sits between
@@ -55,13 +57,19 @@ finish them:
 Year 1 can be finished alone. Years 2 and 3 cannot, and listing them as though
 they can is the failure this plan is trying not to commit.
 
+That split held when the plan was executed. All of year 1 and the unblocked
+half of year 3 are built. Every remaining phase stopped at a person: a
+reviewer who has to be named, a jurisdiction that has to say yes, a partner
+who has to judge the maintenance burden, a custodian who has to hold a freeze.
+None of them was faked, stubbed, or given a placeholder to fill in later.
+
 ---
 
 ## Year 1: what can be finished without anyone else
 
 ### Phase 1: source semantics in derived determinations
 
-**Status: BUILT.** See "What phase 1 delivered" below.
+**Built.** See "What phase 1 delivered" below.
 
 Where the tool derives a determination from a published dataset, it must not
 assert more than the dataset supports. The instance closed here is issue #44:
@@ -87,7 +95,8 @@ introduce.
 
 ### Phase 2: make the gate's scope equal its wording
 
-Issue #73, with issue #74 settled in the same pass.
+**Built, except the standards pin.** Issue #73, with issue #74 settled as far
+as it can be from inside this repository.
 
 `make verify` is presented as local-equivalent verification. Its scope is
 `src/`. Roughly 6,300 lines across `assets/demo.js`, `demo/app.py`, and
@@ -121,7 +130,7 @@ and it is not something to work around or to mint a credential for.
 
 ### Phase 3: currency automation that converges
 
-Issue #70, plus the scanner weaknesses recorded in
+**Built.** Issue #70, plus the scanner weakness recorded in
 `docs/findings/2026-08-15-multi-jurisdiction-adu-ordinance-scan.md`.
 
 The weekly watch files a brand-new issue every Monday with the date in the
@@ -148,7 +157,7 @@ phase 6 run through it.
 
 ### Phase 4: the first promotion past `machine_linked`
 
-All 19 rules are `machine_linked`. Zero named human reviews, zero jurisdiction
+**Blocked on a named reviewer.** All 19 rules are `machine_linked`. Zero named human reviews, zero jurisdiction
 approvals. The ledger, the dual fingerprint binding, the five demotion
 triggers, and the roster gate that rejects a promotion by an unattested
 reviewer are all built and tested against synthetic promotions.
@@ -164,7 +173,7 @@ start without it.
 
 ### Phase 5: one pilot jurisdiction's parcel-aware ADU readiness packet
 
-`AGENTS.md` priority 2, and the single largest capability gap: "Application
+**Blocked on a jurisdiction sponsor.** `AGENTS.md` priority 2, and the single largest capability gap: "Application
 completeness" is the one row in the capability matrix labelled bare `Planned`.
 
 `docs/PRODUCT-CONTEXT.md` specifies the target output in detail: retrieved and
@@ -183,7 +192,8 @@ started from this side.
 
 ### Phase 6: re-verification and local-rule authoring workbench
 
-`AGENTS.md` priority 3. The strict local-source intake validator exists and
+**Blocked on named human owners and a partner decision.** `AGENTS.md`
+priority 3. The strict local-source intake validator exists and
 tops out at `prepared_for_review` by design. The worklist, the decision
 ledger, the assignment ledger, and the three release-receipt schemas exist and
 are all `not_run`.
@@ -200,7 +210,8 @@ not the builder, to judge whether that maintenance burden is acceptable.
 
 ### Phase 7a: held-out scanner evaluation
 
-`AGENTS.md` priority 4, first half. Fully specified and entirely blocked
+**Blocked on independent reviewers and freeze custody.** `AGENTS.md`
+priority 4, first half. Fully specified and entirely blocked
 externally: it needs independently collected official passages, two genuinely
 independent qualified reviewers with a retained adjudication record, and a
 custodian to freeze the inputs. Revealing the key retires that corpus, so it
@@ -209,7 +220,7 @@ any of those four things.
 
 ### Phase 7b: comparable-jurisdiction precedent
 
-`AGENTS.md` priority 4, second half, and the only part of year 3 that is not
+**Built.** `AGENTS.md` priority 4, second half, and the only part of year 3 that is not
 blocked. The committed HCD accountability dataset already maps 1,314 letters
 across 470 of the 541 registry entries, and 205 jurisdictions have received a
 repeal-request technical assistance letter. That is a priority list derived
@@ -223,6 +234,7 @@ leaves that judgement where it belongs.
 
 ### Phase 8: bounded Scenario B comment resolution
 
+**Blocked by a recorded deferral whose precondition needs phases 5 and 6.**
 `AGENTS.md` priority 5, and the last thing on the list on purpose.
 `docs/BETA-ROADMAP.md` defers it, along with new-law discovery, SB 35, AB 2011,
 accounts, uploads, telemetry, model calls, and permitting-system integrations,
@@ -265,17 +277,32 @@ Each of these is a decision already recorded, not a gap waiting to be found.
 
 ## Planned versus built
 
-| Phase | Can it be finished from inside the repository? |
-|---|---|
-| 1. Source semantics in derived determinations | Yes, for the planned-transit-stop instance. Three sibling transit corrections need a routing dependency or a feed-currency model and are out of this phase. |
-| 2. Gate scope equals its wording | Yes, except the standards pin. That pin names a private repository reachable only through a deploy key, so no one working from a clone can read what they would be bumping to. |
-| 3. Currency automation that converges | Yes. |
-| 4. First promotion past `machine_linked` | No. It needs a named reviewer with a dated conflict-of-interest attestation. Every mechanism is built; the roster is empty on purpose and cannot be filled from here. |
-| 5. Pilot parcel-aware readiness packet | No. It needs a jurisdiction sponsor, an active permit subtype, an authoritative local source package, and staff review of disagreements. |
-| 6. Re-verification and authoring workbench | No. The rehearsal requires named human owners and a partner decision on whether the maintenance burden is acceptable, which `docs/BETA-ROADMAP.md` assigns to the partner rather than the builder. |
-| 7a. Held-out scanner evaluation | No. Independent passage collection, two qualified reviewers, adjudication, and custody of the freeze are all external, and the run is one-shot. |
-| 7b. Comparable-jurisdiction precedent | Yes, from committed data. |
-| 8. Bounded Scenario B | No, and not because of engineering. `docs/BETA-ROADMAP.md` defers it until the beta proves its maintenance and governance loop, and the beta is blocked on phases 5 and 6. |
+Each built phase is a separate pull request, so each can be reviewed and
+merged on its own. Every blocked phase names the specific thing that blocks it
+and what would unblock it. None of them is stubbed, and none carries a
+placeholder waiting to be filled in: an empty scaffold that looks finished is
+worse than an honest gap.
+
+| Phase | Status | What blocks it, and what would unblock it |
+|---|---|---|
+| 1. Source semantics in derived determinations | **Built** (PR #102) | Nothing. Three sibling transit corrections in `docs/PRODUCT-CONTEXT.md` risk 5 remain open and need a routing dependency or a feed-currency model. |
+| 2. Gate scope equals its wording | **Built except the standards pin** (PR #103) | The pin needs `portfolio-standards` PR #97 to merge and a tag to be cut. `v2.0.0` keys this repository under its old name and its checker resolves by checkout basename, so pinning to the tag would fail a required check on an unchanged repository. That is a merge decision in another repository. No `.standards-version` was written, because it could only name an unmerged branch commit and DOC-01 asks for a released tag. |
+| 3. Currency automation that converges | **Built** (PR #104) | Nothing. |
+| 4. First promotion past `machine_linked` | **Blocked** | A named reviewer who is a currently attested member of the `rule-content-reviewer` role, with a dated conflict-of-interest attestation. The ledger, the dual fingerprint binding, the five demotion triggers, and the roster gate are all built and tested. The roster has zero members by design and cannot be filled from inside the repository: inventing a reviewer is the one thing this project must never do. Unblocked by one person agreeing to review one rule and being recorded in `reviewer-roster.json`. |
+| 5. Pilot parcel-aware readiness packet | **Blocked** | A jurisdiction sponsor, an active permit subtype, an authoritative local source package, and staff willing to review disagreements. Woodland is a future-state simulation because the official program page says the preapproved plan list is coming soon. Unblocked by a jurisdiction saying yes. |
+| 6. Re-verification and authoring workbench | **Blocked** | Named human owners for the assignments, and a partner decision on whether the maintenance burden is acceptable, which `docs/BETA-ROADMAP.md` assigns to the partner rather than the builder. The intake validator, worklist, decision ledger, assignment ledger, and three release-receipt schemas are all built and `not_run`. Unblocked by the same partner phase 5 needs. |
+| 7a. Held-out scanner evaluation | **Blocked** | Independently collected official passages, two genuinely independent qualified reviewers with a retained adjudication record, and a custodian to freeze the inputs. The contract, evaluator, and CLI are built and `not_run`. Revealing the key retires the corpus, so it runs once and must run properly. Unblocked by recruiting two reviewers and a custodian. |
+| 7b. Comparable-jurisdiction precedent | **Built** (PR #105) | Nothing. |
+| 8. Bounded Scenario B | **Blocked** | `docs/BETA-ROADMAP.md` defers it until the beta proves its maintenance and governance loop, and the beta is blocked on phases 5 and 6. Building it now would contradict a recorded decision rather than close a gap. Unblocked by the pilot running. |
+
+One further thing stays reported rather than fixed, and belongs in this list
+because it is the clearest example of the rule: rule
+`davis-local-adu-process` cites `davis-adu-handout-2026`, whose URL returns
+HTTP 404. It cannot be repointed, because `documents.cityofdavis.org` 404s and
+`www.cityofdavis.org` answers 403 to a non-browser client, so no replacement
+address can be retrieved. Guessing one is exactly what this repository
+forbids. ADR 0005 records the mechanism that reports it honestly, and the
+citation stays as it is until someone can retrieve the document's new home.
 
 ## What phase 1 delivered
 
