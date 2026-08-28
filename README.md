@@ -779,7 +779,18 @@ GitHub Action re-fetches selected statewide sources and classifies each as
 unchanged, changed, or unverifiable. It opens a review issue when a fetched
 source's content hash moved, a rule aged out, or a Golden scenario regressed;
 a source it could not download is recorded as unverifiable with its last
-successful verification date and marks no rule stale. Two
+successful verification date and marks no rule stale.
+
+That alert converges rather than accumulating. Titles are stable and carry no
+run date, so an unresolved condition produces one issue and weekly comments on
+it rather than a new issue every Monday. Both alerts carry a `currency` label,
+each repeat comment says how many days the condition has been open, and a
+green run closes what it opened with a comment naming the run that cleared it.
+An unverifiable run neither opens nor closes anything, because nothing was
+learned about the law in it. The harness prints one machine-readable
+`currency signals:` line on every run, including a clean one, so the issue can
+say which of the three conditions fired: a changed source hash, an aged-out
+rule, and a Golden regression have different owners and different urgency. Two
 selected Woodland workflow
 sources, the January 2026 Davis ADU handout, and HCD's October 2025 Davis
 technical-assistance letter are recorded and watched. The Davis record reports

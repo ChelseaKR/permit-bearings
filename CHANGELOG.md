@@ -55,6 +55,42 @@ published a versioned release.
     Recorded in the README's CI/CD row alongside the fact that a fork pull
     request can never pass this required check, because GitHub does not pass
     the deploy key to fork runs (issue #74).
+### Fixed
+
+- The weekly currency watch converges instead of accumulating. It filed a
+  brand-new issue every Monday with the run date in the title and no
+  deduplication of any kind, so a condition that stays unresolved became an
+  unbounded pile; #63 and #65 are two weeks of the same one. Titles are now
+  stable and dateless, both alerts search before they create and comment on
+  the open issue instead, both carry a `currency` label, and each repeat
+  comment says how many days the condition has been open. A green run closes
+  the alert it opened, with a comment naming the run that cleared it, so the
+  automation is a status signal rather than an append-only log. An
+  unverifiable run neither opens nor closes anything: a source that could not
+  be downloaded is evidence about the network, and nothing was learned about
+  the law in that run. `python -m permit_pathways.harness` now prints one
+  machine-readable `currency signals: changed_sources=N stale_rules=N
+  golden_regressions=N unverifiable_sources=N` line on every run, including a
+  clean one, so the issue names which of the three conditions behind exit 1
+  fired rather than reporting that one of them did; a signal printed only on
+  failure could not be used to detect recovery either. The workflow's own
+  shell is executed against a fake `gh` in `tests/test_currency_workflow.py`,
+  because string assertions prove a workflow says the right words and cannot
+  prove it runs. Reported as issue #70.
+
+- `scripts/scan_ordinances.py` no longer re-dates every published scan result
+  on every run. It took one global `scanned_on` and stamped it on all eight
+  files, including jurisdictions whose ordinance text had not been
+  re-retrieved, so `scanned_on` recorded when the writer last ran rather than
+  when that ordinance was scanned. Each result is now re-derived with its own
+  recorded date first, and only the ones that come back different, or that
+  have no published result yet, take the new date; `--redate-all` covers a
+  deliberate re-retrieval of the whole corpus. Running the writer with a new
+  date against the unchanged corpus now leaves all eight files byte-identical,
+  which also stops it disturbing the two results pinned in the frozen
+  schema-v1 export profile. Recorded as weakness 3 in
+  `docs/findings/2026-08-15-multi-jurisdiction-adu-ordinance-scan.md`, where
+  it is noted as untidy at seven jurisdictions and misleading at two hundred.
 
 ### Added
 

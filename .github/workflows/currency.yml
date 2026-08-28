@@ -71,14 +71,66 @@ jobs:
       # Exit 1 means a source was fetched and its content hash moved, a rule
       # aged out, or a golden case regressed. Exit 2 means only that some
       # sources could not be downloaded — never escalated as a change.
-      - name: Open an issue when currency review is needed
+      #
+      # The title is stable and carries no run date. A dated title guarantees
+      # a distinct title every week, which is what turned one unresolved
+      # condition into an unbounded pile of issues (#63 and #65 were two
+      # weeks of the same one). The date, the run link, and which of the
+      # three conditions fired all go in the body instead. See issue #70.
+      - name: Open or update the currency review issue
         if: ${{ always() && steps.watch.outputs.exit_code == '1' }}
         env:
           GH_TOKEN: ${{ github.token }}
+          TITLE: Source currency review needed
         run: |
-          gh issue create \
-            --title "Source currency review needed ($(date -u +%F))" \
-            --body "$(printf 'The weekly currency check found changed watched sources, stale rules, or a golden regression. Rules dependent on a changed source are stale until re-verified against the new text.\n\n```\n%s\n```' "$(cat report.txt)")"
+          set -euo pipefail
+          # A changed source hash, an aged-out rule, and a golden regression
+          # have different owners and different urgency. The harness prints
+          # the counts so this does not have to parse prose.
+          signals="$(sed -n 's/^currency signals: //p' report.txt | tail -1)"
+          changed_sources="$(printf '%s' "$signals" | tr ' ' '\n' | sed -n 's/^changed_sources=//p')"
+          stale_rules="$(printf '%s' "$signals" | tr ' ' '\n' | sed -n 's/^stale_rules=//p')"
+          golden_regressions="$(printf '%s' "$signals" | tr ' ' '\n' | sed -n 's/^golden_regressions=//p')"
+          # Explicit `if` rather than `[ ... ] && assign`, so `set -e` has
+          # nothing subtle to do when a condition did not fire.
+          fired=""
+          if [ "${changed_sources:-0}" != "0" ]; then
+            fired="${fired}- ${changed_sources} watched source(s) were fetched and their content hash moved. Dependent rules are stale until re-verified against the new text."$'\n'
+          fi
+          if [ "${stale_rules:-0}" != "0" ]; then
+            fired="${fired}- ${stale_rules} rule(s) aged out of the review window. This needs a human re-verification, not a data refresh."$'\n'
+          fi
+          if [ "${golden_regressions:-0}" != "0" ]; then
+            fired="${fired}- ${golden_regressions} golden case(s) regressed. Matching output changed."$'\n'
+          fi
+          if [ -z "$fired" ]; then
+            fired="- The harness reported review needed without a signal breakdown."$'\n'
+          fi
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          body="$(printf 'Run %s, %s.\n\nWhat fired:\n\n%s\n```\n%s\n```' \
+            "$run_url" "$(date -u +%F)" "$fired" "$(cat report.txt)")"
+          # The label makes the whole class findable and survives a title
+          # edit. Creating it must never fail a run that is already reporting
+          # a real problem.
+          gh label create currency \
+            --color B60205 \
+            --description "Opened by the weekly source currency watch" \
+            >/dev/null 2>&1 || true
+          existing="$(gh issue list --state open --limit 1 --label currency \
+            --search "\"$TITLE\" in:title" \
+            --json number,createdAt --jq '.[0] | select(.) | "\(.number) \(.createdAt)"')"
+          if [ -n "$existing" ]; then
+            number="${existing%% *}"
+            opened="${existing##* }"
+            # Filing on the first Monday of drift is right; saying nothing new
+            # on the fourth is how the pile stops being read. Say how long.
+            days="$(( ( $(date -u +%s) - $(date -u -d "$opened" +%s 2>/dev/null || printf '%s' "$(date -u +%s)") ) / 86400 ))"
+            gh issue comment "$number" \
+              --body "$(printf 'Still open after %s day(s).\n\n%s' "$days" "$body")"
+            echo "commented on existing currency issue #$number"
+          else
+            gh issue create --title "$TITLE" --label currency --body "$body"
+          fi
       - name: Note sources that could not be re-fetched
         if: steps.watch.outputs.exit_code == '2'
         run: |
@@ -124,18 +176,82 @@ jobs:
           # The dashboard stays drifted until someone refreshes the dataset,
           # so every run after the first would otherwise open another issue
           # for the same unresolved condition. Update the open one instead.
+          gh label create currency \
+            --color B60205 \
+            --description "Opened by the weekly source currency watch" \
+            >/dev/null 2>&1 || true
           existing="$(gh issue list --state open --limit 1 \
             --search 'HCD HAU letters dataset drifted in:title' \
-            --json number --jq '.[0].number // empty')"
+            --json number,createdAt --jq '.[0] | select(.) | "\(.number) \(.createdAt)"')"
           if [ -n "$existing" ]; then
-            gh issue comment "$existing" \
-              --body "$(printf 'Still drifted as of %s.\n\n%s' "$(date -u +%F)" "$body")"
-            echo "commented on existing issue #$existing"
+            number="${existing%% *}"
+            opened="${existing##* }"
+            days="$(( ( $(date -u +%s) - $(date -u -d "$opened" +%s 2>/dev/null || printf '%s' "$(date -u +%s)") ) / 86400 ))"
+            gh issue comment "$number" \
+              --body "$(printf 'Still drifted after %s day(s), as of %s.\n\n%s' "$days" "$(date -u +%F)" "$body")"
+            echo "commented on existing issue #$number"
           else
+            # No run date in the title: the dataset stays drifted until a
+            # person refreshes it, and a dated title makes each week look
+            # like a separate problem.
             gh issue create \
-              --title "HCD HAU letters dataset drifted ($(date -u +%F))" \
+              --title "HCD HAU letters dataset drifted" \
+              --label currency \
               --body "$body"
           fi
+      # An alert channel that only ever opens issues is an append-only log.
+      # Nothing records that a condition cleared, so a maintainer cannot tell
+      # a resolved alert from one nobody looked at. A green run closes what it
+      # opened, with a comment saying which run cleared it.
+      #
+      # Exit 2 deliberately does not appear here. A source that could not be
+      # downloaded is evidence about the network: it must not open an alert,
+      # and it must not close one either, because nothing was learned about
+      # the law in that run.
+      - name: Close currency alerts that have cleared
+        if: ${{ always() && (steps.watch.outputs.exit_code == '0' || steps.letters.outputs.exit_code == '0') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WATCH_EXIT: ${{ steps.watch.outputs.exit_code }}
+          LETTERS_EXIT: ${{ steps.letters.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          # $3 is an optional `--label` filter. The currency alert carries the
+          # label from the day it is opened, so its close can require it and
+          # never touch a human-filed issue that shares the heading. The
+          # letters alert predates the label (#63 and #65 were filed with
+          # dated titles and none), so its close matches on title alone and
+          # can clear that backlog.
+          close_cleared() {
+            title="$1"
+            cleared="$2"
+            gh issue list --state open --limit 20 ${3:-} \
+              --search "\"$title\" in:title" --json number --jq '.[].number' \
+            | while read -r number; do
+                [ -n "$number" ] || continue
+                gh issue comment "$number" \
+                  --body "$(printf 'Cleared on %s. %s\n\nRun: %s' \
+                    "$(date -u +%F)" "$cleared" "$run_url")"
+                gh issue close "$number" --reason completed
+                echo "closed #$number"
+              done
+          }
+          if [ "${WATCH_EXIT:-}" = "0" ]; then
+            close_cleared "Source currency review needed" \
+              "No watched source changed, no rule aged out, and no golden case regressed." \
+              "--label currency"
+          fi
+          if [ "${LETTERS_EXIT:-}" = "0" ]; then
+            close_cleared "HCD HAU letters dataset drifted" \
+              "The committed dataset matches the dashboard again."
+          fi
+          # The label keeps the class findable after a title edit.
+          gh label create currency \
+            --color B60205 \
+            --description "Opened by the weekly source currency watch" \
+            >/dev/null 2>&1 || true
+
       - name: Note that the letters dashboard could not be read
         if: steps.letters.outputs.exit_code == '2'
         run: |

@@ -130,3 +130,76 @@ def test_golden_loader_rejects_unbound_rule_dependencies(
 
     with pytest.raises(ValueError, match=message):
         load_golden(path, load_rules(RULES, today=AS_OF))
+
+
+# --- The machine-readable signal line ------------------------------------
+#
+# `python -m permit_pathways.harness` exits 1 for three different conditions:
+# a fetched source whose hash moved, a rule aged out of its review window, and
+# a golden regression. They have different owners and different urgency, and
+# the weekly workflow could only report "one of these happened" (issue #70).
+# The counts are printed so the workflow can name the condition without
+# parsing prose.
+
+
+def _signal_line(output: str) -> str:
+    lines = [
+        line for line in output.splitlines() if line.startswith("currency signals: ")
+    ]
+    assert len(lines) == 1, f"expected exactly one signal line, got {lines}"
+    return lines[0]
+
+
+def _signals(output: str) -> dict[str, int]:
+    fields = _signal_line(output).removeprefix("currency signals: ").split()
+    parsed = {}
+    for field in fields:
+        name, _, value = field.partition("=")
+        parsed[name] = int(value)
+    return parsed
+
+
+def test_harness_prints_one_machine_readable_signal_line(capsys):
+    from permit_pathways.harness.__main__ import main
+
+    exit_code = main([])
+    signals = _signals(capsys.readouterr().out)
+    assert exit_code == 0
+    assert set(signals) == {
+        "changed_sources",
+        "stale_rules",
+        "golden_regressions",
+        "unverifiable_sources",
+    }
+    # The committed state is clean, and the line is printed anyway. A signal
+    # that only appears on failure cannot be used to detect recovery.
+    assert signals == {
+        "changed_sources": 0,
+        "stale_rules": 0,
+        "golden_regressions": 0,
+        "unverifiable_sources": 0,
+    }
+
+
+def test_signal_line_counts_a_simulated_changed_source(capsys):
+    from permit_pathways.harness.__main__ import main
+
+    exit_code = main(["--assume-changed", "ca-gov-66321"])
+    signals = _signals(capsys.readouterr().out)
+    assert exit_code == 1
+    # `--assume-changed` stales dependents without claiming a fetch happened,
+    # so the changed-source count stays at what was actually fetched.
+    assert signals["changed_sources"] == 0
+    assert signals["stale_rules"] > 0
+    assert signals["golden_regressions"] == 0
+
+
+def test_signal_line_is_greppable_with_a_fixed_prefix(capsys):
+    # The workflow reads it with `sed -n 's/^currency signals: //p'`, so the
+    # prefix has to start the line and appear exactly once.
+    from permit_pathways.harness.__main__ import main
+
+    main([])
+    output = capsys.readouterr().out
+    assert output.count("currency signals: ") == 1
+    assert _signal_line(output).startswith("currency signals: changed_sources=")

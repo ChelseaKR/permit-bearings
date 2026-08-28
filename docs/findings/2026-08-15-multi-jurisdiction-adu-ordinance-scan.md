@@ -114,10 +114,14 @@ asserted here to be a violation.
    history note. The six new entries cannot: the publisher page does not state
    them, so `SOURCES.json` records the retrieval date and page digest only, and
    the operative dates are unconfirmed.
-3. **`scan_ordinances.py` re-dates every result on every run.** It takes one
+3. **`scan_ordinances.py` re-dates every result on every run.** ~~It takes one
    global `scanned_on` and rewrites all result files, including jurisdictions
    whose text was not re-retrieved. At 7 entries that is untidy; at 200 it is
-   misleading.
+   misleading.~~ **Fixed 2026-08-27.** Each result is re-derived with its own
+   recorded date first, and only the ones that come back different, or that
+   have no published result yet, take the new date. `--redate-all` covers a
+   deliberate re-retrieval of the whole corpus. Running the writer with a new
+   date against an unchanged corpus now rewrites nothing.
 4. **Text conversion is unreviewed.** Tag stripping is not the same as the
    `pdftotext` path used for San Diego, and no one has diffed the converted
    text against the rendered page.

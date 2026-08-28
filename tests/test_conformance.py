@@ -269,3 +269,114 @@ def test_conformance_cli_reports_quiet_and_flagged_results(
     output = capsys.readouterr().out
     assert "1 provision(s) flagged" in output
     assert "[FINDING] Height cap" in output
+
+
+# --- A published result is dated when it was scanned --------------------
+#
+# `docs/findings/2026-08-15-multi-jurisdiction-adu-ordinance-scan.md`,
+# weakness 3: the writer took one global `scanned_on` and stamped it on every
+# result file, including jurisdictions whose text had not been re-retrieved.
+# "At 7 entries that is untidy; at 200 it is misleading." A reader cannot
+# tell a fresh scan from a file that was rewritten in passing.
+
+
+def _scan_module():
+    from scripts import scan_ordinances
+
+    return scan_ordinances
+
+
+def test_writing_preserves_the_date_of_a_result_that_did_not_move(
+    tmp_path, monkeypatch
+):
+    scan_ordinances = _scan_module()
+    results = tmp_path / "results"
+    results.mkdir()
+    monkeypatch.setattr(scan_ordinances, "RESULTS", results)
+    monkeypatch.setattr(scan_ordinances, "INDEX", results / "index.json")
+
+    # First pass: everything is new, so everything takes the new date.
+    assert scan_ordinances.main(["2026-01-01"]) == 0
+    slugs = scan_ordinances.corpus_slugs()
+    first = {
+        slug: json.loads((results / f"{slug}.json").read_text())["scanned_on"]
+        for slug in slugs
+    }
+    assert set(first.values()) == {"2026-01-01"}
+
+    # Second pass on an unchanged corpus with a later date: nothing moved, so
+    # no date moves either.
+    assert scan_ordinances.main(["2026-09-09"]) == 0
+    second = {
+        slug: json.loads((results / f"{slug}.json").read_text())["scanned_on"]
+        for slug in slugs
+    }
+    assert second == first
+    index = json.loads((results / "index.json").read_text())
+    assert {entry["scanned_on"] for entry in index.values()} == {"2026-01-01"}
+
+
+def test_a_result_whose_findings_moved_takes_the_new_date(tmp_path, monkeypatch):
+    scan_ordinances = _scan_module()
+    results = tmp_path / "results"
+    results.mkdir()
+    monkeypatch.setattr(scan_ordinances, "RESULTS", results)
+    monkeypatch.setattr(scan_ordinances, "INDEX", results / "index.json")
+    assert scan_ordinances.main(["2026-01-01"]) == 0
+
+    slugs = scan_ordinances.corpus_slugs()
+    moved = slugs[0]
+    # Simulate a re-retrieved ordinance whose scan output differs, by editing
+    # the published result rather than the committed corpus.
+    published = json.loads((results / f"{moved}.json").read_text())
+    published["findings"] = []
+    (results / f"{moved}.json").write_text(json.dumps(published, indent=1) + "\n")
+
+    assert scan_ordinances.main(["2026-09-09"]) == 0
+    dates = {
+        slug: json.loads((results / f"{slug}.json").read_text())["scanned_on"]
+        for slug in slugs
+    }
+    assert dates[moved] == "2026-09-09"
+    for slug in slugs[1:]:
+        assert dates[slug] == "2026-01-01", f"{slug} was re-dated without moving"
+
+
+def test_a_new_jurisdiction_takes_the_new_date_without_touching_the_others(
+    tmp_path, monkeypatch
+):
+    scan_ordinances = _scan_module()
+    results = tmp_path / "results"
+    results.mkdir()
+    monkeypatch.setattr(scan_ordinances, "RESULTS", results)
+    monkeypatch.setattr(scan_ordinances, "INDEX", results / "index.json")
+    assert scan_ordinances.main(["2026-01-01"]) == 0
+
+    slugs = scan_ordinances.corpus_slugs()
+    newcomer = slugs[0]
+    (results / f"{newcomer}.json").unlink()
+
+    assert scan_ordinances.main(["2026-09-09"]) == 0
+    dates = {
+        slug: json.loads((results / f"{slug}.json").read_text())["scanned_on"]
+        for slug in slugs
+    }
+    assert dates[newcomer] == "2026-09-09"
+    for slug in slugs[1:]:
+        assert dates[slug] == "2026-01-01"
+
+
+def test_redate_all_is_available_but_has_to_be_asked_for(tmp_path, monkeypatch):
+    scan_ordinances = _scan_module()
+    results = tmp_path / "results"
+    results.mkdir()
+    monkeypatch.setattr(scan_ordinances, "RESULTS", results)
+    monkeypatch.setattr(scan_ordinances, "INDEX", results / "index.json")
+    assert scan_ordinances.main(["2026-01-01"]) == 0
+
+    assert scan_ordinances.main(["2026-09-09", "--redate-all"]) == 0
+    dates = {
+        slug: json.loads((results / f"{slug}.json").read_text())["scanned_on"]
+        for slug in scan_ordinances.corpus_slugs()
+    }
+    assert set(dates.values()) == {"2026-09-09"}
