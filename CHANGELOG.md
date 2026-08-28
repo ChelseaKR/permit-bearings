@@ -5,6 +5,57 @@ published a versioned release.
 
 ## [Unreleased]
 
+### Changed
+
+- The verification gate's scope now matches the claim it backs. `make verify`
+  was presented as local-equivalent verification while every one of its
+  checks was scoped to `src/`, leaving roughly 6,300 lines across
+  `assets/demo.js`, `demo/app.py`, and `scripts/` outside lint, strict
+  typing, Bandit, and any coverage floor, including the two files that carry
+  duplicated rule logic (issue #73).
+  - Ruff, strict mypy, and Bandit now cover `src`, `tests`, `scripts`, and
+    `demo`. `demo/app.py` is fully annotated and passes strict mypy; the two
+    `S310`/`B310` network findings in `scripts/pull_hau_letters.py` are
+    waived inline, next to the call they excuse, with the invariant that
+    makes them safe written out, rather than by a file-level entry.
+  - `src/permit_pathways/py.typed` is added. The package was strictly typed
+    and did not say so, so every script importing it was being checked
+    against `Any`.
+  - `tests/browser/` is a new Node unit suite that evaluates the shipped
+    `assets/demo.js` in a `node:vm` context with a small DOM, rather than a
+    copy of it. 65 tests cover the duplicated domains: all 29 golden cases
+    replayed through the browser's own `screen()`, the criterion semantics,
+    the 180-day staleness boundary, the ADR 0005 withdrawn-citation
+    derivation, and the review clocks, whose 60-calendar-day answers are
+    asserted against the dates `permit_pathways.clocks` produces. This is
+    the cross-runtime screening contract `docs/PRODUCT-CONTEXT.md` records
+    as known correctness risk 7.
+  - `scripts/browser-coverage.mjs` reports real V8 coverage of
+    `assets/demo.js` and enforces a floor, with no new dependency. It
+    measures 20% of lines and 17% of functions. That floor is a ratchet on a
+    file that had no coverage gate at all; it is not the Python package's
+    85%, and the README now prints both numbers separately rather than one
+    number that reads as covering the repository.
+  - `make verify` requires Node and says why. Eight cross-runtime contract
+    tests were guarded by `skipif(shutil.which("node") is None)`, so a local
+    run could pass with the browser runtime entirely untested while CI
+    called the same command "local-equivalent verification".
+  - `zizmor` runs at `min-severity: low` instead of `high`, verified clean at
+    low severity and low confidence first, so the change tightens the gate
+    without leaving a backlog.
+  - Not done, and why: the `Standards` pin still names a commit rather than a
+    released tag. `portfolio-standards` v2.0.0 keys this repository as
+    `permit-pathways`, its checker resolves the entry by checkout basename,
+    and after the GitHub rename that entry no longer matches, so pinning to
+    the tag would fall to the `restricted` publication default and fail a
+    required check on an unchanged repository. The fix is `portfolio-standards`
+    PR #97 merging and a tag being cut, which is a decision in another
+    repository. No `.standards-version` file was added, because it could only
+    name an unmerged branch commit and DOC-01 asks for a released tag.
+    Recorded in the README's CI/CD row alongside the fact that a fork pull
+    request can never pass this required check, because GitHub does not pass
+    the deploy key to fork runs (issue #74).
+
 ### Added
 
 - A watched source that could not be fetched is now recorded by kind, and a

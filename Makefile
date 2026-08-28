@@ -1,11 +1,26 @@
-.PHONY: install verify lint type test security bundle-check copy-check readability-check evidence-export-check serve-ai ai-eval
+.PHONY: install verify lint type test security bundle-check copy-check readability-check evidence-export-check browser-test require-node serve-ai ai-eval
 
 install:
 	uv sync --locked --python 3.12 --group dev --extra ai
 
+# Eight Python tests that execute `assets/demo.js` under Node are guarded by
+# `skipif(shutil.which("node") is None)`, and the browser unit suite needs Node
+# outright. Without this target `make verify` passed with the entire browser
+# runtime untested and said nothing about it, while CI called the same command
+# "local-equivalent verification". Fail loudly instead.
+require-node:
+	@command -v node >/dev/null 2>&1 || { \
+		printf '%s\n' \
+			'make verify requires Node.js 24: the browser unit suite and the' \
+			'eight cross-runtime contract tests cannot run without it, and' \
+			'skipping them silently is what this check exists to prevent.' \
+			'Install Node 24, or run the Python-only subset with `make test`.' >&2; \
+		exit 1; \
+	}
+
 lint:
-	.venv/bin/ruff check src tests
-	.venv/bin/ruff format --check src tests
+	.venv/bin/ruff check src tests scripts demo
+	.venv/bin/ruff format --check src tests scripts demo
 
 type:
 	.venv/bin/mypy
@@ -14,7 +29,7 @@ test:
 	.venv/bin/pytest
 
 security:
-	.venv/bin/bandit -q -r src
+	.venv/bin/bandit -q -r src scripts demo
 	@set -eu; \
 		runtime_requirements=$$(mktemp "$${TMPDIR:-/tmp}/permit-pathways-runtime.XXXXXX"); \
 		trap 'rm -f "$$runtime_requirements"' EXIT; \
@@ -31,6 +46,12 @@ bundle-check:
 
 copy-check:
 	node scripts/check_applicant_copy.mjs
+
+# Unit tests over the shipped `assets/demo.js`, with a real coverage floor.
+# The four duplicated domains (screening, staleness, withdrawn citations, and
+# the review clocks) are what a drift between the runtimes would break first.
+browser-test:
+	node scripts/browser-coverage.mjs
 
 # Enforced plain-language regression check: fails when English explanation
 # copy becomes harder to read than the reviewed baseline. A score can flag a
@@ -72,4 +93,4 @@ ai-eval:
 		--cases evals/ai/grounding-cases.json \
 		--output evals/ai/results/$(AI_EVAL_PREFIX)-grounding.json
 
-verify: install lint type test security bundle-check copy-check readability-check evidence-export-check
+verify: install require-node lint type test security bundle-check copy-check browser-test readability-check evidence-export-check

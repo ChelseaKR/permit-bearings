@@ -42,8 +42,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # `high` hid every medium and low workflow-security finding, which is
+      # the same defect as a gate scoped narrower than the claim it backs.
+      # Verified clean at `low` severity and `low` confidence before lowering
+      # it, so this tightens the gate without a pending backlog.
       - name: Run zizmor
         uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
         with:
           advanced-security: true
-          min-severity: high
+          min-severity: low

@@ -6,6 +6,7 @@
   },
   "scripts": {
     "test:a11y": "playwright test tests/accessibility.spec.js",
+    "test:unit": "node scripts/browser-coverage.mjs",
     "test:perf": "node --test tests/lighthouse-score.test.mjs && node scripts/lighthouse-budget.mjs"
   },
   "devDependencies": {
