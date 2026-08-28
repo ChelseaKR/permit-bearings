@@ -176,7 +176,7 @@ def _print_adopted_withdrawn_citations(args: argparse.Namespace) -> None:
         print("\n" + report)
 
 
-def main(*, today: date | None = None) -> int:
+def main(argv: list[str] | None = None, *, today: date | None = None) -> int:
     parser = argparse.ArgumentParser(prog="permit_pathways.harness")
     parser.add_argument("--rules", type=Path, default=DEFAULT_RULES)
     parser.add_argument(
@@ -219,7 +219,7 @@ def main(*, today: date | None = None) -> int:
     parser.add_argument("--receipt-method", default=None)
     parser.add_argument("--run-url", default=None)
     parser.add_argument("--commit-sha", default=None)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     _validate_snapshot_args(parser, args)
     as_of = resolve_today(args.as_of or today)
 
@@ -307,6 +307,18 @@ def main(*, today: date | None = None) -> int:
         "pass"
         if report.automated_checks_pass
         else "REVIEW NEEDED — the automated queue is not empty",
+    )
+    # One machine-readable line, printed on every run including a clean one.
+    # Exit 1 covers three conditions with different owners and different
+    # urgency, and the scheduled workflow could previously only say that one
+    # of them happened. A signal that appeared only on failure could not be
+    # used to detect recovery either, so it is unconditional. See issue #70.
+    print(
+        "\ncurrency signals:"
+        f" changed_sources={len(watch.changed) if watch is not None else 0}"
+        f" stale_rules={len(report.stale)}"
+        f" golden_regressions={len(report.golden_failed)}"
+        f" unverifiable_sources={len(unverifiable)}"
     )
     if unverifiable:
         print(_unverifiable_note(unverifiable))
