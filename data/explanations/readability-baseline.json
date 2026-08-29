@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "metric_id": "flesch-reading-ease-vowel-group-v1",
+  "generated_on": "2026-08-22",
+  "scores": {
+    "adu-conversion-exemptions": {
+      "en": 39.1
+    },
+    "adu-height-standards": {
+      "en": 50.8
+    },
+    "adu-ministerial-review": {
+      "en": 47.2
+    },
+    "adu-multifamily-66323": {
+      "en": 47.8
+    },
+    "adu-multifamily-proposed-66323": {
+      "en": 53.3
+    },
+    "adu-no-owner-occupancy-rental": {
+      "en": 51.3
+    },
+    "adu-parking-limits": {
+      "en": 44.7
+    },
+    "adu-protected-minimum": {
+      "en": 58.5
+    },
+    "adu-size-allowances": {
+      "en": 65.4
+    },
+    "adu-unpermitted-legalization": {
+      "en": 35.6
+    },
+    "davis-local-adu-process": {
+      "en": 29.5
+    },
+    "jadu-ministerial-review": {
+      "en": 45.1
+    },
+    "jadu-standards": {
+      "en": 41.8
+    },
+    "jadu-unpermitted-legalization": {
+      "en": 39.4
+    },
+    "sb9-adu-interaction": {
+      "en": 59.3
+    },
+    "sb9-lot-split-adu-interaction": {
+      "en": 41.3
+    },
+    "sb9-two-unit-ministerial": {
+      "en": 41.8
+    },
+    "sb9-urban-lot-split": {
+      "en": 43.9
+    },
+    "woodland-adu-ordinance-2026": {
+      "en": 38.3
+    }
+  }
+}

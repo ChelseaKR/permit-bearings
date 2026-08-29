@@ -1,4 +1,4 @@
-.PHONY: install verify lint type test security bundle-check copy-check evidence-export-check
+.PHONY: install verify lint type test security bundle-check readability-check copy-check evidence-export-check
 
 install:
 	uv sync --frozen --python 3.12 --group dev
@@ -28,6 +28,9 @@ bundle-check:
 	.venv/bin/python scripts/build_demo_bundle.py --check
 	PYTHONPATH=src .venv/bin/python -m permit_pathways.harness
 
+readability-check:
+	PYTHONPATH=src .venv/bin/python -m permit_pathways.readability_cli check
+
 copy-check:
 	node scripts/check_applicant_copy.mjs
 
@@ -50,4 +53,4 @@ evidence-export-check:
 			--destination "$$restored" >/dev/null; \
 		printf '%s\n' 'evidence export round trip: pass'
 
-verify: install lint type test security bundle-check copy-check evidence-export-check
+verify: install lint type test security bundle-check readability-check copy-check evidence-export-check
