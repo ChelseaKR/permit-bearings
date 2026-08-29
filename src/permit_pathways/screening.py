@@ -97,12 +97,17 @@ def _criterion_matches(actual: Any, operator: str, expected: Any) -> bool:
         return False
     if operator == "eq":
         return _same_scalar(actual, expected)
+    # ``expected`` is shape-checked at load time. Re-check it here so a
+    # directly constructed Rule fails closed instead of raising TypeError or
+    # iterating a string, which is what the browser's OPS table already does.
     if operator == "in":
-        return any(_same_scalar(actual, candidate) for candidate in expected)
+        return isinstance(expected, list) and any(
+            _same_scalar(actual, candidate) for candidate in expected
+        )
     if operator == "lte":
-        return _is_number(actual) and actual <= expected
+        return _is_number(actual) and _is_number(expected) and actual <= expected
     if operator == "gte":
-        return _is_number(actual) and actual >= expected
+        return _is_number(actual) and _is_number(expected) and actual >= expected
     # Loading rejects unsupported operators, but fail closed if a Rule is
     # constructed directly in application code.
     return False
