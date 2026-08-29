@@ -758,3 +758,97 @@ def test_rule_aggregate_and_manifest_discover_every_rule_file(tmp_path):
         "data/rules/beta.json",
     }
     assert rule_manifest(tmp_path)["files"] == ["alpha.json", "beta.json"]
+
+
+@pytest.mark.parametrize("code", [404, 410])
+def test_a_withdrawn_url_is_reported_apart_from_an_unreachable_one(
+    tmp_path,
+    monkeypatch,
+    code,
+):
+    """A 404 is the server answering, not the network failing.
+
+    Both leave dependent rules alone, because neither says the text moved.
+    But a withdrawn URL does not heal on its own and a reader following the
+    citation gets nothing, so it must not read as a transient blip. Two
+    filed issues about a dead City of Davis handout link were the cost of
+    reporting the two the same way.
+    """
+
+    payload = {
+        "https://example.gov/withdrawn": _source_meta("source-gone", b"recorded"),
+    }
+    sources_path = tmp_path / "sources.json"
+    sources_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    def handler(_url):
+        raise urllib.error.HTTPError(
+            "https://example.gov/withdrawn", code, "Not Found", {}, None
+        )
+
+    _install_urlopen(monkeypatch, handler)
+    result = check_sources(sources_path, backoff_seconds=0.0)
+
+    record = result.unverifiable["source-gone"]
+    assert record.http_status == code
+    assert record.is_withdrawn
+    assert result.withdrawn == ["source-gone"]
+    # Never escalated to changed, and dependent rules are not marked stale.
+    assert result.changed == []
+    assert result.unchanged == []
+
+    described = result.summary({"source-gone": "Withdrawn source"})
+    assert "WITHDRAWN" in described
+    assert "CHANGED" not in described
+    assert "nothing is published at the cited URL" in described
+    assert "1 withdrawn" in described
+    assert "last confirmed 2026-07-28" in described
+
+
+@pytest.mark.parametrize(
+    ("failure", "expected_status"),
+    [
+        (OSError("offline"), None),
+        (TimeoutError("timed out"), None),
+        (
+            urllib.error.HTTPError(
+                "https://example.gov/blocked", 403, "Forbidden", {}, None
+            ),
+            403,
+        ),
+        (
+            urllib.error.HTTPError(
+                "https://example.gov/blocked", 503, "Service Unavailable", {}, None
+            ),
+            503,
+        ),
+    ],
+    ids=["network-error", "timeout", "forbidden", "server-error"],
+)
+def test_transport_failures_are_never_labelled_withdrawn(
+    tmp_path,
+    monkeypatch,
+    failure,
+    expected_status,
+):
+    """Only a definitive absence counts. A block or an outage is not one."""
+
+    payload = {
+        "https://example.gov/blocked": _source_meta("source-blocked", b"recorded"),
+    }
+    sources_path = tmp_path / "sources.json"
+    sources_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    def handler(_url):
+        raise failure
+
+    _install_urlopen(monkeypatch, handler)
+    result = check_sources(sources_path, backoff_seconds=0.0)
+
+    record = result.unverifiable["source-blocked"]
+    assert record.http_status == expected_status
+    assert not record.is_withdrawn
+    assert result.withdrawn == []
+    described = result.summary({"source-blocked": "Blocked source"})
+    assert "WITHDRAWN" not in described
+    assert "could not fetch after" in described

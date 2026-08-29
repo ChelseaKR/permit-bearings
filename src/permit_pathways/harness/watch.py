@@ -19,6 +19,16 @@ avoid: a runner that gets rate-limited would otherwise report every
 statewide source as "changed" and flip every dependent rule to stale.
 Fetch failures are still reported, never swallowed — they are just
 reported as what they are.
+
+Within ``unverifiable``, one distinction is reported separately. A timeout
+or a DNS failure is evidence about the network. An HTTP 404 or 410 is the
+server answering successfully that the document is not at the cited URL —
+evidence about the citation. Both leave dependent rules alone, because
+neither says the law moved. But a withdrawn URL does not heal on its own
+and a reader following the citation gets nothing, so it is labelled
+``WITHDRAWN`` rather than folded in with transient failures. Treating the
+two identically is why a dead City of Davis handout link kept rendering
+beside a "Verified" badge until an outside harness reported it.
 """
 
 from __future__ import annotations
@@ -71,8 +81,19 @@ class FetchFailure(Exception):
 
     Raised only for transport-level outcomes. It never carries information
     about whether the document's content changed, because a failed fetch
-    tells us nothing about the content.
+    tells us nothing about the content. ``http_status`` records the response
+    code when the server answered, so a definitive absence can be told apart
+    from an unreachable host.
     """
+
+    def __init__(self, reason: str, *, http_status: int | None = None) -> None:
+        super().__init__(reason)
+        self.http_status = http_status
+
+
+# Response codes in which the server answered that nothing is at the URL.
+# Not a network problem, and not evidence that the law changed.
+WITHDRAWN_STATUSES = frozenset({404, 410})
 
 
 @dataclass(frozen=True)
@@ -88,6 +109,18 @@ class UnverifiableSource:
     reason: str
     last_verified_on: str | None
     attempts: int
+    http_status: int | None = None
+
+    @property
+    def is_withdrawn(self) -> bool:
+        """The server answered that nothing is at the cited URL.
+
+        Distinct from an unreachable host: a timeout may resolve itself, and
+        a 404 will not. Dependent rules are still not marked stale, because
+        a missing document is not evidence that the text changed.
+        """
+
+        return self.http_status in WITHDRAWN_STATUSES
 
     def describe(self) -> str:
         confirmed = (
@@ -95,6 +128,14 @@ class UnverifiableSource:
             if self.last_verified_on
             else "no recorded verification date"
         )
+        if self.is_withdrawn:
+            return (
+                f"the server answered {self.reason}: nothing is published at "
+                f"the cited URL; {confirmed}; a reader following this citation "
+                "gets nothing. Recorded hash and dependent rules unchanged — "
+                "a withdrawn URL is not evidence that the text changed. "
+                "Repoint the citation or record the source as retained-only."
+            )
         return (
             f"could not fetch after {self.attempts} "
             f"attempt{'' if self.attempts == 1 else 's'} ({self.reason}); "
@@ -117,11 +158,23 @@ class WatchResult:
     def checked(self) -> int:
         return len(self.unchanged) + len(self.changed) + len(self.unverifiable)
 
+    @property
+    def withdrawn(self) -> list[str]:
+        """Sources whose server answered that the URL holds nothing."""
+
+        return sorted(
+            source_id
+            for source_id, record in self.unverifiable.items()
+            if record.is_withdrawn
+        )
+
     def summary(self, labels: dict[str, str]) -> str:
+        withdrawn = set(self.withdrawn)
         lines = [
             "Source currency check",
             f"  {len(self.unchanged)} unchanged, {len(self.changed)} changed, "
-            f"{len(self.unverifiable)} unverifiable "
+            f"{len(self.unverifiable) - len(withdrawn)} unverifiable, "
+            f"{len(withdrawn)} withdrawn "
             f"(of {self.checked} watched sources)",
         ]
         for source_id in self.unchanged:
@@ -135,8 +188,9 @@ class WatchResult:
                 f"re-verify dependent rules"
             )
         for source_id, unverifiable in self.unverifiable.items():
+            label = "WITHDRAWN:   " if source_id in withdrawn else "unverifiable:"
             lines.append(
-                f"  unverifiable: {labels.get(source_id, source_id)} "
+                f"  {label} {labels.get(source_id, source_id)} "
                 f"[{source_id}] — {unverifiable.describe()}"
             )
         return "\n".join(lines)
@@ -283,7 +337,7 @@ def _fetch_once(source: SourceRecord) -> bytes:
             # Belt and braces: urlopen already raises HTTPError for non-2xx,
             # but a redirect handler can surface one here too. A non-2xx body
             # is an error page, never the statute text.
-            raise FetchFailure(f"HTTP {status}")
+            raise FetchFailure(f"HTTP {status}", http_status=int(status))
         return cast(bytes, resp.read())
 
 
@@ -305,18 +359,23 @@ def fetch_digest(
     backoff = FETCH_BACKOFF_SECONDS if backoff_seconds is None else backoff_seconds
     budget = max(1, budget)
     reason = "no attempt was made"
+    http_status: int | None = None
     for attempt in range(1, budget + 1):
         try:
             return normalized_digest(_fetch_once(source), source.normalize)
         except FetchFailure as error:
             reason = str(error)
+            http_status = error.http_status
         except Exception as error:
             # Deliberately broad: one dead source must not end the run, and
             # every transport outcome maps to "unverifiable", not "changed".
             reason = _describe_fetch_error(error)
+            http_status = (
+                error.code if isinstance(error, urllib.error.HTTPError) else None
+            )
         if attempt < budget:
             time.sleep(backoff * (2 ** (attempt - 1)))
-    raise FetchFailure(reason)
+    raise FetchFailure(reason, http_status=http_status)
 
 
 def check_sources(
@@ -350,6 +409,7 @@ def check_sources(
                 reason=str(failure),
                 last_verified_on=source.fetched_on,
                 attempts=budget,
+                http_status=failure.http_status,
             )
             continue
         result.observed_digests[source_id] = digest
