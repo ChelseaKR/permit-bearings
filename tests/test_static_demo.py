@@ -289,6 +289,94 @@ def test_static_pages_have_consistent_navigation_and_resolvable_links():
             assert (ROOT / local_target).is_file(), (path.name, target)
 
 
+def test_every_static_page_names_itself_and_not_the_shared_origin():
+    """Every page carries a self-referencing canonical and a complete social card.
+
+    These five pages are served from `chelseakr.github.io`, an origin shared with five
+    other unrelated project sites, on a PATH rather than on a domain of their own. That
+    makes the usual single-domain shorthands actively wrong here rather than merely
+    sloppy: a canonical of "/" resolves to `https://chelseakr.github.io/`, which is not
+    this site's root but a different address that 404s, and every one of the six sites
+    would claim it. A crawler that believes them folds six projects into one document.
+
+    Until this test, only `index.html` was checked (below, in
+    `test_landing_page_social_metadata`), and it was the only page that had a canonical
+    at all. The other four had `og:title`/`og:description`/`og:type` and nothing to say
+    which URL they described or which image to show, so a shared link previewed as a
+    bare URL with no card.
+
+    Each assertion names the page, because a loop that fails without saying which of
+    five files broke is a loop that gets debugged by bisecting the directory.
+    """
+    card = "https://chelseakr.github.io/permit-bearings/assets/social-card.png"
+    pages = {
+        ROOT / "index.html": "https://chelseakr.github.io/permit-bearings/",
+        ROOT / "check.html": "https://chelseakr.github.io/permit-bearings/check.html",
+        ROOT
+        / "prepare.html": "https://chelseakr.github.io/permit-bearings/prepare.html",
+        ROOT / "review.html": "https://chelseakr.github.io/permit-bearings/review.html",
+        ROOT
+        / "evidence.html": "https://chelseakr.github.io/permit-bearings/evidence.html",
+    }
+    for path, url in pages.items():
+        html = path.read_text(encoding="utf-8")
+        where = path.name
+
+        canonical = re.search(r'<link rel="canonical" href="([^"]*)">', html)
+        assert canonical, f"{where} has no canonical URL"
+        assert canonical.group(1) == url, (
+            f"{where} canonicalises to {canonical.group(1)!r}, not {url!r}"
+        )
+
+        def meta(attribute, name, *, page=html, where=where):
+            found = re.search(rf'<meta {attribute}="{name}" content="([^"]*)">', page)
+            assert found, f"{where} has no {name}"
+            return found.group(1)
+
+        # The canonical and og:url are the same page, and neither is the bare origin
+        # the six sites share.
+        assert meta("property", "og:url") == url, (
+            f"{where} og:url disagrees with canonical"
+        )
+        for value in (canonical.group(1), meta("property", "og:url")):
+            assert value.rstrip("/") != "https://chelseakr.github.io", (
+                f"{where} points at the shared origin, which is a different site"
+            )
+            assert "/permit-bearings/" in value, (
+                f"{where}: {value!r} omits the project path"
+            )
+
+        # A card that promises a large image has to carry one, absolute, and it has to
+        # be a file this repository actually ships.
+        assert meta("name", "twitter:card") == "summary_large_image", where
+        for name, attribute in (("og:image", "property"), ("twitter:image", "name")):
+            assert meta(attribute, name) == card, (
+                f"{where} {name} is not the social card"
+            )
+        assert (ROOT / "assets" / "social-card.png").is_file()
+
+        # An image on a card is an image a screen reader still has to announce.
+        assert meta("property", "og:image:alt").strip(), (
+            f"{where} og:image:alt is empty"
+        )
+        assert meta("name", "twitter:image:alt").strip(), (
+            f"{where} twitter:image:alt is empty"
+        )
+
+        # The card repeats the page, rather than inventing a second description of it.
+        title = re.search(r"<title>([^<]*)</title>", html)
+        assert title, f"{where} has no title"
+        assert meta("property", "og:title") == title.group(1), (
+            f"{where} og:title disagrees with <title>"
+        )
+        assert meta("name", "twitter:title") == meta("property", "og:title"), where
+        assert meta("name", "twitter:description") == meta(
+            "property", "og:description"
+        ), where
+        assert meta("property", "og:type") == "website", where
+        assert meta("property", "og:site_name") == "Permit Bearings", where
+
+
 def _webp_dimensions(asset):
     data = asset.read_bytes()
     assert data[:4] == b"RIFF"
