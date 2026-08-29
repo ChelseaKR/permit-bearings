@@ -184,3 +184,149 @@ def test_corpus_hq_dataset_loads_and_contains_davis_amtrak():
         and haversine_miles(s.lat, s.lon, 38.5436, -121.7377) < 0.2
     ]
     assert depot, "Davis Amtrak depot present as a major rail stop"
+
+
+def _hq(details: str, lat: float = 38.5449, lon: float = -121.7405, **kw):
+    from permit_pathways.transit import HQStop
+
+    return HQStop(
+        lat=lat,
+        lon=lon,
+        hqta_type=kw.get("hqta_type", "major_stop_bus"),
+        details=details,
+        agency=kw.get("agency", "Yolo TD"),
+    )
+
+
+def test_planned_rtp_stop_never_supports_an_affirmative_result():
+    """hqta_details marks 3,125 major-stop rows as planned, not built.
+
+    Screening on hqta_type alone stated in the present tense that a facility
+    programmed in an MPO plan "is a major transit stop".
+    """
+
+    from permit_pathways.transit import determine
+
+    planned = _hq("mpo_rtp_planned_major_stop")
+    d = determine(38.5449, -121.7405, [], hq_stops=[planned])
+
+    assert d.height_18ft == "planned_only"
+    assert d.parking_exemption == "planned_only"
+    reason = d.qualifying_stops[0][2]
+    assert "PLANNED" in reason
+    assert "mpo_rtp_planned_major_stop" in reason
+    summary = d.summary()
+    assert "NOT ESTABLISHED BY AN EXISTING STOP" in summary
+    assert "NOT ESTABLISHED BY EXISTING TRANSIT" in summary
+
+
+def test_an_existing_stop_outranks_a_nearer_planned_one():
+    """The cited reason must name a facility that exists, when one qualifies."""
+
+    from permit_pathways.transit import determine
+
+    planned = _hq("mpo_rtp_planned_major_stop", lat=38.5449, lon=-121.7405)
+    existing = _hq(
+        "major_stop_rail_single_operator",
+        lat=38.5436,
+        lon=-121.7377,
+        hqta_type="major_stop_rail",
+        agency="Amtrak",
+    )
+    d = determine(38.5449, -121.7405, [], hq_stops=[planned, existing])
+
+    assert d.height_18ft == "candidate"
+    cited_stop, cited_miles, cited_reason = d.qualifying_stops[0]
+    assert "Amtrak" in cited_stop.name
+    assert "PLANNED" not in cited_reason
+    # The planned entry is nearer and is still reported, never dropped.
+    assert cited_miles > d.qualifying_stops[1][1]
+    assert "PLANNED" in d.qualifying_stops[1][2]
+
+
+def test_unrecorded_hqta_details_is_unknown_not_assumed_existing():
+    from permit_pathways.transit import determine
+
+    for details in ("", "some_value_added_after_this_was_written"):
+        d = determine(38.5449, -121.7405, [], hq_stops=[_hq(details)])
+        assert d.height_18ft == "planned_only", details
+        assert "no recorded hqta_details" in d.qualifying_stops[0][2]
+        assert "does not say whether this facility exists" in d.summary()
+
+
+def test_planned_flag_reads_the_dataset_field_not_the_type():
+    from permit_pathways.transit import HQStop
+
+    planned = _hq("mpo_rtp_planned_major_stop")
+    assert planned.is_major and planned.is_planned
+    assert not planned.existence_is_recorded
+
+    built = _hq("intersection_2_bus_routes_same_operator")
+    assert built.is_major and not built.is_planned
+    assert built.existence_is_recorded
+
+    assert isinstance(HQStop.is_planned, property)
+
+
+def test_corpus_actually_contains_planned_major_stops():
+    """A guard against data that no longer exercises it is not a guard."""
+
+    from permit_pathways.transit import load_hq_stops
+
+    path = (
+        Path(__file__).parent.parent / "corpus" / "transit" / "ca-hq-transit-stops.json"
+    )
+    hq = load_hq_stops(path)
+    major = [s for s in hq if s.is_major]
+    planned = [s for s in major if s.is_planned]
+    assert planned, "corpus no longer exercises the planned-stop path"
+    assert len(planned) < len(major), "corpus has no existing major stops left"
+
+
+def test_documented_davis_command_cites_an_existing_stop():
+    """The README's own example used to cite a planned Yolo TD entry.
+
+    Seven planned rows sit between 0.118 and 0.296 mi of this coordinate; the
+    existing rail major stops are at about 0.36 mi. Both are inside the half
+    mile, so the verdict survives either way — but the stop named as the
+    reason must be one that exists.
+    """
+
+    from permit_pathways.transit import determine, load_feed, load_hq_stops
+
+    root = Path(__file__).parent.parent
+    stops = load_feed(root / "corpus" / "gtfs" / "unitrans.zip")
+    hq = load_hq_stops(root / "corpus" / "transit" / "ca-hq-transit-stops.json")
+    d = determine(38.5449, -121.7442, stops, hq_stops=hq)
+
+    assert d.height_18ft == "candidate"
+    _, _, reason = d.qualifying_stops[0]
+    assert "PLANNED" not in reason
+    assert "mpo_rtp_planned_major_stop" not in reason
+    assert "major_stop_rail" in reason
+    planned_reasons = [r for _, _, r in d.qualifying_stops if "PLANNED" in r]
+    assert planned_reasons, "planned entries must still be reported, not dropped"
+
+
+def test_every_corpus_detail_value_is_classified():
+    """A dataset refresh must not silently downgrade every stop to unknown.
+
+    ``existence_is_recorded`` whitelists the values observed in the committed
+    corpus. That fails safe, but only if a new value is noticed: this names
+    it instead of letting the tool quietly stop finding candidates.
+    """
+
+    import json
+
+    from permit_pathways.transit import EXISTING_DETAILS, PLANNED_DETAILS
+
+    path = (
+        Path(__file__).parent.parent / "corpus" / "transit" / "ca-hq-transit-stops.json"
+    )
+    observed = {row[3] for row in json.loads(path.read_text())["stops"]}
+    unclassified = sorted(observed - EXISTING_DETAILS - PLANNED_DETAILS)
+    assert not unclassified, (
+        "unclassified hqta_details value(s) "
+        f"{unclassified}: decide whether each describes an existing or a "
+        "planned facility and add it to the matching set"
+    )

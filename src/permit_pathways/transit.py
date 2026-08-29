@@ -249,6 +249,29 @@ def _is_major_stop(stop: StopService, all_stops: list[StopService]) -> bool:
     return len(routes) >= 2
 
 
+# hqta_details marks a Caltrans/Cal-ITP HQTA row as programmed in an MPO
+# Regional Transportation Plan rather than built.
+PLANNED_DETAILS = frozenset({"mpo_rtp_planned_major_stop"})
+
+# The values in the committed corpus that describe a facility already in
+# service. This is a whitelist, not a blacklist, so a value added by a future
+# dataset release is reported as unknown rather than assumed to exist. That
+# direction is deliberate: assuming existence is the defect this replaces, and
+# ``test_every_corpus_detail_value_is_classified`` turns a new value into a
+# named test failure instead of a silent downgrade.
+EXISTING_DETAILS = frozenset(
+    {
+        "major_stop_rail_single_operator",
+        "major_stop_brt_single_operator",
+        "major_stop_ferry_single_operator",
+        "intersection_2_bus_routes_same_operator",
+        "intersection_2_bus_routes_different_operators",
+        "corridor_frequent_stop",
+        "corridor_other_stop",
+    }
+)
+
+
 @dataclass(frozen=True)
 class HQStop:
     """A stop from the Caltrans/Cal-ITP statewide High Quality Transit
@@ -261,12 +284,38 @@ class HQStop:
     lon: float
     hqta_type: str  # major_stop_rail | major_stop_brt | major_stop_ferry
     # | major_stop_bus | hq_corridor_bus
+    # hqta_details, e.g. major_stop_rail_single_operator,
+    # intersection_2_bus_routes_same_operator, mpo_rtp_planned_major_stop
     details: str
     agency: str
 
     @property
     def is_major(self) -> bool:
         return self.hqta_type.startswith("major_stop")
+
+    @property
+    def is_planned(self) -> bool:
+        """True when the dataset marks this row as programmed, not built.
+
+        ``hqta_details`` is the field that separates a built facility from
+        one that only appears in an MPO Regional Transportation Plan. In the
+        committed corpus 3,125 of 20,240 ``major_stop_*`` rows carry
+        ``mpo_rtp_planned_major_stop``. Reading ``hqta_type`` alone presents
+        every one of them as an existing stop.
+        """
+
+        return self.details in PLANNED_DETAILS
+
+    @property
+    def existence_is_recorded(self) -> bool:
+        """True only when the dataset positively records a built facility.
+
+        A blank or unrecognised ``hqta_details`` is not evidence that the
+        stop exists. It is reported as unknown rather than assumed, which is
+        the same posture the rest of this repository takes toward gaps.
+        """
+
+        return self.details in EXISTING_DETAILS
 
 
 def load_hq_stops(path: Path) -> list[HQStop]:
@@ -300,8 +349,13 @@ def load_hq_stops(path: Path) -> list[HQStop]:
 class Determination:
     nearest_stop: StopService | None
     nearest_miles: float | None
-    parking_exemption: str  # "candidate" | "no"
-    height_18ft: str  # "candidate" | "no"
+    # "candidate" requires a stop the supplied data records as existing.
+    # "planned_only" means the sole support within a half mile is a facility
+    # the dataset marks as programmed, not built. "no" means neither.
+    parking_exemption: str  # "candidate" | "planned_only" | "no"
+    height_18ft: str  # "candidate" | "planned_only" | "no"
+    # Ordered existing-first, then by distance, so the cited reason names a
+    # facility that exists whenever one qualifies.
     qualifying_stops: list[tuple[StopService, float, str]]
 
     def summary(self) -> str:
@@ -316,6 +370,13 @@ class Determination:
                 "Parking exemption (Gov. Code § 66322(a)(1)): CANDIDATE — public "
                 "transit within a half mile straight-line; confirm walking distance."
             )
+        elif self.parking_exemption == "planned_only":
+            lines.append(
+                "Parking exemption (Gov. Code § 66322(a)(1)): NOT ESTABLISHED BY "
+                "EXISTING TRANSIT — the only transit within a half mile in the "
+                "supplied data is marked planned, not built. Confirm with the "
+                "operator and the MPO before relying on this."
+            )
         else:
             lines.append(
                 "Parking exemption (Gov. Code § 66322(a)(1)): NO CANDIDATE FOUND "
@@ -327,6 +388,14 @@ class Determination:
             lines.append(
                 f"18-ft height allowance (Gov. Code § 66321(b)(4)(B)): CANDIDATE — "
                 f"{stop.name} ({miles:.2f} mi) is a {reason}; confirm walking distance."
+            )
+        elif self.height_18ft == "planned_only":
+            stop, miles, reason = self.qualifying_stops[0]
+            lines.append(
+                f"18-ft height allowance (Gov. Code § 66321(b)(4)(B)): NOT "
+                f"ESTABLISHED BY AN EXISTING STOP — the nearest qualifying entry "
+                f"is {stop.name} ({miles:.2f} mi), a {reason}. No stop the supplied "
+                f"data records as built qualifies within a half mile."
             )
         else:
             lines.append(
@@ -356,61 +425,100 @@ def determine(
     )
     nearest, nearest_miles = with_dist[0] if with_dist else (None, None)
 
-    qualifying: list[tuple[StopService, float, str]] = []
+    # rank 0 = the supplied data records the stop as existing; rank 1 = it
+    # does not. Sorting on rank first keeps a planned facility from becoming
+    # the reason cited for an affirmative screening statement.
+    ranked: list[tuple[int, StopService, float, str]] = []
     for stop, miles in with_dist:
         if miles > HALF_MILE:
             break
         if _is_major_stop(stop, stops):
-            qualifying.append(
-                (stop, miles, "major transit stop (PRC § 21064.3, from feed headways)")
+            ranked.append(
+                (
+                    0,
+                    stop,
+                    miles,
+                    "major transit stop (PRC § 21064.3, from feed headways)",
+                )
             )
         elif stop.hqtc_routes():
-            qualifying.append(
+            ranked.append(
                 (
+                    0,
                     stop,
                     miles,
                     "high-quality transit corridor stop (PRC § 21155(b), from feed headways)",
                 )
             )
 
-    hq_within = []
+    hq_within: list[tuple[HQStop, float]] = []
     for hq in hq_stops or []:
         miles = haversine_miles(lat, lon, hq.lat, hq.lon)
         if miles > HALF_MILE:
             continue
         hq_within.append((hq, miles))
-        label = (
-            "major transit stop"
-            if hq.is_major
-            else "high-quality transit corridor stop"
-        )
         stop_view = StopService(
             stop_id=f"hq:{hq.hqta_type}",
             name=f"{hq.agency} ({hq.hqta_type})",
             lat=hq.lat,
             lon=hq.lon,
         )
-        qualifying.append(
+        ranked.append(
             (
+                0 if hq.existence_is_recorded else 1,
                 stop_view,
                 miles,
-                f"{label} (Caltrans HQ Transit Stops dataset: {hq.hqta_type})",
+                _hq_reason(hq),
             )
         )
 
-    qualifying.sort(key=lambda x: x[1])
-    parking = (
-        "candidate"
-        if ((nearest_miles is not None and nearest_miles <= HALF_MILE) or hq_within)
-        else "no"
-    )
+    ranked.sort(key=lambda entry: (entry[0], entry[2]))
+    qualifying = [(stop, miles, reason) for _, stop, miles, reason in ranked]
+
+    feed_stop_within = nearest_miles is not None and nearest_miles <= HALF_MILE
     return Determination(
         nearest_stop=nearest,
         nearest_miles=nearest_miles,
-        parking_exemption=parking,
-        height_18ft="candidate" if qualifying else "no",
+        parking_exemption=_three_state(
+            existing=feed_stop_within
+            or any(hq.existence_is_recorded for hq, _ in hq_within),
+            any_support=bool(hq_within) or feed_stop_within,
+        ),
+        height_18ft=_three_state(
+            existing=any(rank == 0 for rank, _, _, _ in ranked),
+            any_support=bool(ranked),
+        ),
         qualifying_stops=qualifying,
     )
+
+
+def _three_state(*, existing: bool, any_support: bool) -> str:
+    """Never report a candidate on planned infrastructure alone."""
+
+    if existing:
+        return "candidate"
+    return "planned_only" if any_support else "no"
+
+
+def _hq_reason(hq: HQStop) -> str:
+    """Describe an HQTA row without asserting more than the dataset records."""
+
+    label = (
+        "major transit stop" if hq.is_major else "high-quality transit corridor stop"
+    )
+    provenance = f"Caltrans HQ Transit Stops dataset: {hq.hqta_type}"
+    if hq.is_planned:
+        return (
+            f"PLANNED {label}, not an existing facility "
+            f"({provenance}; hqta_details={hq.details}) — programmed in an MPO "
+            "regional transportation plan; confirm with the operator and MPO"
+        )
+    if not hq.existence_is_recorded:
+        return (
+            f"{label} with no recorded hqta_details ({provenance}) — the supplied "
+            "data does not say whether this facility exists yet"
+        )
+    return f"{label} ({provenance}; hqta_details={hq.details})"
 
 
 def main() -> int:
