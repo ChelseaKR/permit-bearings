@@ -5,10 +5,11 @@ embedded at hcd.ca.gov/hau/enforcement-letters), queried via the public
 report API. Raw rows are preserved at corpus/hcd/hau-letters-raw.json.
 Usage: python3 scripts/build_hcd_letters.py <retrieved-on-ISO>
 """
+
 import json
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,17 +17,23 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def slugify(name):
     import unicodedata
+
     name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
     return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
 
 
 def main(retrieved_on):
     raw = json.loads((ROOT / "corpus/hcd/hau-letters-raw.json").read_text())
-    registry = json.loads(
-        (ROOT / "data/jurisdictions/registry.json").read_text())["jurisdictions"]
+    registry = json.loads((ROOT / "data/jurisdictions/registry.json").read_text())[
+        "jurisdictions"
+    ]
     known = {j["slug"] for j in registry}
-    aliases = {"carmel": "carmel-by-the-sea", "saint-helena": "st-helena",
-               "angels-camp": "angels", "la-ca-ada-flintridge": "la-canada-flintridge"}
+    aliases = {
+        "carmel": "carmel-by-the-sea",
+        "saint-helena": "st-helena",
+        "angels-camp": "angels",
+        "la-ca-ada-flintridge": "la-canada-flintridge",
+    }
     for j in registry:
         if j["kind"] == "county":
             aliases[slugify(j["name"].replace(" County", ""))] = j["slug"]
@@ -37,8 +44,9 @@ def main(retrieved_on):
     for row in raw["rows"]:
         name = (row[idx["G0"]] or "").strip()
         ms = row[idx["G1"]]
-        date = (datetime.fromtimestamp(ms / 1000, tz=timezone.utc)
-                .date().isoformat() if ms else None)
+        date = (
+            datetime.fromtimestamp(ms / 1000, tz=UTC).date().isoformat() if ms else None
+        )
         rec = {
             "date": date,
             "kind": row[idx["G2"]] or "letter",
@@ -60,13 +68,15 @@ def main(retrieved_on):
         recs.sort(key=lambda r: r["date"] or "", reverse=True)
 
     out = {
-        "source": ("HCD Housing Accountability Unit letter dashboard "
-                   "(hcd.ca.gov/hau/enforcement-letters), full public dataset "
-                   f"retrieved {retrieved_on}; raw rows preserved at "
-                   "corpus/hcd/hau-letters-raw.json. Letters addressed to no "
-                   "single jurisdiction are under _statewide; rows whose "
-                   "jurisdiction could not be matched to the Census registry "
-                   "are under _unmatched."),
+        "source": (
+            "HCD Housing Accountability Unit letter dashboard "
+            "(hcd.ca.gov/hau/enforcement-letters), full public dataset "
+            f"retrieved {retrieved_on}; raw rows preserved at "
+            "corpus/hcd/hau-letters-raw.json. Letters addressed to no "
+            "single jurisdiction are under _statewide; rows whose "
+            "jurisdiction could not be matched to the Census registry "
+            "are under _unmatched."
+        ),
         "retrieved_on": retrieved_on,
         "letter_count": len(raw["rows"]),
         "letters": letters,
@@ -77,9 +87,11 @@ def main(retrieved_on):
     dest.write_text(json.dumps(out, indent=1) + "\n")
     n_matched = sum(len(v) for v in letters.values())
     n_unmatched = sum(len(v) for v in unmatched.values())
-    print(f"total {len(raw['rows'])}: {n_matched} matched to "
-          f"{len(letters)} jurisdictions, {len(statewide)} statewide, "
-          f"{n_unmatched} unmatched ({sorted(unmatched)[:10]}...)")
+    print(
+        f"total {len(raw['rows'])}: {n_matched} matched to "
+        f"{len(letters)} jurisdictions, {len(statewide)} statewide, "
+        f"{n_unmatched} unmatched ({sorted(unmatched)[:10]}...)"
+    )
     print(f"wrote {dest} ({dest.stat().st_size} bytes)")
 
 

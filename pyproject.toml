@@ -43,6 +43,9 @@ max-complexity = 10
 
 [tool.ruff.lint.per-file-ignores]
 "src/permit_pathways/harness/watch.py" = ["S310"]
+# Same decision as watch.py: the URL is a module constant naming HCD's
+# published https endpoint, so no caller can supply a file: or custom scheme.
+"scripts/pull_hau_letters.py" = ["S310"]
 "tests/**" = ["S101", "S603", "S607"]
 
 [tool.mypy]

@@ -100,13 +100,17 @@ def _validate_readiness_ids(
     if workflow.workflow_id != entry.workflow_id:
         raise ValueError(f"{entry.workflow_id}: registered workflow ID does not match")
     if packet.workflow_id != entry.workflow_id:
-        raise ValueError(f"{entry.workflow_id}: registered packet workflow ID does not match")
+        raise ValueError(
+            f"{entry.workflow_id}: registered packet workflow ID does not match"
+        )
     if packet.packet_id != entry.packet_id:
         raise ValueError(f"{entry.workflow_id}: registered packet ID does not match")
     if workflow.jurisdiction != entry.jurisdiction:
         raise ValueError(f"{entry.workflow_id}: registered jurisdiction does not match")
     if packet.jurisdiction != entry.jurisdiction:
-        raise ValueError(f"{entry.workflow_id}: registered packet jurisdiction does not match")
+        raise ValueError(
+            f"{entry.workflow_id}: registered packet jurisdiction does not match"
+        )
 
 
 def _registered_program_availability(
@@ -194,8 +198,7 @@ def _canonical_readiness_records(
         evaluation_date = date.fromisoformat(canonical_evaluated_on)
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError(
-            f"{selected.artifacts.readiness_packet.path}: "
-            "invalid packet.evaluated_on"
+            f"{selected.artifacts.readiness_packet.path}: invalid packet.evaluated_on"
         ) from error
     workflow, packet, result = load_and_evaluate_readiness(
         workflow_path,
@@ -495,8 +498,8 @@ def build_bundle(
     payload["rules"] = aggregate_rules
     payload["rule_manifest"] = rule_manifest(root)
     payload["coverage_index"] = build_coverage_index_payload(root)
-    default_readiness, default_journey, workflow_digests = (
-        _build_registered_payloads(root, registry, records)
+    default_readiness, default_journey, workflow_digests = _build_registered_payloads(
+        root, registry, records
     )
     digests.update(workflow_digests)
     payload["readiness"] = default_readiness

@@ -12,6 +12,7 @@ Usage:
 If the resource key changes (HCD republishes the report), re-read the
 embed URL from the dashboard page and update RESOURCE_KEY.
 """
+
 import json
 import sys
 import urllib.request
@@ -23,38 +24,79 @@ RESOURCE_KEY = "049c27c4-70aa-45c0-8ebd-5a224d4b44ed"
 HOST = "https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net"
 MODEL_ID = 971938
 DATASET_ID = "5b74754d-30f9-4464-b563-44ee27833da2"
-COLS = ["u_jurisdiction_1_display_value", "U_DATE_completed_display_value",
-        "u_type_display_value", "u_type_of_request_display_value",
-        "u_hcd_authority_display_value", "u_statutory_references_display_value",
-        "u_keywords_display_value", "u_letter_url_display_value",
-        "u_executive_summary_display_value", "number_display_value"]
+COLS = [
+    "u_jurisdiction_1_display_value",
+    "U_DATE_completed_display_value",
+    "u_type_display_value",
+    "u_type_of_request_display_value",
+    "u_hcd_authority_display_value",
+    "u_statutory_references_display_value",
+    "u_keywords_display_value",
+    "u_letter_url_display_value",
+    "u_executive_summary_display_value",
+    "number_display_value",
+]
 
 
 def query():
-    select = [{"Column": {"Expression": {"SourceRef": {"Source": "s"}},
-                          "Property": c}, "Name": f"c{i}"}
-              for i, c in enumerate(COLS)]
+    select = [
+        {
+            "Column": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": c},
+            "Name": f"c{i}",
+        }
+        for i, c in enumerate(COLS)
+    ]
     payload = {
         "version": "1.0.0",
-        "queries": [{
-            "Query": {"Commands": [{"SemanticQueryDataShapeCommand": {
-                "Query": {"Version": 2,
-                          "From": [{"Name": "s", "Entity": "Source", "Type": 0}],
-                          "Select": select},
-                "Binding": {
-                    "Primary": {"Groupings": [{"Projections": list(range(len(COLS)))}]},
-                    "DataReduction": {"DataVolume": 6,
-                                      "Primary": {"Window": {"Count": 30000}}},
-                    "Version": 1}}}]},
-            "QueryId": "",
-            "ApplicationContext": {"DatasetId": DATASET_ID}}],
-        "cancelQueries": [], "modelId": MODEL_ID}
+        "queries": [
+            {
+                "Query": {
+                    "Commands": [
+                        {
+                            "SemanticQueryDataShapeCommand": {
+                                "Query": {
+                                    "Version": 2,
+                                    "From": [
+                                        {"Name": "s", "Entity": "Source", "Type": 0}
+                                    ],
+                                    "Select": select,
+                                },
+                                "Binding": {
+                                    "Primary": {
+                                        "Groupings": [
+                                            {"Projections": list(range(len(COLS)))}
+                                        ]
+                                    },
+                                    "DataReduction": {
+                                        "DataVolume": 6,
+                                        "Primary": {"Window": {"Count": 30000}},
+                                    },
+                                    "Version": 1,
+                                },
+                            }
+                        }
+                    ]
+                },
+                "QueryId": "",
+                "ApplicationContext": {"DatasetId": DATASET_ID},
+            }
+        ],
+        "cancelQueries": [],
+        "modelId": MODEL_ID,
+    }
     req = urllib.request.Request(
         HOST + "/public/reports/querydata?synchronous=true",
         data=json.dumps(payload).encode(),
-        headers={"X-PowerBI-ResourceKey": RESOURCE_KEY,
-                 "Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=120) as resp:
+        headers={
+            "X-PowerBI-ResourceKey": RESOURCE_KEY,
+            "Content-Type": "application/json",
+        },
+    )
+    # HOST is a module constant naming HCD's published Power BI endpoint over
+    # https. No caller-supplied value reaches the scheme, so the file:/custom
+    # scheme risk B310 warns about cannot arise here. Same decision, and the
+    # same reasoning, as the waiver on harness/watch.py.
+    with urllib.request.urlopen(req, timeout=120) as resp:  # nosec B310
         return json.load(resp)
 
 
@@ -76,7 +118,8 @@ def decode(data):
             elif rbits >> i & 1:
                 vals.append(prev[i])
             else:
-                v = c[ci]; ci += 1
+                v = c[ci]
+                ci += 1
                 dn = col.get("DN")
                 if dn is not None and isinstance(v, int):
                     v = dicts[dn][v]
@@ -90,12 +133,16 @@ def main() -> int:
     check_only = "--check" in sys.argv
     fresh = decode(query())
     current = json.loads(RAW.read_text()) if RAW.exists() else {"rows": []}
+
     def key(rows):  # order-insensitive: the API's row order is not contractual
         return sorted(json.dumps(r, sort_keys=True) for r in rows)
+
     same = key(fresh["rows"]) == key(current.get("rows", []))
-    print(f"dashboard rows: {len(fresh['rows'])}; "
-          f"committed rows: {len(current.get('rows', []))}; "
-          f"{'unchanged' if same else 'CHANGED'}")
+    print(
+        f"dashboard rows: {len(fresh['rows'])}; "
+        f"committed rows: {len(current.get('rows', []))}; "
+        f"{'unchanged' if same else 'CHANGED'}"
+    )
     if check_only:
         return 3 if not same else 0
     RAW.write_text(json.dumps(fresh))
