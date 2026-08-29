@@ -7,6 +7,29 @@ published a versioned release.
 
 ### Changed
 
+- The committed `protect-main` ruleset now records the repository owner's
+  standing bypass, which the live ruleset has had all along.
+  `.github/rulesets/main.json` declared `"bypass_actors": []` while live
+  ruleset `20017370` carried `{"actor_id": 5, "actor_type": "RepositoryRole",
+  "bypass_mode": "always"}` and reported `"current_user_can_bypass": "always"`.
+  The committed file is the one somebody re-applies, which is what made the
+  mismatch a hazard rather than a stale line: an agent once applied a ruleset
+  with no bypass and locked the owner out of their own repository, and
+  restoring access took a sweep across eighteen repositories. Re-applying this
+  file as it stood would have reproduced that, and the empty list would have
+  looked like the careful choice while doing it. The file changed to match
+  reality; no live ruleset or repository setting was touched.
+  - A new `.github/rulesets/README.md` records why the bypass exists, what it
+    is not (a relaxed merge policy — every change still goes through a pull
+    request with the eight required contexts green), and how to check
+    `current_user_can_bypass` after re-applying the file.
+  - `tests/test_repository_ruleset.py` holds the committed file and the live
+    ruleset against that one actor independently rather than comparing the two
+    to each other. Comparing them would report conformance on the day both
+    were emptied together, which is the incident recurring with a green tick
+    on it; that case is a test, and it must produce two findings rather than
+    zero. A second bypass actor on either side is a finding too.
+
 - The verification gate's scope now matches the claim it backs. `make verify`
   was presented as local-equivalent verification while every one of its
   checks was scoped to `src/`, leaving roughly 6,300 lines across
