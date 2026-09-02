@@ -23,7 +23,7 @@ from . import facts
 from .corpus import normalize_for_match
 from .provider import Provider, ProviderError
 
-PROMPT_VERSION = "intake-v1"
+PROMPT_VERSION = "intake-v2"
 MAX_TEXT_CHARS = 4000
 MAX_OUTPUT_TOKENS = 2500
 LANGUAGES = ("en", "es")
@@ -96,6 +96,8 @@ Rules you must follow:
 5. "jurisdiction_name": the city or county named in the description, copied as written (for example "Davis" or "Yolo County"), with "quote" the words it came from. Empty strings if none is named. Do not guess a city from a street, neighborhood, or region.
 6. "unmapped_details": verbatim quotes of concrete details the applicant gave that no field captures (for example a lot size, unit size, or a nearby bus stop). Quotes only; no paraphrase, no interpretation.
 7. Fields that do not apply to the project type should still be present with "unknown".
+8. "second unit", "segunda unidad", "another unit", "otra unidad", "add a unit" and the like name a quantity, not a project type. On their own they fit an ADU, a junior ADU, and an SB 9 two-unit project equally, so on their own they are "unknown". Return a project_type only when the description says which one: detached or in the back yard, converted from a garage, inside the existing home, a second house on the lot under SB 9, or a lot split. A quote can be verbatim and still not decide the question; when it does not, "unknown" is the correct answer, not the closest fit.
+9. If the applicant says they do not know, are not sure, or asks what the options are, that is the applicant telling you the fact is not in the description. Do not resolve it for them.
 """
 
 
@@ -103,10 +105,13 @@ def _vocabulary_block() -> str:
     lines = [
         "Fields and allowed values:",
         f"- project_type: {', '.join(facts.PROJECT_TYPES)}, unknown. "
-        "adu = accessory dwelling unit (backyard cottage, garage conversion, attached or "
-        "detached second unit); jadu = junior ADU, a small unit inside the existing "
+        "adu = accessory dwelling unit (backyard cottage, garage conversion, a "
+        "detached or attached unit the description places outside the existing "
+        "living space); jadu = junior ADU, a small unit inside the existing "
         "home; two_unit = two homes on one single-family lot under SB 9; lot_split = "
-        "splitting one lot into two parcels under SB 9.",
+        "splitting one lot into two parcels under SB 9. These four differ only in "
+        "where the new unit goes, so a description that does not say where it goes "
+        'is "unknown".',
     ]
     for f in facts.FACT_FIELDS:
         lines.append(

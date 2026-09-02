@@ -90,7 +90,7 @@ def test_health_reports_boundary_and_versions() -> None:
     assert body["stores_applicant_content"] is False
     assert body["rules"] == 19 and body["corpus_documents"] == 18
     assert body["prompt_versions"] == {
-        "intake": "intake-v1",
+        "intake": "intake-v2",
         "explain": "explain-v1",
         "ask": "ask-v1",
         "staff_questions": "staff-questions-v1",
