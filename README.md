@@ -9,6 +9,9 @@ relevant standards, cited official sources, and questions for local staff. The
 matcher is deterministic. Separate English and Spanish explanations are
 AI-assisted, review-pending drafts.
 
+**Live demo: <https://chelseakr.github.io/permit-bearings/>** — the static
+prototype in your browser, with no account and no tracking.
+
 **Runtime AI (ADR 0004, owner-directed, 2026-08-21) — Prototype:** an
 optional service, `permit_pathways.ai` (`make serve-ai`), adds AI at the
 edges of the applicant path: natural-language intake that drafts the
@@ -80,8 +83,6 @@ ID/version. The button opens the browser's print dialog, where a person may
 choose Print or Save as PDF. The app does not create, upload, or store a file,
 and direct, invalid, or unavailable packet entry withholds the summary with
 the underlying findings.
-
-**Live demo:** https://chelseakr.github.io/permit-bearings/
 
 **External evidence gate:** prepared, not run. The repository now binds future
 content review, same-version sessions, manual access/language checks, a timed
