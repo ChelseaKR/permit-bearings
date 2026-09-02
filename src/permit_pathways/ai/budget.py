@@ -11,6 +11,7 @@ about the request beyond a count.
 
 from __future__ import annotations
 
+import contextlib
 import datetime as dt
 import os
 import threading
@@ -118,12 +119,31 @@ class Budget:
                 raise BudgetExhausted(
                     "too many requests from this client; wait a minute"
                 )
+            # Reserve the slot now, while still holding the lock. Releasing
+            # the lock before counter.increment (an I/O call, potentially
+            # slow) and only appending afterward would reopen the per-minute
+            # check to concurrent callers: any number of them could pass
+            # "is the window under cap" before any one of them has committed
+            # to it, and the cap would enforce nothing for the duration of
+            # that call. Reserve first under the same lock acquisition as
+            # the check, and roll the reservation back below if the daily
+            # cap (rather than the per-minute one) is what rejects.
             window.append(moment)
             if len(self._windows) > 10_000:
                 self._windows = {
                     k: v for k, v in self._windows.items() if v and moment - v[-1] < 60
                 }
-        used = self.counter.increment(_today(), self.daily_cap)
+        try:
+            used = self.counter.increment(_today(), self.daily_cap)
+        except BudgetExhausted:
+            with self._lock:
+                reserved = self._windows.get(client_id)
+                if reserved is not None:
+                    with contextlib.suppress(ValueError):
+                        # Already pruned by a concurrent charge for the same
+                        # client: nothing left to roll back.
+                        reserved.remove(moment)
+            raise
         return {"daily_used": used, "daily_cap": self.daily_cap}
 
 
