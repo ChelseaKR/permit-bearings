@@ -169,6 +169,8 @@ PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
 PYTHONPATH=src python3 -m permit_pathways.readiness_cli \
   --workflow-id woodland-preapproved-detached-adu --as-of 2026-07-30
 PYTHONPATH=src python3 -m permit_pathways.review_queue_cli  # read-only source-change worklist
+PYTHONPATH=src python3 -m permit_pathways.precedent kinds    # HCD letter kinds in the committed snapshot
+PYTHONPATH=src python3 -m permit_pathways.precedent for davis  # comparable-jurisdiction precedent
 PYTHONPATH=src python3 -m permit_pathways.local_source_onboarding_cli \
   validate                                      # validates the empty not_run template
 PYTHONPATH=src python3 -m permit_pathways.source_release_cli validate-templates
@@ -272,9 +274,9 @@ still needs a person.
 | Standard | State and evidence |
 |---|---|
 | Responsible-Tech Framework | Applies — Product, privacy, source, AI-use, accessibility, and unresolved-review boundaries are recorded in `docs/PRODUCT-CONTEXT.md`, `docs/DESIGN.md`, `PROVENANCE.md`, and `docs/ACCESSIBILITY.md`. |
-| Code Quality | Applies — Python 3.12 and development dependencies are locked; Ruff, strict mypy, 85% branch coverage, generated-data parity, and 29 golden cases run through `make verify`. Ruff enforces complexity 10 across the Python codebase; the former `WVR-007` loader/evaluator waiver has been retired. |
+| Code Quality | Applies — Python 3.12 and development dependencies are locked; Ruff, strict mypy, branch coverage, generated-data parity, and 29 golden cases run through `make verify`. Two separate coverage numbers, because they measure different things: **85% branch coverage of the `permit_pathways` package**, and **20% line / 17% function coverage of `assets/demo.js`**, the 5,255-line browser runtime that carries the second implementation of the rule logic. The browser floor is a ratchet on a file that had no coverage gate at all before; it is not equivalent to the Python figure and is not presented as one. Ruff, strict mypy, and Bandit now cover `src`, `tests`, `scripts`, and `demo` rather than `src` alone, and `make verify` refuses to run without Node instead of silently skipping the eight cross-runtime contract tests. Ruff enforces complexity 10 across the Python codebase; the former `WVR-007` loader/evaluator waiver has been retired. |
 | Security & Supply-Chain | Applies — Event-armed CodeQL, Bandit, pip-audit, gitleaks, zizmor, Dependabot, and Scorecard; all workflow actions are pinned to full commit SHAs and use scoped token permissions. |
-| CI/CD | Applies — Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. |
+| CI/CD | Applies — Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. Two properties of the `Standards` workflow belong next to this row rather than in a commit message. It is a required check that fetches a **private** repository through a deploy key, and GitHub never passes secrets to a fork run, so a pull request from a fork cannot make it pass; that is a known cost of grading against a private baseline, not a defect to work around. And its pin is a commit rather than a released tag on purpose: `v2.0.0` keys this repository as `permit-pathways`, the checker resolves the entry by checkout basename, and after the GitHub rename that entry no longer matches, so pinning to the tag would fall to the `restricted` publication default and fail the check on an unchanged repository. Re-pinning waits on `portfolio-standards` PR #97 merging and a tag being cut. See issue #74. |
 | Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. The proposed no-storage beta runbook still requires host request-metadata and operational-system review because those records sit outside application telemetry. Storage, telemetry, uploads, or external model calls would trigger a new architecture and operational review; the optional AI service directed by ADR 0004 is exactly such a change and will need its own operational review before any hosted deployment. |
 | Accessibility | Applies — Axe runs on all five public pages plus populated candidate-route and valid packet states; Lighthouse covers seven public page states. Browser tests also check 320px and 390px reflow, compact mobile navigation, the Spanish handoff language boundary, labeled mobile evidence records, document-level overflow, and the print summary's isolated print-media layout. The versioned human test matrix in `docs/MANUAL-VALIDATION.md` keeps physical-device, virtual-keyboard, keyboard, screen-reader, zoom, forced-colors, printed-output, and Spanish semantic review explicitly `not_run` until signed evidence exists. |
 | Internationalization | Applies — `make verify` enforces English/Spanish catalog shape, stable option identifiers, formatter arity, static and formatter placeholders, nonblank singular/plural output, and a copy-leaf pseudo-expansion transform. This is structural automation only: it does not generate or render a complete pseudolocale catalog, and mixed-language acceptance and native Spanish semantic review remain pre-pilot work in `docs/I18N.md`. |
@@ -475,6 +477,28 @@ unverifiable fetch remains a visible warning and stales nothing. The separate
 state. New-law discovery, automatic adoption, staffed review assignment,
 approval history, and automatic publication remain planned.
 
+An unverifiable fetch is recorded by kind, because two very different things
+arrive under that one word. A `transport` failure got no authoritative
+answer: DNS, TLS, a timeout, a 5xx, throttling, a 403 refusal. A
+`not_found` failure means the server answered HTTP 404 or 410 about that
+exact address, so the document is no longer published where this project
+points. Neither is evidence that the law changed: the retained copy and its
+recorded hash still stand, no rule is marked stale, no excerpt or action copy
+is suppressed, and no exit code moves. The difference is the link. Where a
+rule's own `citation.url` resolves to a `not_found` source, the result card
+prints the citation as text instead of an anchor, alongside a sentence saying
+the official link did not open, that the quoted text comes from the copy this
+project retained, and that staff should be asked for the current document.
+`assets/demo.js` and `demo/app.py` derive that from the same committed
+receipt and a test asserts they agree; the harness reports the same finding
+from the adopted receipt on every run, and the evidence page labels
+"published link not found" separately from "could not re-fetch". A watcher
+receipt whose unverifiable observation does not say which kind it was is
+rejected by the Python loader and by the browser, because a failure the
+reader cannot describe honestly is not one to render. The decision, and what
+it deliberately does not do, is in
+[ADR 0005](docs/adr/0005-separate-a-withdrawn-citation-from-an-unreachable-source.md).
+
 The separate readiness tests cover positive, negative, boundary, unknown,
 wrong-workflow, changed-source, schema, fingerprint, review-metadata, manifest,
 and CLI behavior for the synthetic Woodland packet. These tests establish
@@ -577,7 +601,7 @@ Conceived 2026-07-27 for the California AI Permitting Innovation Showcase
 |---|---|
 | Scenario 1 (A): guiding applicants to a complete, well-routed application | Primary prototype. Candidate ADU, JADU, and SB 9 routing, a temporary grouped result packet, citations, uncertainty routing, and one generated synthetic Woodland packet-presence future-state simulation are implemented. The official program page currently says its preapproved plan list is coming soon, so this is not an applicant-ready workflow. The sample uses 25 source-bound checklist requirements, two fabricated values tied to official parcel-layer fields, and review-pending AI-assisted action drafts. Live parcel retrieval, file inspection, parcel-specific packet completeness, reviewed remedies, and reviewed translation are planned. |
 | Scenario 2 (B): supporting internal review | Not targeted in v1. |
-| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, proposed run receipts, deliberate snapshot adoption, exact rule/Golden and bounded packet-context worklists, applicant-output invalidation, separate fingerprint-bound decision templates, strict `not_run` approval/publication/rollback receipt tooling, and an HCD-letter dataset are implemented in bounded form. Search, new-law discovery, automatic adoption/publication, completed staffed assignments or receipts, comparable-jurisdiction research, and substantive approval history are planned. |
+| Scenario 3 (C): keeping current with housing law | Prototype assurance layer beneath Scenario 1. Selected-source checking, proposed run receipts, deliberate snapshot adoption, exact rule/Golden and bounded packet-context worklists, applicant-output invalidation, separate fingerprint-bound decision templates, strict `not_run` approval/publication/rollback receipt tooling, and an HCD-letter dataset are implemented in bounded form. A read-only comparable-jurisdiction precedent CLI (`permit_pathways.precedent`) groups the committed 1,312-letter HCD snapshot by letter kind and authority so a reader can find documented precedent; it makes no compliance finding and fetches nothing. Search, new-law discovery, automatic adoption/publication, completed staffed assignments or receipts, and substantive approval history are planned. |
 
 ## Design commitments (from the challenge statement's cross-cutting requirements)
 
@@ -757,7 +781,18 @@ GitHub Action re-fetches selected statewide sources and classifies each as
 unchanged, changed, or unverifiable. It opens a review issue when a fetched
 source's content hash moved, a rule aged out, or a Golden scenario regressed;
 a source it could not download is recorded as unverifiable with its last
-successful verification date and marks no rule stale. Two
+successful verification date and marks no rule stale.
+
+That alert converges rather than accumulating. Titles are stable and carry no
+run date, so an unresolved condition produces one issue and weekly comments on
+it rather than a new issue every Monday. Both alerts carry a `currency` label,
+each repeat comment says how many days the condition has been open, and a
+green run closes what it opened with a comment naming the run that cleared it.
+An unverifiable run neither opens nor closes anything, because nothing was
+learned about the law in it. The harness prints one machine-readable
+`currency signals:` line on every run, including a clean one, so the issue can
+say which of the three conditions fired: a changed source hash, an aged-out
+rule, and a Golden regression have different owners and different urgency. Two
 selected Woodland workflow
 sources, the January 2026 Davis ADU handout, and HCD's October 2025 Davis
 technical-assistance letter are recorded and watched. The Davis record reports
@@ -837,8 +872,9 @@ explanation sidecar and keeps a separate `/trust` route.
   policy plus a conservative generic prototype policy whose exact negative
   excerpt, source/program IDs, canonical HTTPS program path, and fingerprint
   must agree; both are isolated from screening/readiness
-- `src/permit_pathways/source_state.py`: strict watcher-receipt validation and
-  exact rule/Golden dependency impact
+- `src/permit_pathways/source_state.py`: strict watcher-receipt validation,
+  exact rule/Golden dependency impact, and the withdrawn-citation derivation
+  that names each rule whose printed citation address answered "not found"
 - `src/permit_pathways/review_queue.py` and `review_queue_cli.py`: portable,
   fingerprint-bound source-change worklists and separate human decision
   ledgers that cannot clear holds or republish output
@@ -929,6 +965,10 @@ explanation sidecar and keeps a separate `/trust` route.
 - `scripts/build_demo_bundle.py`: rebuild/check the static data bundle
 - `src/permit_pathways/jurisdictions.py`: validates and builds the portable
   jurisdiction-coverage index used by the browser profile
+- `src/permit_pathways/precedent.py`: read-only comparable-jurisdiction
+  discovery over the committed HCD letter snapshot; groups by letter kind and
+  authority, fetches nothing, writes nothing, and carries its
+  not-a-compliance-finding boundary into every rendering
 - `docs/DESIGN.md`: architecture and demo plan
 - `docs/DATA-FLOW.md`: current build-time and browser data boundaries
 - `docs/DESIGN-SYSTEM.md`: California Web Standards alignment and local

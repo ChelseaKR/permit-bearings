@@ -7,6 +7,171 @@ published a versioned release.
 
 ### Changed
 
+- Every public page now carries a self-referencing `<link rel="canonical">`
+  and a complete social card. `index.html` already had both; `check.html`,
+  `prepare.html`, `review.html` and `evidence.html` had `og:title`,
+  `og:description` and `og:type` and nothing to say which URL they described or
+  which image to show, so a shared link to any of the four previewed as a bare
+  URL with no card and no page identity. They now also carry `og:url`,
+  `og:site_name`, `og:image` (with type, dimensions and alt text),
+  `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image` and
+  `twitter:image:alt`, all absolute and all pointing at the page they sit on.
+  No new applicant-facing copy was written: every string is the page's existing
+  title or `og:description`, or the shared card and its alt text from
+  `index.html`. `test_every_static_page_names_itself_and_not_the_shared_origin`
+  extends the existing five-page static-markup checks rather than starting a
+  parallel suite, and it holds the property that matters on this deployment:
+  the site is served from `chelseakr.github.io`, an origin shared with five
+  other unrelated projects, on a path rather than a domain, so a canonical of
+  "/" is not this site's root but a different address that 404s and that all
+  six sites would claim. Observed failing four ways, each naming the page:
+  canonical deleted from `check.html`; `prepare.html` canonicalised to the bare
+  origin; `twitter:card` deleted from `review.html`; `evidence.html`'s `og:url`
+  pointed at `check.html`.
+
+- The verification gate's scope now matches the claim it backs. `make verify`
+  was presented as local-equivalent verification while every one of its
+  checks was scoped to `src/`, leaving roughly 6,300 lines across
+  `assets/demo.js`, `demo/app.py`, and `scripts/` outside lint, strict
+  typing, Bandit, and any coverage floor, including the two files that carry
+  duplicated rule logic (issue #73).
+  - Ruff, strict mypy, and Bandit now cover `src`, `tests`, `scripts`, and
+    `demo`. `demo/app.py` is fully annotated and passes strict mypy; the two
+    `S310`/`B310` network findings in `scripts/pull_hau_letters.py` are
+    waived inline, next to the call they excuse, with the invariant that
+    makes them safe written out, rather than by a file-level entry.
+  - `src/permit_pathways/py.typed` is added. The package was strictly typed
+    and did not say so, so every script importing it was being checked
+    against `Any`.
+  - `tests/browser/` is a new Node unit suite that evaluates the shipped
+    `assets/demo.js` in a `node:vm` context with a small DOM, rather than a
+    copy of it. 65 tests cover the duplicated domains: all 29 golden cases
+    replayed through the browser's own `screen()`, the criterion semantics,
+    the 180-day staleness boundary, the ADR 0005 withdrawn-citation
+    derivation, and the review clocks, whose 60-calendar-day answers are
+    asserted against the dates `permit_pathways.clocks` produces. This is
+    the cross-runtime screening contract `docs/PRODUCT-CONTEXT.md` records
+    as known correctness risk 7.
+  - `scripts/browser-coverage.mjs` reports real V8 coverage of
+    `assets/demo.js` and enforces a floor, with no new dependency. It
+    measures 20% of lines and 17% of functions. That floor is a ratchet on a
+    file that had no coverage gate at all; it is not the Python package's
+    85%, and the README now prints both numbers separately rather than one
+    number that reads as covering the repository.
+  - `make verify` requires Node and says why. Eight cross-runtime contract
+    tests were guarded by `skipif(shutil.which("node") is None)`, so a local
+    run could pass with the browser runtime entirely untested while CI
+    called the same command "local-equivalent verification".
+  - `zizmor` runs at `min-severity: low` instead of `high`, verified clean at
+    low severity and low confidence first, so the change tightens the gate
+    without leaving a backlog.
+  - Not done, and why: the `Standards` pin still names a commit rather than a
+    released tag. `portfolio-standards` v2.0.0 keys this repository as
+    `permit-pathways`, its checker resolves the entry by checkout basename,
+    and after the GitHub rename that entry no longer matches, so pinning to
+    the tag would fall to the `restricted` publication default and fail a
+    required check on an unchanged repository. The fix is `portfolio-standards`
+    PR #97 merging and a tag being cut, which is a decision in another
+    repository. No `.standards-version` file was added, because it could only
+    name an unmerged branch commit and DOC-01 asks for a released tag.
+    Recorded in the README's CI/CD row alongside the fact that a fork pull
+    request can never pass this required check, because GitHub does not pass
+    the deploy key to fork runs (issue #74).
+### Fixed
+
+- The weekly currency watch converges instead of accumulating. It filed a
+  brand-new issue every Monday with the run date in the title and no
+  deduplication of any kind, so a condition that stays unresolved became an
+  unbounded pile; #63 and #65 are two weeks of the same one. Titles are now
+  stable and dateless, both alerts search before they create and comment on
+  the open issue instead, both carry a `currency` label, and each repeat
+  comment says how many days the condition has been open. A green run closes
+  the alert it opened, with a comment naming the run that cleared it, so the
+  automation is a status signal rather than an append-only log. An
+  unverifiable run neither opens nor closes anything: a source that could not
+  be downloaded is evidence about the network, and nothing was learned about
+  the law in that run. `python -m permit_pathways.harness` now prints one
+  machine-readable `currency signals: changed_sources=N stale_rules=N
+  golden_regressions=N unverifiable_sources=N` line on every run, including a
+  clean one, so the issue names which of the three conditions behind exit 1
+  fired rather than reporting that one of them did; a signal printed only on
+  failure could not be used to detect recovery either. The workflow's own
+  shell is executed against a fake `gh` in `tests/test_currency_workflow.py`,
+  because string assertions prove a workflow says the right words and cannot
+  prove it runs. Reported as issue #70.
+
+- `scripts/scan_ordinances.py` no longer re-dates every published scan result
+  on every run. It took one global `scanned_on` and stamped it on all eight
+  files, including jurisdictions whose ordinance text had not been
+  re-retrieved, so `scanned_on` recorded when the writer last ran rather than
+  when that ordinance was scanned. Each result is now re-derived with its own
+  recorded date first, and only the ones that come back different, or that
+  have no published result yet, take the new date; `--redate-all` covers a
+  deliberate re-retrieval of the whole corpus. Running the writer with a new
+  date against the unchanged corpus now leaves all eight files byte-identical,
+  which also stops it disturbing the two results pinned in the frozen
+  schema-v1 export profile. Recorded as weakness 3 in
+  `docs/findings/2026-08-15-multi-jurisdiction-adu-ordinance-scan.md`, where
+  it is noted as untidy at seven jurisdictions and misleading at two hundred.
+
+### Added
+
+- `python -m permit_pathways.precedent`: read-only comparable-jurisdiction
+  discovery over the HCD accountability letter snapshot already committed at
+  `data/jurisdictions/hcd-letters.json`. Nothing is fetched. Three
+  subcommands: `kinds` lists letter kinds with how many jurisdictions
+  received each, `list --kind ... [--authority ...]` prints every letter of
+  one kind, and `for <slug>` shows one jurisdiction's letters and then the
+  other jurisdictions HCD wrote to about the same kind under the same
+  authority. Grouping by (kind, authority) is what makes it precedent rather
+  than a directory: two jurisdictions that both received an ADU-Law repeal
+  request are comparable in a way that two entries on the same list are not.
+  Of the 1,312 letters across 470 of the 541 registry entries, 205
+  jurisdictions have received a repeal-request technical assistance letter,
+  which `docs/findings/2026-08-15-multi-jurisdiction-adu-ordinance-scan.md`
+  had already noted was a priority list sitting in committed data.
+  Every rendering carries the boundary, and a test asserts it: HCD
+  correspondence is documented precedent, not controlling authority for
+  another jurisdiction and not a compliance finding, and a jurisdiction with
+  no row is one this dated snapshot linked no letter to, which is not
+  evidence of compliance or of no HCD activity. A capped listing always
+  reports the full group size. It reads correspondence metadata rather than
+  ordinance text, no watcher monitors an individual letter for later action,
+  and it ships as a CLI rather than a page, because
+  `docs/PRODUCT-CONTEXT.md` says not to add demo modules until the applicant
+  journey reads as one coherent flow and whether it does is not this
+  change's call to make. Addresses `AGENTS.md` priority 4,
+  comparable-jurisdiction discovery.
+
+- A watched source that could not be fetched is now recorded by kind, and a
+  citation whose published address is gone stops being offered as a link.
+  `permit_pathways.harness.watch` classifies an HTTP 404 or 410 as
+  `not_found` (the server answered about that exact address) and every other
+  failure as `transport` (no authoritative answer arrived); a `not_found`
+  answer is not retried, because asking again cannot change it. The
+  source-state receipt requires `unverifiable_kind` on exactly an
+  unverifiable observation and rejects it anywhere else, so
+  `data/source-status/current.json` is byte-identical and keeps its
+  fingerprint. `source_state.withdrawn_citations` names each rule whose own
+  `citation.url` resolves to a `not_found` source; `python -m
+  permit_pathways.harness` reports that from the adopted receipt on every
+  run. `assets/demo.js` and `demo/app.py` both render such a citation as
+  text rather than an anchor, with a bilingual note saying the official link
+  did not open, that the quoted text is from the retained copy, and that
+  staff should be asked for the current document, and a test asserts the two
+  runtimes agree. The evidence page labels "published link not found"
+  separately from "could not re-fetch". Nothing here stales a rule, changes
+  a match, suppresses an excerpt or action copy, or moves an exit code.
+  Motivated by a live run on 2026-08-27 in which twelve leginfo sources
+  failed on a local certificate store and `davis-adu-handout-2026` returned
+  HTTP 404, both reported identically (issues #91 and #96). The Davis
+  citation URL itself is unchanged: the City site answers 403 to a
+  non-browser client, so no replacement address could be retrieved and
+  guessing one is not available to this repository. Recorded as
+  `docs/adr/0005-separate-a-withdrawn-citation-from-an-unreachable-source.md`.
+
+### Changed
+
 - The optional AI service is now hosted and reachable from the public page.
   `deploy/ai-service/` was applied on 2026-08-21: one arm64 Lambda behind a
   Function URL in `us-west-2`, DynamoDB daily cap of 100 model-backed

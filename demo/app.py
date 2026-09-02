@@ -21,8 +21,11 @@ import html
 import json
 import mimetypes
 import sys
+from collections.abc import Iterable, Mapping, Sequence
+from datetime import date
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from typing import TypedDict, cast
 from urllib.parse import parse_qs, unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,14 +35,26 @@ from permit_pathways.dates import (  # noqa: E402
     SOURCE_REVIEW_WINDOW_DAYS,
     utc_today,
 )
-from permit_pathways.explanations import load_explanations  # noqa: E402
-from permit_pathways.harness import verify_rules  # noqa: E402
-from permit_pathways.screening import load_rules, screen  # noqa: E402
+from permit_pathways.explanations import (  # noqa: E402
+    LocalizedExplanation,
+    PlainLanguageExplanation,
+    load_explanations,
+)
+from permit_pathways.harness import (  # noqa: E402
+    verify_rules,
+)
+from permit_pathways.screening import (  # noqa: E402
+    Citation,
+    PathwayResult,
+    load_rules,
+    screen,
+)
 
 RULES_PATH = ROOT / "data" / "rules"
 EXPLANATIONS_PATH = ROOT / "data" / "explanations" / "plain-language.json"
 GOLDEN_PATH = ROOT / "data" / "golden" / "example.json"
 SOURCE_STATE_PATH = ROOT / "data" / "source-status" / "current.json"
+SOURCES_PATH = ROOT / "data" / "sources.json"
 DATA_ROOT = (ROOT / "data").resolve()
 ASSETS_ROOT = (ROOT / "assets").resolve()
 MAX_BODY_BYTES = 64 * 1024
@@ -100,13 +115,66 @@ FIELD_VALUES.update(
     }
 )
 
-STRINGS = {
+
+class UiStrings(TypedDict):
+    """Display copy for one language, keyed as the tables below key it."""
+
+    title: str
+    tagline: str
+    scope: str
+    project_type: str
+    types: list[tuple[str, str]]
+    tri: list[tuple[str, str]]
+    primary_question: str
+    primary_help: str
+    primary_options: list[tuple[str, str]]
+    adu_form_question: str
+    adu_form_options: list[tuple[str, str]]
+    question_intro: str
+    unpermitted_questions: dict[str, str]
+    questions: dict[str, str]
+    jurisdiction: str
+    jurisdictions: list[tuple[str, str]]
+    submit: str
+    disclaimer: str
+    results: str
+    result_intro: str
+    none: str
+    supporting_only: str
+    unknown_heading: str
+    unknown_intro: str
+    explanation_banner: str
+    groups: dict[str, str]
+    means: str
+    next: str
+    confirm: str
+    docs: str
+    source: str
+    evidence: str
+    evidence_unavailable: str
+    copy_record: str
+    ai_draft: str
+    translation_draft: str
+    unavailable: str
+    withheld_unverified: str
+    withheld_stale: str
+    next_scope: str
+    english_only: str
+    verified: str
+    link_not_found: str
+    stale: str
+    unverified: str
+    back: str
+    dashboard: str
+
+
+STRINGS: dict[str, UiStrings] = {
     "en": {
         "title": "Permit Bearings | demo",
         "tagline": "Find a candidate route. See the sources behind it. "
-                   "Take open questions to staff.",
+        "Take open questions to staff.",
         "scope": "The language choice applies to the applicant form and results. "
-                 "The trust dashboard remains in English.",
+        "The trust dashboard remains in English.",
         "project_type": "What are you proposing?",
         "types": [
             ("adu", "Accessory dwelling unit (backyard cottage, garage conversion)"),
@@ -117,14 +185,18 @@ STRINGS = {
         "tri": [("yes", "Yes"), ("no", "No"), ("unknown", "I'm not sure")],
         "primary_question": "What dwelling exists on the lot now, or is proposed?",
         "primary_help": "Choose what exists now separately from what is only "
-                        "proposed. Some review clocks depend on that difference.",
+        "proposed. Some review clocks depend on that difference.",
         "primary_options": [
             ("existing_single_family", "An existing single-family home"),
             ("existing_multifamily", "An existing multifamily building"),
-            ("proposed_single_family",
-             "A single-family home is proposed; none exists now"),
-            ("proposed_multifamily",
-             "A multifamily building is proposed; none exists now"),
+            (
+                "proposed_single_family",
+                "A single-family home is proposed; none exists now",
+            ),
+            (
+                "proposed_multifamily",
+                "A multifamily building is proposed; none exists now",
+            ),
             ("none", "No primary dwelling exists or is proposed"),
             ("unknown", "I'm not sure"),
         ],
@@ -133,65 +205,63 @@ STRINGS = {
             ("new_detached", "Build a new detached ADU"),
             ("new_attached", "Build a new attached ADU"),
             ("conversion", "Convert space in an existing structure"),
-            ("same_footprint_rebuild",
-             "Replace a structure in the same location and dimensions"),
+            (
+                "same_footprint_rebuild",
+                "Replace a structure in the same location and dimensions",
+            ),
             ("unknown", "I'm not sure"),
         ],
         "question_intro": "Choose “I'm not sure” when you do not know. "
-                          "Uncertain material facts go to staff instead of "
-                          "being assumed in favor of a path.",
+        "Uncertain material facts go to staff instead of "
+        "being assumed in favor of a path.",
         "unpermitted_questions": {
             "adu": "Are you trying to legalize an ADU built without permits "
-                   "before January 1, 2020?",
+            "before January 1, 2020?",
             "jadu": "Are you trying to legalize a junior ADU built without "
-                    "permits before January 1, 2020?",
+            "permits before January 1, 2020?",
         },
         "questions": {
             "in_urbanized_area": "Is the property inside an incorporated city "
-                                 "or another SB 9-qualifying urban area?",
+            "or another SB 9-qualifying urban area?",
             "sf_zone": "Is the property zoned for single-family residential use?",
             "demolishes_protected_housing": "Would the project demolish or alter "
-                                            "rent-restricted, price-controlled, "
-                                            "or deed-restricted affordable housing?",
+            "rent-restricted, price-controlled, "
+            "or deed-restricted affordable housing?",
             "tenant_occupied_last_3_years": "Has a tenant lived in housing the "
-                                            "project would demolish or alter "
-                                            "during the last three years?",
+            "project would demolish or alter "
+            "during the last three years?",
             "ellis_withdrawal_last_15_years": "Was housing on the property "
-                                              "withdrawn from rental use under "
-                                              "the Ellis Act during the last "
-                                              "15 years?",
-            "two_unit_contributing_historic_location":
-                "Would the two-home project be located in a contributing "
-                "structure in a state-listed historic district, or in a "
-                "historic property or district protected by a city or county "
-                "ordinance?",
-            "two_unit_individually_listed_historic_property":
-                "Is the parcel individually listed in the State Historic "
-                "Resources Inventory, or is the property individually "
-                "designated or listed as a city or county landmark?",
-            "lot_split_on_historic_landmark_site":
-                "Is the parcel within a historical landmark property in the "
-                "State Historic Resources Inventory, or on a site designated "
-                "or listed as a city or county landmark?",
-            "lot_split_alters_historic_district_resource":
-                "Would the lot split require demolition or alteration of a "
-                "contributing structure or an existing exterior structural "
-                "wall in a historic district listed by California or "
-                "designated by a city or county?",
+            "withdrawn from rental use under "
+            "the Ellis Act during the last "
+            "15 years?",
+            "two_unit_contributing_historic_location": "Would the two-home project be located in a contributing "
+            "structure in a state-listed historic district, or in a "
+            "historic property or district protected by a city or county "
+            "ordinance?",
+            "two_unit_individually_listed_historic_property": "Is the parcel individually listed in the State Historic "
+            "Resources Inventory, or is the property individually "
+            "designated or listed as a city or county landmark?",
+            "lot_split_on_historic_landmark_site": "Is the parcel within a historical landmark property in the "
+            "State Historic Resources Inventory, or on a site designated "
+            "or listed as a city or county landmark?",
+            "lot_split_alters_historic_district_resource": "Would the lot split require demolition or alteration of a "
+            "contributing structure or an existing exterior structural "
+            "wall in a historic district listed by California or "
+            "designated by a city or county?",
             "on_protected_site": "Does the property have a wetland, hazardous-"
-                                 "land, conservation, habitat, or other "
-                                 "protected-site condition named in SB 9?",
+            "land, conservation, habitat, or other "
+            "protected-site condition named in SB 9?",
             "parcel_created_by_sb9_split": "Was this parcel already created by "
-                                            "an SB 9 lot split?",
+            "an SB 9 lot split?",
             "adjacent_sb9_split_same_actor": "Has the same owner, or someone "
-                                              "working with that owner, used SB 9 "
-                                              "to split an adjacent parcel?",
+            "working with that owner, used SB 9 "
+            "to split an adjacent parcel?",
             "proposed_lot_ratio_compliant": "Would each proposed parcel contain "
-                                            "at least 40% of the original lot area?",
+            "at least 40% of the original lot area?",
             "proposed_lot_size_compliant": "Would both new lots be at least "
-                                           "1,200 square feet, or meet a smaller "
-                                           "minimum verified in a current local "
-                                           "ordinance?",
+            "1,200 square feet, or meet a smaller "
+            "minimum verified in a current local "
+            "ordinance?",
         },
         "jurisdiction": "Where is the property?",
         "jurisdictions": [
@@ -201,22 +271,22 @@ STRINGS = {
         ],
         "submit": "Check candidate pathways",
         "disclaimer": "Decision support only. This is not legal advice or a "
-                      "substitute for your jurisdiction's review.",
+        "substitute for your jurisdiction's review.",
         "results": "Possible permit paths and rules",
         "result_intro": "We compared your answers with the limited set of rules "
-                        "in this prototype. We did not verify the property facts, "
-                        "decide eligibility, or approve the project.",
+        "in this prototype. We did not verify the property facts, "
+        "decide eligibility, or approve the project.",
         "none": "The included rules do not identify a possible path from these "
-                "answers. This does not mean the project is impossible. Ask the "
-                "local planning counter to review it.",
+        "answers. This does not mean the project is impossible. Ask the "
+        "local planning counter to review it.",
         "supporting_only": "Supporting local information is shown below, but "
-                           "it is not a candidate permit path.",
+        "it is not a candidate permit path.",
         "unknown_heading": "Staff review is needed before showing a possible path",
         "unknown_intro": "You chose “I'm not sure” for a fact that can change the "
-                         "result. Confirm these items with the local planning counter:",
+        "result. Confirm these items with the local planning counter:",
         "explanation_banner": "About these explanations: the text shown is an "
-                              "AI-assisted draft and has not been reviewed by a "
-                              "person. The cited source stays separate in each card.",
+        "AI-assisted draft and has not been reviewed by a "
+        "person. The cited source stays separate in each card.",
         "groups": {
             "route": "Possible permit paths",
             "standard": "Rules that may apply",
@@ -230,22 +300,28 @@ STRINGS = {
         "source": "Source",
         "evidence": "Why we're saying this",
         "evidence_unavailable": "No supporting excerpt is recorded for this "
-                                "non-current source record.",
+        "non-current source record.",
         "copy_record": "Explanation details",
         "ai_draft": "Draft explanation · made with AI · not reviewed by a person",
         "translation_draft": "Spanish draft · made with AI · not reviewed for accuracy",
         "unavailable": "This explanation is not available. The matching rule "
-                       "and source are still shown.",
+        "and source are still shown.",
         "withheld_unverified": "We are not showing next steps because this "
-                               "source has no date on file. Ask staff to confirm "
-                               "the source before you rely on it.",
+        "source has no date on file. Ask staff to confirm "
+        "the source before you rely on it.",
         "withheld_stale": "We are not showing next steps because the source "
-                          "needs a new check. Confirm it before you rely on it.",
+        "needs a new check. Confirm it before you rely on it.",
         "next_scope": "These are starting points, not a complete checklist. "
-                      "Ask local staff what your project needs.",
+        "Ask local staff what your project needs.",
         "english_only": "English explanation shown because no valid Spanish draft "
-                        "is available.",
+        "is available.",
         "verified": "source date on file",
+        "link_not_found": (
+            "The official link for this source did not open when it was "
+            "last checked: the website answered that no document is "
+            "there. The quoted text below is from the copy this project "
+            "saved. Ask local staff for the current document."
+        ),
         "stale": "SOURCE NEEDS A NEW CHECK",
         "unverified": "NO SOURCE DATE ON FILE",
         "back": "Start over",
@@ -254,9 +330,9 @@ STRINGS = {
     "es": {
         "title": "Permit Bearings | demostración",
         "tagline": "Encuentre una posible ruta. Vea las fuentes que la respaldan. "
-                   "Consulte las preguntas pendientes con el personal de la agencia.",
+        "Consulte las preguntas pendientes con el personal de la agencia.",
         "scope": "El idioma elegido se aplica al formulario y a los resultados "
-                 "para solicitantes. El panel de confianza permanece en inglés.",
+        "para solicitantes. El panel de confianza permanece en inglés.",
         "project_type": "¿Qué propone construir?",
         "types": [
             ("adu", "Vivienda accesoria (casita de patio, conversión de garaje)"),
@@ -267,14 +343,18 @@ STRINGS = {
         "tri": [("yes", "Sí"), ("no", "No"), ("unknown", "No lo sé")],
         "primary_question": "¿Qué vivienda existe ahora en el lote o está propuesta?",
         "primary_help": "Distinga lo que ya existe de lo que solo está propuesto. "
-                        "Algunos plazos dependen de esa diferencia.",
+        "Algunos plazos dependen de esa diferencia.",
         "primary_options": [
             ("existing_single_family", "Ya existe una vivienda unifamiliar"),
             ("existing_multifamily", "Ya existe un edificio multifamiliar"),
-            ("proposed_single_family",
-             "Se propone una vivienda unifamiliar; aún no existe"),
-            ("proposed_multifamily",
-             "Se propone un edificio multifamiliar; aún no existe"),
+            (
+                "proposed_single_family",
+                "Se propone una vivienda unifamiliar; aún no existe",
+            ),
+            (
+                "proposed_multifamily",
+                "Se propone un edificio multifamiliar; aún no existe",
+            ),
             ("none", "No existe ni se propone una vivienda principal"),
             ("unknown", "No lo sé"),
         ],
@@ -283,67 +363,65 @@ STRINGS = {
             ("new_detached", "Construir una ADU nueva y separada"),
             ("new_attached", "Construir una ADU nueva y adosada"),
             ("conversion", "Convertir espacio dentro de una estructura existente"),
-            ("same_footprint_rebuild",
-             "Reemplazar una estructura en el mismo lugar y con las mismas dimensiones"),
+            (
+                "same_footprint_rebuild",
+                "Reemplazar una estructura en el mismo lugar y con las mismas dimensiones",
+            ),
             ("unknown", "No lo sé"),
         ],
         "question_intro": "Elija “No lo sé” si no conoce la respuesta. Los datos "
-                          "materiales inciertos se envían al personal en lugar de "
-                          "suponer que favorecen una vía.",
+        "materiales inciertos se envían al personal en lugar de "
+        "suponer que favorecen una vía.",
         "unpermitted_questions": {
             "adu": "¿Quiere legalizar una ADU construida sin permisos antes "
-                   "del 1 de enero de 2020?",
+            "del 1 de enero de 2020?",
             "jadu": "¿Quiere legalizar una ADU júnior construida sin permisos "
-                    "antes del 1 de enero de 2020?",
+            "antes del 1 de enero de 2020?",
         },
         "questions": {
             "in_urbanized_area": "¿Está la propiedad dentro de una ciudad "
-                                 "incorporada u otra área urbana que califique "
-                                 "para la SB 9?",
+            "incorporada u otra área urbana que califique "
+            "para la SB 9?",
             "sf_zone": "¿Tiene la propiedad zonificación residencial unifamiliar?",
             "demolishes_protected_housing": "¿El proyecto demolería o alteraría "
-                                            "vivienda con renta o precio controlado, "
-                                            "o vivienda asequible restringida por escritura?",
+            "vivienda con renta o precio controlado, "
+            "o vivienda asequible restringida por escritura?",
             "tenant_occupied_last_3_years": "¿Un inquilino vivió durante los "
-                                            "últimos tres años en una vivienda "
-                                            "que el proyecto demolería o alteraría?",
+            "últimos tres años en una vivienda "
+            "que el proyecto demolería o alteraría?",
             "ellis_withdrawal_last_15_years": "¿Se retiró del mercado de alquiler "
-                                              "alguna vivienda de la propiedad "
-                                              "conforme a la Ley Ellis durante "
-                                              "los últimos 15 años?",
-            "two_unit_contributing_historic_location":
-                "¿Estaría el proyecto de dos viviendas en una estructura que "
-                "contribuye al valor de un distrito histórico incluido por el "
-                "estado, o en una propiedad o distrito histórico protegido "
-                "por una ordenanza local?",
-            "two_unit_individually_listed_historic_property":
-                "¿Está la parcela incluida individualmente en el inventario "
-                "estatal de recursos históricos, o está la propiedad designada "
-                "individualmente como monumento histórico por la ciudad o el "
-                "condado?",
-            "lot_split_on_historic_landmark_site":
-                "¿Está la parcela dentro de una propiedad incluida en el "
-                "inventario estatal de recursos históricos, o en un sitio "
-                "designado como monumento histórico por la ciudad o el condado?",
-            "lot_split_alters_historic_district_resource":
-                "¿La división del lote exigiría demoler o alterar una "
-                "estructura que contribuye a un distrito histórico, o un muro "
-                "estructural exterior existente, dentro de un distrito "
-                "histórico incluido por el estado o designado localmente?",
+            "alguna vivienda de la propiedad "
+            "conforme a la Ley Ellis durante "
+            "los últimos 15 años?",
+            "two_unit_contributing_historic_location": "¿Estaría el proyecto de dos viviendas en una estructura que "
+            "contribuye al valor de un distrito histórico incluido por el "
+            "estado, o en una propiedad o distrito histórico protegido "
+            "por una ordenanza local?",
+            "two_unit_individually_listed_historic_property": "¿Está la parcela incluida individualmente en el inventario "
+            "estatal de recursos históricos, o está la propiedad designada "
+            "individualmente como monumento histórico por la ciudad o el "
+            "condado?",
+            "lot_split_on_historic_landmark_site": "¿Está la parcela dentro de una propiedad incluida en el "
+            "inventario estatal de recursos históricos, o en un sitio "
+            "designado como monumento histórico por la ciudad o el condado?",
+            "lot_split_alters_historic_district_resource": "¿La división del lote exigiría demoler o alterar una "
+            "estructura que contribuye a un distrito histórico, o un muro "
+            "estructural exterior existente, dentro de un distrito "
+            "histórico incluido por el estado o designado localmente?",
             "on_protected_site": "¿Tiene la propiedad humedales, suelo peligroso, "
-                                 "terreno de conservación, hábitat u otra condición "
-                                 "de sitio protegido indicada en la SB 9?",
+            "terreno de conservación, hábitat u otra condición "
+            "de sitio protegido indicada en la SB 9?",
             "parcel_created_by_sb9_split": "¿Esta parcela ya fue creada mediante "
-                                            "una división de lote SB 9?",
+            "una división de lote SB 9?",
             "adjacent_sb9_split_same_actor": "¿El mismo propietario, o alguien que "
-                                              "actúe con ese propietario, usó la "
-                                              "SB 9 para dividir una parcela adyacente?",
+            "actúe con ese propietario, usó la "
+            "SB 9 para dividir una parcela adyacente?",
             "proposed_lot_ratio_compliant": "¿Cada parcela propuesta tendría al "
-                                            "menos el 40% del área del lote original?",
+            "menos el 40% del área del lote original?",
             "proposed_lot_size_compliant": "¿Tendrían ambos lotes nuevos al "
-                                           "menos 1,200 pies cuadrados, o "
-                                           "cumplirían un mínimo menor verificado "
-                                           "en una ordenanza local vigente?",
+            "menos 1,200 pies cuadrados, o "
+            "cumplirían un mínimo menor verificado "
+            "en una ordenanza local vigente?",
         },
         "jurisdiction": "¿Dónde está la propiedad?",
         "jurisdictions": [
@@ -353,27 +431,27 @@ STRINGS = {
         ],
         "submit": "Revisar posibles vías",
         "disclaimer": "Solo apoyo a la decisión. No es asesoría legal ni "
-                      "sustituye la revisión de su jurisdicción.",
+        "sustituye la revisión de su jurisdicción.",
         "results": "Posibles vías de permiso y reglas",
         "result_intro": "Comparamos sus respuestas con el conjunto limitado de "
-                        "reglas de este prototipo. No verificamos los datos de "
-                        "la propiedad, decidimos la elegibilidad ni aprobamos "
-                        "el proyecto.",
+        "reglas de este prototipo. No verificamos los datos de "
+        "la propiedad, decidimos la elegibilidad ni aprobamos "
+        "el proyecto.",
         "none": "Las reglas incluidas no identifican una posible vía con estas "
-                "respuestas. Esto no significa que el proyecto sea imposible. "
-                "Pida una revisión en el departamento local de planificación.",
+        "respuestas. Esto no significa que el proyecto sea imposible. "
+        "Pida una revisión en el departamento local de planificación.",
         "supporting_only": "Abajo se muestra información local de apoyo, pero "
-                           "no es una posible vía de permiso.",
+        "no es una posible vía de permiso.",
         "unknown_heading": "Se necesita revisión del personal antes de mostrar "
-                           "una posible vía",
+        "una posible vía",
         "unknown_intro": "Eligió “No lo sé” para un dato que puede cambiar el "
-                         "resultado. Confirme estos puntos con el departamento "
-                         "local de planificación:",
+        "resultado. Confirme estos puntos con el departamento "
+        "local de planificación:",
         "explanation_banner": "Sobre estas explicaciones: el texto mostrado es "
-                              "un borrador creado con ayuda de IA y no ha sido "
-                              "revisado por una persona. El texto en español es "
-                              "una traducción automática sin revisión de exactitud. "
-                              "La fuente citada se mantiene separada en cada tarjeta.",
+        "un borrador creado con ayuda de IA y no ha sido "
+        "revisado por una persona. El texto en español es "
+        "una traducción automática sin revisión de exactitud. "
+        "La fuente citada se mantiene separada en cada tarjeta.",
         "groups": {
             "route": "Posibles vías de permiso",
             "standard": "Reglas que podrían aplicarse",
@@ -387,23 +465,30 @@ STRINGS = {
         "source": "Fuente",
         "evidence": "Por qué decimos esto",
         "evidence_unavailable": "No hay un extracto de respaldo registrado "
-                                "para este registro de fuente no vigente.",
+        "para este registro de fuente no vigente.",
         "copy_record": "Detalles de la explicación",
         "ai_draft": "Borrador de explicación · creado con IA · no revisado por una persona",
         "translation_draft": "Borrador en español · creado con IA · no revisado "
-                             "para comprobar su exactitud",
+        "para comprobar su exactitud",
         "unavailable": "Esta explicación no está disponible. Aun así se muestran "
-                       "la regla coincidente y la fuente.",
+        "la regla coincidente y la fuente.",
         "withheld_unverified": "No mostramos los próximos pasos porque esta fuente "
-                               "no tiene una fecha registrada. Pida al personal que "
-                               "confirme la fuente antes de usarla.",
+        "no tiene una fecha registrada. Pida al personal que "
+        "confirme la fuente antes de usarla.",
         "withheld_stale": "No mostramos los próximos pasos porque la fuente necesita "
-                          "una nueva comprobación. Confírmela antes de usarla.",
+        "una nueva comprobación. Confírmela antes de usarla.",
         "next_scope": "Estos son puntos de partida, no una lista completa. "
-                      "Pregunte al personal local qué necesita su proyecto.",
+        "Pregunte al personal local qué necesita su proyecto.",
         "english_only": "Se muestra la explicación en inglés porque no hay un "
-                        "borrador válido en español.",
+        "borrador válido en español.",
         "verified": "fecha de la fuente registrada",
+        "link_not_found": (
+            "El enlace oficial de esta fuente no abrió en la última "
+            "comprobación: el sitio web respondió que no hay ningún "
+            "documento allí. El texto citado abajo proviene de la copia "
+            "que este proyecto guardó. Pida al personal local el "
+            "documento actual."
+        ),
         "stale": "LA FUENTE NECESITA UNA NUEVA COMPROBACIÓN",
         "unverified": "SIN FECHA DE LA FUENTE",
         "back": "Empezar de nuevo",
@@ -447,7 +532,7 @@ CSS = """
 """
 
 
-def _ui_text(value):
+def _ui_text(value: object) -> str:
     """Normalize editorial dash punctuation without changing stored evidence."""
 
     text = str(value)
@@ -455,16 +540,14 @@ def _ui_text(value):
     return text.replace(f" {dash} ", " ").replace(dash, " ")
 
 
-def _ui_escape(value, *, quote=True):
+def _ui_escape(value: object, *, quote: bool = True) -> str:
     return html.escape(_ui_text(value), quote=quote)
 
 
-def page(title, body, lang="en"):
+def page(title: str, body: str, lang: str = "en") -> str:
     other = "es" if lang == "en" else "en"
     other_label = (
-        "Empezar de nuevo en español"
-        if lang == "en"
-        else "Start over in English"
+        "Empezar de nuevo en español" if lang == "en" else "Start over in English"
     )
     skip_label = "Saltar al contenido" if lang == "es" else "Skip to content"
     nav_label = "Navegación" if lang == "es" else "Navigation"
@@ -494,27 +577,31 @@ def page(title, body, lang="en"):
 <main class="page-shell reading-shell python-reference-main" id="main">
 {body}
 </main><footer class="site-footer"><div class="footer-inner">
-<p>{html.escape(STRINGS[lang]['scope'])} {html.escape(STRINGS[lang]['disclaimer'])}</p>
+<p>{html.escape(STRINGS[lang]["scope"])} {html.escape(STRINGS[lang]["disclaimer"])}</p>
 <div class="footer-links"><a href="/index.html">Public showcase</a>
 <a href="/evidence.html">Methods and limits</a></div>
 </div></footer></body></html>"""
 
 
-def _radio_question(name, legend, options, *, projects, help_text=None):
+def _radio_question(
+    name: str,
+    legend: str,
+    options: Sequence[tuple[str, str]],
+    *,
+    projects: str,
+    help_text: str | None = None,
+) -> str:
     labels = "".join(
         f'<label><input type="radio" name="{html.escape(name)}" '
         f'value="{html.escape(value)}" required> {html.escape(label)}</label>'
         for value, label in options
     )
     help_markup = (
-        f'<p class="small" id="{html.escape(name)}-help">'
-        f"{html.escape(help_text)}</p>"
+        f'<p class="small" id="{html.escape(name)}-help">{html.escape(help_text)}</p>'
         if help_text
         else ""
     )
-    described_by = (
-        f' aria-describedby="{html.escape(name)}-help"' if help_text else ""
-    )
+    described_by = f' aria-describedby="{html.escape(name)}-help"' if help_text else ""
     return (
         f'<fieldset class="conditional ca-field" data-projects="{projects}"'
         f"{described_by}>"
@@ -523,15 +610,14 @@ def _radio_question(name, legend, options, *, projects, help_text=None):
     )
 
 
-def intake_form(lang):
+def intake_form(lang: str) -> str:
     s = STRINGS[lang]
     radios = "".join(
         f'<label><input type="radio" name="project_type" value="{v}" required> {html.escape(t)}</label>'
         for v, t in s["types"]
     )
     juris = "".join(
-        f'<option value="{v}">{html.escape(t)}</option>'
-        for v, t in s["jurisdictions"]
+        f'<option value="{v}">{html.escape(t)}</option>' for v, t in s["jurisdictions"]
     )
     tri = s["tri"]
     conditional = [
@@ -589,18 +675,20 @@ def intake_form(lang):
         for field in SB9_LOT_SPLIT_FIELDS
     )
     conditional_markup = "".join(conditional)
-    return page(s["title"], f"""
-<h1>{html.escape(s['title'])}</h1>
-<p class="tag">{html.escape(s['tagline'])}</p>
+    return page(
+        s["title"],
+        f"""
+<h1>{html.escape(s["title"])}</h1>
+<p class="tag">{html.escape(s["tagline"])}</p>
 <form method="post" action="/screen?lang={lang}">
-<ca-field><label for="python-jurisdiction"><strong>{html.escape(s['jurisdiction'])}</strong></label>
+<ca-field><label for="python-jurisdiction"><strong>{html.escape(s["jurisdiction"])}</strong></label>
 <select id="python-jurisdiction" name="jurisdiction" required>
 <option value="" selected disabled>Seleccione</option>{juris}</select></ca-field>
-<fieldset class="ca-field"><legend>{html.escape(s['project_type'])}</legend>
+<fieldset class="ca-field"><legend>{html.escape(s["project_type"])}</legend>
 <div class="choice-grid">{radios}</div></fieldset>
-<p class="small">{html.escape(s['question_intro'])}</p>
+<p class="small">{html.escape(s["question_intro"])}</p>
 <div id="project-questions">{conditional_markup}</div>
-<button class="ca-button" type="submit">{html.escape(s['submit'])}</button>
+<button class="ca-button" type="submit">{html.escape(s["submit"])}</button>
 </form>
 <script>
 (() => {{
@@ -628,10 +716,12 @@ def intake_form(lang):
   );
   updateQuestions();
 }})();
-</script>""", lang)
+</script>""",
+        lang,
+    )
 
 
-def _base_review_label(explanation, lang):
+def _base_review_label(explanation: PlainLanguageExplanation, lang: str) -> str:
     review = explanation.review
     if review.status == "prototype_review_pending":
         return STRINGS[lang]["ai_draft"]
@@ -658,14 +748,18 @@ def _base_review_label(explanation, lang):
     )
 
 
-def _review_labels(explanation, lang, copy_lang):
+def _review_labels(
+    explanation: PlainLanguageExplanation, lang: str, copy_lang: str
+) -> list[str]:
     labels = [_base_review_label(explanation, lang)]
     if lang != "es":
         return labels
     if copy_lang != "es":
         labels.append(STRINGS[lang]["english_only"])
         return labels
-    localized = explanation.es
+    # ``copy_lang`` is ``es`` only when ``localized_language`` found
+    # Spanish copy on this record, so ``es`` is present here.
+    localized = cast(LocalizedExplanation, explanation.es)
     if localized.translation_status == "machine_draft":
         labels.append(STRINGS[lang]["translation_draft"])
     elif localized.translation_status == "jurisdiction_approved":
@@ -683,7 +777,7 @@ def _review_labels(explanation, lang, copy_lang):
     return labels
 
 
-def committed_changed_source_ids():
+def committed_changed_source_ids() -> tuple[str, ...]:
     """Read the same changed-source list the browser bundle ships.
 
     ``scripts/build_demo_bundle.py`` copies this file into the bundle as
@@ -701,7 +795,66 @@ def committed_changed_source_ids():
     return tuple(value for value in changed if isinstance(value, str))
 
 
-def _result_badge(result, strings, *, today=None, changed_source_ids=()):
+def _source_state_record() -> dict[str, object]:
+    try:
+        record = json.loads(SOURCE_STATE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return record if isinstance(record, dict) else {}
+
+
+def committed_not_found_source_ids() -> tuple[str, ...]:
+    """Watched sources whose published address answered "no document".
+
+    Same reading as ``notFoundSourceIds`` in ``assets/demo.js``, from the
+    same committed receipt, so the reference server does not offer a link
+    the browser withholds. It is a fact about the address, never about the
+    law: nothing here marks a rule stale.
+    """
+
+    observations = _source_state_record().get("observations")
+    if not isinstance(observations, list):
+        return ()
+    return tuple(
+        item["source_id"]
+        for item in observations
+        if isinstance(item, dict)
+        and item.get("status") == "unverifiable"
+        and item.get("unverifiable_kind") == "not_found"
+        and isinstance(item.get("source_id"), str)
+    )
+
+
+def citation_source_id(url: str) -> str | None:
+    """Map a rule's own citation URL to the watched source behind it."""
+
+    try:
+        registry = json.loads(SOURCES_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    record = registry.get(url) if isinstance(registry, dict) else None
+    if not isinstance(record, dict):
+        return None
+    source_id = record.get("source_id")
+    return source_id if isinstance(source_id, str) else None
+
+
+def citation_link_not_found(
+    citation: Citation, not_found_source_ids: Iterable[str] | None = None
+) -> bool:
+    if not_found_source_ids is None:
+        not_found_source_ids = committed_not_found_source_ids()
+    source_id = citation_source_id(citation.url)
+    return source_id is not None and source_id in set(not_found_source_ids)
+
+
+def _result_badge(
+    result: PathwayResult,
+    strings: UiStrings,
+    *,
+    today: date | None = None,
+    changed_source_ids: Iterable[str] = (),
+) -> tuple[str, str]:
     """Label one rule, using the same precedence as ``harness.runner``.
 
     A changed source wins over the age check: once a dependency has moved,
@@ -732,7 +885,7 @@ def _result_badge(result, strings, *, today=None, changed_source_ids=()):
     return status, markup
 
 
-def _safe_external_url(value):
+def _safe_external_url(value: object) -> str | None:
     if not isinstance(value, str):
         return None
     parsed = urlparse(value)
@@ -742,14 +895,14 @@ def _safe_external_url(value):
 
 
 def render_result_card(
-    result,
-    explanation,
-    lang,
+    result: PathwayResult,
+    explanation: PlainLanguageExplanation | None,
+    lang: str,
     *,
-    suppress_pending_review=False,
-    today=None,
-    changed_source_ids=None,
-):
+    suppress_pending_review: bool = False,
+    today: date | None = None,
+    changed_source_ids: Iterable[str] | None = None,
+) -> str:
     """Render one decision record without affecting the underlying match."""
 
     s = STRINGS[lang]
@@ -765,33 +918,40 @@ def render_result_card(
         for character in rule.rule_id
     )
     card_id = f"result-title-{safe_rule_id}"
-    source_url = _safe_external_url(citation.url)
+    link_not_found = citation_link_not_found(citation)
+    # Offering an anchor that resolves to nothing is the part this fixes.
+    # The citation text, the excerpt, the badge, and the match are untouched.
+    source_url = None if link_not_found else _safe_external_url(citation.url)
     source_record = (
         f"<a lang='en' href='{html.escape(source_url, quote=True)}' "
         f"rel='noopener'>{_ui_escape(citation.source)}</a>"
         if source_url
         else f"<span lang='en'>{_ui_escape(citation.source)}</span>"
     )
+    link_note = (
+        f"<p class='notice small source-link-missing' lang='{lang}' "
+        f"data-source-link='not-found'>{_ui_escape(s['link_not_found'])}</p>"
+        if link_not_found
+        else ""
+    )
     source = (
         f"<p class='source-basis'><b>{html.escape(s['source'])}:</b> "
-        f"{source_record}</p>"
+        f"{source_record}</p>{link_note}"
     )
     docs = "".join(
-        f"<li>{_ui_escape(document)}</li>"
-        for document in rule.required_documents
+        f"<li>{_ui_escape(document)}</li>" for document in rule.required_documents
     )
     docs_html = (
-        f"<h4 lang='{lang}'>{s['docs']}</h4>"
-        f"<ul class='small' lang='en'>{docs}</ul>"
+        f"<h4 lang='{lang}'>{s['docs']}</h4><ul class='small' lang='en'>{docs}</ul>"
         if docs
         else ""
     )
     evidence = f"""
 <details>
-  <summary lang="{lang}">{s['evidence']}</summary>
-  {f'<p class="small" lang="en">{_ui_escape(rule.notes)}</p>' if status == "verified" and rule.notes else ''}
-  {f'<blockquote lang="en">{html.escape(citation.excerpt)}</blockquote>' if citation.excerpt else ''}
-  {f'<p class="small" lang="{lang}">{s["evidence_unavailable"]}</p>' if status != "verified" and not citation.excerpt else ''}
+  <summary lang="{lang}">{s["evidence"]}</summary>
+  {f'<p class="small" lang="en">{_ui_escape(rule.notes)}</p>' if status == "verified" and rule.notes else ""}
+  {f'<blockquote lang="en">{html.escape(citation.excerpt)}</blockquote>' if citation.excerpt else ""}
+  {f'<p class="small" lang="{lang}">{s["evidence_unavailable"]}</p>' if status != "verified" and not citation.excerpt else ""}
   {docs_html if status == "verified" else ""}
 </details>"""
 
@@ -799,9 +959,7 @@ def render_result_card(
     display_title_lang = "en"
     if status != "verified":
         message = (
-            s["withheld_unverified"]
-            if status == "unverified"
-            else s["withheld_stale"]
+            s["withheld_unverified"] if status == "unverified" else s["withheld_stale"]
         )
         plain_language = (
             f"<div class='notice ca-shout small' lang='{lang}'>{message}</div>"
@@ -821,8 +979,7 @@ def render_result_card(
             f"<li>{_ui_escape(step)}</li>" for step in localized.next_steps
         )
         confirmations = "".join(
-            f"<li>{_ui_escape(item)}</li>"
-            for item in localized.confirm_with_staff
+            f"<li>{_ui_escape(item)}</li>" for item in localized.confirm_with_staff
         )
         highlights = ""
         if localized.highlights is not None:
@@ -838,33 +995,26 @@ def render_result_card(
   </div>"""
         plain_language = f"""
 <div class="plain-layer">
-  <h4 lang="{lang}">{s['means']}</h4>
+  <h4 lang="{lang}">{s["means"]}</h4>
   <p lang="{copy_lang}">{_ui_escape(localized.summary)}</p>
   {highlights}
-  <h4 lang="{lang}">{s['next']}</h4>
-  <p class="small" lang="{lang}">{s['next_scope']}</p>
+  <h4 lang="{lang}">{s["next"]}</h4>
+  <p class="small" lang="{lang}">{s["next_scope"]}</p>
   <ol lang="{copy_lang}">{next_steps}</ol>
   <div class="confirmation">
-    <h4 lang="{lang}">{s['confirm']}</h4>
+    <h4 lang="{lang}">{s["confirm"]}</h4>
     <ul lang="{copy_lang}">{confirmations}</ul>
   </div>
 </div>"""
-        pending_only = (
-            explanation.review.status == "prototype_review_pending"
-            and (
-                lang != "es"
-                or (
-                    copy_lang == "es"
-                    and localized.translation_status == "machine_draft"
-                )
-            )
+        pending_only = explanation.review.status == "prototype_review_pending" and (
+            lang != "es"
+            or (copy_lang == "es" and localized.translation_status == "machine_draft")
         )
         review_note = (
             ""
             if suppress_pending_review and pending_only
             else "".join(
-                f"<p class='review-note' lang='{lang}'>"
-                f"{_ui_escape(label)}</p>"
+                f"<p class='review-note' lang='{lang}'>{_ui_escape(label)}</p>"
                 for label in _review_labels(explanation, lang, copy_lang)
             )
         )
@@ -876,7 +1026,7 @@ def render_result_card(
             f"{html.escape(explanation.updated_on)}</span></p></details>",
         )
 
-    return f"""<article class="card result-card ca-card{'' if status == 'verified' else ' unverified'}"
+    return f"""<article class="card result-card ca-card{"" if status == "verified" else " unverified"}"
   data-rule-id="{html.escape(rule.rule_id)}" aria-labelledby="{card_id}">
 <div class="result-head">
   <h3 id="{card_id}" lang="{display_title_lang}">{_ui_escape(display_title)}</h3>
@@ -889,7 +1039,7 @@ def render_result_card(
 </article>"""
 
 
-def _form_value(form, name):
+def _form_value(form: Mapping[str, object], name: str) -> str | None:
     values = form.get(name, [])
     if not isinstance(values, (list, tuple)) or len(values) != 1:
         return None
@@ -897,7 +1047,7 @@ def _form_value(form, name):
     return value if isinstance(value, str) else None
 
 
-def _question_label(field, lang, project_type=None):
+def _question_label(field: str, lang: str, project_type: str | None = None) -> str:
     s = STRINGS[lang]
     if field == "primary_dwelling_status":
         return s["primary_question"]
@@ -905,18 +1055,39 @@ def _question_label(field, lang, project_type=None):
         return s["adu_form_question"]
     if field == "unpermitted_existing":
         return s["unpermitted_questions"].get(
-            project_type, s["unpermitted_questions"]["adu"]
+            # A missing project type takes the default at runtime; typeshed
+            # types the lookup key as ``str``.
+            project_type,  # type: ignore[arg-type]
+            s["unpermitted_questions"]["adu"],
         )
     return s["questions"].get(field, field)
 
 
-def result_page(form, lang):
+def _collect_intake_fields(
+    form: Mapping[str, object], project_type: str
+) -> tuple[dict[str, str], list[str]]:
+    """Separate answers the screen can use from answers staff must resolve.
+
+    An answer outside the published vocabulary, and an explicit "unknown",
+    becomes a question for staff instead of a value a path is assumed from.
+    """
+
+    collected: dict[str, str] = {}
+    unresolved: list[str] = []
+    for field in PROJECT_FIELDS[project_type]:
+        value = _form_value(form, field)
+        if value not in FIELD_VALUES[field] or value == "unknown":
+            unresolved.append(field)
+        elif value is not None:
+            collected[field] = value
+    return collected, unresolved
+
+
+def result_page(form: Mapping[str, object], lang: str) -> str:
     s = STRINGS[lang]
     project_type = _form_value(form, "project_type")
     jurisdiction = _form_value(form, "jurisdiction")
-    allowed_jurisdictions = {
-        value for value, _label in s["jurisdictions"]
-    }
+    allowed_jurisdictions = {value for value, _label in s["jurisdictions"]}
     if project_type not in PROJECT_FIELDS or jurisdiction not in allowed_jurisdictions:
         body = (
             f"<h1>{html.escape(s['unknown_heading'])}</h1>"
@@ -929,13 +1100,8 @@ def result_page(form, lang):
         "project_type": project_type,
         "jurisdiction": jurisdiction,
     }
-    unresolved = []
-    for field in PROJECT_FIELDS[project_type]:
-        value = _form_value(form, field)
-        if value not in FIELD_VALUES[field] or value == "unknown":
-            unresolved.append(field)
-        elif value is not None:
-            intake[field] = value
+    collected, unresolved = _collect_intake_fields(form, project_type)
+    intake.update(collected)
 
     if unresolved:
         questions = "".join(
@@ -967,11 +1133,11 @@ def result_page(form, lang):
             f"<div class='notice ca-shout'>{html.escape(s['none'])}</div>"
         )
     else:
-        has_route = any(
-            result.rule.display_group == "route" for result in results
-        )
-        grouped = {key: [] for key in ("route", "standard", "local_process", "other")}
-        shown = []
+        has_route = any(result.rule.display_group == "route" for result in results)
+        grouped: dict[str, list[str]] = {
+            key: [] for key in ("route", "standard", "local_process", "other")
+        }
+        shown: list[tuple[PlainLanguageExplanation, LocalizedExplanation, str]] = []
         changed_source_ids = committed_changed_source_ids()
         for result in results:
             status, _badge = _result_badge(
@@ -995,11 +1161,7 @@ def result_page(form, lang):
         )
         for r in results:
             explanation = explanations.get(r.rule.rule_id)
-            group = (
-                r.rule.display_group
-                if r.rule.display_group in grouped
-                else "other"
-            )
+            group = r.rule.display_group if r.rule.display_group in grouped else "other"
             grouped[group].append(
                 render_result_card(
                     r,
@@ -1038,42 +1200,52 @@ def result_page(form, lang):
             f"{html.escape(s['result_intro'])}</p>"
             f"{no_route_notice}{draft_banner}{sections}"
         )
-    body += (
-        f"<p><a href='/?lang={lang}'>{html.escape(s['back'])}</a></p>"
-    )
+    body += f"<p><a href='/?lang={lang}'>{html.escape(s['back'])}</a></p>"
     return page(s["results"], body, lang)
 
 
-def trust_page(query, lang):
+def trust_page(query: Mapping[str, list[str]], lang: str) -> str:
     changed = query.get("changed", [])
-    report = verify_rules(RULES_PATH, GOLDEN_PATH, today=utc_today(),
-                          changed_source_ids=changed)
+    report = verify_rules(
+        RULES_PATH, GOLDEN_PATH, today=utc_today(), changed_source_ids=changed
+    )
     total = len(report.verified) + len(report.stale) + len(report.unverified)
     pct = round(100 * len(report.verified) / total) if total else 0
-    rows = "".join(
-        f"<tr><td>{rid}</td><td><span class='badge'>within review window</span></td></tr>"
-        for rid in report.verified
-    ) + "".join(
-        f"<tr><td>{rid}</td><td><span class='badge stale'>STALE: re-verify</span></td></tr>"
-        for rid in report.stale
-    ) + "".join(
-        f"<tr><td>{rid}</td><td><span class='badge warn'>no dated source record</span></td></tr>"
-        for rid in report.unverified
+    rows = (
+        "".join(
+            f"<tr><td>{rid}</td><td><span class='badge'>within review window</span></td></tr>"
+            for rid in report.verified
+        )
+        + "".join(
+            f"<tr><td>{rid}</td><td><span class='badge stale'>STALE: re-verify</span></td></tr>"
+            for rid in report.stale
+        )
+        + "".join(
+            f"<tr><td>{rid}</td><td><span class='badge warn'>no dated source record</span></td></tr>"
+            for rid in report.unverified
+        )
     )
     changed_label = (
         "Gov. Code § 66321"
         if changed and changed[0] == "ca-gov-66321"
-        else f"source {changed[0]}" if changed else ""
+        else f"source {changed[0]}"
+        if changed
+        else ""
     )
-    sim = ("<p class='notice ca-shout'>Rehearsing an amendment to "
-           f"{html.escape(changed_label)}: dependent guidance is stale until staff "
-           f"re-verify it. <a href='/trust?lang={lang}'>Reset</a></p>" if changed else
-           f"<p class='small'>Rehearse a legislative change: "
-           f"<a href='/trust?lang={lang}&changed=ca-gov-66321'>amend § 66321 "
-           f"(ADU size/setback/height standards)</a></p>")
-    golden = (f"{len(report.golden_passed)}/"
-              f"{len(report.golden_passed) + len(report.golden_failed)} golden cases passing")
-    body = f"""<h1>{STRINGS[lang]['dashboard']}</h1>
+    sim = (
+        "<p class='notice ca-shout'>Rehearsing an amendment to "
+        f"{html.escape(changed_label)}: dependent guidance is stale until staff "
+        f"re-verify it. <a href='/trust?lang={lang}'>Reset</a></p>"
+        if changed
+        else f"<p class='small'>Rehearse a legislative change: "
+        f"<a href='/trust?lang={lang}&changed=ca-gov-66321'>amend § 66321 "
+        f"(ADU size/setback/height standards)</a></p>"
+    )
+    golden = (
+        f"{len(report.golden_passed)}/"
+        f"{len(report.golden_passed) + len(report.golden_failed)} golden cases passing"
+    )
+    body = f"""<h1>{STRINGS[lang]["dashboard"]}</h1>
 <p><b>{pct}%</b> of rule records have dated source evidence within the
 {SOURCE_REVIEW_WINDOW_DAYS}-day review window · {golden} · checked {report.checked_on}</p>
 <div class="bar"><div style="width:{pct}%"></div><div class="stale" style="width:{100 - pct}%"></div></div>
@@ -1083,7 +1255,7 @@ def trust_page(query, lang):
     return page(STRINGS[lang]["dashboard"], body, lang)
 
 
-def static_path(url_path):
+def static_path(url_path: str) -> Path | None:
     """Resolve a public static-demo path without allowing path traversal."""
 
     decoded = unquote(url_path)
@@ -1099,8 +1271,10 @@ def static_path(url_path):
         return ROOT / page_paths[decoded]
 
     allowed_root = (
-        DATA_ROOT if decoded.startswith("/data/")
-        else ASSETS_ROOT if decoded.startswith("/assets/")
+        DATA_ROOT
+        if decoded.startswith("/data/")
+        else ASSETS_ROOT
+        if decoded.startswith("/assets/")
         else None
     )
     if allowed_root is None:
@@ -1114,7 +1288,7 @@ def static_path(url_path):
 
 
 class Handler(BaseHTTPRequestHandler):
-    def _security_headers(self):
+    def _security_headers(self) -> None:
         self.send_header(
             "Content-Security-Policy",
             "default-src 'none'; script-src 'self' 'unsafe-inline'; "
@@ -1132,7 +1306,13 @@ class Handler(BaseHTTPRequestHandler):
             "camera=(), microphone=(), geolocation=()",
         )
 
-    def _send(self, html_text, code=200, *, extra_headers=None):
+    def _send(
+        self,
+        html_text: str,
+        code: int = 200,
+        *,
+        extra_headers: Mapping[str, str] | None = None,
+    ) -> None:
         data = html_text.encode()
         self.send_response(code)
         self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -1144,7 +1324,7 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def _send_file(self, path):
+    def _send_file(self, path: Path) -> None:
         data = path.read_bytes()
         media_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
         self.send_response(200)
@@ -1155,11 +1335,11 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def _lang(self, query):
+    def _lang(self, query: Mapping[str, list[str]]) -> str:
         lang = query.get("lang", ["en"])[0]
         return lang if lang in STRINGS else "en"
 
-    def do_GET(self):
+    def do_GET(self) -> None:
         url = urlparse(self.path)
         query = parse_qs(url.query)
         lang = self._lang(query)
@@ -1173,7 +1353,7 @@ class Handler(BaseHTTPRequestHandler):
         else:
             self._send(page("404", "<h1>404</h1>"), 404)
 
-    def do_POST(self):
+    def do_POST(self) -> None:
         url = urlparse(self.path)
         query = parse_qs(url.query)
         lang = self._lang(query)
@@ -1226,7 +1406,7 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._send(result_page(form, lang))
 
-    def log_message(self, *args):
+    def log_message(self, *args: object) -> None:
         pass
 
 

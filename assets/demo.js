@@ -233,6 +233,7 @@ const STRINGS = {
     simulationApplied: count => `${count} guidance record${count === 1 ? " was" : "s were"} marked stale by the source-change rehearsal.`,
     simulationReset: count => `The source-change rehearsal was reset. ${count} guidance record${count === 1 ? "" : "s"} again show${count === 1 ? "s" : ""} the recorded source status.`,
     verifiedOn: date => `Source evidence on file: ${date}`,
+    citationLinkNotFound: date => `The official link for this source did not open when it was last checked: the website answered that no document is there. The quoted text below is from the copy this project saved on ${date}. Ask local staff for the current document.`,
     stale: "Source evidence needs a new check",
     unverified: "No source evidence date on file",
     langBtn: "Español",
@@ -497,6 +498,7 @@ const STRINGS = {
     simulationApplied: count => `El ensayo del cambio de fuente marcó como desactualizado${count === 1 ? "" : "s"} ${count} registro${count === 1 ? "" : "s"} de orientación.`,
     simulationReset: count => `Se restableció el ensayo del cambio de fuente. ${count} registro${count === 1 ? "" : "s"} de orientación vuelve${count === 1 ? "" : "n"} a mostrar el estado de fuente registrado.`,
     verifiedOn: date => `Evidencia de la fuente registrada: ${date}`,
+    citationLinkNotFound: date => `El enlace oficial de esta fuente no abrió en la última comprobación: el sitio web respondió que no hay ningún documento allí. El texto citado abajo proviene de la copia que este proyecto guardó el ${date}. Pida al personal local el documento actual.`,
     stale: "La evidencia de la fuente necesita una nueva comprobación",
     unverified: "No hay fecha de evidencia de la fuente",
     langBtn: "English",
@@ -680,6 +682,34 @@ function committedChangedSourceIds() {
   return typeof SOURCE_STATE !== "undefined"
     && Array.isArray(SOURCE_STATE?.changed_source_ids)
     ? SOURCE_STATE.changed_source_ids : [];
+}
+
+// A watched source whose published address answered "no document". This is
+// evidence about the address, not about the law: the excerpt and the
+// recorded hash still stand and nothing is marked stale. What it costs is
+// the link, so the link is what stops being offered.
+function notFoundSourceIds() {
+  return Array.isArray(SOURCE_STATE?.observations)
+    ? SOURCE_STATE.observations
+      .filter(item => item.status === "unverifiable"
+        && item.unverifiable_kind === "not_found")
+      .map(item => item.source_id)
+    : [];
+}
+
+// The source registry is keyed by URL, so a rule's own citation URL maps
+// straight to the watched source behind it. A rule can also *depend* on a
+// withdrawn source without citing it; that is a weaker finding and is not
+// what the result card's link promises.
+function citationSourceId(rule) {
+  const record = SOURCES?.[rule?.citation?.url];
+  return record && typeof record === "object" && nonBlank(record.source_id)
+    ? record.source_id : null;
+}
+
+function citationLinkNotFound(rule) {
+  const sourceId = citationSourceId(rule);
+  return sourceId !== null && notFoundSourceIds().includes(sourceId);
 }
 
 function activeChangedSourceIds() {
@@ -1383,6 +1413,14 @@ const SOURCE_OBSERVATION_KEYS = [
   "last_verified_on", "observed_sha256", "reason", "recorded_sha256",
   "source_id", "status",
 ];
+// Carried only by an unverifiable observation. "transport" means the fetch
+// got no authoritative answer; "not_found" means the server answered that
+// no document is published at that address. Neither stales a rule, but
+// only one of them means the printed citation link resolves to nothing.
+const UNVERIFIABLE_KINDS = ["transport", "not_found"];
+const SOURCE_OBSERVATION_ALLOWED_KEYS = [
+  ...SOURCE_OBSERVATION_KEYS, "unverifiable_kind",
+];
 const SOURCE_RECEIPT_KEYS = ["commit_sha", "method", "run_url", "status"];
 
 function validSha256(value) {
@@ -1411,7 +1449,7 @@ function exactSortedStringList(value) {
 function sourceStateObservationIsValid(observation, source) {
   if (!hasExactKeys(
     observation,
-    SOURCE_OBSERVATION_KEYS,
+    SOURCE_OBSERVATION_ALLOWED_KEYS,
     SOURCE_OBSERVATION_KEYS,
   ) || !source || source.watch === false
       || observation.source_id !== source.source_id
@@ -1422,11 +1460,15 @@ function sourceStateObservationIsValid(observation, source) {
       || observation.last_verified_on !== source.fetched_on
       || !validSha256(observation.recorded_sha256)) return false;
   if (observation.status === "unverifiable") {
+    // A failure with no kind cannot be rendered honestly, so refuse it
+    // rather than guess which kind it was.
     return observation.observed_sha256 === null
-      && nonBlank(observation.reason);
+      && nonBlank(observation.reason)
+      && UNVERIFIABLE_KINDS.includes(observation.unverifiable_kind);
   }
   return validSha256(observation.observed_sha256)
     && observation.reason === null
+    && !Object.prototype.hasOwnProperty.call(observation, "unverifiable_kind")
     && (observation.status === "unchanged")
       === (observation.observed_sha256 === observation.recorded_sha256);
 }
@@ -2719,10 +2761,19 @@ function renderResultCard(rule, explanation, options = {}) {
     ${ok && docs ? `<h5 lang="${lang}">${esc(s.docs)}</h5><ul class="small" lang="en">${docs}</ul>` : ""}
     ${copyRecord}
   </section>`;
-  const sourceUrl = safeExternalUrl(c.url);
+  const linkNotFound = citationLinkNotFound(rule);
+  // Offering an anchor that resolves to nothing is the part this fixes.
+  // The citation text, the excerpt, the badge, and the match are untouched.
+  const sourceUrl = linkNotFound ? null : safeExternalUrl(c.url);
   const sourceMarkup = sourceUrl
     ? `<a lang="en" href="${esc(sourceUrl)}" rel="noopener">${esc(c.source)}</a>`
     : `<span lang="en">${esc(c.source)}</span>`;
+  const linkNotFoundNote = linkNotFound
+    ? `<p class="notice small source-link-missing" lang="${lang}"
+        data-source-link="not-found">${esc(
+          s.citationLinkNotFound(formatSourceDate(c.verified_on)),
+        )}</p>`
+    : "";
   const hasGuidance = Boolean(localizedRecord);
   const showLabel = hasGuidance ? s.showDetails : s.showEvidence;
   const hideLabel = hasGuidance ? s.hideDetails : s.hideEvidence;
@@ -2757,6 +2808,7 @@ function renderResultCard(rule, explanation, options = {}) {
     ${consequence}
     <p class="source-basis"><b lang="${lang}">${esc(s.source)}:</b>
       ${sourceMarkup}</p>
+    ${linkNotFoundNote}
     <details class="rule-details" data-rule-id="${esc(rule.rule_id)}"
         ${isOpen ? "open" : ""}>
       <summary lang="${lang}">
@@ -3301,7 +3353,9 @@ function renderSourceState() {
   summary.textContent = `Checked ${formatSourceDate(
     SOURCE_STATE.checked_at.slice(0, 10),
   )}: ${counts.unchanged} unchanged; ${counts.changed} changed; `
-    + `${counts.unverifiable} could not be re-fetched. This repository-adopted `
+    + `${counts.unverifiable} could not be re-fetched `
+    + `(${notFoundSourceIds().length} because the published address answered `
+    + "that no document is there). This repository-adopted "
     + "receipt is the source-state overlay used by the applicant guide.";
   runLink.href = SOURCE_STATE.receipt.run_url;
   const impact = sourceStateOperationalImpact(SOURCE_STATE.changed_source_ids);
@@ -3322,14 +3376,25 @@ function renderSourceState() {
       + "No fetched source in this committed snapshot changed.</p>",
     );
   }
-  if (SOURCE_STATE.unverifiable_source_ids.length) {
-    const unverifiableCount = SOURCE_STATE.unverifiable_source_ids.length;
-    const unavailableCopy = unverifiableCount === 1
+  const notFound = notFoundSourceIds();
+  const unreachableCount =
+    SOURCE_STATE.unverifiable_source_ids.length - notFound.length;
+  if (unreachableCount) {
+    const unavailableCopy = unreachableCount === 1
       ? "1 source was not re-fetched. Its recorded date still controls"
-      : `${unverifiableCount} sources were not re-fetched. Their recorded dates still control`;
+      : `${unreachableCount} sources were not re-fetched. Their recorded dates still control`;
     queueParts.push(`<p><strong>Watch warning.</strong>
       ${unavailableCopy}; no dependent was marked stale solely because a
       download failed.</p>`);
+  }
+  if (notFound.length) {
+    queueParts.push(`<p><strong>Published link not found.</strong>
+      ${notFound.length} source address${notFound.length === 1 ? "" : "es"}
+      answered that no document is there
+      (${esc(notFound.join(", "))}). The server replied, so this is not a
+      download failure: the recorded hashes and retained copies still stand
+      and nothing was marked stale, but a reader who follows those citation
+      links gets nothing.</p>`);
   }
   queue.innerHTML = queueParts.join("");
   queue.classList.remove("hidden");
@@ -3363,8 +3428,14 @@ function renderSources() {
         monitoring = `<span class="badge bad"><span class="status-ico"
           aria-hidden="true">✕</span>changed · review required</span>`;
       } else if (watched && observation?.status === "unverifiable") {
-        monitoring = `<span class="badge warn"><span class="status-ico"
-          aria-hidden="true">⚠</span>could not re-fetch</span>`;
+        // Two different findings. "could not re-fetch" is about this run;
+        // "published link not found" is about the address, and it is the
+        // one a reader following the citation actually runs into.
+        monitoring = observation.unverifiable_kind === "not_found"
+          ? `<span class="badge bad"><span class="status-ico"
+            aria-hidden="true">⚠</span>published link not found</span>`
+          : `<span class="badge warn"><span class="status-ico"
+            aria-hidden="true">⚠</span>could not re-fetch</span>`;
       }
       const recorded = metadata.fetched_on ? esc(metadata.fetched_on) : "Not recorded";
       const digest = nonBlank(metadata.sha256)

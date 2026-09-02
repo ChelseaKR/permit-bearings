@@ -19,7 +19,13 @@ from typing import Any, Literal, cast
 from urllib.parse import urlsplit
 
 from .harness.runner import load_golden
-from .harness.watch import SourceRecord, WatchResult, load_sources
+from .harness.watch import (
+    UNVERIFIABLE_KINDS,
+    SourceRecord,
+    UnverifiableKind,
+    WatchResult,
+    load_sources,
+)
 from .screening import load_rules
 
 SourceWatchStatus = Literal["unchanged", "changed", "unverifiable"]
@@ -51,6 +57,11 @@ _OBSERVATION_KEYS = {
     "source_id",
     "status",
 }
+# Present exactly on an unverifiable observation and absent everywhere else,
+# so a receipt written before this field existed stays byte-identical and
+# keeps its fingerprint. A fetched observation carrying the key is rejected
+# rather than ignored.
+_UNVERIFIABLE_KIND_KEY = "unverifiable_kind"
 _RECEIPT_KEYS = {"commit_sha", "method", "run_url", "status"}
 
 
@@ -62,6 +73,28 @@ class SourceObservation:
     observed_sha256: str | None
     last_verified_on: str
     reason: str | None
+    # Set only when ``status`` is ``unverifiable``. ``transport`` means the
+    # fetch got no authoritative answer; ``not_found`` means the server
+    # answered that no document is published at that address. Neither is
+    # evidence that the law changed, and neither stales a dependent rule.
+    unverifiable_kind: UnverifiableKind | None = None
+
+    @property
+    def is_not_found(self) -> bool:
+        return self.status == "unverifiable" and self.unverifiable_kind == "not_found"
+
+    def to_dict(self) -> dict[str, object]:
+        payload: dict[str, object] = {
+            "last_verified_on": self.last_verified_on,
+            "observed_sha256": self.observed_sha256,
+            "reason": self.reason,
+            "recorded_sha256": self.recorded_sha256,
+            "source_id": self.source_id,
+            "status": self.status,
+        }
+        if self.unverifiable_kind is not None:
+            payload[_UNVERIFIABLE_KIND_KEY] = self.unverifiable_kind
+        return payload
 
 
 @dataclass(frozen=True)
@@ -87,10 +120,22 @@ class SourceStateSnapshot:
     affected_golden_case_ids: tuple[str, ...]
     unaffected_golden_case_ids: tuple[str, ...]
 
+    @property
+    def not_found_source_ids(self) -> tuple[str, ...]:
+        """Watched sources whose published address answered "no document".
+
+        Derived from the observations rather than stored as its own receipt
+        field, so no committed receipt has to change to gain the reading.
+        """
+
+        return tuple(
+            sorted(item.source_id for item in self.observations if item.is_not_found)
+        )
+
     def to_dict(self) -> dict[str, object]:
         payload = asdict(self)
         payload["observations"] = [
-            asdict(observation) for observation in self.observations
+            observation.to_dict() for observation in self.observations
         ]
         for field_name in (
             "changed_source_ids",
@@ -244,6 +289,7 @@ def _observation_from_watch(
             observed_sha256=None,
             last_verified_on=source.fetched_on,
             reason=failure.reason,
+            unverifiable_kind=failure.kind,
         )
     observed = watch.observed_digests.get(source_id)
     if observed is None:
@@ -390,11 +436,33 @@ def _validate_observation_evidence(
         raise ValueError(f"{source_id}: status contradicts observed digest")
 
 
+def _observation_kind(source_id: str, raw: dict[str, Any], status: Any) -> Any:
+    """Read the fetch-failure kind, which every unverifiable row must carry.
+
+    An unverifiable observation with no kind cannot be rendered honestly:
+    the reader has no way to tell a certificate failure from a citation
+    whose published address is gone. Fail closed rather than guess one.
+    """
+
+    kind = raw.get(_UNVERIFIABLE_KIND_KEY)
+    if status != "unverifiable":
+        if _UNVERIFIABLE_KIND_KEY in raw:
+            raise ValueError(f"{source_id}: fetched observation cannot have a kind")
+        return None
+    if kind not in UNVERIFIABLE_KINDS:
+        raise ValueError(f"{source_id}: unverifiable observation needs a valid kind")
+    return kind
+
+
 def _load_observation(
     raw: Any,
     watched: dict[str, SourceRecord],
 ) -> SourceObservation:
-    if not isinstance(raw, dict) or set(raw) != _OBSERVATION_KEYS:
+    if not isinstance(raw, dict) or not set(raw) <= (
+        _OBSERVATION_KEYS | {_UNVERIFIABLE_KIND_KEY}
+    ):
+        raise ValueError("observations: invalid fields")
+    if not set(raw) >= _OBSERVATION_KEYS:
         raise ValueError("observations: invalid fields")
     source_id = raw.get("source_id")
     if not isinstance(source_id, str) or not _SOURCE_ID.fullmatch(source_id):
@@ -411,6 +479,7 @@ def _load_observation(
     if recorded != source.sha256 or raw.get("last_verified_on") != source.fetched_on:
         raise ValueError(f"{source_id}: recorded evidence drifted")
     _validate_observation_evidence(source_id, status, recorded, observed, reason)
+    kind = _observation_kind(source_id, raw, status)
     return SourceObservation(
         source_id=source_id,
         status=cast(SourceWatchStatus, status),
@@ -418,6 +487,7 @@ def _load_observation(
         observed_sha256=observed,
         last_verified_on=source.fetched_on,
         reason=reason,
+        unverifiable_kind=cast("UnverifiableKind | None", kind),
     )
 
 
@@ -568,3 +638,65 @@ def encoded_source_state(snapshot: SourceStateSnapshot) -> str:
         )
         + "\n"
     )
+
+
+@dataclass(frozen=True)
+class WithdrawnCitation:
+    """One published rule citation whose address answered "no document".
+
+    This is a finding about the *link*, never about the law. The excerpt,
+    the retained local copy, and the recorded hash all still stand, and the
+    rule keeps whatever status its own review dates give it. What changed
+    is that a reader who follows the citation gets nothing, so the citation
+    must stop being presented as a working link.
+    """
+
+    rule_id: str
+    source_id: str
+    source_label: str
+    url: str
+    last_verified_on: str
+    reason: str
+
+    def describe(self) -> str:
+        return (
+            f"{self.rule_id}: cited source {self.source_id} answered "
+            f"{self.reason} at its published address; the retained copy last "
+            f"confirmed {self.last_verified_on} still stands, and no rule was "
+            "marked stale, but the printed link does not resolve"
+        )
+
+
+def withdrawn_citations(
+    snapshot: SourceStateSnapshot,
+    sources_path: Path,
+    rules_path: Path,
+) -> tuple[WithdrawnCitation, ...]:
+    """Return every rule whose own citation URL is recorded ``not_found``.
+
+    A rule can also *depend* on a withdrawn source without citing it; that
+    is a weaker finding and is deliberately not reported here, because the
+    applicant-facing promise is about the one link the result card prints.
+    """
+
+    not_found = {
+        item.source_id: item for item in snapshot.observations if item.is_not_found
+    }
+    if not not_found:
+        return ()
+    sources = load_sources(sources_path)
+    by_url = {source.url: source for source in sources.values()}
+    findings = [
+        WithdrawnCitation(
+            rule_id=rule.rule_id,
+            source_id=source.source_id,
+            source_label=source.label,
+            url=source.url,
+            last_verified_on=not_found[source.source_id].last_verified_on,
+            reason=cast(str, not_found[source.source_id].reason),
+        )
+        for rule in load_rules(rules_path)
+        if (source := by_url.get(rule.citation.url)) is not None
+        and source.source_id in not_found
+    ]
+    return tuple(sorted(findings, key=lambda item: (item.rule_id, item.source_id)))

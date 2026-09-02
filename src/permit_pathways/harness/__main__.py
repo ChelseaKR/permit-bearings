@@ -17,6 +17,14 @@ Exit codes:
   known to be wrong with the rule base; the check simply could not confirm
   currency for those sources this run. Kept distinct from ``1`` so a
   blocked or rate-limited runner cannot masquerade as a legislative change.
+
+An unverifiable source is reported by kind. A ``transport`` failure got no
+answer and is a fact about this run. A ``not_found`` failure means the
+server answered that no document is published at that address, so a rule
+citing it prints a link that resolves to nothing. Neither stales a rule and
+neither changes the exit code: a withdrawn link is a publication fact the
+maintainer may not be able to fix in the same run, so it is reported
+loudly rather than used to break the build.
 """
 
 from __future__ import annotations
@@ -83,9 +91,94 @@ def _write_snapshot(args: argparse.Namespace, watch: object) -> None:
     print(f"\nwrote source-state snapshot: {args.snapshot_out}")
 
 
-def main(*, today: date | None = None) -> int:
+DEFAULT_RULES = ROOT / "data" / "rules"
+DEFAULT_SOURCES = ROOT / "data" / "sources.json"
+ADOPTED_SOURCE_STATE = ROOT / "data" / "source-status" / "current.json"
+
+
+def _unverifiable_note(unverifiable: dict[str, UnverifiableSource]) -> str:
+    """Report the two unverifiable kinds separately.
+
+    Collapsing them is how a local certificate-store failure and a city
+    handout that has been taken down read as the same line.
+    """
+
+    not_found = sorted(
+        source_id for source_id, failure in unverifiable.items() if failure.is_not_found
+    )
+    unreachable = len(unverifiable) - len(not_found)
+    lines = []
+    if unreachable:
+        lines.append(
+            f"\n{unreachable} watched source(s) could not be re-fetched "
+            "this run. Their recorded hashes and last verification dates "
+            "stand, and no rule was marked stale on that account. If a source "
+            "stays unreachable, its dependent rules still age out of the "
+            "review window on their own dates."
+        )
+    if not_found:
+        lines.append(
+            f"\n{len(not_found)} watched source address(es) answered "
+            '"not found": '
+            + ", ".join(not_found)
+            + ". The server replied, so this is not a network problem: the "
+            "document is no longer published at the address this project "
+            "prints. Recorded hashes and retained copies still stand and no "
+            "rule was marked stale, but any citation pointing there resolves "
+            "to nothing for a reader."
+        )
+    return "\n".join(lines)
+
+
+def _adopted_withdrawn_citation_report(args: argparse.Namespace) -> str | None:
+    """Report citations the adopted receipt already records as not found.
+
+    Only for a run over the committed corpus. Pointing --rules or --sources
+    at a fixture makes the committed receipt meaningless, and skipping
+    there is honest; skipping on the real corpus would be a check that
+    cannot fail.
+    """
+
+    if (
+        args.rules != DEFAULT_RULES
+        or args.sources != DEFAULT_SOURCES
+        or not ADOPTED_SOURCE_STATE.exists()
+    ):
+        return None
+    from ..source_state import load_source_state_snapshot, withdrawn_citations
+
+    snapshot = load_source_state_snapshot(
+        ADOPTED_SOURCE_STATE,
+        args.sources,
+        args.rules,
+        args.golden,
+    )
+    findings = withdrawn_citations(snapshot, args.sources, args.rules)
+    if not findings:
+        return (
+            "published citation links: the adopted receipt "
+            f"({snapshot.snapshot_id}) records no cited source whose published "
+            'address answered "not found".'
+        )
+    lines = [
+        f"published citation links: {len(findings)} cited source address(es) "
+        'answered "not found" in the adopted receipt. The excerpts and '
+        "retained copies still stand and no rule was marked stale; the links "
+        "printed beside those rules do not resolve."
+    ]
+    lines.extend(f"  LINK NOT FOUND: {item.describe()}" for item in findings)
+    return "\n".join(lines)
+
+
+def _print_adopted_withdrawn_citations(args: argparse.Namespace) -> None:
+    report = _adopted_withdrawn_citation_report(args)
+    if report is not None:
+        print("\n" + report)
+
+
+def main(argv: list[str] | None = None, *, today: date | None = None) -> int:
     parser = argparse.ArgumentParser(prog="permit_pathways.harness")
-    parser.add_argument("--rules", type=Path, default=ROOT / "data" / "rules")
+    parser.add_argument("--rules", type=Path, default=DEFAULT_RULES)
     parser.add_argument(
         "--golden", type=Path, default=ROOT / "data" / "golden" / "example.json"
     )
@@ -109,7 +202,7 @@ def main(*, today: date | None = None) -> int:
         "moved counts as changed, while a source that could not be fetched "
         "is reported as unverifiable and marks nothing stale",
     )
-    parser.add_argument("--sources", type=Path, default=ROOT / "data" / "sources.json")
+    parser.add_argument("--sources", type=Path, default=DEFAULT_SOURCES)
     parser.add_argument(
         "--snapshot-out",
         type=Path,
@@ -126,7 +219,7 @@ def main(*, today: date | None = None) -> int:
     parser.add_argument("--receipt-method", default=None)
     parser.add_argument("--run-url", default=None)
     parser.add_argument("--commit-sha", default=None)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     _validate_snapshot_args(parser, args)
     as_of = resolve_today(args.as_of or today)
 
@@ -203,6 +296,8 @@ def main(*, today: date | None = None) -> int:
                 changed_source_ids=changed,
             ).summary()
         )
+    _print_adopted_withdrawn_citations(args)
+
     if args.assume_changed:
         print(f"\n(simulating changed sources: {', '.join(args.assume_changed)})")
         for rule_id in report.stale:
@@ -213,14 +308,20 @@ def main(*, today: date | None = None) -> int:
         if report.automated_checks_pass
         else "REVIEW NEEDED — the automated queue is not empty",
     )
+    # One machine-readable line, printed on every run including a clean one.
+    # Exit 1 covers three conditions with different owners and different
+    # urgency, and the scheduled workflow could previously only say that one
+    # of them happened. A signal that appeared only on failure could not be
+    # used to detect recovery either, so it is unconditional. See issue #70.
+    print(
+        "\ncurrency signals:"
+        f" changed_sources={len(watch.changed) if watch is not None else 0}"
+        f" stale_rules={len(report.stale)}"
+        f" golden_regressions={len(report.golden_failed)}"
+        f" unverifiable_sources={len(unverifiable)}"
+    )
     if unverifiable:
-        print(
-            f"\n{len(unverifiable)} watched source(s) could not be re-fetched "
-            "this run. Their recorded hashes and last verification dates "
-            "stand, and no rule was marked stale on that account. If a source "
-            "stays unreachable, its dependent rules still age out of the "
-            "review window on their own dates."
-        )
+        print(_unverifiable_note(unverifiable))
     # Exit nonzero only on NEW problems (changed sources, stale rules, or
     # golden regressions). Known-unverified rules are a standing backlog, not
     # a fresh alarm — a scheduled currency check should page on change, not on

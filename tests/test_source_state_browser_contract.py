@@ -297,6 +297,7 @@ const unverifiableObservation = unverifiable.observations.find(
 unverifiableObservation.status = "unverifiable";
 unverifiableObservation.observed_sha256 = null;
 unverifiableObservation.reason = "HTTP 403 Forbidden";
+unverifiableObservation.unverifiable_kind = "transport";
 unverifiable.unverifiable_source_ids = ["ca-gov-66317"];
 setImpact(unverifiable, []);
 const normalizedUnverifiable = normalize(unverifiable);
@@ -304,6 +305,29 @@ check(normalizedUnverifiable !== null, "valid unverifiable receipt rejected");
 check(
   normalizedUnverifiable.affected_rule_ids.length === 0,
   "unverifiable source incorrectly staled dependents",
+);
+// A withdrawn published address is also never a staling event, and it
+// carries its own kind so the reader is told which failure happened.
+const withdrawn = structuredClone(unverifiable);
+withdrawn.observations.find(
+  item => item.source_id === "ca-gov-66317",
+).unverifiable_kind = "not_found";
+withdrawn.observations.find(
+  item => item.source_id === "ca-gov-66317",
+).reason = "HTTP 404 Not Found";
+const normalizedWithdrawn = normalize(withdrawn);
+check(normalizedWithdrawn !== null, "valid not-found receipt rejected");
+check(
+  normalizedWithdrawn.affected_rule_ids.length === 0,
+  "a withdrawn address incorrectly staled dependents",
+);
+const undescribed = structuredClone(unverifiable);
+delete undescribed.observations.find(
+  item => item.source_id === "ca-gov-66317",
+).unverifiable_kind;
+check(
+  normalize(undescribed) === null,
+  "an unverifiable observation with no kind was accepted",
 );
 SOURCE_STATE = normalizedUnverifiable;
 check(

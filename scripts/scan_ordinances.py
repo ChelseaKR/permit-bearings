@@ -122,6 +122,59 @@ def committed_scan_dates(results_dir: Path = RESULTS) -> dict[str, str]:
     return dates
 
 
+def recorded_scan_dates(results_dir: Path | None = None) -> dict[str, str]:
+    """`scanned_on` per slug, tolerating a slug with no published result yet.
+
+    The strict `committed_scan_dates` is for `--check`, where a missing file
+    is itself drift. Writing is the case where a missing file is ordinary:
+    it is how a new jurisdiction arrives.
+    """
+    results_dir = RESULTS if results_dir is None else results_dir
+    dates: dict[str, str] = {}
+    for slug in corpus_slugs():
+        path = results_dir / f"{slug}.json"
+        if not path.exists():
+            continue
+        try:
+            dates[slug] = json.loads(path.read_text())["scanned_on"]
+        except (ValueError, KeyError):
+            # Unreadable is the same as absent here: it needs a fresh scan.
+            continue
+    return dates
+
+
+def slugs_needing_a_new_date(
+    new_date: str, results_dir: Path | None = None
+) -> set[str]:
+    """Slugs whose published result is absent or genuinely moved.
+
+    A scan date says when this ordinance was scanned. Stamping one global
+    date on every result each run made it say when the writer last ran, which
+    is a different and much less useful fact: a reader could not tell a fresh
+    scan from a file rewritten in passing while another jurisdiction was
+    added. So each result is first re-derived with its own recorded date, and
+    only the ones that come back different, or that have no published result,
+    take the new one.
+    """
+    results_dir = RESULTS if results_dir is None else results_dir
+    recorded = recorded_scan_dates(results_dir)
+    rederived = {
+        path.stem: content
+        for path, content in build_results(
+            lambda slug: recorded.get(slug, new_date)
+        ).items()
+    }
+    moved = set()
+    for slug in corpus_slugs():
+        path = results_dir / f"{slug}.json"
+        if slug not in recorded or not path.exists():
+            moved.add(slug)
+            continue
+        if path.read_text() != rederived[slug]:
+            moved.add(slug)
+    return moved
+
+
 def _label(path: Path) -> str:
     try:
         return str(path.relative_to(ROOT))
@@ -186,7 +239,7 @@ def check_published(results_dir: Path = RESULTS) -> int:
     return 0
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Scan committed ordinance texts, or verify the published results."
     )
@@ -200,20 +253,44 @@ def main() -> int:
         action="store_true",
         help="fail if a published result differs from a fresh scan; writes nothing",
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "--redate-all",
+        action="store_true",
+        help="record the new date on every result, including ones whose scan "
+        "output did not move; use after a deliberate re-retrieval of the "
+        "whole corpus",
+    )
+    args = parser.parse_args(argv)
 
     if args.check:
         if args.scanned_on:
             parser.error("--check re-uses each published scanned_on; pass no date")
+        if args.redate_all:
+            parser.error("--check writes nothing, so it cannot re-date")
         return check_published()
 
     if not args.scanned_on:
         parser.error("a scanned-on ISO date is required when writing")
     RESULTS.mkdir(parents=True, exist_ok=True)
-    outputs = build_results(lambda _slug: args.scanned_on)
+    recorded = recorded_scan_dates()
+    moved = (
+        set(corpus_slugs())
+        if args.redate_all
+        else slugs_needing_a_new_date(args.scanned_on)
+    )
+    outputs = build_results(
+        lambda slug: (
+            args.scanned_on if slug in moved else recorded.get(slug, args.scanned_on)
+        )
+    )
     for path, content in outputs.items():
         path.write_text(content)
-        print(f"wrote {path.relative_to(ROOT)}")
+        print(f"wrote {_label(path)}")
+    kept = sorted(set(corpus_slugs()) - moved)
+    if moved:
+        print(f"dated {args.scanned_on}: {', '.join(sorted(moved))}")
+    if kept:
+        print(f"kept their own scan date (output unchanged): {', '.join(kept)}")
     return 0
 
 
