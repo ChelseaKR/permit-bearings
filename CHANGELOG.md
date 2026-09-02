@@ -31,6 +31,36 @@ published a versioned release.
 
 ### Changed
 
+- The intake prompt no longer teaches the model that "a second unit" means an
+  ADU, and the runtime intake prompt is now `intake-v2`. Gauntlet reported
+  `/intake/extract` returning `project_type=adu (extracted)` in both English
+  and Spanish for an applicant who wrote "I want to add a second unit on my
+  property in Davis. Not sure what the options are." (issue #90). The quote
+  gate could not catch it: "add a second unit on my property" is a verbatim
+  substring, so the value looked supported. The prompt was the source — the
+  vocabulary block glossed `adu` as "backyard cottage, garage conversion,
+  attached or detached second unit", listing the exact phrase an undecided
+  applicant reaches for as a definition of one specific answer, while rule 3
+  forbids inferring an unstated fact. "A second unit" is equally an ADU, a
+  JADU, and an SB 9 two-unit project.
+  - The `adu` gloss drops "second unit"; a new rule names the ambiguous
+    phrases in both languages and says a quote can be verbatim and still not
+    decide the question; a further rule says an applicant stating they do not
+    know is the answer, scoped to the fact they were unsure about — someone
+    undecided between converting the garage and building in the yard has
+    still said the type, and only the form is unknown.
+  - Measured on Bedrock `global.anthropic.claude-sonnet-4-6`, that input, ten
+    trials per language: `intake-v1` filled a project type 7/20 (en 0/10,
+    es 7/10); `intake-v2` 0/20 (en 0/10, es 0/10).
+  - Two committed 40-case runs of `intake-v2` are recorded in
+    `evals/ai/results/`. Project-type and jurisdiction accuracy stay 1.000 and
+    `known_field_wrong` stays 0.000. The cost is a small, repeatable rise in
+    abstention on facts the text does state: `known_field_missed` 0.024 at
+    `intake-v1` against 0.047 and 0.035 at `intake-v2`, both extra misses
+    being `sf_zone` on SB 9 lot-split cases. `filled_when_unknown`, the defect
+    rate this design exists to hold down, is 0.035 against 0.035 and 0.043.
+    Two runs of forty cases cannot separate that last figure from run-to-run
+    variance and it is not claimed as an improvement.
 - Every public page now carries a self-referencing `<link rel="canonical">`
   and a complete social card. `index.html` already had both; `check.html`,
   `prepare.html`, `review.html` and `evidence.html` had `og:title`,

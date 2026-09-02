@@ -277,7 +277,7 @@ def test_metadata_and_result_writer(tmp_path: Path) -> None:
         metadata["status"] == "recorded_live_run" and metadata["provider"] == "scripted"
     )
     assert len(metadata["commit"]) == 40
-    assert metadata["prompt_versions"]["intake"] == "intake-v1"
+    assert metadata["prompt_versions"]["intake"] == "intake-v2"
     assert git_commit(tmp_path) == "unknown"
     target = tmp_path / "out" / "r.json"
     write_result(target, {"a": "ñ"})

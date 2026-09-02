@@ -107,7 +107,7 @@ def test_extraction_keeps_supported_values_and_reports_unknowns() -> None:
         "adu_project_form": "new_detached",
         "unpermitted_existing": "unknown",
     }
-    assert result.prompt_version == "intake-v1" and result.provider == "scripted"
+    assert result.prompt_version == "intake-v2" and result.provider == "scripted"
     assert result.to_dict()["detected_language"] == "en"
     assert provider.calls[0].user.startswith("Project description")
     assert TEXT in provider.calls[0].user
@@ -245,3 +245,29 @@ def test_jurisdiction_resolution_handles_cities_counties_and_ambiguity() -> None
 def test_jurisdiction_entries_are_plain_records() -> None:
     entries = load_jurisdictions([{"slug": "x-city", "name": "X City", "kind": "city"}])
     assert entries == (JurisdictionEntry("x-city", "X City", "city"),)
+
+
+def test_a_bare_second_unit_is_not_taught_as_an_adu_synonym() -> None:
+    """Issue #90: the prompt itself was the source of the wrong answer.
+
+    The vocabulary block glossed ``adu`` as "backyard cottage, garage
+    conversion, attached or detached second unit", so the phrase an applicant
+    reaches for when they do *not* know what to build — "a second unit" — was
+    listed as a definition of one specific answer. Rule 3 forbids inferring an
+    unstated fact, and the vocabulary block supplied the inference anyway.
+
+    The quote gate cannot catch this: "add a second unit on my property" is a
+    verbatim substring, so :func:`_field_from` sees a supported value and keeps
+    it. The correction has to be in the prompt, and this holds it there.
+    """
+    prompt = system_prompt()
+    assert "detached second unit" not in prompt
+    # The phrase is named as ambiguous rather than left unmentioned, in both
+    # languages the service accepts.
+    for phrase in ('"second unit"', '"segunda unidad"'):
+        assert phrase in prompt
+    # ... and the instruction says what to do about it.
+    assert "A quote can be verbatim and still not decide the question" in prompt
+    # An applicant saying they do not know is the answer, not a gap to fill.
+    assert "asks what the options are" in prompt
+    assert "Do not resolve it for them." in prompt
