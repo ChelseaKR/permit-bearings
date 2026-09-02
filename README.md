@@ -189,7 +189,7 @@ PYTHONPATH=src python3 demo/app.py 8766             # Python reference demo
 # /check.html, /prepare.html, /review.html, and /evidence.html.
 python3 scripts/build_demo_bundle.py                # after canonical JSON changes
 PERMIT_AI_PROVIDER=anthropic make serve-ai          # optional AI service (ADR 0004), needs ANTHROPIC_API_KEY
-PERMIT_AI_PROVIDER=bedrock PERMIT_AI_MODEL=global.anthropic.claude-sonnet-4-6 make serve-ai  # via AWS credentials
+PERMIT_AI_PROVIDER=bedrock make serve-ai           # via AWS credentials; defaults to global.anthropic.claude-sonnet-4-6
 make ai-eval                                        # live intake + grounding evaluation; writes evals/ai/results/
 PYTHONPATH=src .venv/bin/python -m permit_pathways.ai.rule_drafts \
   --ordinance corpus/ordinances/capitola.txt --jurisdiction capitola \

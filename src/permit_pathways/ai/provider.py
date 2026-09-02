@@ -10,6 +10,17 @@ Bedrock in production through the public ``anthropic`` SDK.
 The credential is never read from a file this package writes and never
 logged. A missing credential fails at startup with a message, not at the
 first applicant request.
+
+The two providers deliberately default to different models, and that is not
+drift to tidy up. ``claude-sonnet-5`` on the Anthropic API is ADR 0004's
+settled choice and stays the default for a deployer with ordinary API access.
+The same model is not invokable on Bedrock from this project's AWS account:
+``InvokeModel`` answers ``403 anthropic.claude-sonnet-5 is not available for
+this account``, verified live on 2026-09-02, and the entitlement API reporting
+it authorised does not change that. Bedrock is the path every live evaluation
+in ``evals/ai/results/`` actually ran on, so its default has to be a model
+that answers. Change either one only against a live invocation, never against
+an availability listing.
 """
 
 from __future__ import annotations
@@ -19,8 +30,13 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+# ADR 0004's configurable default for the public API. Do not lower this to
+# match the Bedrock default below; they answer different questions.
 DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5"
-DEFAULT_BEDROCK_MODEL = "global.anthropic.claude-sonnet-5"
+# The newest model this project's AWS account can actually invoke on Bedrock.
+# `global.` rather than `us.` is the cheaper of the two inference-profile
+# prefixes and is the one every committed result in `evals/ai/results/` names.
+DEFAULT_BEDROCK_MODEL = "global.anthropic.claude-sonnet-4-6"
 DEFAULT_BEDROCK_REGION = "us-west-2"
 PROVIDER_NAMES = ("anthropic", "bedrock")
 

@@ -56,6 +56,11 @@ PERMIT_AI_PROVIDER=bedrock PERMIT_AI_MODEL=global.anthropic.claude-sonnet-4-6 PY
   --cases evals/ai/grounding-cases.json --output evals/ai/results/<date>-grounding-<provider>-<model>.json
 ```
 
+`PERMIT_AI_MODEL` above is written out for the record; it is also the
+Bedrock default, because `claude-sonnet-5` is not invokable on Bedrock from
+this project's AWS account. Nothing here is measured against a model the
+account cannot call.
+
 `--limit N` runs the first N cases. Exit `1` means at least one case errored
 (the result file lists them); `2` means no provider could be configured.
 
