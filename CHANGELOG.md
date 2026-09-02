@@ -7,6 +7,28 @@ published a versioned release.
 
 ### Changed
 
+- Every public page now carries a self-referencing `<link rel="canonical">`
+  and a complete social card. `index.html` already had both; `check.html`,
+  `prepare.html`, `review.html` and `evidence.html` had `og:title`,
+  `og:description` and `og:type` and nothing to say which URL they described or
+  which image to show, so a shared link to any of the four previewed as a bare
+  URL with no card and no page identity. They now also carry `og:url`,
+  `og:site_name`, `og:image` (with type, dimensions and alt text),
+  `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image` and
+  `twitter:image:alt`, all absolute and all pointing at the page they sit on.
+  No new applicant-facing copy was written: every string is the page's existing
+  title or `og:description`, or the shared card and its alt text from
+  `index.html`. `test_every_static_page_names_itself_and_not_the_shared_origin`
+  extends the existing five-page static-markup checks rather than starting a
+  parallel suite, and it holds the property that matters on this deployment:
+  the site is served from `chelseakr.github.io`, an origin shared with five
+  other unrelated projects, on a path rather than a domain, so a canonical of
+  "/" is not this site's root but a different address that 404s and that all
+  six sites would claim. Observed failing four ways, each naming the page:
+  canonical deleted from `check.html`; `prepare.html` canonicalised to the bare
+  origin; `twitter:card` deleted from `review.html`; `evidence.html`'s `og:url`
+  pointed at `check.html`.
+
 - The committed `protect-main` ruleset now records the repository owner's
   standing bypass, which the live ruleset has had all along.
   `.github/rulesets/main.json` declared `"bypass_actors": []` while live
