@@ -411,7 +411,9 @@ coverage, external validation, applicant readiness, or jurisdiction approval.
 ADR-0004 records the owner's decision to add runtime AI in three bounded
 roles through a separate optional service, `permit_pathways.ai`
 (`make serve-ai`; FastAPI on `127.0.0.1:8787`; provider through the public
-`anthropic` SDK, default `claude-sonnet-5`, or Amazon Bedrock), that the
+`anthropic` SDK, default `claude-sonnet-5`, or Amazon Bedrock, default
+`global.anthropic.claude-sonnet-4-6` because this project's AWS account
+cannot invoke `claude-sonnet-5` there), that the
 static site calls only when the applicant asks for it:
 
 - **Intake extraction** (`intake.py`, `POST /intake/extract`). The applicant

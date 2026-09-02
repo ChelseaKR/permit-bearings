@@ -5,6 +5,30 @@ published a versioned release.
 
 ## [Unreleased]
 
+### Fixed
+
+- The Bedrock provider default is a model this project's AWS account can
+  actually invoke. `DEFAULT_BEDROCK_MODEL` was
+  `global.anthropic.claude-sonnet-5`, and `InvokeModel` answers
+  `403 anthropic.claude-sonnet-5 is not available for this account` for it
+  (verified live 2026-09-02) while the entitlement API reports the model
+  authorised — so availability had to be established by invoking it, not by
+  asking. Anyone following the documented `PERMIT_AI_PROVIDER=bedrock`
+  invocation without also setting `PERMIT_AI_MODEL` got a 403 from a service
+  that was otherwise configured correctly, and Bedrock is the path every
+  recorded run under `evals/ai/results/` actually used. The default is now
+  `global.anthropic.claude-sonnet-4-6`.
+  - `DEFAULT_ANTHROPIC_MODEL` stays `claude-sonnet-5`. The two defaults answer
+    different questions — ADR 0004's settled choice for a deployer with
+    ordinary API access, against what one AWS account is entitled to — so they
+    differ on purpose, and the module docstring, ADR 0004, and
+    `test_the_bedrock_default_is_a_model_this_account_can_invoke` all say so,
+    to stop the next reader tidying the difference away.
+  - That test pins both literals rather than comparing against the constants
+    the way every other assertion in the file does, and additionally requires
+    the Bedrock default to appear as the `run.model` of a committed live
+    result, so the default can never name a model nothing has answered.
+
 ### Changed
 
 - Every public page now carries a self-referencing `<link rel="canonical">`

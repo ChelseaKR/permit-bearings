@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import json
 import sys
 import types
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -20,6 +22,8 @@ from permit_pathways.ai.provider import (
     provider_from_env,
     provider_from_settings,
 )
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 @dataclass
@@ -86,6 +90,44 @@ def test_settings_defaults_and_overrides() -> None:
     assert custom.region == provider_module.DEFAULT_BEDROCK_REGION
     with pytest.raises(ProviderError, match="PERMIT_AI_PROVIDER"):
         ProviderSettings.from_environ({"PERMIT_AI_PROVIDER": "openai"})
+
+
+def test_the_bedrock_default_is_a_model_this_account_can_invoke() -> None:
+    """The two provider defaults differ on purpose; hold both literals.
+
+    Every other assertion in this file compares against the constants, so a
+    wrong constant would travel through all of them unnoticed. This one names
+    the strings.
+
+    `global.anthropic.claude-sonnet-5` was the Bedrock default and is not
+    invokable from this project's AWS account: `InvokeModel` answers
+    `403 anthropic.claude-sonnet-5 is not available for this account`
+    (verified live 2026-09-02), while the entitlement API reports it
+    authorised. Bedrock is the path every committed result under
+    `evals/ai/results/` actually ran on, so a Bedrock default that 403s makes
+    the documented `PERMIT_AI_PROVIDER=bedrock` invocation fail with no model
+    override. The Anthropic-API default is ADR 0004's settled choice and is
+    not the thing to "fix" into agreement with it.
+    """
+    assert DEFAULT_ANTHROPIC_MODEL == "claude-sonnet-5"
+    assert DEFAULT_BEDROCK_MODEL == "global.anthropic.claude-sonnet-4-6"
+    assert DEFAULT_ANTHROPIC_MODEL != DEFAULT_BEDROCK_MODEL
+    # The Bedrock default must name an inference profile, not a bare model id.
+    assert DEFAULT_BEDROCK_MODEL.startswith("global.")
+    # Selecting bedrock with nothing else set must land on that model.
+    assert (
+        ProviderSettings.from_environ({"PERMIT_AI_PROVIDER": "bedrock"}).model
+        == DEFAULT_BEDROCK_MODEL
+    )
+    # Every committed live result names the model it ran on; the Bedrock
+    # default has to be one of them rather than a model nothing has answered.
+    recorded = {
+        json.loads(path.read_text(encoding="utf-8"))["run"]["model"]
+        for path in (ROOT / "evals" / "ai" / "results").glob("*.json")
+        if json.loads(path.read_text(encoding="utf-8"))["run"]["status"]
+        == "recorded_live_run"
+    }
+    assert DEFAULT_BEDROCK_MODEL in recorded
 
 
 def test_sdk_provider_returns_text_and_usage() -> None:

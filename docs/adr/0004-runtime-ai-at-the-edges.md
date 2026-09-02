@@ -78,9 +78,16 @@ the service.
 Consequential choices:
 
 - **Provider and model.** The Anthropic API with `claude-sonnet-5` is the
-  configurable default. Amazon Bedrock is supported through the same SDK. The
-  credential comes only from the environment; no key is ever written to the
-  repository or to a file the service creates.
+  configurable default. Amazon Bedrock is supported through the same SDK, and
+  its default is `global.anthropic.claude-sonnet-4-6` rather than the same
+  model: this project's AWS account cannot invoke `claude-sonnet-5` on
+  Bedrock, where `InvokeModel` answers `403 anthropic.claude-sonnet-5 is not
+  available for this account` while the entitlement API reports it
+  authorised. Bedrock is the path every recorded evaluation in
+  `evals/ai/results/` ran on, so the two defaults differ on purpose and each
+  should move only against a live invocation. The credential comes only from
+  the environment; no key is ever written to the repository or to a file the
+  service creates.
 - **No applicant data is stored or logged by the service.** The service keeps
   no request body, writes no applicant text to disk or logs, and returns
   nothing it did not compute for that request. The model provider's own
