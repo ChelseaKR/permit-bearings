@@ -31,6 +31,16 @@ published a versioned release.
 
 ### Changed
 
+- The README names the live demo above the fold. The URL first appeared at
+  line 84, below the quickstart, the preapproved-plan availability boundary,
+  the registry and bundle-integrity description, and the print-summary
+  paragraph: eighty-three lines of accurate, deliberate prose about what this
+  prototype does not claim, standing between a visitor and the working thing
+  that prose describes. The link moves to line 12, directly after the
+  description and before the runtime AI note. Nothing was cut — every
+  boundary and limitation paragraph is byte-identical, and the demo URL still
+  appears exactly once in the file.
+
 - The intake prompt no longer teaches the model that "a second unit" means an
   ADU, and the runtime intake prompt is now `intake-v2`. Gauntlet reported
   `/intake/extract` returning `project_type=adu (extracted)` in both English
