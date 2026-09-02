@@ -715,8 +715,29 @@ Run against the bundled summer Unitrans (Davis) feed, no local bus stops meet
 the encoded ≤15/≤20-minute peak screens. The separate statewide high-quality
 transit dataset supplies the Davis Amtrak major-stop candidate near the depot.
 That disagreement is the useful finding: a local feed alone is incomplete,
-and schedule dates, planned facilities, multiple operators, and walking
-distance all need explicit confirmation before applicant-facing use.
+and schedule dates, multiple operators, and walking distance all need
+explicit confirmation before applicant-facing use.
+
+**A planned stop is not an existing one.** The statewide Caltrans dataset
+carries an `hqta_details` column that separates a stop derived from published
+service from one an MPO submitted as planned in its adopted regional
+transportation plan. 3,120 of the 13,446 distinct `major_stop_*` rows the
+loader returns from the committed snapshot are planned, close to one row in
+four. Cal-ITP's published methodology lists them under "Planned Major Stops
+(future service, provided by MPOs)" and says Caltrans
+"does not validate or further process them"; the same document quotes
+PRC § 21155 including regional-transportation-plan stops in its own
+major-transit-stop definition, and PRC § 21064.3(a) requiring "An existing
+rail or bus rapid transit station". The screen reads that column. A planned
+row never produces a candidate and never establishes public transit near the
+site, and every planned row inside the half mile is reported by count,
+agency, type, and distance with a question for the transit agency. The
+command above previously named a planned Yolo TD stop 0.12 mi away as the
+reason the 18-ft allowance applied, in the present tense; it now names the
+operating Capitol Corridor rail platform at 0.36 mi and lists the twelve
+planned rows separately. This module does not decide which statutory
+definition a given standard incorporates; it refuses to collapse the two.
+See [ADR 0006](docs/adr/0006-planned-transit-stops-are-not-existing-ones.md).
 
 **Jurisdiction registry:** 541 California jurisdictions (483 incorporated
 cities + 58 counties) are selectable. The original Census 2020 FIPS snapshot
@@ -976,6 +997,8 @@ explanation sidecar and keeps a separate `/trust` route.
 - `docs/PRODUCT-CONTEXT.md`: capability truth and opportunity priorities
 - `docs/BETA-ROADMAP.md`: evidence-gated path from tested prototype to one
   active-jurisdiction limited beta
+- `docs/EXPANSION-PLAN.md`: the ranked two-to-three-year phase order, and
+  which phases need a person outside this repository
 - `docs/BETA-OPERATIONS-RUNBOOK.md` and `docs/adr/0002-retain-no-storage-beta-boundary.md`:
   proposed operating boundary, roles, release/incident/records procedures,
   alternatives, and pending decisions

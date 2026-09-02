@@ -165,6 +165,42 @@ published a versioned release.
   journey reads as one coherent flow and whether it does is not this
   change's call to make. Addresses `AGENTS.md` priority 4,
   comparable-jurisdiction discovery.
+### Fixed
+
+- The transit screen read the Caltrans dataset's stop type and threw away the
+  column that says whether the stop exists. `hqta_details` was parsed into
+  `HQStop.details` and never read by anything in `src/`, `tests/`, `scripts/`,
+  or `assets/`, and it is the only field separating a stop derived from
+  published service from one a metropolitan planning organization submitted as
+  planned in its adopted regional transportation plan. 3,120 of the 13,446
+  distinct `major_stop_*` rows the loader returns from the committed snapshot
+  are planned. On the exact command the README documents, the screen named a
+  planned Yolo TD stop 0.12 mi away as the reason the § 66321(b)(4)(B) height
+  allowance applied, in the present tense, while the operating Capitol
+  Corridor and Amtrak rail platforms sat at 0.36 mi. `HQStop.is_planned` and
+  `HQStop.is_existing_major` now expose the distinction; a planned row inside
+  the half mile produces no candidate for either standard and establishes
+  neither a § 21064.3 major transit stop nor public transit near the site; and
+  every planned row inside the radius is reported by count, agency, type, and
+  distance, with what Caltrans publishes about these rows, both statutory
+  definitions, and a question for the transit agency. Reason strings now name
+  `hqta_type` and `hqta_details` together. `load_hq_stops` requires
+  `hqta_details` to be text and raises otherwise rather than defaulting to a
+  value that reads as an operating facility, and the de-duplication key
+  includes it, which recovers 898 rows that were collapsing into whichever row
+  came first. The verdict on the documented example is unchanged; the stop it
+  cites as the reason is now one that exists. Grounded in Cal-ITP's published
+  methodology for the dataset, read 2026-08-27. Reported as issue #44 and
+  recorded as
+  `docs/adr/0006-planned-transit-stops-are-not-existing-ones.md`.
+
+### Added
+
+- `docs/EXPANSION-PLAN.md`: a two-to-three-year expansion plan ranked against
+  `AGENTS.md`'s priority order and `docs/PRODUCT-CONTEXT.md`'s known
+  correctness risks, separating the work that can be finished from inside the
+  repository from the work that needs a named reviewer, a jurisdiction
+  sponsor, or a partner decision. It changes no capability status.
 
 - A watched source that could not be fetched is now recorded by kind, and a
   citation whose published address is gone stops being offered as a link.
