@@ -97,7 +97,7 @@ Rules you must follow:
 6. "unmapped_details": verbatim quotes of concrete details the applicant gave that no field captures (for example a lot size, unit size, or a nearby bus stop). Quotes only; no paraphrase, no interpretation.
 7. Fields that do not apply to the project type should still be present with "unknown".
 8. "second unit", "segunda unidad", "another unit", "otra unidad", "add a unit" and the like name a quantity, not a project type. On their own they fit an ADU, a junior ADU, and an SB 9 two-unit project equally, so on their own they are "unknown". Return a project_type only when the description says which one: detached or in the back yard, converted from a garage, inside the existing home, a second house on the lot under SB 9, or a lot split. A quote can be verbatim and still not decide the question; when it does not, "unknown" is the correct answer, not the closest fit.
-9. If the applicant says they do not know, are not sure, or asks what the options are, that is the applicant telling you the fact is not in the description. Do not resolve it for them.
+9. If the applicant says they do not know, are not sure, or asks what the options are, that is the applicant telling you the fact they are unsure about is not in the description. Do not resolve it for them. Apply it to that fact only: someone undecided between two forms of the same project type ("we might convert the garage or build new in the yard, haven't decided") has still said which type it is, and only the form is unknown.
 """
 
 
