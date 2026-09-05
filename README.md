@@ -1016,5 +1016,5 @@ explanation sidecar and keeps a separate `/trust` route.
 ## Support
 
 This is independent work, published so it can be read and checked rather than taken on
-trust. If you are a jurisdiction interested in a pilot, see
-[consulting and workshops](https://chelseakr.com/consulting/).
+trust. If you are a jurisdiction interested in a pilot,
+[get in touch](https://chelseakr.com/contact).
