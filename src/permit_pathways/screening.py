@@ -439,3 +439,14 @@ def screen(intake: dict[str, Any], rules: list[Rule]) -> list[PathwayResult]:
         for r in applicable
         if r.matches(intake)
     ]
+
+
+if __name__ == "__main__":  # pragma: no cover - a thin alias for the CLI module
+    # `python -m permit_pathways.screening` is the documented entry point, but
+    # argparse and console rendering do not belong in the module the browser
+    # bundle, the harness, and the AI service all import. The CLI lives in
+    # `screening_cli` (matching every other `*_cli` module here) and this is the
+    # alias, imported only when the module is run as a script.
+    from .screening_cli import main
+
+    raise SystemExit(main())
