@@ -1,5 +1,5 @@
 [project]
-name = "permit-pathways"
+name = "permit-bearings"
 version = "0.0.1"
 description = "Citation-grounded housing-permit pathway guidance for California jurisdictions, with a verification harness for currency."
 readme = "README.md"

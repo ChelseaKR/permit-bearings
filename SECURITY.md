@@ -15,7 +15,7 @@ other vulnerability.
 Do not open a public issue for a suspected vulnerability or exposed secret.
 Use GitHub's private vulnerability-reporting flow under **Security → Report a
 vulnerability**, or email `ckellyreif@gmail.com` with the subject
-`SECURITY: permit-pathways`.
+`SECURITY: permit-bearings`.
 
 Include the affected commit, a minimal reproduction, likely impact, and any
 suggested mitigation. Please avoid submitting real applicant records or other

@@ -803,7 +803,7 @@ wheels = [
 ]
 
 [[package]]
-name = "permit-pathways"
+name = "permit-bearings"
 version = "0.0.1"
 source = { editable = "." }
 

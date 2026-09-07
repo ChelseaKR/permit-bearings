@@ -169,7 +169,7 @@ PYTHONPATH=src python3 -m permit_pathways.harness --fetch \
   --snapshot-id source-watch-local-1 \
   --checked-at 2026-08-03T17:08:28Z \
   --receipt-method local_source_currency_watch \
-  --run-url https://github.com/ChelseaKR/permit-pathways \
+  --run-url https://github.com/ChelseaKR/permit-bearings \
   --commit-sha 8d841409dc5fd16fe56b52a8b57c826c07f176a6
 PYTHONPATH=src python3 -m permit_pathways.harness --assume-changed ca-gov-66321
 PYTHONPATH=src python3 -m permit_pathways.readiness_cli \

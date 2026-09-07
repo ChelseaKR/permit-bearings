@@ -323,6 +323,43 @@ published a versioned release.
 
 ### Changed
 
+- **The Python distribution is renamed `permit-pathways` -> `permit-bearings`,
+  and so is everything outward-facing that still carried the old name.**
+  `pyproject.toml`'s `name`, `uv.lock`, `package.json`/`package-lock.json`
+  (`permit-bearings-quality`), the `SECURITY.md` report subject, the README's
+  `--run-url` example, the "Source code" links on `index.html` and
+  `evidence.html`, the historical Actions run links in
+  `docs/SHOWCASE-REMEDIATION-PLAN.md`, and the temporary paths `make security`,
+  `make evidence-export-check` and the Lighthouse budget script create. Neither
+  name is claimed on PyPI, so this costs nothing today and stops being free the
+  moment either is published.
+  - **Three test-side validators were pinning the old GitHub Pages path**, which
+    is the part that was not merely cosmetic. `tests/test_content_review_evidence.py`,
+    `tests/test_flagship_evidence_ledgers.py` and `tests/test_manual_evidence.py`
+    required a frozen `deployed_url` to start `https://chelseakr.github.io/permit-pathways/`.
+    Every committed record has `deployed_url: null` today, so nothing was
+    wrong yet — but the first real freeze, at the address the site actually
+    serves from, would have been rejected by its own validator.
+  - A new contract test enumerates the four places the old name survives on
+    purpose — `CHANGELOG.md`, the 2026-08-15 scan finding's recorded
+    `User-Agent`, and the two sentences explaining why the standards pin is a
+    commit rather than a tag — and fails on any tracked file that reintroduces
+    it elsewhere. Entries in this changelog keep the old name because several
+    of them are about the rename.
+  - **The import package is still `permit_pathways`, and that is now recorded
+    rather than pending.** Three not-run planning ledgers name module paths
+    inside it — `data/validation/beta-operations-readiness.json` lists
+    `src/permit_pathways/beta_operations.py` as an evidence path,
+    `data/conformance/evaluations/heldout-v1/manifest.json` pins the scanner
+    and evaluator paths, and `data/validation/woodland-source-change-rehearsal.json`
+    names `permit_pathways.readiness_cli`. Their raw bytes are pinned in
+    `beta_gate._NOT_RUN_ARTIFACT_SHA256`, and `beta_gate_cli recompute`
+    refuses to re-derive them outright, because that refusal is what stops a
+    favourable nested result being rewritten together with its digest.
+    Renaming the package therefore means editing three immutable ledgers and
+    three pinned digests by hand. That is an attestation, not a refactor, and
+    it is left to the maintainer.
+
 - **The committed HCD Housing Accountability Unit letter dataset is re-read
   as of 2026-09-07.** The dashboard moved from 1,314 rows to 1,356: 231 rows
   added and 189 removed, across 19 jurisdictions whose rows are new and 141

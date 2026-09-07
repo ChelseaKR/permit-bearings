@@ -525,7 +525,7 @@ def _lock_executed(payload: dict) -> None:
         {
             "execution_status": "executed",
             "tested_commit": "a" * 40,
-            "deployed_url": "https://chelseakr.github.io/permit-pathways/",
+            "deployed_url": "https://chelseakr.github.io/permit-bearings/",
         }
     )
 
