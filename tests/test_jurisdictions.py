@@ -30,16 +30,16 @@ def test_full_statewide_coverage(registry):
     assert cov.counties == 58
     assert cov.total == 541
     assert cov.local_layers == 2  # davis, woodland
-    # Full HAU letter dataset: 470 jurisdictions have letter history.
-    assert cov.with_hcd_letters == 470
+    # Full HAU letter dataset: 473 jurisdictions have letter history.
+    assert cov.with_hcd_letters == 473
 
 
 def test_full_hau_dataset_is_complete_and_matched(registry):
     import json
 
     data = json.loads((DATA / "jurisdictions" / "hcd-letters.json").read_text())
-    assert data["letter_count"] == 1314
-    assert data["retrieved_on"] == "2026-08-03"
+    assert data["letter_count"] == 1356
+    assert data["retrieved_on"] == "2026-09-07"
     assert data["_unmatched"] == {}
     # The Santa Clara County findings letter used to validate the
     # conformance scanner appears in HCD's own dataset.
@@ -114,9 +114,9 @@ def test_coverage_index_keeps_statewide_and_local_coverage_separate(registry):
         "statewide_record_count",
         "unmatched_record_count",
     }
-    assert index["hcd_dataset"]["retrieved_on"] == "2026-08-03"
-    assert index["hcd_dataset"]["letter_count"] == 1314
-    assert index["hcd_dataset"]["statewide_record_count"] == 2
+    assert index["hcd_dataset"]["retrieved_on"] == "2026-09-07"
+    assert index["hcd_dataset"]["letter_count"] == 1356
+    assert index["hcd_dataset"]["statewide_record_count"] == 3
     assert index["hcd_dataset"]["unmatched_record_count"] == 0
 
 

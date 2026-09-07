@@ -30,7 +30,7 @@
     {
       "path": "PROVENANCE.md",
       "role": "provenance",
-      "raw_sha256": "sha256:4d97a1d09d6b0a9582136955f09aa866665773df709c963dfe10b5050d66e54e"
+      "raw_sha256": "sha256:b6d219312d7dd67a6b6e71d75844f0bea1a1c1f60d56c8541aa9ff166e9fab13"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -65,7 +65,7 @@
     {
       "path": "corpus/hcd/hau-letters-raw.json",
       "role": "public_source_dataset",
-      "raw_sha256": "sha256:6c3324ab2484dd3e396dc6bb16389e119e87af85410beb6d2b61f271cad99f0d"
+      "raw_sha256": "sha256:3f7bf3d09fd8da105763c9b1fa7cecb126c636c814ce96c276902f86c7fed010"
     },
     {
       "path": "corpus/hcd/letters/santa-clara-county-findings-2025-06.pdf",
@@ -190,7 +190,7 @@
     {
       "path": "data/demo-data.js",
       "role": "derived_browser_bundle",
-      "raw_sha256": "sha256:370744ff92d421d1f57ffab707bae5464f515879ba86db3f0c9ba24bfd3ea29a"
+      "raw_sha256": "sha256:d1afa6250a5905d19a75db9d34a9d7c872fb66c8404f929496df27a796c54edf"
     },
     {
       "path": "data/explanations/plain-language.json",
@@ -221,12 +221,12 @@
     {
       "path": "data/jurisdictions/generated/coverage-index.json",
       "role": "derived_coverage_index",
-      "raw_sha256": "sha256:b4327c95d0f717d4352b912b807751042ad58f26a55d1cc0adf32cda15dff35d"
+      "raw_sha256": "sha256:b323bd6ccede2d12f510630132a8f589ac7b67b83a15cd65ded15f42e261508e"
     },
     {
       "path": "data/jurisdictions/hcd-letters.json",
       "role": "hcd_letter_snapshot",
-      "raw_sha256": "sha256:e8c0c512b8fe286fe2690ec0d2162a91f1c2e16d08924ef79ef59c29c659dc65"
+      "raw_sha256": "sha256:838d415af2f8ceca66326307edfeac1892b244a5b107b08b39eba771f72708b8"
     },
     {
       "path": "data/jurisdictions/registry.json",

@@ -1,7 +1,7 @@
 {
- "source": "HCD Housing Accountability Unit letter dashboard (hcd.ca.gov/hau/enforcement-letters), full public dataset retrieved 2026-08-03; raw rows preserved at corpus/hcd/hau-letters-raw.json. Letters addressed to no single jurisdiction are under _statewide; rows whose jurisdiction could not be matched to the Census registry are under _unmatched.",
- "retrieved_on": "2026-08-03",
- "letter_count": 1314,
+ "source": "HCD Housing Accountability Unit letter dashboard (hcd.ca.gov/hau/enforcement-letters), full public dataset retrieved 2026-09-07; raw rows preserved at corpus/hcd/hau-letters-raw.json. Letters addressed to no single jurisdiction are under _statewide; rows whose jurisdiction could not be matched to the Census registry are under _unmatched.",
+ "retrieved_on": "2026-09-07",
+ "letter_count": 1356,
  "letters": {
   "adelanto": [
    {
@@ -340,6 +340,15 @@
     "subject": "Letter of technical assistance to assist and inform its City Council regarding the potential impacts their decisions have surrounding these issues.\u00a0City of Anaheim\u2019s (City\u2019s) land-use regulations set out in Municipal Code sections 18.16.058 (Community Care Facilities-Unlicensed (",
     "url": "https://www.hcd.ca.gov/community-development/housing-element/docs/oraAnaheim-TA-050321.pdf",
     "hau_number": "HAU20-069"
+   },
+   {
+    "date": null,
+    "kind": "Technical Assistance Letter",
+    "authority": "Accessory Dwelling Unit Law",
+    "statutes": "66315; 66316; 66317; 66319; 65585",
+    "subject": "A follow-up TA letter explaining further why road dedication and construction requirements are not permissible under State ADU Law.",
+    "url": null,
+    "hau_number": "ADU0007490"
    }
   ],
   "anderson": [
@@ -388,7 +397,7 @@
     "kind": "Letter of Support",
     "authority": "Housing Element Law, Housing Accountability Act, Five Hearing Rule",
     "statutes": "65585; 65905.5; 65589.5",
-    "subject": "Potential Violation",
+    "subject": "The purpose of this letter is to assist the City with its decision-making by providing technical assistance related to Housing Accountability Act (HAA), State Housing Element Law, and the Five Hearing Rule.",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/antioch-los-ta-110325.pdf",
     "hau_number": "HAU0002531"
    },
@@ -736,7 +745,7 @@
    {
     "date": "2021-03-09",
     "kind": "Technical Assistance Letter",
-    "authority": "By-Right Supporting Housing Provisions",
+    "authority": "By-Right Supportive Housing Provisions",
     "statutes": "65582; 65583(c)(3); 65651(a)",
     "subject": "TA Letter re. the City's wrongful CUP approval process for Casa Esperanza, a transitional housing for women and children. The letter confirms that transitional and supportive housing are by-right residential uses and are subject to the same requirements as other residential dwell",
     "url": "https://www.hcd.ca.gov/community-development/housing-element/docs/kerBakersfield-TA-030921.pdf",
@@ -833,6 +842,15 @@
    }
   ],
   "bellflower": [
+   {
+    "date": "2026-03-18",
+    "kind": "Housing Element Findings of Noncompliance/ Corrective Action",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003765"
+   },
    {
     "date": "2025-12-05",
     "kind": "Technical Assistance Letter - Repeal Request",
@@ -1023,6 +1041,15 @@
    }
   ],
   "beverly-hills": [
+   {
+    "date": "2026-09-03",
+    "kind": "SB 79 Ordinance/Alternative Plan Findings Letter",
+    "authority": "Transit Oriented Development Zones (SB 79 of 2025)",
+    "statutes": "65912.161(a)",
+    "subject": "The City was issued a non-compliance letter due to their incorrect calculation of their Alt. Plan and their need to remove the language from .157(d) regarding SDBL height waivers from in their ordinance.",
+    "url": null,
+    "hau_number": "HAU0003489"
+   },
    {
     "date": "2026-05-08",
     "kind": "SB 79 Ordinance/Alternative Plan Findings Letter",
@@ -1236,6 +1263,15 @@
   ],
   "brea": [
    {
+    "date": "2026-08-24",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65584.07; 65584.07(a)",
+    "subject": "TA Letter: County policy requiring RHNA transfers with City as a condition of granting affordable housing funding does not follow HE Law.",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/orange-county-hau-3454-ta-082426.pdf",
+    "hau_number": "HAU0003454"
+   },
+   {
     "date": "2025-10-16",
     "kind": "Technical Assistance Letter",
     "authority": "Housing Element Law",
@@ -1271,6 +1307,15 @@
     "kind": "Decertification of Housing Element Compliance",
     "authority": "Housing Element Law",
     "statutes": "65580",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003791"
+   },
+   {
+    "date": "2026-06-30",
+    "kind": "Decertification of Housing Element Compliance",
+    "authority": "Housing Element Law",
+    "statutes": "65580",
     "subject": "6/30/26 HCD sent a letter revoking the City of Brisbane\u2019s housing element compliance based on the City\u2019s failure to implement Program 2.A.2, including rezoning of adequate sites to accommodate a shortfall to meet the Regional Housing Needs Allocation (RHNA).",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/sma-brisbane-rezone-he-rev-out-063026.pdf",
     "hau_number": "HAU0003610"
@@ -1283,6 +1328,15 @@
     "subject": "Letter was sent on 4/16/2026 to the City of Brisbane; Pursuant to the housing element, the City plans to accomplish the required rezoning via adoption of the Baylands Specific Plan, currently under review by the City. The program for rezoning adequate sites must be completed no l",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/brisbane-corr-action-041626.pdf",
     "hau_number": "HAU0003610"
+   },
+   {
+    "date": "2026-04-16",
+    "kind": "Housing Element Findings of Noncompliance/ Corrective Action",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003790"
    },
    {
     "date": "2025-12-29",
@@ -1418,6 +1472,15 @@
    }
   ],
   "burlingame": [
+   {
+    "date": "2026-09-03",
+    "kind": "SB 79 Ordinance/Alternative Plan Findings Letter",
+    "authority": "Transit Oriented Development Zones (SB 79 of 2025)",
+    "statutes": "65912.161(a)",
+    "subject": "On September 3, 2026, HCD sent\u00a0an SB 79 Transit-Oriented Development Alternative Plan (TODAP) Findings and Technical Assistance Letter to the City, finding the City\u2019s TODAP to be out of compliance and requesting a response on HCD\u2019s findings as well as technical assistance regardi",
+    "url": null,
+    "hau_number": "HAU0003573"
+   },
    {
     "date": "2024-04-11",
     "kind": "Ordinance Findings Letter",
@@ -1678,7 +1741,7 @@
     "authority": "Starter Home Revitalization Act (SB 684 of 2023)",
     "statutes": "65852.28; 65913.4.5; 66499.40; 66499.41; 66300.6; 65941.1; 66499.41(a); 66499.41(a)(2)(A);  66300.6(a); 65852.28(b)(2)",
     "subject": "A parcel should satisfy the statutory definition of \u201cvacant\u201d under the SHRA by the time of application submittal. The HCA does not prohibit the City from approving a standalone demolition permit, and the PSA and HAA do not require that a preliminary application be submitted prior",
-    "url": null,
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/campbell-hau-3283-ta-071726.pdf",
     "hau_number": "HAU0003283"
    },
    {
@@ -1925,6 +1988,15 @@
   ],
   "chino": [
    {
+    "date": "2026-08-31",
+    "kind": "Technical Assistance Letter",
+    "authority": "Density Bonus Law",
+    "statutes": "65589.5; 65915; 21080.66; 65589.5(h)(2); 65589.5(j)(1); 65589.5(j)(3); 65589.5(k)(1)(A)(i); 65589.5(k)(1)(A)(ii); 65589.5(k)(1)(B); 65915(d)(1); 65589.5(d)(2); 65915(d)(1)(B); 65589.5(a)(3); 65915(d)(4); 65915(d)(3); 65585(j)(1); 65585(j)(1)(j)(3)",
+    "subject": "City risks HAA violation if it does not approve one of two SDBL projects, and it must make findings as specified in statute that both projects' requested partial undergrounding concessions would result in a specific, adverse impact.",
+    "url": null,
+    "hau_number": "HAU0003372"
+   },
+   {
     "date": "2026-02-27",
     "kind": "Technical Assistance Letter - Repeal Request",
     "authority": "Accessory Dwelling Unit Law",
@@ -1985,6 +2057,15 @@
   ],
   "chula-vista": [
    {
+    "date": "2026-05-08",
+    "kind": "Letter of Inquiry",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003808"
+   },
+   {
     "date": "2025-03-12",
     "kind": "Technical Assistance Letter",
     "authority": "Density Bonus Law",
@@ -2007,7 +2088,7 @@
    {
     "date": "2023-05-15",
     "kind": "Technical Assistance Letter",
-    "authority": "By-Right Supporting Housing Provisions",
+    "authority": "By-Right Supportive Housing Provisions",
     "statutes": "65650; 65651; 65652; 65653; 65654; 65655; 65656",
     "subject": "HCD provided technical assistance to the City of Claremont regarding implementation of the By-right Supportive Housing Law (Gov. Code 65650-65656, commonly known as AB 2162, Chapter 753, Statutes of 2018.",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/Claremont-TA-05152023.pdf",
@@ -2152,6 +2233,15 @@
   ],
   "colfax": [
    {
+    "date": "2026-03-18",
+    "kind": "Letter of Inquiry",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003802"
+   },
+   {
     "date": "2025-05-28",
     "kind": "Technical Assistance Letter - Repeal Request",
     "authority": "Accessory Dwelling Unit Law",
@@ -2194,6 +2284,15 @@
   ],
   "colusa": [
    {
+    "date": "2026-07-24",
+    "kind": "Ordinance Findings Letter",
+    "authority": "Accessory Dwelling Unit Law",
+    "statutes": "66310; 66311; 66311.5; 66312; 66313; 66314; 66315; 66316; 66317; 66318; 66319; 66320; 66321; 66322; 66323; 66324",
+    "subject": "Ordinance Findings Letter",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/colusa-adu-findings-072426.pdf",
+    "hau_number": "ADU0008868"
+   },
+   {
     "date": "2025-03-25",
     "kind": "Recertification of Housing Element Compliance",
     "authority": "Housing Element Law",
@@ -2228,6 +2327,17 @@
     "subject": "Other",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/colusa-1398-rezone-loi-52324.pdf",
     "hau_number": "HAU0002934"
+   }
+  ],
+  "colusa-county": [
+   {
+    "date": "2026-02-06",
+    "kind": "Letter of Inquiry",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003800"
    }
   ],
   "commerce": [
@@ -2872,6 +2982,15 @@
     "date": "2026-01-15",
     "kind": "Letter of Inquiry",
     "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/del-mar-hei-loi-011526.pdf",
+    "hau_number": "HAU0003798"
+   },
+   {
+    "date": "2026-01-15",
+    "kind": "Letter of Inquiry",
+    "authority": "Housing Element Law",
     "statutes": "65580; 65585; 65585(i)(1)(C); 65585(j); 65585(l)(1); 65589.5(d)(6); 65589.5(h)(11)",
     "subject": "Letter of Inquiry regarding implementation of several Housing Element programs. The letter also establishes certain deadlines that the City needs to meet in order to demonstrate feasibility of the Fairgrounds affordable housing project within the planning period, otherwise the co",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/del-mar-hei-loi-011526.pdf",
@@ -3005,6 +3124,17 @@
     "subject": "Ordinance Findings Letter",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/dixon-adu-111225.pdf",
     "hau_number": "ADU0007239"
+   }
+  ],
+  "dos-palos": [
+   {
+    "date": "2026-08-10",
+    "kind": "Notice of Violation",
+    "authority": "Housing Element Law",
+    "statutes": "Government Code sections 65580-65589.11",
+    "subject": "Other",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/dos-palos-he-noncompliant-nov-081026.pdf",
+    "hau_number": "HAU0003070"
    }
   ],
   "downey": [
@@ -3171,6 +3301,15 @@
   ],
   "el-monte": [
    {
+    "date": "2026-07-08",
+    "kind": "Housing Element Findings of Noncompliance/ Corrective Action",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003780"
+   },
+   {
     "date": "2026-06-24",
     "kind": "Ordinance Findings Letter",
     "authority": "Accessory Dwelling Unit Law",
@@ -3178,6 +3317,15 @@
     "subject": "Ordinance Findings Letter",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/el-monte-adu-findings-062426.pdf",
     "hau_number": "ADU0007578"
+   },
+   {
+    "date": "2026-02-06",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65583.2",
+    "subject": "Technical Assistance",
+    "url": null,
+    "hau_number": "HAU0003779"
    },
    {
     "date": "2025-03-14",
@@ -3557,7 +3705,7 @@
    {
     "date": "2023-01-12",
     "kind": "Notice of Potential Violation",
-    "authority": "Housing Accountability Act, By-Right Supporting Housing Provisions, Streamlined Ministerial Approval Process (SB 35 of 2017)",
+    "authority": "Housing Accountability Act, By-Right Supportive Housing Provisions, Streamlined Ministerial Approval Process (SB 35 of 2017)",
     "statutes": "65589.5; 65913.4; 65650-65656",
     "subject": "The purpose of this letter is to reiterate the City\u2019s obligation for review of AB 2162 supportive housing projects and to provide notice about which provisions of the statute the City could risk violating based on HCD\u2019s observations of the City\u2019s review to date.",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/FillmoreNOPV012223.pdf",
@@ -3566,7 +3714,7 @@
    {
     "date": "2023-01-12",
     "kind": "Notice of Potential Violation",
-    "authority": "By-Right Supporting Housing Provisions, Housing Accountability Act",
+    "authority": "By-Right Supportive Housing Provisions, Housing Accountability Act",
     "statutes": "65650-65656; 65583.2(i); 65589.5(f)(1)",
     "subject": "HCD notified the City that it is at risk of violating By-Right Supportive Housing Law by seeking to (1) impose subjective and/or discretionary review criteria on the project; (2) impose requirements that are not written, objective development standards or policies that apply to o",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/FillmoreNOPV012223.pdf",
@@ -3575,7 +3723,7 @@
    {
     "date": "2022-08-24",
     "kind": "Technical Assistance Letter",
-    "authority": "Housing Accountability Act, By-Right Supporting Housing Provisions, Streamlined Ministerial Approval Process (SB 35 of 2017)",
+    "authority": "Housing Accountability Act, By-Right Supportive Housing Provisions, Streamlined Ministerial Approval Process (SB 35 of 2017)",
     "statutes": "65589.5; 65913.4; 65650-65656",
     "subject": "The purpose of this letter is to provide technical assistance to the City regarding implementation of the Permit Streamlining Act (PSA) (Chapter 4.5, Gov. Code, \u00a7\u00a7 65920-65964.5), Housing Accountability Act (HAA) (Gov. Code, \u00a7 65589.5), and ByRight Supportive Housing Law (Gov. Co",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/fillmore-attachments-TA-082422.pdf",
@@ -3584,7 +3732,7 @@
    {
     "date": "2022-08-24",
     "kind": "Technical Assistance Letter",
-    "authority": "Housing Accountability Act, By-Right Supporting Housing Provisions, Portions of the Permit Streamlining Act",
+    "authority": "Housing Accountability Act, By-Right Supportive Housing Provisions, Portions of the Permit Streamlining Act",
     "statutes": "65650; 65651; 65652; 65653; 65654; 65656; 65651(b); 65943(a); 65589.5(j)(2)(A); 65589.5(h)(8)",
     "subject": "HCD explained the difference between completeness review under the PSA and consistency review under the HAA. The City improperly characterized consistency comments as incomplete items, impermissibly raising the bar to achieving a complete application. The City must ensure that it",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/fillmore-attachments-TA-082422.pdf",
@@ -3657,6 +3805,15 @@
    }
   ],
   "folsom": [
+   {
+    "date": "2026-03-24",
+    "kind": "Letter of Inquiry",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003804"
+   },
    {
     "date": "2025-12-05",
     "kind": "Technical Assistance Letter - Repeal Request",
@@ -3947,7 +4104,7 @@
     "hau_number": "HAU0002324"
    },
    {
-    "date": "2025-12-29",
+    "date": "2025-12-30",
     "kind": "Notice of Violation",
     "authority": "Housing Accountability Act",
     "statutes": "65589.5(d)",
@@ -4174,10 +4331,10 @@
    {
     "date": "2026-07-27",
     "kind": "Technical Assistance Letter",
-    "authority": "Housing Crisis Act of 2019, Housing Element Law",
-    "statutes": "66300, 65585, 65863, 65588, 65915, 65009.1",
-    "subject": "7/27/2026 - CT sent a TA Letter to the City and to the Requestor. The letter covered the City's responsibilities for following the Housing Crisis Act of 2019 and Housing Element Law, in relation to a proposed ballot measure, Measure F-26.",
-    "url": null,
+    "authority": "Housing Crisis Act of 2019, Housing Element Law, No Net Loss",
+    "statutes": "66300; 65585;65863; 65588; 65915; 65009.1",
+    "subject": "The letter covered the City's responsibilities for following the Housing Crisis Act of 2019 and Housing Element Law, in relation to a proposed ballot measure, Measure F-26. If Measure F-26 passes and results in a reduction in capacity relative to what existed January 1, 2018, and",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/grover-beach-ta-072726.pdf",
     "hau_number": "HAU0003468"
    }
   ],
@@ -4653,6 +4810,15 @@
   ],
   "huron": [
    {
+    "date": "2026-02-18",
+    "kind": "Recertification of Housing Element Compliance",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003760"
+   },
+   {
     "date": "2025-05-16",
     "kind": "Housing Element Findings of Noncompliance/ Corrective Action",
     "authority": "Housing Element Law",
@@ -4785,6 +4951,15 @@
    }
   ],
   "irvine": [
+   {
+    "date": "2026-04-29",
+    "kind": "Letter of Inquiry",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003805"
+   },
    {
     "date": "2025-03-27",
     "kind": "Ordinance Findings Letter",
@@ -5828,6 +6003,15 @@
   ],
   "los-altos": [
    {
+    "date": "2026-08-28",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65580; 65583(a)(5); 65585(b)(1); 65585(b)(3); 65585(d); 65585(f); 65585(g); 65585(h); 65585(i); 65585(j)(1); 65589.5(d)(5); 65009.1(a)",
+    "subject": "This letter provides technical assistance regarding implications for City of Los Altos (City) compliance with Housing Element Law2 should the Ordinance be adopted by voters.",
+    "url": null,
+    "hau_number": "HAU0003415"
+   },
+   {
     "date": "2025-12-05",
     "kind": "Technical Assistance Letter - Repeal Request",
     "authority": "Accessory Dwelling Unit Law",
@@ -6295,7 +6479,7 @@
    {
     "date": "2023-07-28",
     "kind": "Technical Assistance Letter",
-    "authority": "By-Right Supporting Housing Provisions",
+    "authority": "By-Right Supportive Housing Provisions",
     "statutes": " 65650; 65656; 65661(a); 8899.50; 65583.2(i); 65008",
     "subject": "TA Letter of Support for a supportive housing project. The letter explains by right supportive housing law and the County's obligation to approve the project. TA letter send to LA County BOS staff Anish Sairaya, LA County Planning, LACDA, and applicant.",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/la-county-hau208-072823.pdf",
@@ -6832,6 +7016,15 @@
   ],
   "milpitas": [
    {
+    "date": "2026-09-02",
+    "kind": "SB 79 Ordinance/Alternative Plan Findings Letter",
+    "authority": "Transit Oriented Development Zones (SB 79 of 2025)",
+    "statutes": "65912.160(d)(3)(A); 65912.157; 65912.157(a); 65912.160(c)(1); 65858; 65912.160(a)",
+    "subject": "The City\u2019s ordinances are in substantial compliance. However, contrary to the recitals in the City\u2019s ordinances, all zones that principally or conditionally permit residential/mixed/commercial development are eligible for SB 79.",
+    "url": null,
+    "hau_number": "HAU0003358"
+   },
+   {
     "date": "2025-12-16",
     "kind": "Letter of Inquiry",
     "authority": "Housing Element Law",
@@ -6839,6 +7032,17 @@
     "subject": "Other",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/milpitas-rezone-he-loi-121625.pdf",
     "hau_number": "HAU0002876"
+   }
+  ],
+  "mission-viejo": [
+   {
+    "date": "2026-08-05",
+    "kind": "Technical Assistance Letter",
+    "authority": "Anti-Discrimination in Land Use Law, Affirmatively Further Fair Housing, Housing Element Law",
+    "statutes": "8899.50; 65008; 65580-65589.11",
+    "subject": "This letter is meant to assist the City with revisions to their municipal code concerning these non-compliant group home regulations in conflict with the aforementioned state laws. Further group home regulatory language concerns include, but are not limited to, zoning requirement",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/mission-viejo-hau-ta-080526.pdf",
+    "hau_number": "HAU0002293"
    }
   ],
   "modesto": [
@@ -6951,6 +7155,15 @@
     "kind": "Successful Completion of Corrective Action",
     "authority": "Housing Element Law",
     "statutes": "65583.2",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003784"
+   },
+   {
+    "date": "2026-07-08",
+    "kind": "Successful Completion of Corrective Action",
+    "authority": "Housing Element Law",
+    "statutes": "65583.2",
     "subject": "Potential Violation",
     "url": null,
     "hau_number": "HAU0002801"
@@ -7020,6 +7233,15 @@
    }
   ],
   "monterey": [
+   {
+    "date": "2026-05-20",
+    "kind": "Housing Element Findings of Noncompliance/ Corrective Action",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003762"
+   },
    {
     "date": "2026-05-11",
     "kind": "Technical Assistance Letter - Repeal Request",
@@ -7343,7 +7565,7 @@
     "authority": "Streamlined Ministerial Approval Process (SB 35 of 2017)",
     "statutes": "21080.66(a)(6); 65913.4(a)(6)(G)",
     "subject": "To meet the eligibility condition in Gov. Code section 65913.4, subd. (a)(6)(G)(ii) that &#34;the site meets FEMA requirements necessary to meet minimum flood plain management criteria of the National Flood Insurance Program,&#34; the project as proposed must meet the requirement",
-    "url": null,
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/napa-hau-3329-ta-073126.pdf",
     "hau_number": "HAU0003329"
    },
    {
@@ -7594,7 +7816,7 @@
    {
     "date": "2024-09-16",
     "kind": "Notice of Violation",
-    "authority": "Housing Crisis Act of 2019, Anti-Discrimination in Land Use Law, Affirmatively Further Fair Housing, Housing Element Law, By-Right Supporting Housing Provisions, By-Right Low Barrier Navigation Centers",
+    "authority": "Housing Crisis Act of 2019, Anti-Discrimination in Land Use Law, Affirmatively Further Fair Housing, Housing Element Law, By-Right Supportive Housing Provisions, By-Right Low Barrier Navigation Centers",
     "statutes": "66300(b)(1)(B); 65858(c); 65008(a); 65008(b)(1); 8899.50(a)(1); 8899.50(b); 65580(a); 65583(c); 65585(i); 65585(j);",
     "subject": "The City's Urgency Ordinance No. 24-1752U (\u201cOrdinance\u201d) which imposes \u201ca citywide moratorium to establish, implement, operate\u201d (sic) convenience stores (liquor stores), discount stores, laundromats, carwashes, payday loan establishments, emergency shelters, single-room occupancy ",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/norwalk-hau-1252-nov-cal-091624.pdf\u00a0",
@@ -7622,6 +7844,15 @@
    }
   ],
   "oakland": [
+   {
+    "date": "2026-09-03",
+    "kind": "Technical Assistance Letter",
+    "authority": "Transit Oriented Development Zones (SB 79 of 2025)",
+    "statutes": "65912.161(b)",
+    "subject": "On September 3, 2026,\u00a0HCD\u00a0sent\u00a0a Technical Assistance Letter\u00a0to the City, finding\u00a0that, while the ordinance remains out of substantial compliance,\u00a0the City\u2019s SB 79\u00a0map\u00a0and supporting documentation to temporarily exclude sites from SB 79\u00a0is\u00a0in substantial compliance with state law",
+    "url": null,
+    "hau_number": "HAU0003112"
+   },
    {
     "date": "2026-06-12",
     "kind": "SB 79 Ordinance/Alternative Plan Findings Letter",
@@ -7679,6 +7910,15 @@
     "subject": "An ADU ordinance review letter based on Oceanside Ordinance No. 26-OR0104-1",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/oceanside-adu-findings-061726.pdf",
     "hau_number": "ADU0008105"
+   },
+   {
+    "date": "2026-03-24",
+    "kind": "Letter of Inquiry",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003803"
    },
    {
     "date": "2026-02-27",
@@ -7961,7 +8201,7 @@
    {
     "date": "2026-03-17",
     "kind": "Technical Assistance Letter",
-    "authority": "By-Right Supporting Housing Provisions, Housing Accountability Act, Portions of the Permit Streamlining Act",
+    "authority": "By-Right Supportive Housing Provisions, Housing Accountability Act, Portions of the Permit Streamlining Act",
     "statutes": "65943(a); 65653(b); 65943(g); 65905.5(b)(3)(B); 65589.5(j)(2)(A)(i); 65589.5(j)(2)(B); 65589.5(h)(10); 65913.3;",
     "subject": "TA Letter to City of Palmdale: the project was deemed complete by operation of the Permit Streamlining Act and deemed consistent by operation of the Housing Accountability Act. Additionally, the project is a use by right pursuant to By-Right Supportive Housing Law (AB 2162).",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/palmdale-ta-hau-2533-031726.pdf",
@@ -8082,6 +8322,15 @@
     "subject": "Ordinance Findings Letter",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/paramount-adu-findings-070126.pdf",
     "hau_number": "ADU0008691"
+   },
+   {
+    "date": "2026-03-18",
+    "kind": "Housing Element Findings of Noncompliance/ Corrective Action",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003781"
    },
    {
     "date": "2025-03-17",
@@ -8527,6 +8776,15 @@
    }
   ],
   "port-hueneme": [
+   {
+    "date": "2026-03-18",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003787"
+   },
    {
     "date": "2025-03-17",
     "kind": "Letter of Inquiry",
@@ -9146,6 +9404,15 @@
   ],
   "rocklin": [
    {
+    "date": "2026-08-10",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65583.2(h); 65583.2(h)(1); 65583.2(i)",
+    "subject": "The City must process the project in a manner consistent with the definition of &#34;use by right&#34; in Housing Element Law, including that the project is not subject to CEQA.",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/rocklin-hau-1521-ta-081026.pdf",
+    "hau_number": "HAU0001521"
+   },
+   {
     "date": "2025-12-05",
     "kind": "Technical Assistance Letter - Repeal Request",
     "authority": "Accessory Dwelling Unit Law",
@@ -9367,6 +9634,15 @@
   ],
   "sacramento": [
    {
+    "date": "2026-08-18",
+    "kind": "Ordinance Findings Letter",
+    "authority": "Accessory Dwelling Unit Law",
+    "statutes": "66310; 66311; 66311.5; 66311.7; 66312; 66313; 66313.5; 66314; 66315; 66316; 66317; 66318; 66319; 66320; 66321; 66322; 66323; 66325; 66326; 66327; 66328; 66329; 66330; 66331; 66333; 66333.5; 66334; 66335; 66335.5; 66336; 66337; 66338; 66339; 66339.5; 66340; 66341",
+    "subject": "A findings letter to the City of Sacramento regarding ADU Ordinance No. Ordinance No. 2026-0001 and Resolution No. 2026-0074.",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/sacramento-adu-findings-081826.pdf",
+    "hau_number": "ADU0007816"
+   },
+   {
     "date": "2026-01-20",
     "kind": "Ordinance Findings Letter",
     "authority": "Accessory Dwelling Unit Law",
@@ -9386,6 +9662,15 @@
    }
   ],
   "sacramento-county": [
+   {
+    "date": "2026-07-30",
+    "kind": "Technical Assistance Letter",
+    "authority": "Duplexes and Urban Lot Splits (SB 9 of 2021)",
+    "statutes": "65852.21(a); 66411.7(a)(3)(A)",
+    "subject": "TA letter on the eligibility of the County\u2019s Agriculture-Residential (AR) zoning districts for SB 9. Additionally, the three specific questions the County posed related to this topic;\n1. onsite wastewater treatment system (OWTS) or a well, subject to a minimum lot size requiremen",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/sacramento-cou-hau-2675-ta-073026.pdf",
+    "hau_number": "HAU0002675"
+   },
    {
     "date": "2026-02-27",
     "kind": "Technical Assistance Letter - Repeal Request",
@@ -9407,7 +9692,7 @@
    {
     "date": "2024-09-19",
     "kind": "Technical Assistance Letter",
-    "authority": "By-Right Supporting Housing Provisions",
+    "authority": "By-Right Supportive Housing Provisions",
     "statutes": "65583(c)(3); 65583(a)(4)(B)",
     "subject": "Application of AB 2162 to a supportive housing project. AB 2162 applies ministerially in zones that allow for residential by use permit only.",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/sacramentoco-hau-779-ta-09192024.pdf",
@@ -9421,15 +9706,6 @@
     "subject": "Other",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/sacramento-cou-he-rezone-loi-081424.pdf",
     "hau_number": "HAU0003001"
-   },
-   {
-    "date": null,
-    "kind": "Technical Assistance Letter",
-    "authority": "Duplexes and Urban Lot Splits (SB 9 of 2021)",
-    "statutes": "65852.21(a); 66411.7(a)(3)(A)",
-    "subject": "TA letter on the eligibility of the County\u2019s Agriculture-Residential (AR) zoning districts for SB 9. Additionally, the three specific questions the County posed related to this topic;\n1. onsite wastewater treatment system (OWTS) or a well, subject to a minimum lot size requiremen",
-    "url": null,
-    "hau_number": "HAU0002675"
    }
   ],
   "st-helena": [
@@ -9602,7 +9878,7 @@
     "authority": "Housing Element Law",
     "statutes": "65583(a)(3); 65583.2(b)(5)(B); 65583(a)(5); 65863; 65835.2(c)(3); 65585(b);",
     "subject": "Follow-up TA: Sites that cannot connect to City of Redlands water due to Measure U are considered insufficient for LI RHNA. County must provide HE NNL analysis.",
-    "url": null,
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/planning-and-community/HAU/san-bernardino-cou-hau-1905-ta-072826.pdf",
     "hau_number": "HAU0001905"
    },
    {
@@ -9656,6 +9932,15 @@
    }
   ],
   "san-clemente": [
+   {
+    "date": "2026-04-29",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003785"
+   },
    {
     "date": "2026-02-27",
     "kind": "Technical Assistance Letter - Repeal Request",
@@ -9803,6 +10088,15 @@
     "subject": "Technical Assistance Letter - Repeal Request",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/san-diego-county-adu-ta-05112026.pdf",
     "hau_number": "ADU0008357"
+   },
+   {
+    "date": "2026-01-28",
+    "kind": "Letter of Inquiry",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003799"
    },
    {
     "date": "2024-09-24",
@@ -10174,6 +10468,24 @@
   ],
   "san-juan-capistrano": [
    {
+    "date": "2026-08-11",
+    "kind": "Ordinance Findings Letter",
+    "authority": "Accessory Dwelling Unit Law",
+    "statutes": "66310; 66311; 66311.5; 66311.7; 66312; 66313; 66313.5; 66314; 66315; 66316; 66317; 66318; 66319; 66320; 66321; 66322; 66323; 66324; 66325; 66326; 66327; 66328; 66329; 66330; 66331; 66332; 66333;\u00a066333.5; 66334; 66335; 66335.5; 66336; 66337; 66338; 66339; 66339.5; 66340; 66341; 66342",
+    "subject": "Ordinance review for the wrong ordinance; City staff replied immediately with their current ord.",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/san-juan-capistrano-adu-findings-081126.pdf",
+    "hau_number": "ADU0008909"
+   },
+   {
+    "date": "2026-04-29",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003788"
+   },
+   {
     "date": "2025-03-17",
     "kind": "Letter of Inquiry",
     "authority": "Housing Element Law",
@@ -10473,6 +10785,15 @@
   ],
   "sanger": [
    {
+    "date": "2026-08-05",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Accountability Act",
+    "statutes": "Gov. Code, \u00a7 65589.5; Gov. Code, \u00a7 65589.5(d)(5)(A)",
+    "subject": "Project is considered consistent because it meets the density range assumed in the Housing Element.",
+    "url": null,
+    "hau_number": "HAU0003320"
+   },
+   {
     "date": "2025-07-07",
     "kind": "Successful Completion of Corrective Action",
     "authority": "Housing Element Law",
@@ -10602,6 +10923,15 @@
    }
   ],
   "santa-barbara-county": [
+   {
+    "date": "2026-08-25",
+    "kind": "Technical Assistance Letter",
+    "authority": "Duplexes and Urban Lot Splits (SB 9 of 2021)",
+    "statutes": "65852.21; 66411.7;",
+    "subject": "Provided a response to the County's response.",
+    "url": null,
+    "hau_number": "HAU0001871"
+   },
    {
     "date": "2025-10-31",
     "kind": "Ordinance Findings Letter",
@@ -10887,7 +11217,7 @@
   ],
   "santa-monica": [
    {
-    "date": "2026-07-17",
+    "date": "2026-07-15",
     "kind": "Technical Assistance Letter",
     "authority": "Starter Home Revitalization Act (SB 684 of 2023)",
     "statutes": "66499.41",
@@ -11038,6 +11368,15 @@
    }
   ],
   "sausalito": [
+   {
+    "date": "2026-08-12",
+    "kind": "Technical Assistance Letter",
+    "authority": "Accessory Dwelling Unit Law",
+    "statutes": "66314; 66321; 66323",
+    "subject": "This letter answers questions from the requestor and the City regarding completeness review and applicable development standards for a specific ADU application in Sausalito.",
+    "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/sausalito-adu-ta-081226.pdf",
+    "hau_number": "ADU0008756"
+   },
    {
     "date": "2025-12-23",
     "kind": "Technical Assistance Letter",
@@ -11590,7 +11929,7 @@
    {
     "date": "2022-05-24",
     "kind": "Technical Assistance Letter",
-    "authority": "By-Right Supporting Housing Provisions, Anti-Discrimination in Land Use Law",
+    "authority": "By-Right Supportive Housing Provisions, Anti-Discrimination in Land Use Law",
     "statutes": "65650; 65651; 65652; 65653; 65654; 65655; 65656; 65008; 65008(b); 65008(d)(2)(A); 65651(a); 65651(a)(1); 65651(a)(2); 65651(a)(3); 65651(a)(5); 65651(a)(6); 65651(a)(7); 65583.2(i); 65653(b); 65589.5(f); 65651(b)(1)",
     "subject": "The jurisdiction must review a qualifying supportive housing project pursuant to the requirements of Government Code section 65650-65656, including the eligibility criteria, objective standards, and review timeframes. No city shall enact or administer its laws so as to \u201cprohibit ",
     "url": "https://www.hcd.ca.gov/community-development/housing-element/docs/amaSutterCreek-TA-052422.pdf",
@@ -11830,6 +12169,15 @@
    }
   ],
   "trinidad": [
+   {
+    "date": "2026-02-06",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003801"
+   },
    {
     "date": "2025-07-25",
     "kind": "Letter of Inquiry",
@@ -12072,6 +12420,15 @@
    }
   ],
   "ventura-county": [
+   {
+    "date": "2026-02-18",
+    "kind": "Determination Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65580",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003789"
+   },
    {
     "date": "2025-03-17",
     "kind": "Letter of Inquiry",
@@ -12496,6 +12853,15 @@
   ],
   "wheatland": [
    {
+    "date": "2026-04-29",
+    "kind": "Letter of Inquiry",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003807"
+   },
+   {
     "date": "2025-12-05",
     "kind": "Technical Assistance Letter - Repeal Request",
     "authority": "Accessory Dwelling Unit Law",
@@ -12607,6 +12973,15 @@
     "subject": "Technical Assistance Letter - Repeal Request",
     "url": "https://www.hcd.ca.gov/sites/default/files/docs/policy-and-research/ordinance-review-letters/winters-adu-ta-100825.pdf",
     "hau_number": "ADU0006789"
+   },
+   {
+    "date": "2024-12-12",
+    "kind": "Technical Assistance Letter",
+    "authority": "Housing Element Law",
+    "statutes": "65585",
+    "subject": "Other",
+    "url": null,
+    "hau_number": "HAU0003759"
    },
    {
     "date": "2024-08-14",
@@ -12753,6 +13128,15 @@
   ]
  },
  "_statewide": [
+  {
+   "date": "2026-08-28",
+   "kind": "Ordinance Findings Letter",
+   "authority": "Accessory Dwelling Unit Law",
+   "statutes": "66310; 66311; 66311.5; 66311.7; 66312; 66313; 66313.5; ; 66314; 66315; 66316; 66317; 66318; 66319; 66320; 66321; 66322; 66323; 66324; 66325; 66326; 66327; 66328; 66329; 66330; 66331; 66332; 66333;  66333.5; 66334; 66335; 66335.5; 66336; 66337; 66338; 66339; 66339.5; 66340; 66341; 66342",
+   "subject": "Ordinance Findings Letter",
+   "url": null,
+   "hau_number": "ADU0009002"
+  },
   {
    "date": "2026-06-25",
    "kind": "Technical Assistance Letter",

@@ -229,8 +229,8 @@ any of those four things.
 ### Phase 7b: comparable-jurisdiction precedent
 
 **Built.** `AGENTS.md` priority 4, second half, and the only part of year 3 that is not
-blocked. The committed HCD accountability dataset already maps 1,314 letters
-across 470 of the 541 registry entries, and 205 jurisdictions have received a
+blocked. The committed HCD accountability dataset already maps 1,353 letters
+across 473 of the 541 registry entries, and 205 jurisdictions have received a
 repeal-request technical assistance letter. That is a priority list derived
 entirely from data already in the repository, with nothing to fetch.
 
