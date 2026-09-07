@@ -1219,9 +1219,12 @@ def determine(
     for stop, miles in with_dist if feed_counts else []:
         if miles > HALF_MILE:
             break
-        # Per stop, not per run: under several feeds one operator's feed can
-        # resolve for the date while another's does not, and the unresolved
-        # one's empty headways must not read as "no qualifying service".
+        # Defence in depth, and currently unreachable in effect: a stop whose
+        # feed did not resolve carries no routes and no rail or ferry flag, so
+        # it cannot reach either branch below anyway. No test can fail on this
+        # line, which is why it is labelled rather than counted as a guard. The
+        # gate that does bite is on the parking screen further down, where an
+        # unread feed's stop would otherwise be public transit near the site.
         if not stop.headways_measured:
             continue
         if _is_major_stop(stop, stops):
