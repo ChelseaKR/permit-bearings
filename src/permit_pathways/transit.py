@@ -69,6 +69,36 @@ decide which definition a given standard incorporates. It refuses to
 collapse the two: a planned row never produces a candidate, and it is
 always reported by count, agency, type and distance so the reader can ask
 the transit agency whether the facility is in service.
+
+Operator coverage. A site is served by whoever serves it, not by whoever
+published the feed someone happened to supply. A location near the Davis
+depot is served by Unitrans, Yolobus, Capitol Corridor and Amtrak thruway
+buses; screening the Unitrans feed alone and reporting "no qualifying stop"
+states a fact about one operator in the voice of a fact about the site.
+:func:`load_feeds` therefore takes several feeds, namespaces stop and route
+ids by feed so two operators' route "1" are two routes rather than one, and
+clusters stops across operators with the same corner rule. Alongside the
+result, :func:`assess_coverage` cross-checks the operators actually supplied
+against the agencies the statewide dataset lists as serving *operating*
+stops inside the radius, and reports one of three states:
+
+- ``complete``   every operating agency the statewide dataset lists within
+  the radius was supplied;
+- ``bounded``    at least one was not, or a supplied feed does not name its
+  own agency, so it could not be matched;
+- ``unknown``    no feed was supplied at all.
+
+Only ``complete`` lets a feed-derived screen report a negative; the other two
+report ``unknown``, for the same reason an unresolved calendar does. Two
+limits are deliberate and stated rather than papered over. First, agency
+names are matched exactly after case and punctuation normalisation and never
+fuzzily: a false match would turn ``bounded`` into ``complete`` and
+manufacture certainty, while a false miss only over-reports incompleteness,
+so the failure is aimed at the safe side. Second, the statewide dataset lists
+only high-quality and major stops, so ``complete`` bounds the § 21064.3 and
+§ 21155 screens and says nothing about an ordinary bus operator relevant to
+the § 66322(a)(1) parking exemption; it never upgrades a negative into a
+claim of coverage.
 """
 
 from __future__ import annotations
@@ -80,6 +110,7 @@ import json
 import math
 import zipfile
 from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
@@ -112,6 +143,11 @@ GTFS_DAY_COLUMNS = (
 GTFS_SERVICE_ADDED = "1"  # calendar_dates.txt exception_type
 GTFS_SERVICE_REMOVED = "2"
 
+#: Operator-coverage states. See the module docstring.
+COVERAGE_COMPLETE = "complete"
+COVERAGE_BOUNDED = "bounded"
+COVERAGE_UNKNOWN = "unknown"
+
 #: Calendar states in which a feed-derived screen may be reported at all.
 CALENDAR_RESOLVED = "resolved"
 #: The feed answered "nothing runs that day". A negative the feed supports.
@@ -140,6 +176,15 @@ class StopService:
     bus_routes: set[str] = field(default_factory=set)
     rail: bool = False
     ferry: bool = False
+    #: Which supplied feed this stop came from. Empty for a stop built by a
+    #: caller rather than loaded, which is how the single-feed API and the
+    #: statewide-dataset views have always worked.
+    feed: str = ""
+    #: Whether this stop's own feed resolved a service set for the requested
+    #: date. Under several feeds the answer differs per feed, so it cannot be
+    #: one global flag: an unresolved feed's stops must not be read as "no
+    #: qualifying service" beside a resolved feed's stops that were measured.
+    headways_measured: bool = True
 
     def hqtc_routes(self) -> list[str]:
         return [r for r, g in self.route_max_gaps.items() if g <= HQTC_MAX_GAP_MIN]
@@ -267,6 +312,75 @@ class ServiceCalendar:
                 "from these measurements."
             )
         return note
+
+
+@dataclass(frozen=True)
+class FeedCalendars:
+    """The per-feed calendar states behind one multi-operator screen.
+
+    Deliberately not a merged :class:`ServiceCalendar`. Merging would have to
+    pick one status for feeds that disagree, and both directions are wrong:
+    calling the whole thing unresolved discards candidates a resolved feed
+    really did establish, and calling it resolved lets an unreadable feed's
+    silence read as an absence. So the two questions are answered separately —
+    a stop may be *measured* if its own feed resolved, and a *negative* needs
+    every supplied feed to have been able to answer.
+    """
+
+    entries: tuple[tuple[str, ServiceCalendar], ...]
+
+    @property
+    def headways_measurable(self) -> bool:
+        """True when at least one supplied feed resolved a service set.
+
+        Per-stop measurability is carried by :attr:`StopService.headways_measured`;
+        this is only the gate that lets the screen look at feed stops at all.
+        """
+        return any(calendar.headways_measurable for _key, calendar in self.entries)
+
+    @property
+    def supports_a_negative(self) -> bool:
+        """True only when *every* supplied feed could answer for the date.
+
+        One unreadable feed is enough to make "no qualifying stop" a statement
+        about the readable feeds rather than about the site. With no feed at
+        all the question is vacuous — there is no feed whose readability is in
+        doubt — and it is :class:`FeedCoverage` that withholds the negative,
+        so that the reader is told "no feed was supplied" rather than the
+        false "the supplied feed could not be read".
+        """
+        return all(calendar.supports_a_negative for _key, calendar in self.entries)
+
+    @property
+    def status(self) -> str:
+        if not self.entries:
+            return "no_feed_supplied"
+        statuses = {calendar.status for _key, calendar in self.entries}
+        if len(statuses) == 1:
+            return statuses.pop()
+        return "mixed"
+
+    @property
+    def service_date(self) -> str | None:
+        """The date every feed was asked about, or ``None`` if they differ."""
+        dates = {calendar.service_date for _key, calendar in self.entries}
+        return dates.pop() if len(dates) == 1 else None
+
+    @property
+    def service_ids_active(self) -> tuple[str, ...]:
+        """Active service ids, namespaced by feed so two feeds' ``WK`` differ."""
+        return tuple(
+            f"{key}:{service_id}"
+            for key, calendar in self.entries
+            for service_id in calendar.service_ids_active
+        )
+
+    def reason(self) -> str:
+        if not self.entries:
+            return "No operator feed was supplied, so no feed stop was read."
+        return "\n".join(
+            f"{key}: {calendar.reason()}" for key, calendar in self.entries
+        )
 
 
 def _feed_validity(z: zipfile.ZipFile) -> tuple[date | None, date | None]:
@@ -521,6 +635,11 @@ def load_feed(gtfs_zip: Path, *, as_of: date | None = None) -> FeedScreen:
                 route_types,
                 _arrivals(z, _trips_on_date(z, calendar.service_ids_active)),
             )
+    # Recorded on every stop, not only inferred from the calendar, so that a
+    # stop carried into a multi-feed union still knows whether its own feed
+    # was read for the date.
+    for stop in stops.values():
+        stop.headways_measured = calendar.headways_measurable
     return FeedScreen(stops=list(stops.values()), calendar=calendar)
 
 
@@ -536,6 +655,135 @@ def _load_stops(z: zipfile.ZipFile) -> dict[str, StopService]:
         if s.get("stop_lat")
     }
     return stops
+
+
+def feed_agencies(gtfs_zip: Path) -> tuple[str, ...]:
+    """The agency names a feed declares for itself, verbatim and de-duplicated.
+
+    A feed that ships no `agency.txt`, or names no agency in it, returns ``()``.
+    That is not the same fact as "this operator is absent from the statewide
+    list", and :func:`assess_coverage` keeps them apart: an unnamed feed cannot
+    be matched, so it makes the screen ``bounded`` rather than silently
+    matching nothing and reading as an operator that was never supplied.
+    """
+    with zipfile.ZipFile(gtfs_zip) as z:
+        rows = _read_optional(z, "agency.txt") or []
+    names: list[str] = []
+    for row in rows:
+        name = (row.get("agency_name") or "").strip()
+        if name and name not in names:
+            names.append(name)
+    return tuple(names)
+
+
+@dataclass(frozen=True)
+class LoadedFeed:
+    """One supplied operator feed: what it is called, and what it said."""
+
+    key: str
+    path: Path
+    agencies: tuple[str, ...]
+    screen: FeedScreen
+
+
+@dataclass(frozen=True)
+class MultiFeedScreen:
+    """Several operators' feeds screened as one, with their ids kept apart."""
+
+    feeds: tuple[LoadedFeed, ...]
+    stops: list[StopService]
+    calendar: FeedCalendars
+
+    @property
+    def operators_supplied(self) -> tuple[str, ...]:
+        """Every agency name declared across the supplied feeds, sorted."""
+        return tuple(
+            sorted({agency for feed in self.feeds for agency in feed.agencies})
+        )
+
+    @property
+    def feeds_without_declared_agency(self) -> tuple[str, ...]:
+        """Supplied feeds that name no agency, and so cannot be matched."""
+        return tuple(feed.key for feed in self.feeds if not feed.agencies)
+
+    def coverage(
+        self, lat: float, lon: float, hq_stops: list[HQStop] | None = None
+    ) -> FeedCoverage:
+        """This run's operator coverage at one point. See :func:`assess_coverage`."""
+        return assess_coverage(
+            lat,
+            lon,
+            hq_stops,
+            operators_supplied=self.operators_supplied,
+            feeds_supplied=len(self.feeds),
+            feeds_without_declared_agency=self.feeds_without_declared_agency,
+        )
+
+
+def _feed_keys(paths: list[Path]) -> list[str]:
+    """A stable, unique short name per supplied feed.
+
+    Two files named `gtfs.zip` in different directories are two operators, so
+    a collision is disambiguated rather than allowed to alias two feeds into
+    one namespace — which would put both operators' route "1" back together.
+    """
+    keys: list[str] = []
+    for path in paths:
+        stem = path.stem or "feed"
+        key = stem
+        suffix = 2
+        while key in keys:
+            key = f"{stem}-{suffix}"
+            suffix += 1
+        keys.append(key)
+    return keys
+
+
+def _namespaced(stop: StopService, key: str, *, measured: bool) -> StopService:
+    return StopService(
+        stop_id=f"{key}:{stop.stop_id}",
+        name=stop.name,
+        lat=stop.lat,
+        lon=stop.lon,
+        route_max_gaps={f"{key}:{r}": gap for r, gap in stop.route_max_gaps.items()},
+        bus_routes={f"{key}:{r}" for r in stop.bus_routes},
+        rail=stop.rail,
+        ferry=stop.ferry,
+        feed=key,
+        headways_measured=measured,
+    )
+
+
+def load_feeds(gtfs_zips: list[Path], *, as_of: date | None = None) -> MultiFeedScreen:
+    """Load several operators' feeds into one screenable set of stops.
+
+    Stop *and* route ids are namespaced by feed. Route namespacing is not
+    cosmetic: PRC § 21064.3's bus branch counts *two or more* qualifying
+    routes at one intersection, and two operators both numbering a route "1"
+    would otherwise satisfy that test with one route between them.
+    """
+    keys = _feed_keys(list(gtfs_zips))
+    feeds: list[LoadedFeed] = []
+    stops: list[StopService] = []
+    for key, path in zip(keys, gtfs_zips, strict=True):
+        screen = load_feed(path, as_of=as_of)
+        measured = screen.calendar.headways_measurable
+        feeds.append(
+            LoadedFeed(
+                key=key,
+                path=path,
+                agencies=feed_agencies(path),
+                screen=screen,
+            )
+        )
+        stops.extend(_namespaced(s, key, measured=measured) for s in screen.stops)
+    return MultiFeedScreen(
+        feeds=tuple(feeds),
+        stops=stops,
+        calendar=FeedCalendars(
+            entries=tuple((feed.key, feed.screen.calendar) for feed in feeds)
+        ),
+    )
 
 
 def _is_major_stop(stop: StopService, all_stops: list[StopService]) -> bool:
@@ -632,6 +880,165 @@ def load_hq_stops(path: Path) -> list[HQStop]:
     return out
 
 
+def _normalise_operator(name: str) -> str:
+    """Fold an agency name for comparison: case, punctuation and spacing only.
+
+    Deliberately not fuzzy. A false *match* would turn ``bounded`` into
+    ``complete`` and invent coverage the run does not have; a false *miss*
+    only reports the screen as more bounded than it is. Only one of those two
+    errors can overstate a negative, so the comparison is aimed away from it.
+    """
+    folded = "".join(ch if ch.isalnum() else " " for ch in name.casefold())
+    return " ".join(folded.split())
+
+
+@dataclass(frozen=True)
+class FeedCoverage:
+    """Which operators a screen actually covered, and whether that is all of them.
+
+    ``completeness`` is the field that decides whether a feed-derived negative
+    may be reported at all. It is bounded by what the statewide dataset lists,
+    which is only high-quality and major stops — see the module docstring.
+    """
+
+    operators_supplied: tuple[str, ...]
+    operators_listed_not_supplied: tuple[str, ...]
+    feeds_without_declared_agency: tuple[str, ...]
+    #: Operating rows inside the radius whose agency the dataset leaves blank.
+    #: They cannot be matched against a supplied feed either way, so they bound
+    #: the screen rather than counting as covered.
+    unnamed_listed_stops: int
+    listed_operating_stops: int
+    feeds_supplied: int
+    #: Whether any statewide dataset was supplied to cross-check against. With
+    #: none, "no agency is missing" is vacuous rather than reassuring, and
+    #: reading it as ``complete`` would be an absent check reported as a passed
+    #: one — the exact move this module exists to refuse.
+    cross_checked: bool
+    completeness: str
+
+    @property
+    def supports_a_negative(self) -> bool:
+        """Only a complete operator set can turn "found nothing" into "no"."""
+        return self.completeness == COVERAGE_COMPLETE
+
+    def reason(self) -> str:
+        supplied = ", ".join(self.operators_supplied) or "none named"
+        if self.completeness == COVERAGE_UNKNOWN:
+            return (
+                "Operator coverage: UNKNOWN — no transit feed was supplied, so no "
+                "operator's stops were read. Any candidate reported here comes "
+                "from the statewide Caltrans dataset alone, and no feed-derived "
+                "negative rests on anything."
+            )
+        if self.completeness == COVERAGE_BOUNDED:
+            parts = [
+                f"Operator coverage: BOUNDED to the operators supplied ({supplied})."
+            ]
+            if not self.cross_checked:
+                parts.append(
+                    "No statewide dataset was supplied to check that list "
+                    "against, so nothing establishes that it is every operator "
+                    "serving this site."
+                )
+            if self.operators_listed_not_supplied:
+                missing = ", ".join(self.operators_listed_not_supplied)
+                parts.append(
+                    f"The statewide Caltrans dataset lists {missing} as serving an "
+                    "operating stop within a half mile, and no feed was supplied "
+                    "for them."
+                )
+            if self.unnamed_listed_stops:
+                noun = "row" if self.unnamed_listed_stops == 1 else "rows"
+                parts.append(
+                    f"{self.unnamed_listed_stops} operating dataset {noun} inside "
+                    "the radius name no agency, so whether their operator was "
+                    "supplied cannot be told."
+                )
+            if self.feeds_without_declared_agency:
+                feeds = ", ".join(self.feeds_without_declared_agency)
+                parts.append(
+                    f"Supplied feed(s) {feeds} declare no agency name, so they "
+                    "could not be matched against that list."
+                )
+            # Conditional on purpose. A bounded run that *found* a candidate
+            # still reports it, so a sentence asserting this run answered
+            # UNKNOWN would be false half the time it is printed.
+            parts.append(
+                "A finding of 'no qualifying stop' would therefore be a "
+                "statement about the supplied operators rather than about the "
+                "site, and is reported as UNKNOWN instead of as a negative."
+            )
+            return " ".join(parts)
+        return (
+            f"Operator coverage: complete against the statewide Caltrans list — "
+            f"feeds were supplied ({supplied}) for every agency it names as "
+            f"serving one of the {self.listed_operating_stops} operating stops "
+            "within a half mile. That dataset lists only high-quality and major "
+            "stops, so this does not establish that every ordinary bus operator "
+            "near the site was supplied."
+        )
+
+
+def assess_coverage(
+    lat: float,
+    lon: float,
+    hq_stops: list[HQStop] | None,
+    *,
+    operators_supplied: Sequence[str] = (),
+    feeds_supplied: int = 0,
+    feeds_without_declared_agency: Sequence[str] = (),
+    radius_miles: float = HALF_MILE,
+) -> FeedCoverage:
+    """Cross-check the operators supplied against the ones the state lists.
+
+    Planned rows are excluded from the listed set on purpose: a stop an MPO
+    submitted as future service does not establish that its agency serves this
+    location today, so it cannot make the screen incomplete for not having
+    that agency's feed. Those rows are already reported separately.
+    """
+    listed_named: list[str] = []
+    unnamed = 0
+    for hq in hq_stops or []:
+        if hq.is_planned:
+            continue
+        if haversine_miles(lat, lon, hq.lat, hq.lon) > radius_miles:
+            continue
+        if hq.agency.strip():
+            listed_named.append(hq.agency.strip())
+        else:
+            unnamed += 1
+    supplied = tuple(dict.fromkeys(operators_supplied))
+    supplied_folded = {_normalise_operator(name) for name in supplied}
+    missing = tuple(
+        sorted(
+            {
+                agency
+                for agency in listed_named
+                if _normalise_operator(agency) not in supplied_folded
+            }
+        )
+    )
+    unnamed_feeds = tuple(feeds_without_declared_agency)
+    cross_checked = bool(hq_stops)
+    if feeds_supplied == 0:
+        completeness = COVERAGE_UNKNOWN
+    elif not cross_checked or missing or unnamed or unnamed_feeds:
+        completeness = COVERAGE_BOUNDED
+    else:
+        completeness = COVERAGE_COMPLETE
+    return FeedCoverage(
+        operators_supplied=supplied,
+        operators_listed_not_supplied=missing,
+        feeds_without_declared_agency=unnamed_feeds,
+        unnamed_listed_stops=unnamed,
+        listed_operating_stops=len(listed_named) + unnamed,
+        feeds_supplied=feeds_supplied,
+        cross_checked=cross_checked,
+        completeness=completeness,
+    )
+
+
 @dataclass(frozen=True)
 class Determination:
     nearest_stop: StopService | None
@@ -644,7 +1051,10 @@ class Determination:
     planned_major_stops: list[tuple[HQStop, float]] = field(default_factory=list)
     #: The service-date state the feed stops were read under, when a feed was
     #: supplied. ``None`` means no feed calendar constrained this screen.
-    calendar: ServiceCalendar | None = None
+    calendar: ServiceCalendar | FeedCalendars | None = None
+    #: Which operators this screen actually covered. ``None`` means the caller
+    #: did not state what it supplied, so no coverage claim is made either way.
+    coverage: FeedCoverage | None = None
 
     def summary(self) -> str:
         lines = []
@@ -653,9 +1063,10 @@ class Determination:
         if self.nearest_stop:
             # Qualified when the calendar did not resolve, so a stop's distance
             # is never read as service the feed did not confirm for the date.
+            # Under several feeds the answer is per stop, not per run.
             unread = (
                 ""
-                if self.calendar is None or self.calendar.headways_measurable
+                if self.calendar is None or self.nearest_stop.headways_measured
                 else " — a location in the feed; this run does not state whether"
                 " it is served on the requested date"
             )
@@ -670,10 +1081,9 @@ class Determination:
             )
         elif self.parking_exemption == "unknown":
             lines.append(
-                "Parking exemption (Gov. Code § 66322(a)(1)): UNKNOWN — the "
-                "supplied feed does not state what runs on the requested date, so "
-                "no stop in it was read either way. This is not a finding that "
-                "there is no transit near the site."
+                "Parking exemption (Gov. Code § 66322(a)(1)): UNKNOWN — "
+                f"{self._withheld_because()} This is not a finding that there is "
+                "no transit near the site."
             )
         else:
             lines.append(
@@ -690,8 +1100,8 @@ class Determination:
         elif self.height_18ft == "unknown":
             lines.append(
                 "18-ft height allowance (Gov. Code § 66321(b)(4)(B)): UNKNOWN — "
-                "peak headways decide this screen and none were measured, so the "
-                "supplied feed neither establishes nor rules out a qualifying stop."
+                f"{self._withheld_because()} The supplied data neither establishes "
+                "nor rules out a qualifying stop."
             )
         else:
             lines.append(
@@ -701,12 +1111,38 @@ class Determination:
             )
         if self.planned_major_stops:
             lines.append(self._planned_stop_note())
+        if self.coverage is not None:
+            lines.append(self.coverage.reason())
         lines.append(
             "Screening result from GTFS peak headways on the stated service date; "
             "straight-line distance can eliminate a supplied stop but cannot prove "
             "dataset completeness. Not a legal determination."
         )
         return "\n".join(lines)
+
+    def _withheld_because(self) -> str:
+        """Name the reason a screen is `unknown`, rather than assuming one.
+
+        Two different failures both produce `unknown` — the feed could not be
+        read for the date, and the run did not cover every operator — and a
+        reader told the wrong one is told something false about the data they
+        supplied. The calendar is named first because an unreadable feed is
+        prior: its stops were never read whatever the operator list says.
+        """
+        if self.calendar is not None and not self.calendar.supports_a_negative:
+            return (
+                "the supplied feed does not state what runs on the requested "
+                "date, so no stop in it was read either way."
+            )
+        if self.coverage is not None and not self.coverage.supports_a_negative:
+            if self.coverage.completeness == COVERAGE_UNKNOWN:
+                return "no transit feed was supplied, so no operator's stops were read."
+            return (
+                "the run did not cover every operator the statewide dataset "
+                "lists near this site, so finding nothing among the supplied "
+                "operators is not finding nothing."
+            )
+        return "the supplied data could not answer for this site."
 
     def _planned_stop_note(self) -> str:
         """Say what was withheld, why, and who can settle it."""
@@ -745,7 +1181,8 @@ def determine(
     stops: list[StopService],
     hq_stops: list[HQStop] | None = None,
     *,
-    calendar: ServiceCalendar | None = None,
+    calendar: ServiceCalendar | FeedCalendars | None = None,
+    coverage: FeedCoverage | None = None,
 ) -> Determination:
     """Screen a point against feed stops and the statewide dataset.
 
@@ -754,14 +1191,24 @@ def determine(
     counted nor read as an absence: the feed-derived screens report ``unknown``
     unless the statewide dataset — which carries its own currency and is not
     scoped by this feed's calendar — independently supplies a candidate.
+
+    ``coverage`` says which operators the run was given. It withholds a
+    negative for the same reason an unresolved calendar does: "no qualifying
+    stop among the operators someone happened to supply" is not the finding
+    "no qualifying stop". Left ``None``, the caller has stated nothing about
+    operator coverage and none is claimed or enforced.
     """
     # `calendar is None` means no feed calendar constrains this screen, which
     # is the shape of a statewide-dataset-only call.
     feed_counts = calendar is None or calendar.headways_measurable
-    feed_answers = calendar is None or calendar.supports_a_negative
+    feed_answers = (calendar is None or calendar.supports_a_negative) and (
+        coverage is None or coverage.supports_a_negative
+    )
     if not stops and not hq_stops:
         verdict = _verdict(False, feed_answers)
-        return Determination(None, None, verdict, verdict, [], calendar=calendar)
+        return Determination(
+            None, None, verdict, verdict, [], calendar=calendar, coverage=coverage
+        )
     with_dist = sorted(
         ((s, haversine_miles(lat, lon, s.lat, s.lon)) for s in stops),
         key=lambda x: x[1],
@@ -772,6 +1219,11 @@ def determine(
     for stop, miles in with_dist if feed_counts else []:
         if miles > HALF_MILE:
             break
+        # Per stop, not per run: under several feeds one operator's feed can
+        # resolve for the date while another's does not, and the unresolved
+        # one's empty headways must not read as "no qualifying service".
+        if not stop.headways_measured:
+            continue
         if _is_major_stop(stop, stops):
             qualifying.append(
                 (stop, miles, "major transit stop (PRC § 21064.3, from feed headways)")
@@ -820,8 +1272,11 @@ def determine(
 
     qualifying.sort(key=lambda x: x[1])
     planned_within.sort(key=lambda x: x[1])
-    feed_stop_in_range = (
-        feed_counts and nearest_miles is not None and nearest_miles <= HALF_MILE
+    # The nearest stop whose own feed was read for the date, not simply the
+    # nearest stop: a stop from a feed that could not be resolved is a
+    # location, not service the applicant can rely on that day.
+    feed_stop_in_range = feed_counts and any(
+        miles <= HALF_MILE for stop, miles in with_dist if stop.headways_measured
     )
     parking = _verdict(bool(hq_within or feed_stop_in_range), feed_answers)
     height = _verdict(bool(qualifying), feed_answers)
@@ -833,6 +1288,7 @@ def determine(
         qualifying_stops=qualifying,
         planned_major_stops=planned_within,
         calendar=calendar,
+        coverage=coverage,
     )
 
 
@@ -843,7 +1299,18 @@ def main() -> int:
         prog="permit_pathways.transit",
         description="Transit-proximity screening for ADU parking/height standards.",
     )
-    parser.add_argument("--gtfs", type=Path, required=True)
+    parser.add_argument(
+        "--gtfs",
+        type=Path,
+        action="append",
+        default=[],
+        metavar="FEED.zip",
+        help=(
+            "A GTFS feed to screen. Repeat it once per operator serving the "
+            "area; ids are namespaced per feed. Supplying none screens the "
+            "statewide dataset alone and reports coverage as unknown."
+        ),
+    )
     parser.add_argument("--lat", type=float, required=True)
     parser.add_argument("--lon", type=float, required=True)
     parser.add_argument(
@@ -868,28 +1335,38 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    screen = load_feed(args.gtfs, as_of=args.as_of)
+    screen = load_feeds(list(args.gtfs), as_of=args.as_of)
     stops = screen.stops
     hq = load_hq_stops(args.hq_stops) if args.hq_stops else []
+    coverage = screen.coverage(args.lat, args.lon, hq)
+    measured = [s for s in stops if s.headways_measured]
     if screen.calendar.headways_measurable:
         headway_note = (
-            f"{sum(1 for s in stops if s.hqtc_routes())} with ≤15-min peak routes, "
-            f"{sum(1 for s in stops if len(s.major_candidate_routes()) >= 1)} with "
-            f"≤20-min peak routes on "
-            f"{screen.calendar.service_date} (service "
+            f"{sum(1 for s in measured if s.hqtc_routes())} with ≤15-min peak "
+            f"routes, "
+            f"{sum(1 for s in measured if len(s.major_candidate_routes()) >= 1)} "
+            f"with ≤20-min peak routes on "
+            f"{screen.calendar.service_date or 'the requested date'} (service "
             f"{', '.join(screen.calendar.service_ids_active)})"
         )
     else:
         headway_note = "no peak headways measured"
+    operators = ", ".join(screen.operators_supplied) or "none named"
     print(
-        f"Loaded {len(stops)} feed stops; {headway_note}; "
+        f"Loaded {len(stops)} stops from {len(screen.feeds)} feed(s) "
+        f"({operators}); {headway_note}; "
         f"{len(hq)} Caltrans HQ dataset stops, of "
         f"which {sum(1 for s in hq if s.is_planned)} are MPO-submitted "
         f"planned stops this screen does not count.\n"
     )
     print(
         determine(
-            args.lat, args.lon, stops, hq_stops=hq, calendar=screen.calendar
+            args.lat,
+            args.lon,
+            stops,
+            hq_stops=hq,
+            calendar=screen.calendar,
+            coverage=coverage,
         ).summary()
     )
     return 0
