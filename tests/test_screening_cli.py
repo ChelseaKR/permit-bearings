@@ -194,6 +194,33 @@ def test_every_golden_case_matches_its_expected_rules_through_the_cli(
     assert sorted(matched) == sorted(case["expected_rule_ids"]), case["case_id"]
 
 
+@pytest.mark.parametrize("case", GOLDEN, ids=[c["case_id"] for c in GOLDEN])
+def test_every_golden_case_validates_against_the_published_result_schema(
+    case: dict[str, Any], tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The other half of the parity claim, over the whole corpus rather than one intake.
+
+    `test_screening_contract.py` already validates *a* result against
+    `result.schema.json`, and one intake exercises one shape: it is a complete
+    ADU with a snapshot present, so the branches an integrator is most likely to
+    hit first -- a withheld route, an empty `candidate_routes`, a null
+    `source_state` field, an SB 9 project type -- were published without any
+    document ever having been checked against the schema that describes them.
+    The Golden corpus covers all four, so it is what the schema is held to here.
+
+    The checker is imported from the contract test rather than re-implemented,
+    so it stays the one whose keyword coverage that module already guards. A
+    second, quieter validator would be the exact hole this repository writes
+    that guard to prevent.
+    """
+    from tests.test_screening_contract import _committed, validate
+
+    code, payload, err = _run(tmp_path, case["intake"], capsys)
+    assert code in (EXIT_OK, EXIT_NEEDS_STAFF_REVIEW), err
+    errors = validate(payload, _committed("result.schema.json"), case["case_id"])
+    assert not errors, errors
+
+
 def test_the_golden_corpus_is_not_empty_and_covers_both_exit_states() -> None:
     """A parametrized loop over an empty list passes without checking anything,
     and a corpus with no unknown-fact case would leave exit 1 unexercised."""
