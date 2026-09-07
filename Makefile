@@ -40,6 +40,7 @@ security:
 			--no-deps --disable-pip
 
 bundle-check:
+	.venv/bin/python scripts/gen_schemas.py --check
 	.venv/bin/python scripts/build_demo_bundle.py --check
 	.venv/bin/python scripts/scan_ordinances.py --check
 	PYTHONPATH=src .venv/bin/python -m permit_pathways.harness

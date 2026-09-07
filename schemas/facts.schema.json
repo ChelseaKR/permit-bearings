@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chelseakr.github.io/permit-bearings/schemas/facts.schema.json",
+  "title": "Permit Bearings screening facts",
+  "description": "Applicant-asserted facts for one project. Every value is asserted by whoever wrote the file; nothing here is verified against a parcel record, a zoning map, or a permit history.",
+  "type": "object",
+  "required": [
+    "project_type",
+    "jurisdiction"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "project_type": {
+      "type": "string",
+      "enum": [
+        "adu",
+        "jadu",
+        "two_unit",
+        "lot_split"
+      ],
+      "description": "The kind of project being screened."
+    },
+    "jurisdiction": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Jurisdiction slug. Rules scoped 'statewide' apply to every jurisdiction; others apply only to the slug they name."
+    },
+    "primary_dwelling_status": {
+      "type": "string",
+      "enum": [
+        "existing_single_family",
+        "existing_multifamily",
+        "proposed_single_family",
+        "proposed_multifamily",
+        "none",
+        "unknown"
+      ],
+      "description": "What dwelling exists on the lot now, or is only proposed. 'existing_*' means it is there today; 'proposed_*' means none exists yet and one is being proposed; 'none' means neither. Read only for project types: adu, jadu. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "adu_project_form": {
+      "type": "string",
+      "enum": [
+        "new_detached",
+        "new_attached",
+        "conversion",
+        "same_footprint_rebuild",
+        "unknown"
+      ],
+      "description": "The kind of ADU work: a new detached structure, a new attached addition, conversion of space inside an existing structure, or replacing a structure in the same location and dimensions. Read only for project types: adu. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "unpermitted_existing": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether the applicant is trying to legalize a unit that was built without permits before January 1, 2020. Read only for project types: adu, jadu. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "in_urbanized_area": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether the property is inside an incorporated city or another SB 9-qualifying urban area. Read only for project types: two_unit, lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "sf_zone": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether the property is zoned for single-family residential use. Read only for project types: two_unit, lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "demolishes_protected_housing": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether the project would demolish or alter rent-restricted, price-controlled, or deed-restricted affordable housing. Read only for project types: two_unit, lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "tenant_occupied_last_3_years": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether a tenant lived in housing the project would demolish or alter during the last three years. Read only for project types: two_unit, lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "ellis_withdrawal_last_15_years": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether housing on the property was withdrawn from rental use under the Ellis Act during the last 15 years. Read only for project types: two_unit, lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "on_protected_site": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether the property has a wetland, hazardous-land, conservation, habitat, or other protected-site condition named in SB 9. Read only for project types: two_unit, lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "two_unit_contributing_historic_location": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether the two-home project would be in a contributing structure in a state-listed historic district, or in a historic property or district protected by a city or county ordinance. Read only for project types: two_unit. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "two_unit_individually_listed_historic_property": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether the parcel is individually listed in the State Historic Resources Inventory or individually designated as a city or county landmark. Read only for project types: two_unit. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "lot_split_on_historic_landmark_site": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether the parcel is within a historical landmark property in the State Historic Resources Inventory or on a site designated or listed as a city or county landmark. Read only for project types: lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "lot_split_alters_historic_district_resource": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether the lot split would require demolition or alteration of a contributing structure or an existing exterior structural wall in a historic district listed by California or designated locally. Read only for project types: lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "parcel_created_by_sb9_split": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether this parcel was itself created by an earlier SB 9 lot split. Read only for project types: lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "adjacent_sb9_split_same_actor": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether the same owner, or someone acting with that owner, used SB 9 to split an adjacent parcel. Read only for project types: lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "proposed_lot_ratio_compliant": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether each proposed parcel would contain at least 40 percent of the original lot area. Read only for project types: lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    },
+    "proposed_lot_size_compliant": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "unknown"
+      ],
+      "description": "Whether both new lots would be at least 1,200 square feet, or meet a smaller minimum verified in a current local ordinance. Read only for project types: lot_split. 'unknown' means the applicant did not answer, which withholds candidate routes rather than defaulting the answer."
+    }
+  }
+}

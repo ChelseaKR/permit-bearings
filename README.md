@@ -155,6 +155,8 @@ npm run test:a11y                                  # axe, reflow, and journey-st
 npm run test:perf                                  # Lighthouse category budgets
 PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip \
   --lat 38.5449 --lon -121.7442 --as-of 2026-08-04   # --as-of is required for any headway
+PYTHONPATH=src python3 -m permit_pathways.screening --facts facts.json \
+  --jurisdiction davis --format json                 # screen one intake (see "For integrators")
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
 python3 scripts/scan_ordinances.py --check         # published scan results vs. checks.json
 PYTHONPATH=src python3 -m permit_pathways.conformance_evaluation_cli validate-plan
@@ -267,6 +269,86 @@ authenticate the originating Git commit. Both are inert and do not adopt,
 approve, or publish records. The exact format, operator commands, privacy
 boundary, and limitations are in
 [docs/EXPORT-RESTORE.md](docs/EXPORT-RESTORE.md).
+
+## For integrators
+
+The deterministic matcher is reachable from a command line and describes itself
+in three published JSON Schemas under [`schemas/`](schemas/). It runs no model,
+opens no network connection, and stores nothing.
+
+```sh
+PYTHONPATH=src python3 -m permit_pathways.screening \
+  --facts facts.json --jurisdiction davis --format json
+```
+
+`facts.json` is an applicant-asserted intake matching
+[`schemas/facts.schema.json`](schemas/facts.schema.json):
+
+```json
+{
+  "project_type": "adu",
+  "jurisdiction": "davis",
+  "primary_dwelling_status": "existing_single_family",
+  "adu_project_form": "new_detached",
+  "unpermitted_existing": "no"
+}
+```
+
+### The exit codes are the contract
+
+| code | meaning |
+|---|---|
+| `0` | A result was produced and every material fact was answered. |
+| `1` | **Staff review needed.** A material fact is unknown, so no candidate route is reported. |
+| `2` | The facts document is invalid. Nothing was screened. |
+
+`1` is not an error and is deliberately not `0`. A run with unanswered questions
+is a screening that stopped short, and a caller that treats it as a success is
+publishing an absence as an answer — which is exactly what the withheld routes
+exist to prevent. In that state `candidate_routes` is empty, `unresolved_facts`
+names each question still to ask, and the matched rules are still listed, because
+hiding them would misrepresent coverage.
+
+An unrecognised field name or an unrecognised value is `2`, naming the field and
+what it accepts. Nothing is ignored: silently dropping a field would screen a
+different project than the one described.
+
+### What the result envelope carries
+
+A result is not a list of rules. It is a list of rules and the boundary it was
+computed inside — see [`schemas/result.schema.json`](schemas/result.schema.json):
+
+- `decision_boundary` and `decision_boundary_statement` — these are candidate
+  rules from an encoded, cited rule set, and not an eligibility determination,
+  a completeness determination, or a jurisdiction approval.
+- `rules_fingerprint` — a digest of the parsed rule set the result used, so a
+  consumer can tell two results apart when the rules moved under them.
+- `source_state` — which source-watch snapshot was read, its receipt status, and
+  which sources **could not be fetched** on the last check. When no snapshot is
+  supplied every field is `null` and `available` is `false`: an unchecked run
+  must not render the same as one that was checked and found nothing changed.
+- `facts` — each material fact with `provenance: "applicant_asserted"`. Nothing
+  here is verified against a parcel record, a zoning map, or a permit history.
+- `matched_rules`, each with its citation and `has_dated_source_record`. Rules
+  without a dated source record are listed and flagged, never hidden.
+
+There is no ranking field, and the schema is closed, so one cannot be added
+without failing a test. Order is the rule set's, not a preference.
+
+### Keeping the schemas honest
+
+The schemas are generated from the Python definitions
+(`permit_pathways.screening_contract`), never hand-edited:
+
+```sh
+python3 scripts/gen_schemas.py            # regenerate
+python3 scripts/gen_schemas.py --check    # fail if a committed schema is stale (runs in `make bundle-check`)
+```
+
+`tests/test_screening_contract.py` regenerates and compares as well, validates
+every committed rule record and every Golden intake against the published
+schemas, and asserts that its own checker understands every keyword those
+schemas use — so the checker cannot go quiet by ignoring one.
 
 ## Standards Conformance
 

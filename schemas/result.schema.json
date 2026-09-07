@@ -1,0 +1,274 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chelseakr.github.io/permit-bearings/schemas/result.schema.json",
+  "title": "Permit Bearings screening result",
+  "description": "One screening result and the boundary it was computed inside. A consumer that drops 'decision_boundary', 'unresolved_facts' or 'source_state' is reporting something this project does not claim.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "as_of",
+    "jurisdiction",
+    "project_type",
+    "decision_boundary",
+    "decision_boundary_statement",
+    "facts",
+    "unresolved_facts",
+    "matched_rules",
+    "candidate_routes",
+    "source_state",
+    "rules_fingerprint",
+    "notices"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "as_of": {
+      "type": "string",
+      "description": "ISO date the run used."
+    },
+    "jurisdiction": {
+      "type": "string"
+    },
+    "project_type": {
+      "type": "string",
+      "enum": [
+        "adu",
+        "jadu",
+        "two_unit",
+        "lot_split"
+      ],
+      "description": "The project screened."
+    },
+    "decision_boundary": {
+      "type": "string",
+      "enum": [
+        "candidate_rules_only",
+        "needs_staff_review"
+      ],
+      "description": "'needs_staff_review' whenever a material fact is unknown."
+    },
+    "decision_boundary_statement": {
+      "type": "string"
+    },
+    "facts": {
+      "type": "array",
+      "description": "The material facts for this project type, in form order.",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "value",
+          "known",
+          "provenance"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "adjacent_sb9_split_same_actor",
+              "adu_project_form",
+              "demolishes_protected_housing",
+              "ellis_withdrawal_last_15_years",
+              "in_urbanized_area",
+              "lot_split_alters_historic_district_resource",
+              "lot_split_on_historic_landmark_site",
+              "on_protected_site",
+              "parcel_created_by_sb9_split",
+              "primary_dwelling_status",
+              "proposed_lot_ratio_compliant",
+              "proposed_lot_size_compliant",
+              "sf_zone",
+              "tenant_occupied_last_3_years",
+              "two_unit_contributing_historic_location",
+              "two_unit_individually_listed_historic_property",
+              "unpermitted_existing"
+            ],
+            "description": "Fact name."
+          },
+          "value": {
+            "type": "string"
+          },
+          "known": {
+            "type": "boolean",
+            "description": "False when the applicant did not answer."
+          },
+          "provenance": {
+            "type": "string",
+            "const": "applicant_asserted"
+          }
+        }
+      }
+    },
+    "unresolved_facts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "matched_rules": {
+      "type": "array",
+      "description": "Every rule whose criteria the intake satisfies, including rules with no dated source record. There is no ranking field: the order is the rule set's, not a preference.",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule_id",
+          "pathway",
+          "route_class",
+          "display_group",
+          "jurisdiction_scope",
+          "required_documents",
+          "source_dependencies",
+          "citation",
+          "has_dated_source_record"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "rule_id": {
+            "type": "string"
+          },
+          "pathway": {
+            "type": "string"
+          },
+          "route_class": {
+            "type": "string",
+            "enum": [
+              "ministerial",
+              "discretionary",
+              "mixed"
+            ],
+            "description": "Route class."
+          },
+          "display_group": {
+            "type": "string",
+            "enum": [
+              "route",
+              "standard",
+              "local_process"
+            ],
+            "description": "Group."
+          },
+          "jurisdiction_scope": {
+            "type": "string"
+          },
+          "required_documents": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "source_dependencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "citation": {
+            "type": "object"
+          },
+          "has_dated_source_record": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "candidate_routes": {
+      "type": "array",
+      "description": "Empty whenever 'decision_boundary' is 'needs_staff_review': withheld, not absent. Unordered by preference.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "ministerial",
+          "discretionary",
+          "mixed"
+        ],
+        "description": "Route class."
+      }
+    },
+    "source_state": {
+      "type": "object",
+      "required": [
+        "snapshot_id",
+        "receipt_id",
+        "receipt_status",
+        "checked_at",
+        "changed_source_ids",
+        "unverifiable_source_ids",
+        "affected_rule_ids",
+        "available"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "snapshot_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "receipt_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "receipt_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "checked_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "changed_source_ids": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "unverifiable_source_ids": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "affected_rule_ids": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "available": {
+          "type": "boolean",
+          "description": "False when no snapshot was supplied. Every other field is then null, so a consumer cannot read an unchecked run as a clean one."
+        }
+      }
+    },
+    "rules_fingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Digest of the parsed rule set this result used."
+    },
+    "notices": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

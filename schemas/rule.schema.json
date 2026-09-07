@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chelseakr.github.io/permit-bearings/schemas/rule.schema.json",
+  "title": "Permit Bearings rule record",
+  "description": "Rules are data, not code: each record carries its own citation. An uncited rule is a schema error, not a softer answer.",
+  "type": "object",
+  "required": [
+    "rule_id",
+    "pathway",
+    "route_class",
+    "jurisdiction_scope",
+    "criteria",
+    "citation",
+    "source_dependencies",
+    "display_group"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "rule_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pathway": {
+      "type": "string",
+      "minLength": 1
+    },
+    "route_class": {
+      "type": "string",
+      "enum": [
+        "ministerial",
+        "discretionary",
+        "mixed"
+      ],
+      "description": "How the route is decided."
+    },
+    "jurisdiction_scope": {
+      "type": "string",
+      "description": "'statewide', or a jurisdiction slug."
+    },
+    "display_group": {
+      "type": "string",
+      "enum": [
+        "route",
+        "standard",
+        "local_process"
+      ],
+      "description": "Where the rule is presented in a result."
+    },
+    "criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "op",
+          "value"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "op": {
+            "type": "string",
+            "enum": [
+              "eq",
+              "in",
+              "lte",
+              "gte"
+            ],
+            "description": "Comparison the matcher applies."
+          },
+          "value": {}
+        }
+      }
+    },
+    "citation": {
+      "type": "object",
+      "required": [
+        "source",
+        "url"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "excerpt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "excerpt_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verified_on": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "ISO date the source evidence carries. Null means no dated source record -- not that the rule is wrong, and not that it is current."
+        }
+      }
+    },
+    "source_dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_documents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}
