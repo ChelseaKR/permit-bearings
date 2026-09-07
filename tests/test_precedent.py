@@ -98,9 +98,9 @@ def _write(tmp_path: Path, payload) -> Path:
 
 
 def test_loader_reads_the_committed_snapshot(letters):
-    assert letters.retrieved_on == "2026-08-03"
-    assert len(letters.letters) == 1312
-    assert len(letters.jurisdictions()) == 470
+    assert letters.retrieved_on == "2026-09-07"
+    assert len(letters.letters) == 1353
+    assert len(letters.jurisdictions()) == 473
 
 
 @pytest.mark.parametrize(
@@ -143,7 +143,7 @@ def test_kind_counts_match_the_committed_data(letters):
     # 205 jurisdictions with a repeal request is the priority list the scan
     # findings note said was already sitting in committed data.
     assert counts[REPEAL_REQUEST] == (211, 205)
-    assert counts["Letter of Inquiry"][1] == 282
+    assert counts["Letter of Inquiry"][1] == 287
 
 
 def test_with_kind_can_narrow_to_one_authority(letters):

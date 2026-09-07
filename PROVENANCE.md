@@ -55,8 +55,8 @@
   reviews and zero jurisdiction approvals. Bundle format 6 carries this claim
   separately from source state and program availability.
 - **HCD HAU letter refresh:** the public HCD Housing Accountability Unit
-  dashboard was re-read on August 3, 2026. The committed derived dataset now
-  contains 1,314 letter records: 1,312 mapped across 470 jurisdictions and two
+  dashboard was re-read on September 7, 2026. The committed derived dataset now
+  contains 1,356 letter records: 1,353 mapped across 473 jurisdictions and three
   statewide records, with zero unmatched rows.
 - **Statewide coverage index:** `jurisdictions.py` derives a portable profile
   index from the committed jurisdiction registry, scoped rule records, and

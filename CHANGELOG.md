@@ -323,6 +323,25 @@ published a versioned release.
 
 ### Changed
 
+- **The committed HCD Housing Accountability Unit letter dataset is re-read
+  as of 2026-09-07.** The dashboard moved from 1,314 rows to 1,356: 231 rows
+  added and 189 removed, across 19 jurisdictions whose rows are new and 141
+  whose rows changed in place. A row total is not a letter count — HCD edits
+  published rows — so the numbers are reported as rows, not as new letters
+  (issue #63). The derived dataset now holds 1,356 records: 1,353 keyed to
+  473 of the 541 registry entries, three statewide, zero unmatched. The
+  jurisdictions with HCD letter history go from 470 to 473, and every prose
+  count that quoted the old snapshot — `PROVENANCE.md`, `docs/EXPANSION-PLAN.md`,
+  `docs/PRODUCT-CONTEXT.md`, the README's Scenario 3 row, and the
+  `permit_pathways.precedent` docstring — moves with it. The 2026-08-15
+  ordinance-scan finding keeps its own numbers: it is a dated record of what
+  the scan was run against, not a live claim.
+  - The regenerated demo bundle, coverage index and v2 export profile carry
+    the new digests, and the export profile's tamper-evidence anchor
+    (`_EXPORT_PROFILE_V2_SHA256`) is re-pinned by hand after reading the
+    profile diff, which is exactly the five files this change touches that the
+    profile covers.
+
 - The README names the live demo above the fold. The URL first appeared at
   line 84, below the quickstart, the preapproved-plan availability boundary,
   the registry and bundle-integrity description, and the print-summary

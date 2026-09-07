@@ -1,9 +1,9 @@
 {
   "hcd_dataset": {
-    "letter_count": 1314,
-    "retrieved_on": "2026-08-03",
-    "source": "HCD Housing Accountability Unit letter dashboard (hcd.ca.gov/hau/enforcement-letters), full public dataset retrieved 2026-08-03; raw rows preserved at corpus/hcd/hau-letters-raw.json. Letters addressed to no single jurisdiction are under _statewide; rows whose jurisdiction could not be matched to the Census registry are under _unmatched.",
-    "statewide_record_count": 2,
+    "letter_count": 1356,
+    "retrieved_on": "2026-09-07",
+    "source": "HCD Housing Accountability Unit letter dashboard (hcd.ca.gov/hau/enforcement-letters), full public dataset retrieved 2026-09-07; raw rows preserved at corpus/hcd/hau-letters-raw.json. Letters addressed to no single jurisdiction are under _statewide; rows whose jurisdiction could not be matched to the Census registry are under _unmatched.",
+    "statewide_record_count": 3,
     "unmatched_record_count": 0
   },
   "profiles": {
@@ -56,7 +56,7 @@
       "local_rule_ids": []
     },
     "anaheim": {
-      "hcd_record_count": 8,
+      "hcd_record_count": 9,
       "local_rule_ids": []
     },
     "anderson": {
@@ -152,7 +152,7 @@
       "local_rule_ids": []
     },
     "bellflower": {
-      "hcd_record_count": 5,
+      "hcd_record_count": 6,
       "local_rule_ids": []
     },
     "belmont": {
@@ -172,7 +172,7 @@
       "local_rule_ids": []
     },
     "beverly-hills": {
-      "hcd_record_count": 8,
+      "hcd_record_count": 9,
       "local_rule_ids": []
     },
     "big-bear-lake": {
@@ -204,7 +204,7 @@
       "local_rule_ids": []
     },
     "brea": {
-      "hcd_record_count": 2,
+      "hcd_record_count": 3,
       "local_rule_ids": []
     },
     "brentwood": {
@@ -212,7 +212,7 @@
       "local_rule_ids": []
     },
     "brisbane": {
-      "hcd_record_count": 4,
+      "hcd_record_count": 6,
       "local_rule_ids": []
     },
     "buellton": {
@@ -228,7 +228,7 @@
       "local_rule_ids": []
     },
     "burlingame": {
-      "hcd_record_count": 1,
+      "hcd_record_count": 2,
       "local_rule_ids": []
     },
     "butte-county": {
@@ -312,7 +312,7 @@
       "local_rule_ids": []
     },
     "chino": {
-      "hcd_record_count": 3,
+      "hcd_record_count": 4,
       "local_rule_ids": []
     },
     "chino-hills": {
@@ -324,7 +324,7 @@
       "local_rule_ids": []
     },
     "chula-vista": {
-      "hcd_record_count": 1,
+      "hcd_record_count": 2,
       "local_rule_ids": []
     },
     "citrus-heights": {
@@ -360,7 +360,7 @@
       "local_rule_ids": []
     },
     "colfax": {
-      "hcd_record_count": 1,
+      "hcd_record_count": 2,
       "local_rule_ids": []
     },
     "colma": {
@@ -372,11 +372,11 @@
       "local_rule_ids": []
     },
     "colusa": {
-      "hcd_record_count": 4,
+      "hcd_record_count": 5,
       "local_rule_ids": []
     },
     "colusa-county": {
-      "hcd_record_count": 0,
+      "hcd_record_count": 1,
       "local_rule_ids": []
     },
     "commerce": {
@@ -466,7 +466,7 @@
       ]
     },
     "del-mar": {
-      "hcd_record_count": 5,
+      "hcd_record_count": 6,
       "local_rule_ids": []
     },
     "del-norte-county": {
@@ -502,7 +502,7 @@
       "local_rule_ids": []
     },
     "dos-palos": {
-      "hcd_record_count": 0,
+      "hcd_record_count": 1,
       "local_rule_ids": []
     },
     "downey": {
@@ -546,7 +546,7 @@
       "local_rule_ids": []
     },
     "el-monte": {
-      "hcd_record_count": 3,
+      "hcd_record_count": 5,
       "local_rule_ids": []
     },
     "el-paso-de-robles-paso-robles": {
@@ -614,7 +614,7 @@
       "local_rule_ids": []
     },
     "folsom": {
-      "hcd_record_count": 1,
+      "hcd_record_count": 2,
       "local_rule_ids": []
     },
     "fontana": {
@@ -802,7 +802,7 @@
       "local_rule_ids": []
     },
     "huron": {
-      "hcd_record_count": 2,
+      "hcd_record_count": 3,
       "local_rule_ids": []
     },
     "imperial": {
@@ -842,7 +842,7 @@
       "local_rule_ids": []
     },
     "irvine": {
-      "hcd_record_count": 3,
+      "hcd_record_count": 4,
       "local_rule_ids": []
     },
     "irwindale": {
@@ -1034,7 +1034,7 @@
       "local_rule_ids": []
     },
     "los-altos": {
-      "hcd_record_count": 3,
+      "hcd_record_count": 4,
       "local_rule_ids": []
     },
     "los-altos-hills": {
@@ -1154,11 +1154,11 @@
       "local_rule_ids": []
     },
     "milpitas": {
-      "hcd_record_count": 1,
+      "hcd_record_count": 2,
       "local_rule_ids": []
     },
     "mission-viejo": {
-      "hcd_record_count": 0,
+      "hcd_record_count": 1,
       "local_rule_ids": []
     },
     "modesto": {
@@ -1190,11 +1190,11 @@
       "local_rule_ids": []
     },
     "montebello": {
-      "hcd_record_count": 8,
+      "hcd_record_count": 9,
       "local_rule_ids": []
     },
     "monterey": {
-      "hcd_record_count": 3,
+      "hcd_record_count": 4,
       "local_rule_ids": []
     },
     "monterey-county": {
@@ -1294,7 +1294,7 @@
       "local_rule_ids": []
     },
     "oakland": {
-      "hcd_record_count": 4,
+      "hcd_record_count": 5,
       "local_rule_ids": []
     },
     "oakley": {
@@ -1302,7 +1302,7 @@
       "local_rule_ids": []
     },
     "oceanside": {
-      "hcd_record_count": 7,
+      "hcd_record_count": 8,
       "local_rule_ids": []
     },
     "ojai": {
@@ -1374,7 +1374,7 @@
       "local_rule_ids": []
     },
     "paramount": {
-      "hcd_record_count": 3,
+      "hcd_record_count": 4,
       "local_rule_ids": []
     },
     "parlier": {
@@ -1454,7 +1454,7 @@
       "local_rule_ids": []
     },
     "port-hueneme": {
-      "hcd_record_count": 5,
+      "hcd_record_count": 6,
       "local_rule_ids": []
     },
     "porterville": {
@@ -1554,7 +1554,7 @@
       "local_rule_ids": []
     },
     "rocklin": {
-      "hcd_record_count": 9,
+      "hcd_record_count": 10,
       "local_rule_ids": []
     },
     "rohnert-park": {
@@ -1582,7 +1582,7 @@
       "local_rule_ids": []
     },
     "sacramento": {
-      "hcd_record_count": 2,
+      "hcd_record_count": 3,
       "local_rule_ids": []
     },
     "sacramento-county": {
@@ -1622,7 +1622,7 @@
       "local_rule_ids": []
     },
     "san-clemente": {
-      "hcd_record_count": 4,
+      "hcd_record_count": 5,
       "local_rule_ids": []
     },
     "san-diego": {
@@ -1630,7 +1630,7 @@
       "local_rule_ids": []
     },
     "san-diego-county": {
-      "hcd_record_count": 4,
+      "hcd_record_count": 5,
       "local_rule_ids": []
     },
     "san-dimas": {
@@ -1674,7 +1674,7 @@
       "local_rule_ids": []
     },
     "san-juan-capistrano": {
-      "hcd_record_count": 5,
+      "hcd_record_count": 7,
       "local_rule_ids": []
     },
     "san-leandro": {
@@ -1722,7 +1722,7 @@
       "local_rule_ids": []
     },
     "sanger": {
-      "hcd_record_count": 3,
+      "hcd_record_count": 4,
       "local_rule_ids": []
     },
     "santa-ana": {
@@ -1734,7 +1734,7 @@
       "local_rule_ids": []
     },
     "santa-barbara-county": {
-      "hcd_record_count": 11,
+      "hcd_record_count": 12,
       "local_rule_ids": []
     },
     "santa-clara": {
@@ -1786,7 +1786,7 @@
       "local_rule_ids": []
     },
     "sausalito": {
-      "hcd_record_count": 4,
+      "hcd_record_count": 5,
       "local_rule_ids": []
     },
     "scotts-valley": {
@@ -1966,7 +1966,7 @@
       "local_rule_ids": []
     },
     "trinidad": {
-      "hcd_record_count": 1,
+      "hcd_record_count": 2,
       "local_rule_ids": []
     },
     "trinity-county": {
@@ -2026,7 +2026,7 @@
       "local_rule_ids": []
     },
     "ventura-county": {
-      "hcd_record_count": 4,
+      "hcd_record_count": 5,
       "local_rule_ids": []
     },
     "vernon": {
@@ -2098,7 +2098,7 @@
       "local_rule_ids": []
     },
     "wheatland": {
-      "hcd_record_count": 2,
+      "hcd_record_count": 3,
       "local_rule_ids": []
     },
     "whittier": {
@@ -2126,7 +2126,7 @@
       "local_rule_ids": []
     },
     "winters": {
-      "hcd_record_count": 2,
+      "hcd_record_count": 3,
       "local_rule_ids": []
     },
     "woodlake": {

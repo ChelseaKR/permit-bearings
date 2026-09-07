@@ -3,9 +3,9 @@
 `AGENTS.md` priority 4 includes comparable-jurisdiction discovery, and
 `docs/PRODUCT-CONTEXT.md` records it as a P1 opportunity: "Converts the
 existing HCD-letter dataset into a useful Scenario C workflow." The dataset is
-already in the repository. `data/jurisdictions/hcd-letters.json` holds 1,314
-letters keyed to 470 of the 541 registry entries, retrieved 2026-08-03, and
-nothing here fetches anything.
+already in the repository. `data/jurisdictions/hcd-letters.json` holds 1,356
+letter records, 1,353 of them keyed to 473 of the 541 registry entries,
+retrieved 2026-09-07, and nothing here fetches anything.
 
 What this answers, for a maintainer or a staff planner looking at one
 jurisdiction: which other jurisdictions HCD wrote to about the same authority

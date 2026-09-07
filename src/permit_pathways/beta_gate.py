@@ -165,7 +165,7 @@ _EXPORT_PROFILE_ID = "permit-bearings-public-synthetic-evidence-v1"
 _EXPORT_PROFILE_V2_ID = "permit-bearings-public-synthetic-evidence-v2"
 _EXPORT_PROFILE_V2_PATH = "data/export/public-synthetic-evidence-v2.json"
 _EXPORT_PROFILE_V2_SHA256 = (
-    "sha256:b2e071e520d10d8d5efe17275c09dcd92d6d861d1ebbdfe440ca2fa4523eb152"
+    "sha256:48cbeaeb8b168f0cd5f25959f7ddb6dd1577e8143d736534d696c8f19634494b"
 )
 _EXPORT_EXCLUDED_PATHS = {
     DEFAULT_RECORD_PATH.as_posix(),
