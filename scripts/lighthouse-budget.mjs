@@ -43,7 +43,7 @@ async function waitForServer() {
 function runAudit(page, sample) {
   const report = join(
     tmpdir(),
-    `permit-pathways-${page.label}-${process.pid}-${sample}.json`,
+    `permit-bearings-${page.label}-${process.pid}-${sample}.json`,
   );
   try {
     execFileSync(

@@ -24,7 +24,7 @@ COMMIT = re.compile(r"^[0-9a-f]{40}$")
 SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
 RAW_SHA256 = re.compile(r"^[0-9a-f]{64}$")
 ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-PAGES_URL = "https://chelseakr.github.io/permit-pathways/"
+PAGES_URL = "https://chelseakr.github.io/permit-bearings/"
 PARTICIPANT_IDS = [f"P{number:02d}" for number in range(1, 7)]
 REHEARSAL_STAGE_IDS = [
     "detect",

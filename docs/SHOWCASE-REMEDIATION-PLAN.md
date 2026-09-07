@@ -179,16 +179,16 @@ recorded.
 
 - The three latest successful `main` CI runs observed on 2026-07-29 completed
   in 13, 16, and 15 seconds:
-  [run 30410892005](https://github.com/ChelseaKR/permit-pathways/actions/runs/30410892005),
-  [run 30428315210](https://github.com/ChelseaKR/permit-pathways/actions/runs/30428315210),
+  [run 30410892005](https://github.com/ChelseaKR/permit-bearings/actions/runs/30410892005),
+  [run 30428315210](https://github.com/ChelseaKR/permit-bearings/actions/runs/30428315210),
   and
-  [run 30478495913](https://github.com/ChelseaKR/permit-pathways/actions/runs/30478495913).
+  [run 30478495913](https://github.com/ChelseaKR/permit-bearings/actions/runs/30478495913).
 - The matching GitHub Pages build and deployment runs completed in 39, 42, and
   47 seconds:
-  [run 30410891433](https://github.com/ChelseaKR/permit-pathways/actions/runs/30410891433),
-  [run 30428314821](https://github.com/ChelseaKR/permit-pathways/actions/runs/30428314821),
+  [run 30410891433](https://github.com/ChelseaKR/permit-bearings/actions/runs/30410891433),
+  [run 30428314821](https://github.com/ChelseaKR/permit-bearings/actions/runs/30428314821),
   and
-  [run 30478494564](https://github.com/ChelseaKR/permit-pathways/actions/runs/30478494564).
+  [run 30478494564](https://github.com/ChelseaKR/permit-bearings/actions/runs/30478494564).
 
 These are elapsed workflow timings calculated from GitHub's `startedAt` and
 `updatedAt` values. They measure validation and static publication in an

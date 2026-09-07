@@ -38,7 +38,7 @@ AS_OF = date(2026, 8, 2)
 BASELINE_COMMIT = "18d6af3b72e83538c32fbad91e43a0c4636652a8"
 EXECUTION_COMMIT = "a" * 40
 DEPLOYED_URL = (
-    "https://chelseakr.github.io/permit-pathways/"
+    "https://chelseakr.github.io/permit-bearings/"
     "prepare.html?journey=woodland-preapproved-detached-adu-synthetic&version=1.0.0"
 )
 FROZEN_ON = "2026-08-03"
@@ -292,7 +292,7 @@ def _validate_lock(
     if (
         deployed.scheme != "https"
         or deployed.netloc != "chelseakr.github.io"
-        or not deployed.path.startswith("/permit-pathways/")
+        or not deployed.path.startswith("/permit-bearings/")
     ):
         raise ValueError("artifact_lock.deployed_url: unexpected deployment")
     if _iso_date(lock["frozen_on"], "artifact_lock.frozen_on") < AS_OF:

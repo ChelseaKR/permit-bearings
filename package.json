@@ -1,5 +1,5 @@
 {
-  "name": "permit-pathways-quality",
+  "name": "permit-bearings-quality",
   "private": true,
   "engines": {
     "node": ">=24"

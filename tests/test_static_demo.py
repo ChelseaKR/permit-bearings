@@ -546,7 +546,7 @@ def test_public_brand_name_and_tagline_are_consistent():
     assert '<a class="brand" href="/?lang=en">Permit Bearings</a>' in rendered_page
 
     pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'name = "permit-pathways"' in pyproject
+    assert 'name = "permit-bearings"' in pyproject
     assert "globalThis.PERMIT_PATHWAYS_DEMO_DATA" in application
     assert (ROOT / "src" / "permit_pathways").is_dir()
 

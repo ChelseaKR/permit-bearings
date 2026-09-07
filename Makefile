@@ -32,9 +32,9 @@ test:
 security:
 	.venv/bin/bandit -q -r src scripts demo
 	@set -eu; \
-		runtime_requirements=$$(mktemp "$${TMPDIR:-/tmp}/permit-pathways-runtime.XXXXXX"); \
+		runtime_requirements=$$(mktemp "$${TMPDIR:-/tmp}/permit-bearings-runtime.XXXXXX"); \
 		trap 'rm -f "$$runtime_requirements"' EXIT; \
-		UV_CACHE_DIR=/tmp/permit-pathways-uv-cache uv export --frozen --no-dev --extra ai \
+		UV_CACHE_DIR=/tmp/permit-bearings-uv-cache uv export --frozen --no-dev --extra ai \
 			--no-emit-project --format requirements-txt \
 			--output-file "$$runtime_requirements" >/dev/null; \
 		.venv/bin/pip-audit --requirement "$$runtime_requirements" \
@@ -63,7 +63,7 @@ readability-check:
 
 evidence-export-check:
 	@set -eu; \
-		evidence_directory=$$(mktemp -d "$${TMPDIR:-/tmp}/permit-pathways-evidence-export.XXXXXX"); \
+		evidence_directory=$$(mktemp -d "$${TMPDIR:-/tmp}/permit-bearings-evidence-export.XXXXXX"); \
 		trap 'rm -rf "$$evidence_directory"' EXIT; \
 		repository_commit_sha=$$(git rev-parse HEAD); \
 		archive="$$evidence_directory/public-synthetic-evidence.zip"; \

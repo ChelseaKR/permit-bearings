@@ -767,10 +767,22 @@ def test_outbound_requests_and_citation_metadata_name_this_repository():
     watchers announce themselves to servers this project polls, and
     `CITATION.cff` tells anyone citing the work where it lives; all three named
     a repository that only resolves through GitHub's rename redirect, which
-    survives only while nobody else claims the old name. The Python
-    distribution and the import package are deliberately still
-    `permit_pathways` — moving those is coupled to rebuilding the deployed AI
-    service (#111) — so this asserts the outward-facing names only.
+    survives only while nobody else claims the old name.
+
+    The distribution name now moves with them: neither `permit-pathways` nor
+    `permit-bearings` is claimed on PyPI, so renaming it costs nothing today
+    and stops being free the moment either is published.
+
+    The **import package** is deliberately still `permit_pathways`, and that
+    is not a leftover. `data/validation/beta-operations-readiness.json` lists
+    `src/permit_pathways/beta_operations.py` as an evidence path, and two
+    other not-run planning ledgers name module paths the same way. Their raw
+    bytes are pinned in `beta_gate._NOT_RUN_ARTIFACT_SHA256`, which
+    `beta_gate_cli recompute` refuses to re-derive — that refusal is what
+    stops a favourable nested result being rewritten together with its
+    digest. Moving the import package therefore requires editing three
+    immutable ledgers and three pinned digests by hand, which is an
+    attestation and not a refactor. See the rename issue.
     """
 
     from scripts.pull_hau_letters import USER_AGENT as HAU_LETTERS_USER_AGENT
@@ -785,7 +797,58 @@ def test_outbound_requests_and_citation_metadata_name_this_repository():
     assert 'repository-code: "https://github.com/ChelseaKR/permit-bearings"' in citation
     assert "permit-pathways" not in citation
 
-    project_urls = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    project_urls = project_urls.split("[project.urls]", 1)[1].split("\n[", 1)[0]
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'name = "permit-bearings"' in pyproject
+    project_urls = pyproject.split("[project.urls]", 1)[1].split("\n[", 1)[0]
     assert "permit-pathways" not in project_urls
     assert "ChelseaKR/permit-bearings" in project_urls
+
+
+def test_the_old_distribution_name_survives_only_where_naming_it_is_the_point():
+    """Nothing published still carries `permit-pathways`, with four exceptions.
+
+    Listing the exceptions one by one, rather than allowing them by pattern,
+    is what makes adding a fifth a decision somebody has to write down:
+
+    * `CHANGELOG.md` — a historical record. Several entries are *about* the
+      rename; rewriting them would make the history describe a name that was
+      not in force at the time.
+    * the 2026-08-15 ordinance-scan finding — it records the `User-Agent` that
+      scan actually sent. That is a measurement, not a current claim.
+    * `.github/workflows/standards.yml` and the CI/CD row of the README's
+      conformance table — both explain why the standards pin is a commit
+      rather than a tag: `v2.0.0` of the private baseline keys this
+      repository under its old GitHub name, and that sentence is only true
+      with the old name in it.
+
+    This file is excluded because it has to write both names down to compare
+    them. The import package is checked separately, in the test above.
+    """
+
+    import subprocess
+
+    allowed = {
+        ".github/workflows/standards.yml",
+        "CHANGELOG.md",
+        "README.md",
+        "docs/findings/2026-08-15-multi-jurisdiction-adu-ordinance-scan.md",
+        "tests/test_trust_contracts.py",
+    }
+    tracked = subprocess.run(
+        ["git", "ls-files"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.split()
+    offenders = []
+    for relative in sorted(set(tracked) - allowed):
+        try:
+            text = (ROOT / relative).read_text(encoding="utf-8")
+        except (UnicodeDecodeError, FileNotFoundError, IsADirectoryError):
+            continue
+        if "permit-pathways" in text:
+            offenders.append(relative)
+    assert offenders == [], (
+        f"these tracked files still name the old distribution: {offenders}"
+    )

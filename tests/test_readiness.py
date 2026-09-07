@@ -961,7 +961,7 @@ def test_default_loader_and_cli_use_current_date_for_source_currency(
         sys,
         "argv",
         [
-            "permit-pathways-readiness",
+            "permit-bearings-readiness",
             "--workflow",
             str(WORKFLOW_PATH),
             "--packet",
@@ -997,7 +997,7 @@ def test_convenience_loader_and_cli_emit_the_canonical_manifest(
         sys,
         "argv",
         [
-            "permit-pathways-readiness",
+            "permit-bearings-readiness",
             "--workflow",
             str(WORKFLOW_PATH),
             "--packet",

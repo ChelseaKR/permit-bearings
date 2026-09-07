@@ -1154,7 +1154,7 @@ test("external evidence gate stays visibly pending without success claims", asyn
     gate.getByRole("link", { name: "execution and claim protocol" }),
   ).toHaveAttribute(
     "href",
-    "https://github.com/ChelseaKR/permit-pathways/blob/main/docs/VALIDATION-EVIDENCE.md",
+    "https://github.com/ChelseaKR/permit-bearings/blob/main/docs/VALIDATION-EVIDENCE.md",
   );
   await expectNoDocumentOverflow(page);
   await expectNoAutomatedWcagViolations(page);
