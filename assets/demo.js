@@ -3297,6 +3297,7 @@ function renderResults(list) {
       ${decisionBoundaryMarkup("no-route")}
       <div class="notice ca-shout" lang="${lang}">${esc(s.none)}</div>
       ${renderProjectFacts()}
+      ${whatIfDisclosureMarkup()}
       ${statewideOrientationMarkup()}`;
     return;
   }

@@ -529,6 +529,27 @@ test("populated applicant result reflows without automated WCAG violations", asy
   await expectNoAutomatedWcagViolations(page);
 });
 
+// The result page's scans above run over the page as it arrives, and the
+// what-if disclosure arrives closed. axe skips content inside a closed
+// `<details>`, so every heading, list and paragraph in it was unscanned: the
+// scan that passed said nothing about the markup this test opens.
+test("the what-if disclosure is keyboard-openable and clean once open", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openCanonicalJourney(page);
+  const disclosure = page.locator("details.what-if");
+  await expectClosedDisclosure(disclosure, disclosure.locator(".result-support-body"));
+  await expandDisclosureWithKeyboard(disclosure, "Enter");
+  await expect(disclosure.locator(".result-support-body")).toBeVisible();
+  // More than one fact and more than one answer per fact, so the scan is over
+  // the repeated structure a visitor actually reads rather than one row.
+  expect(await disclosure.locator(".what-if-fact").count()).toBeGreaterThan(1);
+  expect(await disclosure.locator(".what-if-answer").count()).toBeGreaterThan(3);
+  await expectNoDocumentOverflow(page);
+  await expectNoAutomatedWcagViolations(page);
+});
+
 for (const viewport of [
   { label: "320px", width: 320, height: 720 },
   { label: "390px", width: 390, height: 844 },

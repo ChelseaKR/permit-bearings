@@ -108,6 +108,44 @@ function copy(demo, language, key) {
   return demo.get("STRINGS")[language].whatIf[key];
 }
 
+describe("the copy these assertions read is fit to assert on", () => {
+  // Every test below asserts that rendered markup *contains* a catalog string,
+  // read from the shipped catalog rather than retyped. That keeps the suite
+  // from drifting from what a visitor reads, but it buys one weakness: a blank
+  // string is contained in everything, and two identical strings make a
+  // "shows A, not B" assertion unfalsifiable. `make copy-check` refuses blank
+  // copy for its own reasons; this pins the two properties the assertions
+  // below actually depend on, so neither can quietly stop meaning anything.
+  const KEYS = [
+    "sameRules",
+    "agree",
+    "unreadQuestion",
+    "deltasWithheld",
+    "rulesAdded",
+    "rulesRemoved",
+    "pathNamed",
+    "pathNone",
+    "pathUnresolved",
+  ];
+
+  for (const language of ["en", "es"]) {
+    test(`${language}: every asserted string is present and non-blank`, () => {
+      const demo = loadDemo();
+      for (const key of KEYS) {
+        const value = copy(demo, language, key);
+        assert.equal(typeof value, "string", key);
+        assert.ok(value.trim().length > 0, key);
+      }
+    });
+
+    test(`${language}: no two of them are the same string`, () => {
+      const demo = loadDemo();
+      const values = KEYS.map((key) => copy(demo, language, key));
+      assert.equal(new Set(values).size, KEYS.length, values.join(" | "));
+    });
+  }
+});
+
 describe("the disclosure renders one branch per allowed answer", () => {
   test("every material fact is shown, in the form's order", () => {
     const demo = loadedPage();
@@ -284,6 +322,23 @@ describe("both result pages carry the disclosure", () => {
     const matched = demo.get("screen")(goldenIntake(WOODLAND_CASE_ID));
     assert.ok(matched.length > 0);
     demo.get("renderResults")(matched);
+    const markup = elements.results.innerHTML;
+    assert.ok(markup.includes('<details class="what-if result-support ca-box"'));
+    assert.ok(
+      markup.indexOf('class="result-cover-sheet') <
+        markup.indexOf('class="what-if result-support'),
+    );
+  });
+
+  test("a result that matched no rule at all renders it too", () => {
+    // The state where "what would change?" is most worth asking, and the one
+    // the early return in `renderResults` skipped when the disclosure landed.
+    const elements = {
+      results: makeElement("results"),
+      resultStatus: makeElement("resultStatus"),
+    };
+    const demo = loadedPage({ elements });
+    demo.get("renderResults")([]);
     const markup = elements.results.innerHTML;
     assert.ok(markup.includes('<details class="what-if result-support ca-box"'));
     assert.ok(
