@@ -7,6 +7,48 @@ published a versioned release.
 
 ### Added
 
+- **A what-if explorer: which rules and routes change when one answer
+  changes.** `permit_pathways.what_if` re-runs the deterministic matcher once
+  per allowed value of one material fact at a time and reports the rule and
+  route delta, reachable as
+  `python -m permit_pathways.what_if --facts facts.json` and ported into
+  `assets/demo.js` as `whatIfDeltas` (issue #130).
+  - **Decision support without prediction.** Nothing says which answer is
+    true, which is better, or what to do. Facts come in the form's order and
+    values in the order the vocabulary declares them, so no branch is
+    presented as preferable. Single-fact perturbation only: there is no search
+    for a best path and no combination of two changes.
+  - **Three states where a delta would be a lie, and what happens instead.**
+    A branch that still leaves a material fact unanswered reports
+    `needs_staff_review` and an empty `candidate_routes`, exactly as a real
+    screening of that intake would — including the case where answering
+    "unknown" matches the very same rules, so a reader of rule deltas alone
+    would conclude that not answering costs nothing when it costs the route.
+    A fact every rule reads the same way is reported as
+    `no_rule_reads_this_differently` rather than dropped. And a fact read by a
+    rule whose source the snapshot records as changed since it was last
+    reviewed gets `null` deltas, never `[]`, plus the ids of the held rules:
+    an empty delta reads as "changing this answer changes nothing", which is a
+    finding about the rule set that a held rule set cannot support.
+  - The hold is fail-closed on purpose. Every in-jurisdiction rule with a
+    criterion on the fact counts, including one that cannot match this project
+    type as encoded today, because a hold says the *encoding* may no longer
+    match its source and narrowing the set would assume what the hold puts in
+    doubt.
+  - Its own `what_if_schema_version`, not the screening envelope's
+    `schema_version`: they describe different documents, and moving the
+    screening version would tell every screening consumer their contract had
+    changed when it had not.
+  - `tests/test_what_if_browser_parity.py` lifts the shipped port out of
+    `assets/demo.js` and runs it under Node against all 29 Golden cases, twice
+    each — once clean and once with a source on hold — and requires identical
+    output, because `null` in one runtime and `[]` in the other render the
+    same and mean opposite things. Expected Woodland deltas are hand-written
+    in `tests/fixtures/what-if-woodland.json` rather than captured from a run.
+  - **Not included:** the "See what would change" disclosure on `check.html`.
+    Rendering it needs new applicant-facing copy in English and Spanish, which
+    is review work rather than automation; #130 stays open for it.
+
 - **The transit screen is calendar-aware.** `transit.py` takes `--as-of DATE`
   and measures peak headways only over the services `calendar.txt` and
   `calendar_dates.txt` say run on that date, after checking the date against
