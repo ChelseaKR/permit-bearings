@@ -292,6 +292,23 @@ describe("both result pages carry the disclosure", () => {
     );
   });
 
+  test("a result that matched no rule at all renders it too", () => {
+    // The state where "what would change?" is most worth asking, and the one
+    // the early return in `renderResults` skipped when the disclosure landed.
+    const elements = {
+      results: makeElement("results"),
+      resultStatus: makeElement("resultStatus"),
+    };
+    const demo = loadedPage({ elements });
+    demo.get("renderResults")([]);
+    const markup = elements.results.innerHTML;
+    assert.ok(markup.includes('<details class="what-if result-support ca-box"'));
+    assert.ok(
+      markup.indexOf('class="result-cover-sheet') <
+        markup.indexOf('class="what-if result-support'),
+    );
+  });
+
   test("a staff-review result renders it too", () => {
     const elements = { results: makeElement("results"), resultStatus: makeElement("resultStatus") };
     const demo = loadedPage({ caseId: "adu-primary-status-unknown", elements });
