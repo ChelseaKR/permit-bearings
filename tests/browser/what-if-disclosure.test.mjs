@@ -154,6 +154,18 @@ describe("the disclosure renders one branch per allowed answer", () => {
       "the rule's own pathway text should appear",
     );
   });
+
+  test("a branch that only loses rules says so, and is not called unchanged", () => {
+    const demo = loadedPage();
+    const row = answerRow(
+      factBlock(disclosure(demo), "primary_dwelling_status"),
+      "none",
+    );
+    assert.ok(row.includes(copy(demo, "en", "rulesRemoved")));
+    assert.ok(!row.includes(copy(demo, "en", "rulesAdded")));
+    assert.ok(!row.includes(copy(demo, "en", "sameRules")));
+    assert.ok(row.includes("ADU — ministerial review and application timelines"));
+  });
 });
 
 describe("an unanswered branch still says the route is gone", () => {
