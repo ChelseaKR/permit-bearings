@@ -397,3 +397,40 @@ def test_every_reason_is_reported_not_only_the_first() -> None:
     with pytest.raises(FactsDocumentError) as caught:
         validate_facts_document({"project_type": "shed", "adu_project_form": "wrong"})
     assert len(caught.value.reasons) >= 3
+
+
+def test_a_snapshot_that_omits_a_list_does_not_report_it_as_empty() -> None:
+    """The first version of `source_state_summary` had this bug.
+
+    `snapshot.get("changed_source_ids") or []` publishes an empty list for a
+    snapshot that never carried the key — which reads as "nothing changed", a
+    finding the snapshot did not make. Absent is unknown, and unknown is null.
+    """
+    partial = {
+        "snapshot_id": "source-watch-1",
+        "checked_at": "2026-09-01T00:00:00Z",
+        "receipt": {"status": "reviewed"},
+        "unverifiable_source_ids": [],
+        # changed_source_ids and affected_rule_ids are simply not there.
+    }
+    summary = source_state_summary(partial)
+    assert summary["available"] is True, "a snapshot was read"
+    assert summary["changed_source_ids"] is None
+    assert summary["affected_rule_ids"] is None
+    # And a key that IS there, and empty, keeps its distinct meaning.
+    assert summary["unverifiable_source_ids"] == []
+
+    result = _result(_adu_facts(), snapshot=partial)
+    assert not validate(result, _committed("result.schema.json"))
+    assert any(
+        "does not record affected_rule_ids, changed_source_ids" in notice
+        for notice in result["notices"]
+    ), result["notices"]
+
+
+def test_a_list_of_the_wrong_shape_is_unknown_rather_than_coerced() -> None:
+    for bogus in ("ca-gov-66321", 3, {"a": 1}, [1, 2], [None]):
+        summary = source_state_summary(
+            {"snapshot_id": "s", "changed_source_ids": bogus}
+        )
+        assert summary["changed_source_ids"] is None, f"{bogus!r} was coerced"

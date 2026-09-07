@@ -234,6 +234,21 @@ def _matched_rule_payload(result: PathwayResult) -> dict[str, Any]:
     }
 
 
+def _id_list(snapshot: Mapping[str, Any], key: str) -> list[str] | None:
+    """One of the snapshot's id lists, or ``None`` when it does not carry it.
+
+    ``or []`` was the first version of this, and it was the very defect the rest
+    of this module exists to prevent: a snapshot that was supplied but does not
+    carry ``changed_source_ids`` would have published an empty list, which reads
+    as "nothing changed" — a finding the snapshot never reported. A key that is
+    absent, null, or not a list of strings is unknown, and unknown is ``None``.
+    """
+    value = snapshot.get(key)
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        return None
+    return list(value)
+
+
 def source_state_summary(snapshot: Mapping[str, Any] | None) -> dict[str, Any]:
     """What the result can honestly say about the sources under it.
 
@@ -241,6 +256,11 @@ def source_state_summary(snapshot: Mapping[str, Any] | None) -> dict[str, Any]:
     reported as nulls plus a notice rather than as an empty summary: an empty
     ``changed_source_ids`` list looks exactly like "nothing changed", and an
     absent check is not the same finding as a clean one.
+
+    ``available`` says only that a snapshot was read. Each field is reported
+    separately, because a snapshot can be present and still not answer a
+    question — and a supplied snapshot missing a field is not evidence of an
+    empty answer to it.
     """
     if snapshot is None:
         return {
@@ -262,9 +282,9 @@ def source_state_summary(snapshot: Mapping[str, Any] | None) -> dict[str, Any]:
         "receipt_id": snapshot.get("snapshot_id"),
         "receipt_status": receipt_map.get("status"),
         "checked_at": snapshot.get("checked_at"),
-        "changed_source_ids": list(snapshot.get("changed_source_ids") or []),
-        "unverifiable_source_ids": list(snapshot.get("unverifiable_source_ids") or []),
-        "affected_rule_ids": list(snapshot.get("affected_rule_ids") or []),
+        "changed_source_ids": _id_list(snapshot, "changed_source_ids"),
+        "unverifiable_source_ids": _id_list(snapshot, "unverifiable_source_ids"),
+        "affected_rule_ids": _id_list(snapshot, "affected_rule_ids"),
         "available": True,
     }
 
@@ -310,13 +330,34 @@ def build_result(
             "No source-state snapshot was supplied, so this result says nothing "
             "about whether the cited sources have changed since they were recorded."
         )
-    elif source["unverifiable_source_ids"]:
-        notices.append(
-            "Some sources could not be fetched on the last check and are neither "
-            "confirmed unchanged nor known to have changed: "
-            + ", ".join(source["unverifiable_source_ids"])
-            + "."
+    else:
+        # Reported per field, because a supplied snapshot can still fail to
+        # answer one of these, and silence about a question is not an answer of
+        # "none". `unverifiable is None` and `unverifiable == []` are different
+        # findings and get different sentences.
+        unsaid = sorted(
+            key
+            for key in (
+                "changed_source_ids",
+                "unverifiable_source_ids",
+                "affected_rule_ids",
+            )
+            if source[key] is None
         )
+        if unsaid:
+            notices.append(
+                "The source-state snapshot does not record "
+                + ", ".join(unsaid)
+                + ", so this result says nothing about "
+                + ("them." if len(unsaid) > 1 else "it.")
+            )
+        if source["unverifiable_source_ids"]:
+            notices.append(
+                "Some sources could not be fetched on the last check and are neither "
+                "confirmed unchanged nor known to have changed: "
+                + ", ".join(source["unverifiable_source_ids"])
+                + "."
+            )
 
     return {
         "schema_version": SCHEMA_VERSION,
