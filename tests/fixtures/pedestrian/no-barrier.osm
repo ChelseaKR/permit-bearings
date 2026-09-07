@@ -30,6 +30,7 @@
     <nd ref="1"/>
     <nd ref="4"/>
     <tag k="highway" v="footway"/>
+    <tag k="foot" v="yes"/>
     <tag k="name" v="Footbridge"/>
   </way>
   <way id="105">

@@ -10,6 +10,12 @@ and the two distances agree.
 That one-tag difference is the point. If the graph rules ever let a motorway
 or a `foot=no` street through, the barrier fixture measures 300 m and the
 whole module reports the optimistic number it exists to stop reporting.
+
+Way 104 carries `foot=yes` in both files, and that is deliberate. Without it,
+`motorway_link` would be excluded merely by being absent from the walkable
+set, the exclusion set would carry no weight in this fixture, and a control
+that deleted a value from `EXCLUDED_HIGHWAY` would pass. With it, the
+fixture exercises the rule the ADR actually states.
 """
 
 from __future__ import annotations
@@ -176,12 +182,38 @@ def test_no_status_but_measured_ever_carries_a_distance() -> None:
 # --- Graph rules (ADR 0007) -----------------------------------------------
 
 
-@pytest.mark.parametrize("highway", sorted(EXCLUDED_HIGHWAY))
+#: Written out rather than taken from `EXCLUDED_HIGHWAY`, because a fixture
+#: derived from the constant it tests can never catch a wrong constant:
+#: deleting a value from the set would delete its own test case with it. This
+#: list has to be edited deliberately, and ADR 0007 is where the argument for
+#: each entry lives.
+NEVER_WALKABLE = (
+    "motorway",
+    "motorway_link",
+    "trunk",
+    "trunk_link",
+    "construction",
+    "proposed",
+    "raceway",
+    "bus_guideway",
+)
+
+
+def test_the_excluded_set_is_exactly_the_one_adr_0007_records() -> None:
+    assert sorted(EXCLUDED_HIGHWAY) == sorted(NEVER_WALKABLE)
+
+
+@pytest.mark.parametrize("highway", NEVER_WALKABLE)
 def test_an_excluded_way_is_not_walkable_even_when_tagged_foot_yes(
     tmp_path: Path, highway: str
 ) -> None:
     """A mapped shoulder is not a footpath, and reading it as one is the
-    optimistic answer this module exists to stop."""
+    optimistic answer this module exists to stop.
+
+    `foot=yes` is the case that matters: without it these values are already
+    outside the walkable set, so the exclusion set would carry no weight and
+    a control that removed a value from it would pass.
+    """
     path = tmp_path / "x.osm"
     path.write_text(_osm(_way(("highway", highway), ("foot", "yes"))), encoding="utf-8")
     with pytest.raises(PedestrianNetworkError, match="no walkable way"):
