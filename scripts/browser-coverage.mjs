@@ -37,7 +37,7 @@ function parseArgs(argv) {
   // Floors are set at what the suite actually reaches, as a ratchet. They
   // are far below the Python package's 85 percent and are not presented as
   // equivalent: this file had no coverage gate at all until now.
-  const options = { minLines: 21, minFunctions: 23 };
+  const options = { minLines: 21, minFunctions: 40 };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === "--min-lines") options.minLines = Number(argv[++i]);
     else if (argv[i] === "--min-functions") options.minFunctions = Number(argv[++i]);

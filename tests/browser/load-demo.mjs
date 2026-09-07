@@ -76,6 +76,46 @@ export function makeElement(id = "") {
 }
 
 /**
+ * An element that keeps the one relationship `escapeHtml` depends on.
+ *
+ * `demo.js` escapes by writing `textContent` on a detached element and
+ * reading `innerHTML` back off it. A stub whose two fields are unrelated
+ * returns the empty string for every escaped value, so `esc(...)` renders
+ * nothing and every assertion about rendered copy passes against blank
+ * markup. `document.createElement` is used for nothing else in `demo.js`,
+ * so implementing it here costs nothing and makes copy assertions real.
+ *
+ * The one deliberate divergence from a browser: a browser serializes a text
+ * node escaping `&`, `<` and `>` but leaves `"` alone, because quotes only
+ * need escaping in an attribute value. This stub escapes the quote as well,
+ * matching the stub `tests/test_static_demo.py` already uses.
+ */
+export function makeEscapingElement() {
+  const element = makeElement();
+  let text = "";
+  Object.defineProperties(element, {
+    textContent: {
+      get: () => text,
+      set: (next) => {
+        text = String(next ?? "");
+      },
+    },
+    innerHTML: {
+      get: () =>
+        text
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;"),
+      set: (next) => {
+        text = String(next ?? "");
+      },
+    },
+  });
+  return element;
+}
+
+/**
  * Evaluate `assets/demo.js` and return its global scope.
  *
  * @param {object} options
@@ -108,7 +148,7 @@ export function loadDemo({
     getElementById: (id) => elements[id] ?? null,
     querySelector: () => null,
     querySelectorAll: () => [],
-    createElement: () => makeElement(),
+    createElement: () => makeEscapingElement(),
     addEventListener() {},
     removeEventListener() {},
   };

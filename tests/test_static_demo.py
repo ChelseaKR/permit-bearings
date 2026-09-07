@@ -212,6 +212,8 @@ def test_check_page_uses_collapsed_native_support_disclosures_and_route_first_or
         in application
     )
     assert '<details class="statewide-orientation result-support ca-box"' in application
+    assert '<details class="what-if result-support ca-box"' in application
+    assert '<details class="what-if result-support ca-box" open' not in application
     sample_result_start = check.index('id="sampleResult"')
     sample_result_tag = check[
         check.rfind("<a", 0, sample_result_start) : check.index(
@@ -245,6 +247,9 @@ def test_check_page_uses_collapsed_native_support_disclosures_and_route_first_or
         "${renderProjectFacts()}"
     )
     assert render_results.rindex("${renderProjectFacts()}") < render_results.rindex(
+        "${whatIfDisclosureMarkup()}"
+    )
+    assert render_results.rindex("${whatIfDisclosureMarkup()}") < render_results.rindex(
         "${statewideOrientationMarkup(list)}"
     )
 

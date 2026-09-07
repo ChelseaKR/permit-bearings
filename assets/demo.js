@@ -283,6 +283,22 @@ const STRINGS = {
       budgetExhausted: "The AI service has reached its request limit for now. The deterministic result is unchanged; try again later.",
       openSourceAt: "Open the official source at this passage",
     },
+    whatIf: {
+      heading: "See what would change if an answer were different",
+      intro: "This lists what the included rules attach to each answer you could give, one question at a time. It does not say which answer is true, it does not rank the answers, and it is not advice. Opening this changes nothing about your project or about any application.",
+      edit: "Change your answers in the form above",
+      currentAnswer: "Your answer",
+      unreadQuestion: "No included rule has a condition on this question.",
+      agree: "Included rules read this question, and every answer here matches the same rules.",
+      deltasWithheld: "Not calculated. Rules that read this question depend on a source that changed since it was last reviewed. What a different answer would change is not known until a person checks that source again.",
+      withheldRules: "Rules waiting for a new source check:",
+      sameRules: "Matches the same rules as your answer.",
+      rulesAdded: "Rules that would also match:",
+      rulesRemoved: "Rules that would stop matching:",
+      pathNamed: "The included rules identify a possible path for this answer.",
+      pathNone: "The included rules identify no possible path for this answer.",
+      pathUnresolved: "No possible path is shown for this answer: it leaves a question for staff to answer.",
+    },
   },
   es: {
     tagline: "Encuentre una posible ruta. Vea las fuentes que la respaldan. Consulte las preguntas pendientes con el personal de la agencia.",
@@ -547,6 +563,22 @@ const STRINGS = {
       questionsOnly: "Redactar preguntas para el personal local (redactadas por IA)",
       budgetExhausted: "El servicio de IA alcanzó su límite de solicitudes por ahora. El resultado determinista no cambia; inténtelo más tarde.",
       openSourceAt: "Abrir la fuente oficial en este pasaje",
+    },
+    whatIf: {
+      heading: "Vea qué cambiaría si una respuesta fuera distinta",
+      intro: "Aquí se indica lo que las reglas incluidas asocian a cada respuesta que usted podría dar, una pregunta a la vez. No dice cuál respuesta es la correcta, no clasifica las respuestas y no es asesoría. Abrir esta sección no cambia nada sobre su proyecto ni sobre ninguna solicitud.",
+      edit: "Cambie sus respuestas en el formulario de arriba",
+      currentAnswer: "Su respuesta",
+      unreadQuestion: "Ninguna regla incluida tiene una condición sobre esta pregunta.",
+      agree: "Las reglas incluidas leen esta pregunta y todas las respuestas aquí coinciden con las mismas reglas.",
+      deltasWithheld: "No se calculó. Las reglas que leen esta pregunta dependen de una fuente que cambió desde su última revisión. No se sabe qué cambiaría otra respuesta hasta que una persona vuelva a verificar esa fuente.",
+      withheldRules: "Reglas que esperan una nueva verificación de la fuente:",
+      sameRules: "Coincide con las mismas reglas que su respuesta.",
+      rulesAdded: "Reglas que también coincidirían:",
+      rulesRemoved: "Reglas que dejarían de coincidir:",
+      pathNamed: "Las reglas incluidas identifican una posible vía para esta respuesta.",
+      pathNone: "Las reglas incluidas no identifican ninguna posible vía para esta respuesta.",
+      pathUnresolved: "No se muestra ninguna posible vía para esta respuesta: deja una pregunta que el personal debe responder.",
     },
   },
 };
@@ -2713,6 +2745,143 @@ function renderProjectFacts() {
   </details>`;
 }
 
+/**
+ * The "see what would change" disclosure. `whatIfDeltas` computes it; these
+ * functions render it.
+ *
+ * The three states the what-if module protects are three separate pieces of
+ * copy here, because collapsing any of them re-introduces the defect the
+ * module exists to prevent:
+ *
+ *   - a fact whose rules are on source hold shows the hold and no branches at
+ *     all, never an empty delta rendered as "nothing would change";
+ *   - a fact every rule reads the same way says so, in one line above the
+ *     branches rather than as a column of identical rows;
+ *   - every branch still states whether a path is shown for it, including on
+ *     a fact whose rules agree. That is the case the module docstring names:
+ *     answering "not sure" can match exactly the same rules and still cost
+ *     the route, so a reader given only rule deltas would conclude that not
+ *     answering is free.
+ *
+ * A rule is named by its `pathway`, verbatim and marked `lang="en"`, the same
+ * way a result card names a route record. It is an English record name, not
+ * interface copy, and it is not translated.
+ */
+function whatIfRulePathway(ruleId) {
+  const rule = RULES.find(record => record.rule_id === ruleId);
+  return rule && nonBlank(rule.pathway) ? rule.pathway : ruleId;
+}
+
+function whatIfRuleList(label, ruleIds) {
+  if (!ruleIds || !ruleIds.length) return "";
+  return `<p class="what-if-label" lang="${lang}">${esc(label)}</p>
+    <ul class="what-if-rules">${ruleIds.map(ruleId =>
+      `<li lang="en">${escVerbatim(whatIfRulePathway(ruleId))}</li>`
+    ).join("")}</ul>`;
+}
+
+/**
+ * Whether the encoded rules name a path for one branch. A withheld branch
+ * never reaches this: a held fact renders its hold instead of its branches,
+ * so `candidate_routes` is never the `null` that a hold puts there.
+ */
+function whatIfPathState(alternative) {
+  const s = STRINGS[lang];
+  if (alternative.unresolved_facts.length) return s.whatIf.pathUnresolved;
+  return alternative.candidate_routes.length
+    ? s.whatIf.pathNamed : s.whatIf.pathNone;
+}
+
+function whatIfAlternativeMarkup(entry, alternative, projectType) {
+  const s = STRINGS[lang];
+  const label = factValueLabel(entry.field, alternative.value, projectType);
+  const current = alternative.is_current_answer
+    ? `<span class="what-if-current"
+        lang="${lang}">${esc(s.whatIf.currentAnswer)}</span>` : "";
+  const moved = alternative.rules_added.length
+    || alternative.rules_removed.length;
+  // Two rows say nothing about rules: the applicant's own answer, which is
+  // the baseline every delta is measured against, and any branch of a fact
+  // whose one-line agreement statement already covers every branch.
+  const silent = alternative.is_current_answer
+    || entry.no_rule_reads_this_differently;
+  const rules = moved
+    ? `${whatIfRuleList(s.whatIf.rulesAdded, alternative.rules_added)}${
+      whatIfRuleList(s.whatIf.rulesRemoved, alternative.rules_removed)}`
+    : `<p class="what-if-same" lang="${lang}">${esc(s.whatIf.sameRules)}</p>`;
+  return `<li class="what-if-answer" data-value="${esc(alternative.value)}"
+      data-current="${alternative.is_current_answer ? "yes" : "no"}">
+    <p class="what-if-answer-label"><strong
+        lang="${lang}">${esc(label)}</strong>${current}</p>
+    ${silent ? "" : rules}
+    <p class="what-if-path" lang="${lang}">${esc(whatIfPathState(alternative))}</p>
+  </li>`;
+}
+
+function whatIfFactMarkup(entry, projectType) {
+  const s = STRINGS[lang];
+  const heading = `<h4 lang="${lang}">${esc(
+    questionLabel(entry.field, projectType)
+  )}</h4>`;
+  if (entry.deltas_withheld) {
+    return `<div class="what-if-fact" data-field="${esc(entry.field)}"
+        data-withheld="${esc(entry.deltas_withheld)}">
+      ${heading}
+      <p class="notice what-if-withheld"
+        lang="${lang}">${esc(s.whatIf.deltasWithheld)}</p>
+      ${whatIfRuleList(s.whatIf.withheldRules, entry.rules_on_source_hold)}
+    </div>`;
+  }
+  const agreement = entry.no_rule_reads_this_differently
+    ? `<p class="what-if-agree" lang="${lang}">${esc(
+      entry.read_by_rule_ids.length ? s.whatIf.agree : s.whatIf.unreadQuestion
+    )}</p>` : "";
+  return `<div class="what-if-fact" data-field="${esc(entry.field)}"
+      data-withheld="no">
+    ${heading}${agreement}
+    <ul class="what-if-answers">${entry.alternatives.map(alternative =>
+      whatIfAlternativeMarkup(entry, alternative, projectType)
+    ).join("")}</ul>
+  </div>`;
+}
+
+function whatIfDisclosureMarkup() {
+  if (!LAST_INTAKE || !LAST_JURISDICTION) return "";
+  // With no rule set loaded every fact would report that no rule has a
+  // condition on it, which is a finding about the rules and not about a
+  // failed load. Say nothing instead.
+  if (!Array.isArray(RULES) || !RULES.length) return "";
+  const s = STRINGS[lang];
+  const projectType = LAST_INTAKE.project_type;
+  const fields = fieldsForProject(projectType);
+  if (!fields.length) return "";
+  // Identifiers, not labels. The copy contract holds both catalogs to the
+  // same option identifiers, so reading them from English keeps the set of
+  // branches explored identical in either display language.
+  const identifiers = STRINGS.en;
+  const valuesByField = Object.fromEntries(fields.map(name => [
+    name,
+    (name === "primary_dwelling_status" ? identifiers.primaryOptions
+      : name === "adu_project_form" ? identifiers.aduFormOptions
+        : identifiers.tri).map(([value]) => value),
+  ]));
+  const facts = whatIfDeltas(
+    LAST_INTAKE, fields, valuesByField, activeChangedSourceIds()
+  );
+  if (!facts.length) return "";
+  return `<details class="what-if result-support ca-box"
+      aria-labelledby="whatIfHeading" lang="${lang}">
+    <summary class="result-support-summary" id="whatIfHeading">
+      <span class="result-support-title">${esc(s.whatIf.heading)}</span>
+    </summary>
+    <div class="result-support-body">
+      <p class="small">${esc(s.whatIf.intro)}</p>
+      <p><a class="edit-answers" href="#screenHeading">${esc(s.whatIf.edit)}</a></p>
+      ${facts.map(entry => whatIfFactMarkup(entry, projectType)).join("")}
+    </div>
+  </details>`;
+}
+
 function decisionBoundaryMarkup(state) {
   const s = STRINGS[lang];
   const jurisdiction = jurisDisplay(LAST_JURISDICTION);
@@ -3192,6 +3361,7 @@ function renderResults(list) {
     ${noRouteNotice}${draftBanner}${renderResultIndex(grouped)}${sections}
     ${packetSampleLink}
     ${renderProjectFacts()}
+    ${whatIfDisclosureMarkup()}
     ${statewideOrientationMarkup(list)}`;
   renderJourneyHandoffOutcome();
 }
@@ -3226,6 +3396,7 @@ function renderNeedsStaffReview(fieldNames) {
         ).join("")}</ul>
       </div>
       ${renderProjectFacts()}
+      ${whatIfDisclosureMarkup()}
       ${statewideOrientationMarkup([], fieldNames)}`;
 }
 

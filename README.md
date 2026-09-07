@@ -378,6 +378,16 @@ same function, and `tests/test_what_if_browser_parity.py` runs the shipped
 port under Node against every Golden case, with and without a source hold, and
 requires identical output.
 
+On `check.html` it renders as a collapsed **See what would change if an answer
+were different** section under both result pages. The three states above are
+three separate pieces of applicant copy there: a held fact shows the hold and
+no branches at all, a fact every rule reads the same way says so once above
+its branches, and every branch states whether a path is shown for it — which
+is the line that matters on a branch whose rules did not move but whose route
+is gone. Rules are named by their own `pathway` record name, verbatim and
+marked `lang="en"`; interface copy is translated, a record name is not.
+`tests/browser/what-if-disclosure.test.mjs` covers the rendering.
+
 ### Keeping the schemas honest
 
 The schemas are generated from the Python definitions

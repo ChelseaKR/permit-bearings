@@ -1566,6 +1566,73 @@ select[aria-invalid="true"] {
   margin: 0;
 }
 
+.what-if {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  margin: var(--s-4) 0 0;
+  padding: 0;
+}
+
+.what-if-fact {
+  border-top: 1px solid var(--line);
+  margin: var(--s-2) calc(0px - var(--s-3)) 0;
+  padding: 0.9rem var(--s-3) 0.25rem;
+}
+
+.what-if-fact > h4 {
+  font-family: var(--display);
+  font-size: var(--font-size-2);
+  margin: 0 0 0.5rem;
+  max-width: 48rem;
+}
+
+.what-if-answers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.what-if-answer {
+  border-left: 0.24rem solid var(--line);
+  margin: 0 0 0.9rem;
+  padding-left: 0.85rem;
+}
+
+.what-if-answer[data-current="yes"] {
+  border-left-color: var(--blue);
+}
+
+.what-if-answer-label {
+  margin: 0 0 0.3rem;
+}
+
+.what-if-current {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  font-size: var(--font-size-0);
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.45rem;
+  white-space: nowrap;
+}
+
+.what-if-agree,
+.what-if-label,
+.what-if-path,
+.what-if-same,
+.what-if-withheld {
+  margin: 0.3rem 0;
+  max-width: 48rem;
+}
+
+.what-if-path,
+.what-if-same {
+  font-size: var(--font-size-1);
+}
+
+.what-if-rules {
+  margin: 0.2rem 0 0.55rem;
+}
+
 .result-count {
   font-size: var(--font-size-3);
   font-weight: 750;

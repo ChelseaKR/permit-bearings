@@ -45,9 +45,33 @@ published a versioned release.
     output, because `null` in one runtime and `[]` in the other render the
     same and mean opposite things. Expected Woodland deltas are hand-written
     in `tests/fixtures/what-if-woodland.json` rather than captured from a run.
-  - **Not included:** the "See what would change" disclosure on `check.html`.
-    Rendering it needs new applicant-facing copy in English and Spanish, which
-    is review work rather than automation; #130 stays open for it.
+  - **The disclosure on `check.html`.** `whatIfDisclosureMarkup` renders the
+    explorer into a collapsed "See what would change if an answer were
+    different" section under both result pages: the screened result and the
+    staff-review result. It reuses the applicant-copy contract, so its
+    seventeen strings exist in English and Spanish at key parity.
+    - **Three states, three pieces of copy.** A fact on source hold renders
+      the hold and *no branches at all*, because an empty delta drawn as a row
+      is the claim a held rule set cannot support. A fact every rule reads the
+      same way says so once, above the branches, instead of as a column of
+      identical rows. And every branch states whether a path is shown for it
+      even when its rules did not move: on the Woodland fixture, answering "I'm
+      not sure" to the ADU-work question matches exactly the same rules as the
+      real answer, so a disclosure showing only rule deltas would tell an
+      applicant that not answering is free. It costs the route, and the page
+      now says so on that row.
+    - A rule is named by its own `pathway` record name, verbatim and marked
+      `lang="en"`, the same way a result card names a route record. Interface
+      copy is translated; a record name is not.
+    - With no rule set loaded the disclosure renders nothing, rather than
+      reporting that no rule has a condition on any question, which would be a
+      finding about the rules and not about a failed load.
+    - The branches explored are read from the English option identifiers, so
+      the set of answers examined is identical in either display language.
+    - `tests/browser/what-if-disclosure.test.mjs` covers it against the
+      shipped file, asserting copy through the catalog rather than retyping
+      it. The browser coverage floor moves 23% to 40% of functions, to what
+      the suite now reaches.
 
 - **The transit screen is calendar-aware.** `transit.py` takes `--as-of DATE`
   and measures peak headways only over the services `calendar.txt` and
