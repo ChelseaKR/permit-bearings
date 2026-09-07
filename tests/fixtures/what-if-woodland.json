@@ -1,0 +1,247 @@
+{
+  "_about": [
+    "Expected per-fact, per-value rule deltas for the Golden case",
+    "`woodland-new-detached-adu-local-layer`, screened with no source-state",
+    "snapshot. This is the `facts` array of the payload",
+    "`permit_pathways.what_if.what_if` returns, and the same structure the",
+    "browser port `whatIfDeltas` in `assets/demo.js` produces.",
+    "",
+    "Hand-written from `data/rules`, not captured from a run: a fixture",
+    "recorded from the code it checks pins whatever the code did, including a",
+    "wrong constant. Each entry below is derivable by reading the criteria of",
+    "the rules named in `read_by_rule_ids`.",
+    "",
+    "Baseline for every delta (the submitted answers): adu-height-standards,",
+    "adu-ministerial-review, adu-no-owner-occupancy-rental, adu-parking-limits,",
+    "adu-protected-minimum, adu-size-allowances, woodland-adu-ordinance-2026;",
+    "route class 'ministerial'.",
+    "",
+    "Note the shape of the `unknown` branches. `adu_project_form: unknown` and",
+    "`unpermitted_existing: unknown` match exactly the same rules as the",
+    "answered intake, because a criterion is never satisfied by 'unknown'. What",
+    "changes is the boundary: the branch reports needs_staff_review and",
+    "withholds its candidate route. A reader looking only at rule deltas would",
+    "conclude that not answering costs nothing, and it costs the route."
+  ],
+  "case_id": "woodland-new-detached-adu-local-layer",
+  "facts": [
+    {
+      "field": "primary_dwelling_status",
+      "current_value": "existing_single_family",
+      "known": true,
+      "read_by_rule_ids": [
+        "adu-conversion-exemptions",
+        "adu-height-standards",
+        "adu-ministerial-review",
+        "adu-multifamily-66323",
+        "adu-multifamily-proposed-66323",
+        "adu-no-owner-occupancy-rental",
+        "adu-parking-limits",
+        "adu-protected-minimum",
+        "adu-size-allowances",
+        "adu-unpermitted-legalization",
+        "jadu-ministerial-review",
+        "jadu-standards",
+        "jadu-unpermitted-legalization"
+      ],
+      "no_rule_reads_this_differently": false,
+      "deltas_withheld": null,
+      "rules_on_source_hold": [],
+      "alternatives": [
+        {
+          "value": "existing_single_family",
+          "is_current_answer": true,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": [],
+          "rules_removed": [],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "existing_multifamily",
+          "is_current_answer": false,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": ["adu-multifamily-66323"],
+          "rules_removed": ["adu-no-owner-occupancy-rental"],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "proposed_single_family",
+          "is_current_answer": false,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": [],
+          "rules_removed": [],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "proposed_multifamily",
+          "is_current_answer": false,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": ["adu-multifamily-proposed-66323"],
+          "rules_removed": ["adu-no-owner-occupancy-rental"],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "none",
+          "is_current_answer": false,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": [],
+          "rules_removed": [
+            "adu-height-standards",
+            "adu-ministerial-review",
+            "adu-no-owner-occupancy-rental",
+            "adu-parking-limits",
+            "adu-protected-minimum",
+            "adu-size-allowances"
+          ],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "unknown",
+          "is_current_answer": false,
+          "decision_boundary": "needs_staff_review",
+          "unresolved_facts": ["primary_dwelling_status"],
+          "candidate_routes": [],
+          "rules_added": [],
+          "rules_removed": [
+            "adu-height-standards",
+            "adu-ministerial-review",
+            "adu-no-owner-occupancy-rental",
+            "adu-parking-limits",
+            "adu-protected-minimum",
+            "adu-size-allowances"
+          ],
+          "routes_added": [],
+          "routes_removed": ["ministerial"]
+        }
+      ]
+    },
+    {
+      "field": "adu_project_form",
+      "current_value": "new_detached",
+      "known": true,
+      "read_by_rule_ids": ["adu-conversion-exemptions"],
+      "no_rule_reads_this_differently": false,
+      "deltas_withheld": null,
+      "rules_on_source_hold": [],
+      "alternatives": [
+        {
+          "value": "new_detached",
+          "is_current_answer": true,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": [],
+          "rules_removed": [],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "new_attached",
+          "is_current_answer": false,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": [],
+          "rules_removed": [],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "conversion",
+          "is_current_answer": false,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": ["adu-conversion-exemptions"],
+          "rules_removed": [],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "same_footprint_rebuild",
+          "is_current_answer": false,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": ["adu-conversion-exemptions"],
+          "rules_removed": [],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "unknown",
+          "is_current_answer": false,
+          "decision_boundary": "needs_staff_review",
+          "unresolved_facts": ["adu_project_form"],
+          "candidate_routes": [],
+          "rules_added": [],
+          "rules_removed": [],
+          "routes_added": [],
+          "routes_removed": ["ministerial"]
+        }
+      ]
+    },
+    {
+      "field": "unpermitted_existing",
+      "current_value": "no",
+      "known": true,
+      "read_by_rule_ids": [
+        "adu-unpermitted-legalization",
+        "jadu-unpermitted-legalization"
+      ],
+      "no_rule_reads_this_differently": false,
+      "deltas_withheld": null,
+      "rules_on_source_hold": [],
+      "alternatives": [
+        {
+          "value": "yes",
+          "is_current_answer": false,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": ["adu-unpermitted-legalization"],
+          "rules_removed": [],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "no",
+          "is_current_answer": true,
+          "decision_boundary": "candidate_rules_only",
+          "unresolved_facts": [],
+          "candidate_routes": ["ministerial"],
+          "rules_added": [],
+          "rules_removed": [],
+          "routes_added": [],
+          "routes_removed": []
+        },
+        {
+          "value": "unknown",
+          "is_current_answer": false,
+          "decision_boundary": "needs_staff_review",
+          "unresolved_facts": ["unpermitted_existing"],
+          "candidate_routes": [],
+          "rules_added": [],
+          "rules_removed": [],
+          "routes_added": [],
+          "routes_removed": ["ministerial"]
+        }
+      ]
+    }
+  ]
+}

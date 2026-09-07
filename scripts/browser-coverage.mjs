@@ -1,7 +1,7 @@
 /**
  * Run the browser unit suite and report real coverage of `assets/demo.js`.
  *
- * Why this exists: `assets/demo.js` is 5,255 lines carrying the second
+ * Why this exists: `assets/demo.js` is over five thousand lines carrying the second
  * implementation of this product's rule logic, and until now no coverage gate
  * of any kind applied to it. `--cov=permit_pathways` measures one Python
  * package; the 85 percent figure never described this file in either
@@ -37,7 +37,7 @@ function parseArgs(argv) {
   // Floors are set at what the suite actually reaches, as a ratchet. They
   // are far below the Python package's 85 percent and are not presented as
   // equivalent: this file had no coverage gate at all until now.
-  const options = { minLines: 20, minFunctions: 17 };
+  const options = { minLines: 21, minFunctions: 23 };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === "--min-lines") options.minLines = Number(argv[++i]);
     else if (argv[i] === "--min-functions") options.minFunctions = Number(argv[++i]);

@@ -3,9 +3,10 @@
 install:
 	uv sync --locked --python 3.12 --group dev --extra ai
 
-# Eight Python tests that execute `assets/demo.js` under Node are guarded by
+# The Python tests that execute `assets/demo.js` under Node are guarded by
 # `skipif(shutil.which("node") is None)`, and the browser unit suite needs Node
-# outright. Without this target `make verify` passed with the entire browser
+# outright. The count used to be written out here and had already drifted, so
+# it is not written out any more. Without this target `make verify` passed with the entire browser
 # runtime untested and said nothing about it, while CI called the same command
 # "local-equivalent verification". Fail loudly instead.
 require-node:

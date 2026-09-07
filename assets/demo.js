@@ -662,6 +662,121 @@ function screen(intake) {
     (r.jurisdiction_scope === "statewide" || r.jurisdiction_scope === intake.jurisdiction)
     && matches(r, intake));
 }
+
+// --- What-if: what the encoded rules attach to each answer -----------------
+//
+// A hand-port of `src/permit_pathways/what_if.py`, held identical to it by
+// `tests/test_what_if_browser_parity.py` over every Golden case, the way
+// `scanOrdinance` is held to `conformance.py`. It perturbs one fact at a time
+// through the deployed `screen()` above, so what the browser explores is the
+// matcher the browser actually runs.
+//
+// Two boundaries it must not lose, both inherited from a real screening:
+//   * a branch that still has an unanswered material fact reports
+//     `needs_staff_review` and withholds its candidate routes;
+//   * when a rule that reads the fact depends on a source recorded as changed
+//     since it was last reviewed, the four delta lists are `null`, never `[]`.
+//     An empty delta reads as "changing this answer changes nothing", which is
+//     a finding about the rule set that a held rule set cannot support.
+function whatIfBranch(intake, fields) {
+  const matched = screen(intake);
+  const unresolved = fields.filter(
+    name => (intake[name] ?? "unknown") === "unknown"
+  );
+  return {
+    matched_rule_ids: matched.map(rule => rule.rule_id).sort(),
+    candidate_routes: unresolved.length
+      ? []
+      : [...new Set(matched.map(rule => rule.route_class))].sort(),
+    unresolved_facts: unresolved,
+    decision_boundary: unresolved.length
+      ? "needs_staff_review" : "candidate_rules_only",
+  };
+}
+
+function whatIfDelta(before, after) {
+  return {
+    added: after.filter(item => !before.includes(item)).sort(),
+    removed: before.filter(item => !after.includes(item)).sort(),
+  };
+}
+
+function whatIfApplicableRules(rules, jurisdiction) {
+  return rules.filter(rule => rule.jurisdiction_scope === "statewide"
+    || rule.jurisdiction_scope === jurisdiction);
+}
+
+function whatIfRulesReading(rules, field) {
+  return rules
+    .filter(rule => Array.isArray(rule.criteria)
+      && rule.criteria.some(criterion => criterion.field === field))
+    .map(rule => rule.rule_id)
+    .sort();
+}
+
+function whatIfHeldRuleIds(rules, changedSourceIds) {
+  const changed = changedSourceIds || [];
+  if (!changed.length) return new Set();
+  return new Set(rules
+    .filter(rule => (rule.source_dependencies || [])
+      .some(sourceId => changed.includes(sourceId)))
+    .map(rule => rule.rule_id));
+}
+
+function whatIfAlternative(intake, field, value, fields, baseline, withheld) {
+  const branch = whatIfBranch({...intake, [field]: value}, fields);
+  const rules = whatIfDelta(
+    baseline.matched_rule_ids, branch.matched_rule_ids
+  );
+  const routes = whatIfDelta(
+    baseline.candidate_routes, branch.candidate_routes
+  );
+  return {
+    value,
+    is_current_answer: intake[field] === value,
+    // Which facts are still unanswered is a property of the intake alone, so
+    // a source hold cannot make it unknowable.
+    decision_boundary: branch.decision_boundary,
+    unresolved_facts: branch.unresolved_facts,
+    candidate_routes: withheld ? null : branch.candidate_routes,
+    rules_added: withheld ? null : rules.added,
+    rules_removed: withheld ? null : rules.removed,
+    routes_added: withheld ? null : routes.added,
+    routes_removed: withheld ? null : routes.removed,
+  };
+}
+
+function whatIfDeltas(intake, fields, valuesByField, changedSourceIds) {
+  const inScope = whatIfApplicableRules(RULES, intake.jurisdiction);
+  const held = whatIfHeldRuleIds(inScope, changedSourceIds);
+  const baseline = whatIfBranch(intake, fields);
+  return fields.map(field => {
+    const reading = whatIfRulesReading(inScope, field);
+    const onHold = reading.filter(ruleId => held.has(ruleId));
+    const withheld = onHold.length > 0;
+    const alternatives = (valuesByField[field] || []).map(
+      value => whatIfAlternative(
+        intake, field, value, fields, baseline, withheld
+      )
+    );
+    return {
+      field,
+      current_value: intake[field] ?? "unknown",
+      known: (intake[field] ?? "unknown") !== "unknown",
+      read_by_rule_ids: reading,
+      // A result, not an omission: a fact every rule reads the same way is
+      // reported saying so rather than dropped from the output.
+      no_rule_reads_this_differently: withheld ? null : alternatives.every(
+        alternative => alternative.rules_added.length === 0
+          && alternative.rules_removed.length === 0
+      ),
+      deltas_withheld: withheld ? "source_on_review_hold" : null,
+      rules_on_source_hold: onHold,
+      alternatives,
+    };
+  });
+}
+
 function ruleStatus(rule, changedSourceIds) {
   const c = rule.citation;
   const dependencies = Array.isArray(rule.source_dependencies)
