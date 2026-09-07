@@ -835,6 +835,44 @@ that dataset carries its own currency and is not scoped by a local feed's
 calendar. `frequencies.txt` is not expanded; a feed that ships one is
 reported as such rather than measured around.
 
+**A negative is only as wide as the operators supplied.** A site is served by
+whoever serves it, not by whoever published the feed someone happened to
+supply — near the Davis depot that is Unitrans, Yolobus, Capitol Corridor and
+Amtrak thruway buses. `--gtfs` is repeatable, once per operator; stop *and*
+route ids are namespaced by feed, so two operators both numbering a route "1"
+count as the two routes § 21064.3's bus branch requires rather than
+collapsing into one, and the corner-clustering rule reaches across feeds so
+opposite sides of one intersection are still one intersection. Each feed
+keeps its own service calendar: one operator's unreadable feed no longer
+erases another operator's measured headways, and its stops are not counted as
+an absence of service either.
+
+Alongside the result the run discloses what it covered, cross-checking the
+agencies it was given against those the statewide dataset lists as serving
+*operating* stops within the radius:
+
+| `screen_completeness` | meaning |
+| --- | --- |
+| `complete` | every operating agency the statewide dataset names within the radius was supplied |
+| `bounded` | one was not, a supplied feed does not name its own agency, or no statewide dataset was supplied to check against |
+| `unknown` | no operator feed was supplied at all |
+
+Only `complete` lets a feed-derived screen report a negative; the other two
+report `unknown`, for the same reason an unresolved calendar does. Run
+against the bundled Unitrans feed at the Davis site, the screen is `bounded`
+and says so: the statewide dataset lists Amtrak and the Capitol Corridor
+Joint Powers Authority as serving operating stops within a half mile and
+neither feed was supplied. Three limits are stated rather than papered over.
+Agency names are matched exactly after case and punctuation folding and never
+fuzzily, because a false match would turn `bounded` into `complete` and
+manufacture coverage while a false miss only over-reports incompleteness.
+The statewide dataset lists only high-quality and major stops, so `complete`
+bounds the § 21064.3 and § 21155 screens and says nothing about an ordinary
+bus operator relevant to the § 66322(a)(1) parking exemption. And with no
+statewide dataset supplied there is nothing to cross-check against, so
+"no agency is missing" is vacuous and reads as `bounded`, never as a
+completed check.
+
 **A planned stop is not an existing one.** The statewide Caltrans dataset
 carries an `hqta_details` column that separates a stop derived from published
 service from one an MPO submitted as planned in its adopted regional

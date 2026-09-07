@@ -712,3 +712,571 @@ def test_a_feed_without_frequencies_does_not_claim_headway_defined_trips(tmp_pat
     resolved = load_feed(with_frequencies, as_of=date(2026, 6, 15)).calendar
     assert resolved.frequency_based_trips is True
     assert "frequencies.txt" in resolved.reason()
+
+
+# --- Several operators, and what a negative is bounded to (issue #133) ---
+#
+# A site is served by whoever serves it, not by whoever published the feed
+# someone happened to supply. Near the Davis depot that is Unitrans, Yolobus,
+# Capitol Corridor and Amtrak thruway buses; the committed corpus screens one
+# of them. These tests pin three things: several feeds screen as one set with
+# their ids kept apart, a run says which operators it covered, and a negative
+# is withheld when it cannot say that.
+
+from permit_pathways.transit import (  # noqa: E402
+    COVERAGE_BOUNDED,
+    COVERAGE_COMPLETE,
+    COVERAGE_UNKNOWN,
+    FeedCoverage,
+    _normalise_operator,
+    assess_coverage,
+    feed_agencies,
+    load_feeds,
+)
+
+AGENCY_ALPHA = (
+    "agency_id,agency_name,agency_url,agency_timezone\n"
+    "alpha,Alpha Transit,http://alpha.invalid,America/Los_Angeles\n"
+)
+AGENCY_BETA = (
+    "agency_id,agency_name,agency_url,agency_timezone\n"
+    "beta,Beta Transit,http://beta.invalid,America/Los_Angeles\n"
+)
+
+
+def _rows(block):
+    """Header line plus the remaining non-empty lines of a fixture CSV."""
+    lines = [line for line in block.splitlines() if line.strip()]
+    return lines[0], lines[1:]
+
+
+def _subset_feed(stop_ids, route_ids, agency):
+    """The slice of ``FILES`` covering these stops and routes, as its own feed.
+
+    Derived from the single-feed fixture rather than retyped, so the split and
+    merged feeds cannot drift apart and make the equivalence test vacuous.
+    """
+    stops_header, stops_rows = _rows(FILES["stops.txt"])
+    routes_header, routes_rows = _rows(FILES["routes.txt"])
+    trips_header, trips_rows = _rows(FILES["trips.txt"])
+    times_header, times_rows = _rows(FILES["stop_times.txt"])
+
+    kept_trips = [r for r in trips_rows if r.split(",")[0] in route_ids]
+    kept_trip_ids = {r.split(",")[2] for r in kept_trips}
+    kept_times = [
+        r
+        for r in times_rows
+        if r.split(",")[0] in kept_trip_ids and r.split(",")[3] in stop_ids
+    ]
+    return {
+        "agency.txt": agency,
+        "stops.txt": stops_header
+        + "\n"
+        + "\n".join(r for r in stops_rows if r.split(",")[0] in stop_ids)
+        + "\n",
+        "routes.txt": routes_header
+        + "\n"
+        + "\n".join(r for r in routes_rows if r.split(",")[0] in route_ids)
+        + "\n",
+        "calendar.txt": FILES["calendar.txt"],
+        "trips.txt": trips_header + "\n" + "\n".join(kept_trips) + "\n",
+        "stop_times.txt": times_header + "\n" + "\n".join(kept_times) + "\n",
+    }
+
+
+@pytest.fixture()
+def split_feeds(tmp_path):
+    """The one-feed fixture cut in two along the corner it clusters at.
+
+    S1 (routes A and B) goes to one operator, S2 (route C) to the other. The
+    § 21064.3 bus branch needs two qualifying routes at one intersection, and
+    after the split neither feed has two on its own.
+    """
+    alpha = _write_feed(
+        tmp_path / "alpha.zip", _subset_feed({"S1", "FAR"}, {"A", "B"}, AGENCY_ALPHA)
+    )
+    beta = _write_feed(tmp_path / "beta.zip", _subset_feed({"S2"}, {"C"}, AGENCY_BETA))
+    return [alpha, beta]
+
+
+def test_two_feeds_at_one_corner_answer_as_the_merged_feed_does(split_feeds, feed_path):
+    # Done-when 1. Splitting one operator's stops across two feeds must not
+    # change the answer, and the corner rule has to reach across feeds for
+    # that to hold: each feed alone has one qualifying route at the corner.
+    merged = load_feed(feed_path, as_of=FIXTURE_SERVICE_DATE)
+    several = load_feeds(split_feeds, as_of=FIXTURE_SERVICE_DATE)
+
+    from_merged = determine(38.5452, -121.7401, merged.stops, calendar=merged.calendar)
+    from_several = determine(
+        38.5452, -121.7401, several.stops, calendar=several.calendar
+    )
+    assert (
+        from_merged.parking_exemption == from_several.parking_exemption == "candidate"
+    )
+    assert from_merged.height_18ft == from_several.height_18ft == "candidate"
+    assert [reason for _s, _m, reason in from_merged.qualifying_stops] == [
+        reason for _s, _m, reason in from_several.qualifying_stops
+    ]
+    assert [stop.name for stop, _m, _r in from_merged.qualifying_stops] == [
+        stop.name for stop, _m, _r in from_several.qualifying_stops
+    ]
+
+
+def test_one_feed_of_the_split_pair_cannot_reach_the_two_route_threshold(
+    split_feeds,
+):
+    # The control for the test above. Written first as "each half alone
+    # returns no candidate", which failed: each half has one route at
+    # <=15-minute peaks, so each half alone is already a § 21155(b)
+    # high-quality-corridor candidate on its own. The half the split actually
+    # destroys is the § 21064.3 *major transit stop*, which needs two
+    # qualifying routes at one intersection — so that is what the control
+    # asserts, and what crossing feeds has to restore.
+    for single in split_feeds:
+        alone = load_feeds([single], as_of=FIXTURE_SERVICE_DATE)
+        determination = determine(
+            38.5452, -121.7401, alone.stops, calendar=alone.calendar
+        )
+        reasons = [reason for _s, _m, reason in determination.qualifying_stops]
+        assert reasons, "each half alone still has a corridor-quality route"
+        assert all("high-quality transit corridor" in r for r in reasons)
+        assert not any("major transit stop" in r for r in reasons)
+
+    several = load_feeds(split_feeds, as_of=FIXTURE_SERVICE_DATE)
+    together = determine(38.5452, -121.7401, several.stops, calendar=several.calendar)
+    assert all(
+        "major transit stop" in reason for _s, _m, reason in together.qualifying_stops
+    )
+
+
+def test_two_operators_route_1_are_two_routes_not_one(tmp_path):
+    # PRC § 21064.3's bus branch counts two or more qualifying routes at one
+    # intersection. Two operators both numbering a route "1" is the ordinary
+    # case, and merging their ids would collapse them into one route and deny
+    # a candidate that exists.
+    def one_route_feed(stop_id, lat, lon, agency):
+        times = _peak_times(13, 15)
+        return {
+            "agency.txt": agency,
+            "stops.txt": (
+                f"stop_id,stop_name,stop_lat,stop_lon\n{stop_id},Corner,{lat},{lon}\n"
+            ),
+            "routes.txt": "route_id,route_short_name,route_type\n1,1,3\n",
+            "calendar.txt": FILES["calendar.txt"],
+            "trips.txt": "route_id,service_id,trip_id,direction_id\n"
+            + "".join(f"1,WK,T{i},0\n" for i in range(len(times))),
+            "stop_times.txt": (
+                "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n"
+                + "".join(
+                    f"T{i},{hms},{hms},{stop_id},1\n" for i, hms in enumerate(times)
+                )
+            ),
+        }
+
+    north = _write_feed(
+        tmp_path / "north.zip", one_route_feed("1", 38.5450, -121.7400, AGENCY_ALPHA)
+    )
+    south = _write_feed(
+        tmp_path / "south.zip", one_route_feed("1", 38.5455, -121.7402, AGENCY_BETA)
+    )
+    several = load_feeds([north, south], as_of=FIXTURE_SERVICE_DATE)
+    assert sorted(s.stop_id for s in several.stops) == ["north:1", "south:1"]
+    assert sorted(r for s in several.stops for r in s.route_max_gaps) == [
+        "north:1",
+        "south:1",
+    ]
+    determination = determine(
+        38.5452, -121.7401, several.stops, calendar=several.calendar
+    )
+    assert determination.height_18ft == "candidate"
+    assert "major transit stop" in determination.qualifying_stops[0][2]
+
+
+def test_two_feeds_with_the_same_filename_do_not_share_a_namespace(tmp_path):
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    first = _write_feed(
+        tmp_path / "a" / "gtfs.zip",
+        _subset_feed({"S1", "FAR"}, {"A", "B"}, AGENCY_ALPHA),
+    )
+    second = _write_feed(
+        tmp_path / "b" / "gtfs.zip", _subset_feed({"S2"}, {"C"}, AGENCY_BETA)
+    )
+    several = load_feeds([first, second], as_of=FIXTURE_SERVICE_DATE)
+    assert [feed.key for feed in several.feeds] == ["gtfs", "gtfs-2"]
+    assert len({s.stop_id for s in several.stops}) == len(several.stops)
+
+
+def test_feed_agency_names_are_read_verbatim():
+    assert feed_agencies(UNITRANS) == ("Unitrans",)
+
+
+def test_a_feed_that_names_no_agency_reports_none_rather_than_guessing(tmp_path):
+    files = _subset_feed({"S2"}, {"C"}, AGENCY_BETA)
+    del files["agency.txt"]
+    path = _write_feed(tmp_path / "anonymous.zip", files)
+    assert feed_agencies(path) == ()
+    several = load_feeds([path], as_of=FIXTURE_SERVICE_DATE)
+    assert several.operators_supplied == ()
+    assert several.feeds_without_declared_agency == ("anonymous",)
+
+
+# --- Operator coverage --------------------------------------------------
+
+
+def test_unitrans_alone_near_davis_is_bounded_and_names_who_is_missing():
+    # Done-when 2, over the committed corpus rather than a fixture. The
+    # statewide dataset lists Amtrak and Capitol Corridor as serving operating
+    # stops within a half mile of the README site; neither feed was supplied.
+    from permit_pathways.transit import load_hq_stops
+
+    several = load_feeds([UNITRANS], as_of=date(2026, 8, 4))
+    hq = load_hq_stops(
+        Path(__file__).parent.parent / "corpus" / "transit" / "ca-hq-transit-stops.json"
+    )
+    coverage = several.coverage(*DAVIS_SITE, hq)
+    assert coverage.operators_supplied == ("Unitrans",)
+    assert coverage.operators_listed_not_supplied == (
+        "Amtrak",
+        "Capitol Corridor Joint Powers Authority",
+    )
+    assert coverage.completeness == COVERAGE_BOUNDED
+    assert "Capitol Corridor Joint Powers Authority" in coverage.reason()
+
+
+def test_a_planned_operator_is_not_counted_as_a_missing_one():
+    # Every Yolo TD row within a half mile of the README site is one an MPO
+    # submitted as planned. A facility that does not exist yet cannot show
+    # that its agency serves this location today, so not having Yolo TD's feed
+    # does not make the screen more bounded than it is.
+    from permit_pathways.transit import load_hq_stops
+
+    several = load_feeds([UNITRANS], as_of=date(2026, 8, 4))
+    hq = load_hq_stops(
+        Path(__file__).parent.parent / "corpus" / "transit" / "ca-hq-transit-stops.json"
+    )
+    coverage = several.coverage(*DAVIS_SITE, hq)
+    assert "Yolo TD" not in coverage.operators_listed_not_supplied
+    planned_nearby = [
+        s
+        for s in hq
+        if s.is_planned
+        and s.agency == "Yolo TD"
+        and haversine_miles(s.lat, s.lon, *DAVIS_SITE) <= 0.5
+    ]
+    assert planned_nearby, "the fixture premise: Yolo TD is listed here, as planned"
+
+
+def test_a_bounded_run_still_reports_the_candidate_the_state_dataset_supplies():
+    # Withholding a negative is not the same as withholding an answer. The
+    # Davis finding the README states must survive the coverage disclosure.
+    from permit_pathways.transit import load_hq_stops
+
+    several = load_feeds([UNITRANS], as_of=date(2026, 8, 4))
+    hq = load_hq_stops(
+        Path(__file__).parent.parent / "corpus" / "transit" / "ca-hq-transit-stops.json"
+    )
+    determination = determine(
+        *DAVIS_SITE,
+        several.stops,
+        hq_stops=hq,
+        calendar=several.calendar,
+        coverage=several.coverage(*DAVIS_SITE, hq),
+    )
+    assert determination.height_18ft == "candidate"
+    assert "major_stop_rail" in determination.qualifying_stops[0][2]
+    assert "BOUNDED" in determination.summary()
+
+
+def test_no_feed_at_all_is_unknown_not_complete():
+    # Done-when 3. Nothing was supplied, so nothing was covered; the screen
+    # rests on the statewide dataset alone and says so.
+    coverage = assess_coverage(*DAVIS_SITE, [EXISTING_RAIL_STOP], feeds_supplied=0)
+    assert coverage.completeness == COVERAGE_UNKNOWN
+    assert coverage.operators_supplied == ()
+    assert "no transit feed was supplied" in coverage.reason().lower()
+
+
+def test_no_feed_at_all_yields_only_statewide_candidates_and_no_negative():
+    several = load_feeds([], as_of=date(2026, 8, 4))
+    assert several.stops == []
+    coverage = several.coverage(*DAVIS_SITE, [EXISTING_RAIL_STOP])
+    assert coverage.completeness == COVERAGE_UNKNOWN
+
+    found = determine(
+        *DAVIS_SITE,
+        several.stops,
+        hq_stops=[EXISTING_RAIL_STOP],
+        calendar=several.calendar,
+        coverage=coverage,
+    )
+    assert found.height_18ft == "candidate"
+    assert all("Caltrans" in reason for _s, _m, reason in found.qualifying_stops)
+
+    # Far from the one dataset row: nothing was found, and with no operator
+    # feed nothing supports calling that an absence.
+    nothing = determine(
+        38.9000,
+        -121.4000,
+        several.stops,
+        hq_stops=[EXISTING_RAIL_STOP],
+        calendar=several.calendar,
+        coverage=several.coverage(38.9000, -121.4000, [EXISTING_RAIL_STOP]),
+    )
+    assert nothing.height_18ft == "unknown"
+    assert nothing.parking_exemption == "unknown"
+    assert "no transit feed was supplied" in nothing.summary()
+
+
+def test_a_complete_run_still_reports_a_negative(split_feeds):
+    # The complement, and the point of running it. A change that only ever
+    # reported `unknown` would satisfy every withholding test above and make
+    # the screen useless. Both operators the dataset lists near this point
+    # were supplied, so "no qualifying stop" is a finding the run can make.
+    several = load_feeds(split_feeds, as_of=FIXTURE_SERVICE_DATE)
+    remote = (38.9000, -121.4000)
+    hq = [EXISTING_RAIL_STOP]  # 30+ miles away: listed, but not near this site
+    coverage = several.coverage(*remote, hq)
+    assert coverage.completeness == COVERAGE_COMPLETE
+    assert coverage.operators_supplied == ("Alpha Transit", "Beta Transit")
+    determination = determine(
+        *remote,
+        several.stops,
+        hq_stops=hq,
+        calendar=several.calendar,
+        coverage=coverage,
+    )
+    assert determination.parking_exemption == "no"
+    assert determination.height_18ft == "no"
+    assert "complete against the statewide Caltrans list" in determination.summary()
+
+
+def test_without_a_statewide_dataset_nothing_cross_checks_the_operator_list(
+    split_feeds,
+):
+    # An absent check is not a passed one. With no dataset to compare against,
+    # "no agency is missing" is vacuous, and reading it as complete would let
+    # a one-operator run report a site-wide negative.
+    several = load_feeds(split_feeds, as_of=FIXTURE_SERVICE_DATE)
+    coverage = several.coverage(38.9000, -121.4000, None)
+    assert coverage.cross_checked is False
+    assert coverage.completeness == COVERAGE_BOUNDED
+    assert coverage.operators_listed_not_supplied == ()
+    assert "No statewide dataset was supplied" in coverage.reason()
+    determination = determine(
+        38.9000,
+        -121.4000,
+        several.stops,
+        calendar=several.calendar,
+        coverage=coverage,
+    )
+    assert determination.parking_exemption == "unknown"
+    assert determination.height_18ft == "unknown"
+
+
+def test_a_feed_that_cannot_name_itself_bounds_the_screen(tmp_path):
+    files = _subset_feed({"S1", "FAR"}, {"A", "B"}, AGENCY_ALPHA)
+    del files["agency.txt"]
+    path = _write_feed(tmp_path / "anonymous.zip", files)
+    several = load_feeds([path], as_of=FIXTURE_SERVICE_DATE)
+    coverage = several.coverage(38.9000, -121.4000, [EXISTING_RAIL_STOP])
+    assert coverage.completeness == COVERAGE_BOUNDED
+    assert coverage.feeds_without_declared_agency == ("anonymous",)
+    assert "declare no agency name" in coverage.reason()
+
+
+def test_an_operating_row_with_no_agency_name_bounds_the_screen():
+    # The statewide snapshot leaves `agency` blank on 2,283 rows. Every one of
+    # them is currently a planned row, so this case is unreachable from the
+    # committed corpus today — which is exactly why it is pinned on a fixture:
+    # a later snapshot that blanks an operating row must not have that blank
+    # counted as an operator who was supplied.
+    unnamed = HQStop(
+        lat=38.5450,
+        lon=-121.7440,
+        hqta_type="major_stop_bus",
+        details="major_stop_bus_intersection",
+        agency=" ",
+    )
+    coverage = assess_coverage(
+        *DAVIS_SITE,
+        [unnamed],
+        operators_supplied=("Unitrans",),
+        feeds_supplied=1,
+    )
+    assert coverage.unnamed_listed_stops == 1
+    assert coverage.operators_listed_not_supplied == ()
+    assert coverage.completeness == COVERAGE_BOUNDED
+    assert "name no agency" in coverage.reason()
+
+
+def test_the_committed_snapshot_blanks_an_agency_only_on_planned_rows():
+    # The premise of the test above, measured rather than assumed. If a future
+    # snapshot breaks it, the fixture case has become reachable and this test
+    # is where that shows up.
+    from permit_pathways.transit import load_hq_stops
+
+    hq = load_hq_stops(
+        Path(__file__).parent.parent / "corpus" / "transit" / "ca-hq-transit-stops.json"
+    )
+    unnamed = [s for s in hq if not s.agency.strip()]
+    assert unnamed
+    assert all(s.is_planned for s in unnamed)
+
+
+def test_operator_names_match_across_punctuation_but_never_fuzzily():
+    # A false match invents coverage the run does not have; a false miss only
+    # over-reports incompleteness. The comparison is aimed away from the first.
+    assert _normalise_operator(
+        "Capitol Corridor Joint-Powers Authority"
+    ) == _normalise_operator("capitol corridor joint powers authority")
+    assert _normalise_operator("Yolo  County  Transportation") == (
+        "yolo county transportation"
+    )
+    # An abbreviation does not fold into its expansion. That is the safe
+    # direction: it can only report the screen as more bounded than it is.
+    assert _normalise_operator("Capitol Corridor J.P.A.") == "capitol corridor j p a"
+    assert _normalise_operator("Capitol Corridor J.P.A.") != _normalise_operator(
+        "Capitol Corridor JPA"
+    )
+    assert _normalise_operator("AC Transit") != _normalise_operator(
+        "Alameda-Contra Costa Transit District"
+    )
+
+    near_miss = assess_coverage(
+        *DAVIS_SITE,
+        [
+            HQStop(
+                lat=38.5450,
+                lon=-121.7440,
+                hqta_type="major_stop_bus",
+                details="major_stop_bus_intersection",
+                agency="Unitrans Davis",
+            )
+        ],
+        operators_supplied=("Unitrans",),
+        feeds_supplied=1,
+    )
+    assert near_miss.operators_listed_not_supplied == ("Unitrans Davis",)
+    assert near_miss.completeness == COVERAGE_BOUNDED
+
+
+def test_the_three_coverage_states_are_the_published_strings():
+    # These strings are the screen's own vocabulary and reach a reader. A
+    # property test over the state machine would not notice one of them being
+    # renamed or, worse, a fourth being introduced that nothing reads.
+    assert COVERAGE_COMPLETE == "complete"
+    assert COVERAGE_BOUNDED == "bounded"
+    assert COVERAGE_UNKNOWN == "unknown"
+    assert (
+        FeedCoverage(
+            operators_supplied=(),
+            operators_listed_not_supplied=(),
+            feeds_without_declared_agency=(),
+            unnamed_listed_stops=0,
+            listed_operating_stops=0,
+            feeds_supplied=1,
+            cross_checked=True,
+            completeness=COVERAGE_COMPLETE,
+        ).supports_a_negative
+        is True
+    )
+    for state in (COVERAGE_BOUNDED, COVERAGE_UNKNOWN):
+        assert (
+            FeedCoverage(
+                operators_supplied=(),
+                operators_listed_not_supplied=(),
+                feeds_without_declared_agency=(),
+                unnamed_listed_stops=0,
+                listed_operating_stops=0,
+                feeds_supplied=1,
+                cross_checked=True,
+                completeness=state,
+            ).supports_a_negative
+            is False
+        )
+
+
+# --- Feeds that disagree about the date ---------------------------------
+
+
+def test_one_unreadable_feed_does_not_erase_another_feeds_measurement(
+    split_feeds, tmp_path
+):
+    # Alpha resolves for the date; Beta ships no calendar at all. The old
+    # single-calendar gate was global, so one unreadable feed would have
+    # discarded every stop including the ones that were measured.
+    beta_files = _subset_feed({"S2"}, {"C"}, AGENCY_BETA)
+    del beta_files["calendar.txt"]
+    broken_beta = _write_feed(tmp_path / "beta-nocal.zip", beta_files)
+    several = load_feeds([split_feeds[0], broken_beta], as_of=FIXTURE_SERVICE_DATE)
+
+    by_feed = {s.feed: s for s in several.stops}
+    assert by_feed["alpha"].headways_measured is True
+    assert by_feed["beta-nocal"].headways_measured is False
+    assert several.calendar.headways_measurable is True
+    assert several.calendar.supports_a_negative is False
+    assert several.calendar.status == "mixed"
+
+    # Alpha's route A is still measured at ~10-minute peaks, so the corridor
+    # candidate it establishes survives.
+    determination = determine(
+        38.5452, -121.7401, several.stops, calendar=several.calendar
+    )
+    assert determination.height_18ft == "candidate"
+    assert "high-quality transit corridor" in determination.qualifying_stops[0][2]
+
+
+def test_an_unreadable_feeds_stops_are_not_read_as_absent_service(
+    split_feeds, tmp_path
+):
+    # The other half: Beta's stop is present and has no headways, and that
+    # blank must not be counted as "this corner has no qualifying service".
+    beta_files = _subset_feed({"S2"}, {"C"}, AGENCY_BETA)
+    del beta_files["calendar.txt"]
+    broken_beta = _write_feed(tmp_path / "beta-nocal.zip", beta_files)
+    only_beta = load_feeds([broken_beta], as_of=FIXTURE_SERVICE_DATE)
+    determination = determine(
+        38.5452, -121.7401, only_beta.stops, calendar=only_beta.calendar
+    )
+    assert determination.height_18ft == "unknown"
+    assert determination.parking_exemption == "unknown"
+    assert "beta-nocal: " in determination.summary()
+    assert "neither calendar.txt nor calendar_dates.txt" in determination.summary()
+
+
+def test_a_multi_feed_screen_names_each_feeds_service_ids_apart(split_feeds):
+    several = load_feeds(split_feeds, as_of=FIXTURE_SERVICE_DATE)
+    assert several.calendar.service_ids_active == ("alpha:WK", "beta:WK")
+    assert several.calendar.service_date == "2026-06-15"
+    assert several.calendar.status == "resolved"
+
+
+def test_an_unreadable_feeds_stop_next_door_is_not_public_transit_near_the_site(
+    tmp_path,
+):
+    # § 66322(a)(1) turns on transit near the site, and a stop in a feed whose
+    # calendar could not be resolved is a location, not service anyone can
+    # catch that day. Written as a control for the per-stop measurability
+    # gate: with one feed resolved and another not, a global gate would either
+    # count this stop (reporting a candidate on an unread feed) or discard the
+    # resolved feed's stops with it.
+    next_door = _subset_feed({"S2"}, {"C"}, AGENCY_BETA)
+    del next_door["calendar.txt"]
+    unreadable = _write_feed(tmp_path / "next-door.zip", next_door)
+    far_away = _write_feed(
+        tmp_path / "far.zip", _subset_feed({"FAR"}, {"B"}, AGENCY_ALPHA)
+    )
+    several = load_feeds([unreadable, far_away], as_of=FIXTURE_SERVICE_DATE)
+
+    by_feed = {s.feed: s for s in several.stops}
+    assert by_feed["next-door"].headways_measured is False
+    assert by_feed["far"].headways_measured is True
+    # The unreadable feed's stop is ~0.04 mi away; the readable feed's is ~5.
+    assert haversine_miles(38.5452, -121.7401, *(38.5455, -121.7402)) < 0.1
+
+    determination = determine(
+        38.5452, -121.7401, several.stops, calendar=several.calendar
+    )
+    assert determination.parking_exemption == "unknown"
+    assert determination.height_18ft == "unknown"
