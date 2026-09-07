@@ -1280,3 +1280,154 @@ def test_an_unreadable_feeds_stop_next_door_is_not_public_transit_near_the_site(
     )
     assert determination.parking_exemption == "unknown"
     assert determination.height_18ft == "unknown"
+
+
+# --- Walking distance is reported beside the straight line, never instead --
+
+
+def _pedestrian_point(east_m: float, north_m: float) -> tuple[float, float]:
+    import math
+
+    from permit_pathways.pedestrian import EARTH_RADIUS_M
+
+    lat0, lon0 = 38.5400, -121.7400
+    per_deg_lat = math.pi * EARTH_RADIUS_M / 180.0
+    per_deg_lon = per_deg_lat * math.cos(math.radians(lat0))
+    return (lat0 + north_m / per_deg_lat, lon0 + east_m / per_deg_lon)
+
+
+PEDESTRIAN_FIXTURES = (
+    Path(__file__).resolve().parents[1] / "tests" / "fixtures" / ("pedestrian")
+)
+
+
+def _barrier_network(name: str = "barrier.osm"):
+    from permit_pathways.pedestrian import load_network
+
+    return load_network(PEDESTRIAN_FIXTURES / name)
+
+
+def _stop_at(point: tuple[float, float], *, stop_id: str = "s1") -> StopService:
+    return StopService(stop_id=stop_id, name="Depot", lat=point[0], lon=point[1])
+
+
+def test_without_a_network_the_run_is_straight_line_only_and_says_nothing_else() -> (
+    None
+):
+    site = _pedestrian_point(0, 0)
+    result = determine(site[0], site[1], [_stop_at(_pedestrian_point(0, 300))])
+    assert result.walking == ()
+    assert result.network is None
+    summary = result.summary()
+    assert "Walking distance over" not in summary
+    assert "walking distance withheld" not in summary
+    # The straight-line caveat that was already there is unchanged.
+    assert "confirm walking distance." in summary
+
+
+def test_a_barrier_makes_the_walk_1400_m_for_a_300_m_straight_line() -> None:
+    site = _pedestrian_point(0, 0)
+    result = determine(
+        site[0],
+        site[1],
+        [_stop_at(_pedestrian_point(0, 300))],
+        network=_barrier_network(),
+    )
+    assert [walk.walking_status for walk in result.walking] == ["measured"]
+    walk = result.walking[0]
+    assert round(walk.straight_line_m) == 300
+    assert round(walk.walking_m or 0) == 1400
+    summary = result.summary()
+    assert "300 m straight-line, 1400 m walking" in summary
+    # The verdict is still the straight-line one. Which distance a
+    # jurisdiction applies is not this tool's call, and the summary says so.
+    assert result.parking_exemption == "candidate"
+    assert "the verdicts above stay straight-line" in summary
+
+
+def test_removing_the_barrier_makes_the_reported_distances_agree() -> None:
+    site = _pedestrian_point(0, 0)
+    result = determine(
+        site[0],
+        site[1],
+        [_stop_at(_pedestrian_point(0, 300))],
+        network=_barrier_network("no-barrier.osm"),
+    )
+    walk = result.walking[0]
+    assert round(walk.walking_m or 0) == round(walk.straight_line_m) == 300
+
+
+def test_a_stop_the_extract_cannot_reach_is_named_not_given_a_number() -> None:
+    site = _pedestrian_point(0, 0)
+    result = determine(
+        site[0],
+        site[1],
+        [
+            _stop_at(_pedestrian_point(0, 300), stop_id="reachable"),
+            _stop_at(_pedestrian_point(320, 60), stop_id="orphan"),
+        ],
+        network=_barrier_network(),
+    )
+    by_id = {walk.stop_id: walk for walk in result.walking}
+    assert by_id["orphan"].walking_status == "disconnected"
+    assert by_id["orphan"].walking_m is None
+    assert by_id["orphan"].to_dict()["walking_m"] is None
+    assert "walking distance withheld (disconnected)" in result.summary()
+
+
+def test_the_network_provenance_travels_with_the_result() -> None:
+    site = _pedestrian_point(0, 0)
+    result = determine(
+        site[0],
+        site[1],
+        [_stop_at(_pedestrian_point(0, 300))],
+        network=_barrier_network(),
+    )
+    assert result.network is not None
+    assert result.network["source"] == "barrier.osm"
+    assert result.network["sha256"].startswith("sha256:")
+    assert "Walking distance over barrier.osm (sha256:" in result.summary()
+
+
+def test_a_network_with_no_stop_in_range_says_so_rather_than_reporting_nothing() -> (
+    None
+):
+    site = _pedestrian_point(0, 0)
+    # The only stop is a mile away, outside the half-mile straight-line radius.
+    result = determine(
+        site[0],
+        site[1],
+        [_stop_at((38.6200, -121.7400))],
+        network=_barrier_network(),
+    )
+    assert result.walking == ()
+    assert "No stop inside the straight-line radius" in result.summary()
+
+
+def test_the_default_screening_path_never_imports_the_network_module() -> None:
+    """A screening run that supplies no extract must not pay for one.
+
+    The import is inside `_walking_distances` and inside `main`'s flag branch,
+    so a plain `import permit_pathways.transit` leaves the network module
+    unloaded. This is checked in a fresh interpreter because the rest of this
+    suite has already imported it.
+    """
+    import subprocess  # nosec B404
+    import sys
+
+    root = Path(__file__).resolve().parents[1]
+    completed = subprocess.run(  # nosec B603
+        [
+            sys.executable,
+            "-c",
+            "import sys; sys.path.insert(0, 'src');"
+            "import permit_pathways.transit;"
+            "print('permit_pathways.pedestrian' in sys.modules)",
+        ],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=True,
+        env={"PATH": "/usr/bin:/bin"},
+    )
+    assert completed.stdout.strip() == "False"

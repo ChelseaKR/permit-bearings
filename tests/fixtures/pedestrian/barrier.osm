@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Barrier case. Site at node 1, stop at node 4, 300 m apart in a straight line. Way 104 is a freeway ramp mis-tagged foot=yes and way 105 is a service road signed foot=no, so neither is walkable and the walk goes 550 m east, 300 m across and 550 m back west: 1400 m. Way 106 is an orphan path inside the bounds, joined to nothing. -->
+<osm version="0.6" generator="permit-bearings test fixture">
+  <bounds minlat="38.5396403" minlon="-121.7404599" maxlat="38.5430577" maxlon="-121.7332164"/>
+  <node id="1" lat="38.5400000" lon="-121.7400000"/>
+  <node id="2" lat="38.5400000" lon="-121.7336763"/>
+  <node id="3" lat="38.5426980" lon="-121.7336763"/>
+  <node id="4" lat="38.5426980" lon="-121.7400000"/>
+  <node id="10" lat="38.5405396" lon="-121.7365507"/>
+  <node id="11" lat="38.5405396" lon="-121.7360908"/>
+  <way id="101">
+    <nd ref="1"/>
+    <nd ref="2"/>
+    <tag k="highway" v="footway"/>
+    <tag k="name" v="South sidewalk"/>
+  </way>
+  <way id="102">
+    <nd ref="2"/>
+    <nd ref="3"/>
+    <tag k="highway" v="footway"/>
+    <tag k="name" v="East crossing"/>
+  </way>
+  <way id="103">
+    <nd ref="3"/>
+    <nd ref="4"/>
+    <tag k="highway" v="footway"/>
+    <tag k="name" v="North sidewalk"/>
+  </way>
+  <way id="104">
+    <nd ref="1"/>
+    <nd ref="4"/>
+    <tag k="highway" v="motorway_link"/>
+    <tag k="foot" v="yes"/>
+    <tag k="name" v="Freeway ramp"/>
+  </way>
+  <way id="105">
+    <nd ref="1"/>
+    <nd ref="4"/>
+    <tag k="highway" v="residential"/>
+    <tag k="foot" v="no"/>
+    <tag k="name" v="Service road"/>
+  </way>
+  <way id="106">
+    <nd ref="10"/>
+    <nd ref="11"/>
+    <tag k="highway" v="footway"/>
+    <tag k="name" v="Orphan path"/>
+  </way>
+</osm>

@@ -19,8 +19,17 @@ Honesty model. Distances here are straight-line (haversine). Walking
 distance is never shorter than straight-line, so a supplied stop farther than
 the threshold can be eliminated. That does not prove every relevant operator,
 stop, or service record is present. A stop within the threshold is a
-CANDIDATE "yes" pending a walking-network check (production deployments
-should confirm with a router). Headways are measured within the peak windows
+CANDIDATE "yes" pending a walking-network check.
+
+That check is now available offline, and it does not change a verdict.
+Supplying a pedestrian network (`--pedestrian-network`, see
+`pedestrian.py` and ADR 0007) measures the walking distance to each stop
+within the straight-line radius and reports it *beside* the straight line.
+Which of the two distances a jurisdiction applies is not this module's call,
+so both are printed and the verdicts stay straight-line. A stop the network
+cannot measure — outside the extract, too far from any walkable node, or in
+a component the site cannot reach — is reported with that reason and no
+number, never with the straight line standing in for it. Headways are measured within the peak windows
 6-9 AM and 4-7 PM, using the maximum gap between consecutive trips - a
 screening approximation of the statutes' "service interval" language, and
 only as current and complete as the supplied feed.
@@ -114,6 +123,10 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from .pedestrian import PedestrianNetwork
 
 HALF_MILE = 0.5
 HQTC_MAX_GAP_MIN = 15  # PRC § 21155(b)
@@ -1040,6 +1053,32 @@ def assess_coverage(
 
 
 @dataclass(frozen=True)
+class StopWalk:
+    """One stop's two distances, or the reason there is only one.
+
+    ``walking_m`` is ``None`` for every status but ``measured``, and the
+    status says which reason applies. Nothing here ever fills ``walking_m``
+    from ``straight_line_m``: that substitution is the exact error the
+    walking check exists to catch.
+    """
+
+    stop_id: str
+    name: str
+    straight_line_m: float
+    walking_m: float | None
+    walking_status: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "stop_id": self.stop_id,
+            "name": self.name,
+            "straight_line_m": round(self.straight_line_m, 1),
+            "walking_m": None if self.walking_m is None else round(self.walking_m, 1),
+            "walking_status": self.walking_status,
+        }
+
+
+@dataclass(frozen=True)
 class Determination:
     nearest_stop: StopService | None
     nearest_miles: float | None
@@ -1055,6 +1094,13 @@ class Determination:
     #: Which operators this screen actually covered. ``None`` means the caller
     #: did not state what it supplied, so no coverage claim is made either way.
     coverage: FeedCoverage | None = None
+    #: Walking distances to the stops inside the straight-line radius, when a
+    #: pedestrian network was supplied. Empty means none was: the run is
+    #: straight-line only and says so, rather than reporting zero walks.
+    walking: tuple[StopWalk, ...] = ()
+    #: The extract those walks came from — name, SHA-256, bounds — so a metre
+    #: count can be traced to a file. ``None`` with no network.
+    network: dict[str, Any] | None = None
 
     def summary(self) -> str:
         lines = []
@@ -1113,12 +1159,51 @@ class Determination:
             lines.append(self._planned_stop_note())
         if self.coverage is not None:
             lines.append(self.coverage.reason())
+        if self.network is not None:
+            lines.append(self._walking_note())
         lines.append(
             "Screening result from GTFS peak headways on the stated service date; "
             "straight-line distance can eliminate a supplied stop but cannot prove "
             "dataset completeness. Not a legal determination."
         )
         return "\n".join(lines)
+
+    def _walking_note(self) -> str:
+        """Both distances per stop, and the reason wherever there is one.
+
+        Printed only when a network was supplied. Without one this block is
+        absent and the run reads exactly as it did before, which is the point:
+        a straight-line-only run must not start implying it checked a walk.
+        """
+        network = self.network or {}
+        bounds = network["bounds"]
+        header = (
+            f"Walking distance over {network['source']} "
+            f"({network['sha256'][:19]}…, {network['nodes']} walkable "
+            f"nodes, bounds {bounds['min_lat']:.5f},{bounds['min_lon']:.5f} to "
+            f"{bounds['max_lat']:.5f},{bounds['max_lon']:.5f}). Reported beside "
+            "the straight line, never in place of it; the verdicts above stay "
+            "straight-line, because which distance a jurisdiction applies is "
+            "not this tool's call."
+        )
+        if not self.walking:
+            return (
+                f"{header}\n  No stop inside the straight-line radius, so no "
+                "walk was measured."
+            )
+        rows = []
+        for walk in self.walking:
+            if walk.walking_m is None:
+                rows.append(
+                    f"  {walk.name}: {walk.straight_line_m:.0f} m straight-line; "
+                    f"walking distance withheld ({walk.walking_status})"
+                )
+            else:
+                rows.append(
+                    f"  {walk.name}: {walk.straight_line_m:.0f} m straight-line, "
+                    f"{walk.walking_m:.0f} m walking"
+                )
+        return "\n".join([header, *rows])
 
     def _withheld_because(self) -> str:
         """Name the reason a screen is `unknown`, rather than assuming one.
@@ -1183,6 +1268,8 @@ def determine(
     *,
     calendar: ServiceCalendar | FeedCalendars | None = None,
     coverage: FeedCoverage | None = None,
+    network: PedestrianNetwork | None = None,
+    snap_max_m: float | None = None,
 ) -> Determination:
     """Screen a point against feed stops and the statewide dataset.
 
@@ -1197,6 +1284,13 @@ def determine(
     stop among the operators someone happened to supply" is not the finding
     "no qualifying stop". Left ``None``, the caller has stated nothing about
     operator coverage and none is claimed or enforced.
+
+    ``network``, when supplied, measures the walking distance to every stop
+    inside the straight-line radius and reports it alongside. It changes no
+    verdict: both standards are written in walking distance, but which of the
+    two numbers a jurisdiction applies to a given screen is a judgement this
+    module does not make. Left ``None``, the result carries no walking fields
+    at all rather than empty ones.
     """
     # `calendar is None` means no feed calendar constrains this screen, which
     # is the shape of a statewide-dataset-only call.
@@ -1207,7 +1301,14 @@ def determine(
     if not stops and not hq_stops:
         verdict = _verdict(False, feed_answers)
         return Determination(
-            None, None, verdict, verdict, [], calendar=calendar, coverage=coverage
+            None,
+            None,
+            verdict,
+            verdict,
+            [],
+            calendar=calendar,
+            coverage=coverage,
+            network=None if network is None else network.provenance(),
         )
     with_dist = sorted(
         ((s, haversine_miles(lat, lon, s.lat, s.lon)) for s in stops),
@@ -1292,6 +1393,71 @@ def determine(
         planned_major_stops=planned_within,
         calendar=calendar,
         coverage=coverage,
+        walking=(
+            ()
+            if network is None
+            else _walking_distances(
+                lat, lon, with_dist, hq_within, planned_within, network, snap_max_m
+            )
+        ),
+        network=None if network is None else network.provenance(),
+    )
+
+
+def _walking_distances(
+    lat: float,
+    lon: float,
+    with_dist: list[tuple[StopService, float]],
+    hq_within: list[tuple[HQStop, float]],
+    planned_within: list[tuple[HQStop, float]],
+    network: PedestrianNetwork,
+    snap_max_m: float | None,
+) -> tuple[StopWalk, ...]:
+    """Walk to every stop inside the straight-line radius, in distance order.
+
+    Planned dataset rows are included. They establish nothing, but a reader
+    told to ask the agency about a planned facility is better served knowing
+    it is a mile and a half on foot than not.
+    """
+    from .pedestrian import DEFAULT_SNAP_MAX_M
+
+    targets: list[tuple[str, str, float, float, float]] = [
+        (stop.stop_id, stop.name, miles, stop.lat, stop.lon)
+        for stop, miles in with_dist
+        if miles <= HALF_MILE
+    ]
+    targets += [
+        (f"hq:{hq.hqta_type}", f"{hq.agency} ({hq.hqta_type})", miles, hq.lat, hq.lon)
+        for hq, miles in hq_within
+    ]
+    targets += [
+        (
+            f"hq-planned:{hq.hqta_type}",
+            f"{hq.agency} ({hq.hqta_type}, planned)",
+            miles,
+            hq.lat,
+            hq.lon,
+        )
+        for hq, miles in planned_within
+    ]
+    targets.sort(key=lambda row: (row[2], row[0]))
+    if not targets:
+        return ()
+    results = network.walk_many(
+        lat,
+        lon,
+        [(row[3], row[4]) for row in targets],
+        snap_max_m=DEFAULT_SNAP_MAX_M if snap_max_m is None else snap_max_m,
+    )
+    return tuple(
+        StopWalk(
+            stop_id=row[0],
+            name=row[1],
+            straight_line_m=result.straight_line_m,
+            walking_m=result.walking_m,
+            walking_status=result.walking_status,
+        )
+        for row, result in zip(targets, results, strict=True)
     )
 
 
@@ -1336,7 +1502,37 @@ def main() -> int:
     parser.add_argument(
         "--hq-stops", type=Path, default=default_hq if default_hq.exists() else None
     )
+    parser.add_argument(
+        "--pedestrian-network",
+        type=Path,
+        default=None,
+        metavar="EXTRACT",
+        help=(
+            "An offline pedestrian network: an OSM XML extract (.osm, .osm.gz, "
+            ".osm.bz2) or a pre-built graph (.json). Supplying one reports the "
+            "walking distance to each stop beside the straight line. It changes "
+            "no verdict. Without it the run is straight-line only and says so."
+        ),
+    )
+    parser.add_argument(
+        "--snap-max-meters",
+        type=float,
+        default=None,
+        metavar="METRES",
+        help=(
+            "How far a site or stop may sit from the nearest walkable node "
+            "before the walking distance is withheld as `snap_too_far` "
+            "(default 100). Raising it does not improve the measurement; it "
+            "attaches points to paths that may not serve them."
+        ),
+    )
     args = parser.parse_args()
+
+    network = None
+    if args.pedestrian_network is not None:
+        from .pedestrian import load_network
+
+        network = load_network(args.pedestrian_network)
 
     screen = load_feeds(list(args.gtfs), as_of=args.as_of)
     stops = screen.stops
@@ -1370,6 +1566,8 @@ def main() -> int:
             hq_stops=hq,
             calendar=screen.calendar,
             coverage=coverage,
+            network=network,
+            snap_max_m=args.snap_max_meters,
         ).summary()
     )
     return 0

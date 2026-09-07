@@ -854,8 +854,44 @@ Run against the bundled summer Unitrans (Davis) feed on 2026-08-04, no local
 bus stops meet the encoded ≤15/≤20-minute peak screens. The separate statewide
 high-quality transit dataset supplies the Davis Amtrak major-stop candidate
 near the depot. That disagreement is the useful finding: a local feed alone is
-incomplete, and multiple operators and walking distance still need explicit
-confirmation before applicant-facing use.
+incomplete, and multiple operators still need explicit confirmation before
+applicant-facing use.
+
+**Walking distance, measured offline, beside the straight line.** Both
+standards are written in *walking* distance, and a stop across a freeway or a
+creek is a quarter mile as the crow flies and a mile and a half on foot — so
+the straight line is optimistic in exactly the direction that matters.
+`--pedestrian-network` takes an OpenStreetMap extract (`.osm`, `.osm.gz`,
+`.osm.bz2`) or a pre-built graph (`.json`) and measures the walk to every stop
+inside the radius:
+
+```sh
+PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zip \
+  --lat 38.5449 --lon -121.7442 --as-of 2026-08-04 \
+  --pedestrian-network davis.osm
+```
+
+Nothing is fetched: the extract is a file, the graph rules are recorded in
+`docs/adr/0007-walkable-graph-rules.md`, and the extract's SHA-256 and bounds
+travel with the result. It uses no third-party package — the reader is the
+standard library's `iterparse` — so there is nothing to install; PBF is
+deliberately unsupported (`osmium cat -o area.osm area.osm.pbf` converts it).
+
+**It changes no verdict, and it never guesses.** The parking and height
+verdicts stay straight-line, because which of the two distances a jurisdiction
+applies to a given screen is a legal judgement this tool does not make. Three
+states carry no number at all, by name:
+
+| state | meaning |
+| --- | --- |
+| `not_in_extract` | the site or the stop is outside the extract's bounds |
+| `snap_too_far` | the nearest walkable node is beyond the snap limit (default 100 m) |
+| `disconnected` | both points snapped and no walkable route joins them *in this extract* |
+
+None of them is filled in from the straight line, and a clipped extract makes
+the last two common near its edge, so neither is evidence against a stop.
+Without `--pedestrian-network` the run is straight-line only and prints no
+walking block at all.
 
 **A headway is a fact about a date.** `--as-of` is required for any headway
 conclusion, and there is deliberately no default to today, so a recorded run

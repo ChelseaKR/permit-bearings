@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The same extract with the barrier removed: way 104 is a footbridge rather than a freeway ramp, so the walk is the straight line, 300 m. Way 105 is still signed foot=no and way 106 is still an orphan. -->
+<osm version="0.6" generator="permit-bearings test fixture">
+  <bounds minlat="38.5396403" minlon="-121.7404599" maxlat="38.5430577" maxlon="-121.7332164"/>
+  <node id="1" lat="38.5400000" lon="-121.7400000"/>
+  <node id="2" lat="38.5400000" lon="-121.7336763"/>
+  <node id="3" lat="38.5426980" lon="-121.7336763"/>
+  <node id="4" lat="38.5426980" lon="-121.7400000"/>
+  <node id="10" lat="38.5405396" lon="-121.7365507"/>
+  <node id="11" lat="38.5405396" lon="-121.7360908"/>
+  <way id="101">
+    <nd ref="1"/>
+    <nd ref="2"/>
+    <tag k="highway" v="footway"/>
+    <tag k="name" v="South sidewalk"/>
+  </way>
+  <way id="102">
+    <nd ref="2"/>
+    <nd ref="3"/>
+    <tag k="highway" v="footway"/>
+    <tag k="name" v="East crossing"/>
+  </way>
+  <way id="103">
+    <nd ref="3"/>
+    <nd ref="4"/>
+    <tag k="highway" v="footway"/>
+    <tag k="name" v="North sidewalk"/>
+  </way>
+  <way id="104">
+    <nd ref="1"/>
+    <nd ref="4"/>
+    <tag k="highway" v="footway"/>
+    <tag k="foot" v="yes"/>
+    <tag k="name" v="Footbridge"/>
+  </way>
+  <way id="105">
+    <nd ref="1"/>
+    <nd ref="4"/>
+    <tag k="highway" v="residential"/>
+    <tag k="foot" v="no"/>
+    <tag k="name" v="Service road"/>
+  </way>
+  <way id="106">
+    <nd ref="10"/>
+    <nd ref="11"/>
+    <tag k="highway" v="footway"/>
+    <tag k="name" v="Orphan path"/>
+  </way>
+</osm>
