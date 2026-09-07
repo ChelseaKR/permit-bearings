@@ -1250,3 +1250,33 @@ def test_a_multi_feed_screen_names_each_feeds_service_ids_apart(split_feeds):
     assert several.calendar.service_ids_active == ("alpha:WK", "beta:WK")
     assert several.calendar.service_date == "2026-06-15"
     assert several.calendar.status == "resolved"
+
+
+def test_an_unreadable_feeds_stop_next_door_is_not_public_transit_near_the_site(
+    tmp_path,
+):
+    # § 66322(a)(1) turns on transit near the site, and a stop in a feed whose
+    # calendar could not be resolved is a location, not service anyone can
+    # catch that day. Written as a control for the per-stop measurability
+    # gate: with one feed resolved and another not, a global gate would either
+    # count this stop (reporting a candidate on an unread feed) or discard the
+    # resolved feed's stops with it.
+    next_door = _subset_feed({"S2"}, {"C"}, AGENCY_BETA)
+    del next_door["calendar.txt"]
+    unreadable = _write_feed(tmp_path / "next-door.zip", next_door)
+    far_away = _write_feed(
+        tmp_path / "far.zip", _subset_feed({"FAR"}, {"B"}, AGENCY_ALPHA)
+    )
+    several = load_feeds([unreadable, far_away], as_of=FIXTURE_SERVICE_DATE)
+
+    by_feed = {s.feed: s for s in several.stops}
+    assert by_feed["next-door"].headways_measured is False
+    assert by_feed["far"].headways_measured is True
+    # The unreadable feed's stop is ~0.04 mi away; the readable feed's is ~5.
+    assert haversine_miles(38.5452, -121.7401, *(38.5455, -121.7402)) < 0.1
+
+    determination = determine(
+        38.5452, -121.7401, several.stops, calendar=several.calendar
+    )
+    assert determination.parking_exemption == "unknown"
+    assert determination.height_18ft == "unknown"
