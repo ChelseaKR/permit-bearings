@@ -7,6 +7,48 @@ published a versioned release.
 
 ### Added
 
+- **Walking distance over an offline pedestrian network, reported beside the
+  straight line.** Both transit standards are written in walking distance
+  (§ 66322(a)(1): "within one-half mile walking distance of public transit")
+  and `transit.py` measured a straight line, which the README described as
+  able to eliminate a stop but not establish one. That asymmetry is
+  systematic, not incidental: a stop across a freeway or a creek is a quarter
+  mile as the crow flies and a mile and a half on foot, so the straight-line
+  answer errs in the direction that matters (issue #134).
+  - `permit_pathways.pedestrian` builds a walkable graph from an OSM XML
+    extract (`.osm`, `.osm.gz`, `.osm.bz2`) or a pre-built graph (`.json`)
+    and measures the shortest walk. `transit.py --pedestrian-network` reports
+    it per stop, `--snap-max-meters` sets the snap limit. Nothing is fetched
+    and no routing service is called.
+  - **No third-party package, and therefore no optional extra.** The reader is
+    the standard library's `iterparse` and the search is `heapq`, so there is
+    nothing to install and nothing new in the lockfile. A test proves the
+    default screening path never imports the module. PBF is deliberately
+    unsupported and says so by name rather than failing on binary; `osmium cat`
+    converts it in one command.
+  - **The graph rules are written down, in ADR 0007**, not inferred at read
+    time. `motorway`, `trunk`, `construction`, `proposed`, `raceway` and
+    `bus_guideway` are never walkable *whatever else they are tagged* — a
+    `foot=yes` on a motorway is a mapped shoulder, not a footpath — and
+    `foot=no` or `access=private` removes an otherwise walkable way. Edges are
+    undirected: `oneway` restricts vehicles.
+  - **Three states carry no number, by name:** `not_in_extract`,
+    `snap_too_far`, `disconnected`. None is ever filled in from the straight
+    line, which is the substitution the check exists to prevent, and a clipped
+    extract makes the last two common near its edge, so neither is treated as
+    evidence against a stop.
+  - **It changes no verdict.** Parking and height stay straight-line, because
+    which distance a jurisdiction applies to a given screen is a legal
+    judgement this tool does not make; the summary says so where it prints the
+    numbers. Without the flag the run is straight-line only and prints no
+    walking block at all.
+  - Two committed OSM fixtures differ in exactly one tag — way 104 is a
+    freeway ramp in one and a footbridge in the other — so the barrier case
+    measures 300 m straight-line and 1,400 m walking, and removing the barrier
+    makes them agree. A test asserts the two files differ *only* in that tag,
+    so the comparison cannot quietly start proving something else. The
+    extract's SHA-256 and bounds travel with every result.
+
 - **A what-if explorer: which rules and routes change when one answer
   changes.** `permit_pathways.what_if` re-runs the deterministic matcher once
   per allowed value of one material fact at a time and reports the rule and

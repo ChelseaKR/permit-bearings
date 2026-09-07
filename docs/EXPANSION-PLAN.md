@@ -96,10 +96,18 @@ routing dependency, only the admission that the previous answer — the busiest
 service_id in the file, whatever day it ran — was a measurement of nothing in
 particular.
 
-**Remaining in this class, not built:** two of the corrections risk 5 names.
-Multi-operator feed completeness and walking-network confirmation. Each needs
-a routing dependency or a second dataset that this phase deliberately did not
-introduce.
+**Walking-network confirmation is now built**, and it needed no routing
+dependency after all. `pedestrian.py` measures the walk over an OSM extract
+the operator supplies as a file, with the graph rules recorded in ADR 0007;
+`transit.py --pedestrian-network` reports it beside the straight line. It
+changes no verdict, because which of the two distances a jurisdiction applies
+is not this tool's judgement. A stop the extract cannot measure is reported
+with the reason — outside the extract, too far from any path, or in a
+component the site cannot reach — and never with the straight line standing
+in for it.
+
+**Remaining in this class, not built:** multi-operator feed completeness,
+which needs a second dataset this phase deliberately did not introduce.
 
 ### Phase 2: make the gate's scope equal its wording
 
