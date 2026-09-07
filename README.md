@@ -157,6 +157,8 @@ PYTHONPATH=src python3 -m permit_pathways.transit --gtfs corpus/gtfs/unitrans.zi
   --lat 38.5449 --lon -121.7442 --as-of 2026-08-04   # --as-of is required for any headway
 PYTHONPATH=src python3 -m permit_pathways.screening --facts facts.json \
   --jurisdiction davis --format json                 # screen one intake (see "For integrators")
+PYTHONPATH=src python3 -m permit_pathways.what_if --facts facts.json \
+  --jurisdiction davis                               # what each other answer would change
 PYTHONPATH=src python3 -m permit_pathways.conformance <ordinance.txt>  # scan
 python3 scripts/scan_ordinances.py --check         # published scan results vs. checks.json
 PYTHONPATH=src python3 -m permit_pathways.conformance_evaluation_cli validate-plan
@@ -335,6 +337,47 @@ computed inside — see [`schemas/result.schema.json`](schemas/result.schema.jso
 There is no ranking field, and the schema is closed, so one cannot be added
 without failing a test. Order is the rule set's, not a preference.
 
+### What each other answer would change
+
+The matcher is a pure function, so "what if the lot were in a single-family
+zone" is computable rather than a judgement call:
+
+```sh
+PYTHONPATH=src python3 -m permit_pathways.what_if \
+  --facts facts.json --jurisdiction woodland --format json
+```
+
+It re-runs the same rule set once per allowed value of one material fact at a
+time and reports the rule and route delta, each rule with its citation.
+Unknown answers are explored too, so "needs staff review" becomes "here is
+what each answer would mean". It ranks nothing, recommends nothing, and
+changes nothing about the project: facts come in the form's order and values
+in the order the vocabulary declares them.
+
+The same three states the screening envelope protects are protected here:
+
+- A branch that still leaves a material fact unanswered reports
+  `needs_staff_review` and an empty `candidate_routes` — including the case
+  where answering "unknown" matches exactly the same rules, so a reader of
+  rule deltas alone would conclude that not answering costs nothing. It costs
+  the route.
+- A fact every rule reads the same way is reported as
+  `no_rule_reads_this_differently`, not dropped. Omitting it would leave a
+  reader to guess whether it had been checked.
+- A fact read by a rule whose source the snapshot records as **changed since
+  it was last reviewed** gets `null` deltas, never `[]`, plus the ids of the
+  held rules. An empty delta reads as "changing this answer changes nothing",
+  and that is a finding about the rule set which a held rule set cannot
+  support.
+
+Exit codes are the screening command's, for the same reason: a what-if over an
+intake that still has an unanswered material fact exits `1`.
+
+`whatIfDeltas` in [`assets/demo.js`](assets/demo.js) is the browser port of the
+same function, and `tests/test_what_if_browser_parity.py` runs the shipped
+port under Node against every Golden case, with and without a source hold, and
+requires identical output.
+
 ### Keeping the schemas honest
 
 The schemas are generated from the Python definitions
@@ -360,7 +403,7 @@ still needs a person.
 | Standard | State and evidence |
 |---|---|
 | Responsible-Tech Framework | Applies — Product, privacy, source, AI-use, accessibility, and unresolved-review boundaries are recorded in `docs/PRODUCT-CONTEXT.md`, `docs/DESIGN.md`, `PROVENANCE.md`, and `docs/ACCESSIBILITY.md`. |
-| Code Quality | Applies — Python 3.12 and development dependencies are locked; Ruff, strict mypy, branch coverage, generated-data parity, and 29 golden cases run through `make verify`. Two separate coverage numbers, because they measure different things: **85% branch coverage of the `permit_pathways` package**, and **20% line / 17% function coverage of `assets/demo.js`**, the 5,255-line browser runtime that carries the second implementation of the rule logic. The browser floor is a ratchet on a file that had no coverage gate at all before; it is not equivalent to the Python figure and is not presented as one. Ruff, strict mypy, and Bandit now cover `src`, `tests`, `scripts`, and `demo` rather than `src` alone, and `make verify` refuses to run without Node instead of silently skipping the eight cross-runtime contract tests. Ruff enforces complexity 10 across the Python codebase; the former `WVR-007` loader/evaluator waiver has been retired. |
+| Code Quality | Applies — Python 3.12 and development dependencies are locked; Ruff, strict mypy, branch coverage, generated-data parity, and 29 golden cases run through `make verify`. Two separate coverage numbers, because they measure different things: **85% branch coverage of the `permit_pathways` package**, and **20% line / 17% function coverage of `assets/demo.js`**, the browser runtime that carries the second implementation of the rule logic (over five thousand lines). The browser floor is a ratchet on a file that had no coverage gate at all before; it is not equivalent to the Python figure and is not presented as one. Ruff, strict mypy, and Bandit now cover `src`, `tests`, `scripts`, and `demo` rather than `src` alone, and `make verify` refuses to run without Node instead of silently skipping the cross-runtime contract tests. Ruff enforces complexity 10 across the Python codebase; the former `WVR-007` loader/evaluator waiver has been retired. |
 | Security & Supply-Chain | Applies — Event-armed CodeQL, Bandit, pip-audit, gitleaks, zizmor, Dependabot, and Scorecard; all workflow actions are pinned to full commit SHAs and use scoped token permissions. |
 | CI/CD | Applies — Pull requests and default-branch pushes run Python, browser, security, and source-integrity gates. GitHub Pages deploys the default branch after merge. Two properties of the `Standards` workflow belong next to this row rather than in a commit message. It is a required check that fetches a **private** repository through a deploy key, and GitHub never passes secrets to a fork run, so a pull request from a fork cannot make it pass; that is a known cost of grading against a private baseline, not a defect to work around. And its pin is a commit rather than a released tag on purpose: `v2.0.0` keys this repository as `permit-pathways`, the checker resolves the entry by checkout basename, and after the GitHub rename that entry no longer matches, so pinning to the tag would fall to the `restricted` publication default and fail the check on an unchanged repository. That PR merged on 2026-09-06, so the pin is now the merge commit on the standards default branch rather than a commit on a PR branch that deletion would make unreachable; re-pinning to a tag still waits on one being cut after it. See issue #74. |
 | Observability | N/A — the deployed artifact is a static, no-account, no-telemetry showcase rather than a long-running production service. The proposed no-storage beta runbook still requires host request-metadata and operational-system review because those records sit outside application telemetry. Storage, telemetry, uploads, or external model calls would trigger a new architecture and operational review; the optional AI service directed by ADR 0004 is exactly such a change and will need its own operational review before any hosted deployment. |

@@ -1,7 +1,7 @@
 /**
  * Run the browser unit suite and report real coverage of `assets/demo.js`.
  *
- * Why this exists: `assets/demo.js` is 5,255 lines carrying the second
+ * Why this exists: `assets/demo.js` is over five thousand lines carrying the second
  * implementation of this product's rule logic, and until now no coverage gate
  * of any kind applied to it. `--cov=permit_pathways` measures one Python
  * package; the 85 percent figure never described this file in either
