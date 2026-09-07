@@ -59,6 +59,22 @@ candidate in `check.html`'s `permit-ai-service` meta tag.
 - After the cap: `POST /explain` returns 429 `budget_exhausted`.
 - CloudWatch log lines contain paths and status codes, never bodies.
 
+## Running it somewhere else, with no subprocessor
+
+This directory is one way to host the service, not the only one. Setting
+`PERMIT_AI_PROVIDER=local`, `PERMIT_AI_MODEL=<served-model>` and
+`PERMIT_AI_LOCAL_URL=<http(s) chat-completions endpoint>` points the same
+service at an OpenAI-compatible runtime on localhost or the jurisdiction's own
+network, so the applicant's description never leaves the operator's host. The
+optional `PERMIT_AI_LOCAL_API_KEY` adds a bearer token for an endpoint that
+wants one. Every verification control is unchanged, because they all run here
+on the model's output rather than at the provider. `/health` reports
+`provider_kind: local` so the page can say so.
+
+Nothing in this Lambda deployment changes: it stays Bedrock. The local path is
+for a self-hosted operator, and no evaluation result for an open-weight model
+is committed yet — see `evals/ai/README.md`.
+
 ## What this does not do
 
 - It does not make the hosted service a reviewed beta. The privacy review of

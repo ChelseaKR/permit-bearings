@@ -630,9 +630,13 @@ default, host to be decided)
     |   applicant record store: none
     |   rate limiting / abuse controls: deployment-specific, not_run
     v
-Model provider (Anthropic API, or Amazon Bedrock via the same SDK)
-    |   subprocessor; retention per the provider's terms for the deployment's
-    |   account — to be recorded before any hosted deployment: not_run
+Model provider, one of:
+  - Anthropic API, or Amazon Bedrock via the same SDK. A subprocessor;
+    retention per the provider's terms for the deployment's account — to be
+    recorded before any hosted deployment: not_run
+  - a self-hosted OpenAI-compatible endpoint (PERMIT_AI_PROVIDER=local).
+    No subprocessor: the applicant's text reaches only the host the operator
+    runs. Retention is whatever that runtime does, which the operator owns.
     v
 Service: deterministic checks on the model output
     - extracted facts: allowed-value check; supporting quote must occur in
@@ -660,6 +664,21 @@ browser identifiers. The free-text field is the one place an applicant could
 volunteer personal information; the interface tells them not to and the
 service does not retain it, but a provider receives whatever was typed.
 
+Which provider is in use is not a guess a reader has to make: `/health`
+reports `provider` (the name) and `provider_kind`, which is `hosted` when the
+text reaches a third party and `local` when it does not. The page can label
+the control from that one field without having to know every provider name.
+
+**The local provider removes the subprocessor, not the controls.** Every
+mechanical guard above — allowed-value checks, verbatim quote binding, corpus
+verification, withheld counts — runs in this service on the model's output,
+so it applies identically whichever endpoint answered. What a smaller
+open-weight model costs in abstention and citation resolution is a question
+for `make ai-eval` against that provider, not an assumption: run it and
+record the numbers beside the Bedrock ones. Nothing here bundles weights or a
+runtime, and the static page is unaffected — the service is still probed and
+the applicant still opts in.
+
 Data flow and subprocessors: browser → service → one model provider. For
 the AWS deployment in `deploy/ai-service/` (applied 2026-08-21) the facts are: the
 service runs as an AWS Lambda function in `us-west-2` in the owner's
@@ -674,7 +693,13 @@ configuration provisions.
 
 Access controls and security boundary: the service binds to localhost by
 default and allows only configured origins; the provider credential is read
-from the environment and never written. The prepared hosted deployment adds
+from the environment and never written. A `local` endpoint is configured by
+`PERMIT_AI_LOCAL_URL`, which must be a plain HTTP(S) URL with no inline
+credentials — checked at startup rather than at the first applicant request —
+plus a required `PERMIT_AI_MODEL` and an optional `PERMIT_AI_LOCAL_API_KEY`
+for an endpoint on the jurisdiction's own network. An endpoint that does not
+answer raises the same error every other provider failure raises, so the
+service reports unavailable and the page stays static. The prepared hosted deployment adds
 HTTPS (Function URL), a CORS allowlist of the static site's origin, request
 size limits (4,000-character description, 500-character question), a
 per-client limit of 6 model-backed requests per minute, a hard daily cap

@@ -56,6 +56,24 @@ PERMIT_AI_PROVIDER=bedrock PERMIT_AI_MODEL=global.anthropic.claude-sonnet-4-6 PY
   --cases evals/ai/grounding-cases.json --output evals/ai/results/<date>-grounding-<provider>-<model>.json
 ```
 
+A third provider runs the same two suites against a self-hosted
+OpenAI-compatible endpoint, so what an open-weight model costs in abstention
+and citation resolution is measured rather than assumed:
+
+```sh
+PERMIT_AI_PROVIDER=local PERMIT_AI_MODEL=<served-model> \
+  PERMIT_AI_LOCAL_URL=http://127.0.0.1:11434/v1/chat/completions PYTHONPATH=src \
+  .venv/bin/python -m permit_pathways.ai.eval intake \
+  --cases evals/ai/intake-cases.json --output evals/ai/results/<date>-local-<model>-intake.json
+```
+
+**No local result is committed yet.** The provider and its offline controls
+are in place; running it needs a host with the runtime and the weights, and a
+result file that named a model nothing had answered would be exactly the
+placeholder-carrying-numbers this directory's contract test exists to refuse.
+The Bedrock numbers below stand on their own and are not a prediction of what
+a smaller model would do.
+
 `PERMIT_AI_MODEL` above is written out for the record; it is also the
 Bedrock default, because `claude-sonnet-5` is not invokable on Bedrock from
 this project's AWS account. Nothing here is measured against a model the

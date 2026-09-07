@@ -87,6 +87,9 @@ def test_health_reports_boundary_and_versions() -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok" and body["provider"] == "scripted"
+    # The page labels where the applicant's words go from this field, not by
+    # matching provider names it would have to keep in step.
+    assert body["provider_kind"] == "local"
     assert body["stores_applicant_content"] is False
     assert body["rules"] == 19 and body["corpus_documents"] == 18
     assert body["prompt_versions"] == {

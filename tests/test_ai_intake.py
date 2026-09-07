@@ -271,3 +271,67 @@ def test_a_bare_second_unit_is_not_taught_as_an_adu_synonym() -> None:
     # An applicant saying they do not know is the answer, not a gap to fill.
     assert "asks what the options are" in prompt
     assert "Do not resolve it for them." in prompt
+
+
+# --- The controls do not depend on where the text went --------------------
+
+
+def _local_provider(response: str, *, model: str = "qwen2.5:14b") -> Any:
+    """A `LocalProvider` wired to a stub OpenAI-compatible endpoint.
+
+    The point of the local provider is that the applicant's words stay on the
+    operator's host. The point of these two tests is that nothing else moves
+    with them: the same fixed response has to produce the same verified
+    structure, and a fabricated quote has to be downgraded the same way.
+    """
+    from permit_pathways.ai.provider import LocalProvider
+
+    def opener(request: Any, timeout: float) -> tuple[int, bytes]:
+        document = {
+            "model": model,
+            "choices": [{"finish_reason": "stop", "message": {"content": response}}],
+            "usage": {"prompt_tokens": 120, "completion_tokens": 40},
+        }
+        return 200, json.dumps(document).encode("utf-8")
+
+    return LocalProvider(
+        url="http://127.0.0.1:11434/v1/chat/completions", model=model, opener=opener
+    )
+
+
+def test_a_local_endpoint_produces_the_same_verified_structure() -> None:
+    fixed = _payload()
+    hosted = extract_intake(
+        TEXT, language="en", provider=ScriptedProvider([fixed]), registry=REGISTRY
+    ).to_dict()
+    local = extract_intake(
+        TEXT, language="en", provider=_local_provider(fixed), registry=REGISTRY
+    ).to_dict()
+
+    # The provider name and model are exactly what should differ, and the
+    # record says which one answered — that is the audit trail, not drift.
+    assert hosted.pop("provider") == "scripted"
+    assert local.pop("provider") == "local"
+    assert hosted.pop("model") == "scripted-model"
+    assert local.pop("model") == "qwen2.5:14b"
+    # Usage comes from whichever endpoint answered, so it differs too.
+    assert (local.pop("input_tokens"), local.pop("output_tokens")) == (120, 40)
+    assert (hosted.pop("input_tokens"), hosted.pop("output_tokens")) == (0, 0)
+    assert local == hosted
+    # Non-vacuity: what is left is the extraction itself, not an empty dict.
+    assert local["project_type"]["value"] == "adu"
+    assert len(local) >= 6
+
+
+def test_a_local_endpoint_quote_that_is_not_in_the_text_is_still_downgraded() -> None:
+    fabricated = _payload(
+        unpermitted_existing={"value": "no", "quote": "built with permits"}
+    )
+    result = extract_intake(
+        TEXT, language="en", provider=_local_provider(fabricated), registry=REGISTRY
+    )
+    field = next(f for f in result.fields if f.name == "unpermitted_existing")
+    assert field.value == "unknown"
+    assert field.status == STATUS_DOWNGRADED
+    assert "does not occur" in str(field.note)
+    assert result.provider == "local"
