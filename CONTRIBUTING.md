@@ -1,5 +1,25 @@
 # Contributing to Permit Bearings
 
+## If you are not here to write code
+
+The engineering is not what is blocking this project. Read the exit-gate table
+in `docs/BETA-ROADMAP.md` and the dependency column keeps saying the same
+thing: External jurisdiction. External reviewers. External recruitment.
+External partner.
+
+Two of those are things a stranger can start today:
+
+- **You work for a California jurisdiction, or know one.** Issue #114 is one
+  partner jurisdiction and one detached-ADU workflow, and twelve other roadmap
+  issues wait behind it. It asks for a conversation, not a procurement: no
+  money, no contract, no applicant data, no integration.
+- **You have a screen reader and 20 minutes.** All 21 manual accessibility rows
+  read `not_run`, and the screening form has never been driven by one.
+
+[`docs/HELP-WANTED.md`](docs/HELP-WANTED.md) says what each asks, what it does
+not ask, roughly what it costs, and - importantly - what a session report can
+and cannot do to the manual record while the deployment lock is unfilled.
+
 Read `AGENTS.md`, `docs/PRODUCT-CONTEXT.md`, `docs/DESIGN.md`, and
 `PROVENANCE.md` before changing product behavior or public claims. The
 repository's core rule is claim discipline: a candidate route is not an
