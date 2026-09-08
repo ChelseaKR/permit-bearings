@@ -3,42 +3,70 @@
     "title": "Angels Municipal Code, Title 17, Ch. 17.61 \u2014 Accessory Dwelling Units (ADUs) and Junior Accessory Dwelling Units (JADUs)",
     "url": "https://www.codepublishing.com/CA/Angels/html/Angels17/Angels1761.html",
     "retrieved": "2026-08-15",
-    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 42a71f1983b57e02\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 42a71f1983b57e02\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here.",
+    "watch": {
+      "identifier": "17.61",
+      "text_sha256": "9cb23563bbbebc58e6acfe10a9436be6426916c298f8c9f52550f30bb89c20dd"
+    }
   },
   "capitola": {
     "title": "Capitola Municipal Code, Title 17, Ch. 17.74 \u2014 Accessory Dwelling Units",
     "url": "https://www.codepublishing.com/CA/Capitola/html/Capitola17/Capitola1774.html",
     "retrieved": "2026-08-15",
-    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 e18b9056472bfdf5\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 e18b9056472bfdf5\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here.",
+    "watch": {
+      "identifier": "17.74",
+      "text_sha256": "e4e9154c0885642d53a15b9252ee36223220896c460d16adb3a87dd83b7e4375"
+    }
   },
   "folsom": {
     "title": "Folsom Municipal Code, Title 17, Ch. 17.105 \u2014 Accessory Dwelling Units",
     "url": "https://www.codepublishing.com/CA/Folsom/html/Folsom17/Folsom17105.html",
     "retrieved": "2026-08-15",
-    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 49fde0e655a95915\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 49fde0e655a95915\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here.",
+    "watch": {
+      "identifier": "17.105",
+      "text_sha256": "b502ec98eefb0a4e09ae1b6d578eefe3412ef1036b35337c93d9f6855fe7b371"
+    }
   },
   "foster-city": {
     "title": "Foster City Municipal Code, Title 17, Ch. 17.78 \u2014 Accessory Dwelling Units",
     "url": "https://www.codepublishing.com/CA/FosterCity/html/FosterCity17/FosterCity1778.html",
     "retrieved": "2026-08-15",
-    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 04d387c46eecbc18\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 04d387c46eecbc18\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here.",
+    "watch": {
+      "identifier": "17.78",
+      "text_sha256": "f59d1bc9e91cfe0147a8ab9b5fcb54969435b29edccbce80235886091cdba95c"
+    }
   },
   "san-diego": {
     "title": "San Diego Municipal Code, Ch. 14, Art. 1, Div. 3 \u2014 Accessory Dwelling Units (ADUs) and Junior Accessory Dwelling Units (JADUs) (\u00a7 141.0302 et seq.)",
     "url": "https://docs.sandiego.gov/municode/MuniCodeChapter14/Ch14Art01Division03.pdf",
     "retrieved": "2026-07-27",
-    "note": "Official city PDF; text extracted with pdftotext. Ordinance last amended 7-23-2025 (O-21989 N.S.), effective 8-22-2025 per the document's own history note."
+    "note": "Official city PDF; text extracted with pdftotext. Ordinance last amended 7-23-2025 (O-21989 N.S.), effective 8-22-2025 per the document's own history note.",
+    "watch": {
+      "identifier": "141.0302",
+      "text_sha256": "f0170dcda45555662641df1690dbc94e7e6f52c629da571f14d85e2960f49cb7"
+    }
   },
   "trinidad": {
     "title": "Trinidad Municipal Code, Title 17, Ch. 17.54 \u2014 Accessory Dwelling Units",
     "url": "https://www.codepublishing.com/CA/Trinidad/html/Trinidad17/Trinidad1754.html",
     "retrieved": "2026-08-15",
-    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 307dd4e5a8c77167\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 307dd4e5a8c77167\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here.",
+    "watch": {
+      "identifier": "17.54",
+      "text_sha256": "e38a9f9290c1e66bd6d1f36b254ece7365bc4e46ab1f0d73de2ddf9ee489af11"
+    }
   },
   "watsonville": {
     "title": "Watsonville Municipal Code, Ch. 14-23 \u2014 Accessory Dwelling Units and Junior Accessory Dwelling Units",
     "url": "https://www.codepublishing.com/CA/Watsonville/html/Watsonville14/Watsonville1423.html",
     "retrieved": "2026-08-15",
-    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 8b1061e3437750bf\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here."
+    "note": "Publisher-hosted current municipal code (Code Publishing Inc.); chapter HTML retrieved once over HTTPS and converted to text by tag stripping. Retrieved page SHA-256 8b1061e3437750bf\u2026. Publisher pages carry no adopted-ordinance history note, so the operative enactment and effective dates are unconfirmed here.",
+    "watch": {
+      "identifier": "14-23",
+      "text_sha256": "e786f0fb6a900b89e178533fef2009d7db2759f0ea6202f889ffdbf4d924dcae"
+    }
   }
 }

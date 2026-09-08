@@ -7,6 +7,48 @@ published a versioned release.
 
 ### Added
 
+- **A watch over the seven scanned ordinances, and a gate over the bytes they
+  were scanned from.** Every published conformance result names a real
+  California city and says its ordinance carries specific defects, on the
+  strength of text retrieved once in July and August. Nothing monitored those
+  sources afterwards, and the results said so in their own disclaimer (part of
+  issue #136).
+  - `corpus/ordinances/SOURCES.json` entries gain a `watch` block: the SHA-256
+    of the committed text, and the chapter or section designation the document
+    must carry. Neither existed before. The digests recorded in the `note`
+    prose are **truncated hashes of the retrieved pages**, and this repository
+    does not keep those bytes, so no reader could ever check one against
+    anything here; the new digest is over the text the scanner actually reads.
+  - `scripts/scan_ordinances.py --check`, already in `make bundle-check`, now
+    also holds every committed text to that digest. It re-derived the results
+    *from* the corpus before, which proves the results match the corpus and
+    cannot notice the corpus itself moving: an edit no check matches changed
+    nothing it compared.
+  - `scripts/watch_ordinances.py` re-reads all seven and reports each as
+    unchanged, changed, or unverifiable by kind, on the weekly
+    `Source currency watch` schedule.
+  - **The comparison is findings, not content hashes, and that is measured
+    rather than assumed.** Re-extracting all seven with this repository's own
+    extractor reproduced the committed text **byte-for-byte zero times out of
+    seven** — publishers reflow markup, and a PDF extractor is not the one that
+    produced the committed conversion. A digest watch would have called every
+    source changed on its first run, which is how a watch gets switched off in
+    its first week. The findings rule reported **five unchanged and two
+    changed** on the same bytes.
+  - **A `200` is not evidence that the page is the document.** One of the seven
+    publisher URLs now answers `200` with a code-migration notice, and scanning
+    that notice yields **zero findings** — a clean bill of health for a city
+    whose ordinance nobody read. A page that does not carry its declared
+    identifier is `unverifiable/not_the_document`, never `changed`.
+  - **The watch proposes; it never adopts.** Re-scanning republishes a
+    statement about a named city. The workflow files one undated, labelled
+    issue saying what moved and leaves the re-scan to a person.
+  - `data/export/public-synthetic-evidence-v2.json` and
+    `_EXPORT_PROFILE_V2_SHA256` re-pinned for the one changed file, through
+    `beta_gate_cli recompute`'s maintainer-attestation path: the profile diff
+    is a single entry (`corpus/ordinances/SOURCES.json`), and the new constant
+    was confirmed against `shasum -a 256` independently of the tool.
+
 - **An evaluation set for `/ask`, and the scorer that reads it.** The
   capability table said "no evaluation set covers `/ask` yet" while the other
   two runtime endpoints had committed cases and recorded numbers, so the most

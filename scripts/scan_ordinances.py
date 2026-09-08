@@ -28,6 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from permit_pathways import ordinance_watch  # noqa: E402
 from permit_pathways.conformance import load_checks, scan  # noqa: E402
 
 CORPUS = ROOT / "corpus/ordinances"
@@ -71,7 +72,20 @@ def build_results(scanned_on: Callable[[str], str]) -> dict[Path, str]:
         findings = scan((CORPUS / f"{slug}.txt").read_text(), checks)
         out = {
             "slug": slug,
-            "source": sources[slug],
+            # The reader-facing provenance only. `SOURCES.json` also carries a
+            # `watch` block -- the declared document identifier and the digest
+            # of the committed text -- which is machinery for
+            # `scripts/watch_ordinances.py` rather than anything a reader of an
+            # ordinance page needs. Publishing it would have rewritten all seven
+            # results, and `slugs_needing_a_new_date` reads any change in the
+            # output as a scan having moved, so adding provenance metadata would
+            # have restamped `scanned_on` to today on seven ordinances nobody
+            # re-scanned. Naming the fields is what stops that.
+            "source": {
+                field: sources[slug][field]
+                for field in ordinance_watch.PUBLISHED_SOURCE_FIELDS
+                if field in sources[slug]
+            },
             "scanned_on": scanned_on(slug),
             "disclaimer": DISCLAIMER,
             "findings": [
@@ -212,6 +226,34 @@ def describe_drift(path: Path, expected: str, actual: str | None) -> list[str]:
     ]
 
 
+def check_corpus() -> int:
+    """Hold the committed ordinance texts to the provenance that describes them.
+
+    ``check_published`` re-derives every result *from* these texts, so it proves
+    the results match the corpus. It cannot notice the corpus itself moving: an
+    edit that no check matches changes nothing it compares, and every published
+    finding is then a claim about bytes with no record of where they came from.
+
+    Offline and deterministic on purpose. A merge gate that reaches seven
+    municipal-code publishers goes red on their outages rather than on this
+    repository's commits; the network half lives in
+    ``scripts/watch_ordinances.py`` and runs on the weekly schedule.
+    """
+    try:
+        sources = ordinance_watch.load_sources(CORPUS / "SOURCES.json")
+    except ValueError as error:
+        print(f"corpus/ordinances/SOURCES.json: {error}")
+        return 1
+    problems = ordinance_watch.corpus_problems(sources, CORPUS)
+    if problems:
+        print("the committed ordinance corpus does not match its provenance")
+        for problem in problems:
+            print(f"  {problem.describe()}")
+        return 1
+    print(f"ordinance corpus matches SOURCES.json ({len(sources)} source(s))")
+    return 0
+
+
 def check_published(results_dir: Path = RESULTS) -> int:
     """Re-derive every published artifact and fail if any of them moved.
 
@@ -267,7 +309,13 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("--check re-uses each published scanned_on; pass no date")
         if args.redate_all:
             parser.error("--check writes nothing, so it cannot re-date")
-        return check_published()
+        # Both, always, and the corpus first: a text that does not match its
+        # recorded digest makes every result derived from it a claim about
+        # unidentified bytes, and reporting only the second failure would send
+        # a maintainer to re-scan rather than to ask what moved.
+        corpus = check_corpus()
+        published = check_published()
+        return corpus or published
 
     if not args.scanned_on:
         parser.error("a scanned-on ISO date is required when writing")
