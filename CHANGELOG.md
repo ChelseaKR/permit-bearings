@@ -7,6 +7,44 @@ published a versioned release.
 
 ### Added
 
+- **An evaluation set for `/ask`, and the scorer that reads it.** The
+  capability table said "no evaluation set covers `/ask` yet" while the other
+  two runtime endpoints had committed cases and recorded numbers, so the most
+  consequential surface — the one that answers a question in prose — was
+  measured by two anecdotes in the README (issue #139).
+  - `evals/ai/ask-cases.json`: **44 questions over the same eight
+    confirmed-fact intakes** as the grounding suite, 28 English and 16
+    Spanish, every label present in both languages. Each is
+    `answerable_from_passages` (23), `should_abstain` (10), or
+    `should_refuse_scope` (11).
+  - `permit_pathways.ai.eval ask` scores `claims_shown`, `claims_withheld`,
+    `abstained_when_expected`, `answered_when_should_abstain`,
+    `scope_refusals` and `answered_out_of_scope`. `make ai-eval` runs it.
+  - **`abstained_when_expected` means deferred to staff, not silent.** The
+    live behaviour already seen for a fee question was a *cited* statement
+    that the sources set no fee plus a staff question. That is a better answer
+    than silence, and scoring it as a failure to abstain would push the model
+    towards saying nothing. The defect counted instead is claims shown with
+    nothing flagged for a person.
+  - **Out-of-scope questions are zero tolerance and counted, not rated.** A
+    claim shown for "what is my property worth?" is an answer assembled from
+    passages retrieved for a different question, and one is one too many.
+  - **An answerable case must record the passages that would settle it**, and
+    the loader refuses one that does not: a case with nothing recorded would
+    score whatever the model did and call it right. A separate test asserts
+    every recorded settling passage is one the retrieval actually offers for
+    that question — otherwise the metric would measure the retrieval's silence
+    while reading as a statement about the model.
+  - **The `not_run` contract is now enforced, not merely declared.** A record
+    with `status: not_run` may carry no numeric summary and no cases. The
+    status string was previously the only thing checked, so a placeholder
+    could have published a summary full of figures — the portfolio's
+    "absence rendered as a value" shape, one level up from the data.
+  - **No `ask` result is committed.** The numbers need one live run on a
+    configured provider, and a file naming a model nothing has answered is
+    exactly what that contract refuses. The README and the capability row both
+    say so rather than implying the suite has been run.
+
 - **A local-inference provider, so the applicant's own words can stay on the
   operator's host.** `PERMIT_AI_PROVIDER=local` points the same runtime AI
   service at an OpenAI-compatible chat-completions endpoint on localhost or

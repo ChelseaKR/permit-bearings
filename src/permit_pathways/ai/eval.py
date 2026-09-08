@@ -12,6 +12,29 @@ Two measurements, both model-independent in their scoring:
   the explanation prompt. Scored on how many generated claims carry citations
   that resolve verbatim against the committed corpus, and how many were
   withheld.
+* **Follow-up answering (`ask`)** — one question per case against the same
+  confirmed-fact intakes, each labelled with what the passages can support.
+  The metric is grounding and *abstention*, not legal fidelity. Three labels:
+
+  ``answerable_from_passages``  the offered passages settle it, and the case
+                                records which ones. Answering is correct;
+                                abstaining is a miss, not a defect.
+  ``should_abstain``            the passages do not settle it — a fee no
+                                committed source states, a fact the intake
+                                records as unknown. Answering *without*
+                                handing it to staff is the defect.
+  ``should_refuse_scope``       the question is outside the matched result
+                                (a valuation, a referral, a parking ticket).
+                                **Zero tolerance:** any claim shown here is
+                                an answer built from passages that were
+                                retrieved for a different question.
+
+  The most consequential failure of a question-answering surface is a
+  confident answer the passages do not support, and this project's own
+  earlier grounding runs found exactly that class — a paraphrase presented as
+  a quote — before retrieval was interleaved across rules. The verifier, not
+  the model, is the control; this suite measures how often the control has to
+  fire and whether the model defers when it should.
 
 A result file records provider, model, prompt versions, UTC date, and the
 Git commit, so a number in the repository is always traceable to one run.
@@ -379,6 +402,173 @@ def run_grounding_eval(
     }
 
 
+EXPECT_ANSWERABLE = "answerable_from_passages"
+EXPECT_ABSTAIN = "should_abstain"
+EXPECT_REFUSE_SCOPE = "should_refuse_scope"
+ASK_EXPECTATIONS = (EXPECT_ANSWERABLE, EXPECT_ABSTAIN, EXPECT_REFUSE_SCOPE)
+
+
+@dataclass(frozen=True)
+class AskCase:
+    case_id: str
+    language: str
+    question: str
+    expectation: str
+    intake: dict[str, str]
+    settling_passage_ids: tuple[str, ...]
+
+
+def load_ask_cases(path: Path) -> list[AskCase]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    cases: list[AskCase] = []
+    for raw in payload.get("cases", []):
+        expectation = str(raw["expectation"])
+        if expectation not in ASK_EXPECTATIONS:
+            raise EvalError(
+                f"{raw.get('case_id')}: expectation must be one of "
+                f"{', '.join(ASK_EXPECTATIONS)}; got {expectation!r}"
+            )
+        settling = tuple(str(x) for x in raw.get("settling_passage_ids", ()))
+        # An answerable case with no settling passage recorded is a case
+        # nobody checked: it would score whatever the model did and call it
+        # right. Refuse it rather than let it dilute the rate.
+        if expectation == EXPECT_ANSWERABLE and not settling:
+            raise EvalError(
+                f"{raw.get('case_id')}: an answerable case must record the "
+                "passage ids that would settle it"
+            )
+        if expectation != EXPECT_ANSWERABLE and settling:
+            raise EvalError(
+                f"{raw.get('case_id')}: only an answerable case may record "
+                "settling passage ids"
+            )
+        cases.append(
+            AskCase(
+                str(raw["case_id"]),
+                str(raw["language"]),
+                str(raw["question"]),
+                expectation,
+                dict(raw["intake"]),
+                settling,
+            )
+        )
+    if not cases:
+        raise EvalError(f"no cases in {path}")
+    if len({c.case_id for c in cases}) != len(cases):
+        raise EvalError("duplicate ask case_id")
+    return cases
+
+
+def score_ask_case(case: AskCase, answer: explain_module.Answer) -> dict[str, Any]:
+    """Score one answered question against what the passages can support.
+
+    `deferred_to_staff` is what a `should_abstain` case needs, and it is
+    deliberately not the same thing as `abstained`. The live behaviour this
+    project has already seen for a fee question was a *cited* statement that
+    the sources set no fee, plus a staff question — which is a better answer
+    than silence and must not be scored as a failure to abstain. What must
+    never happen is claims shown with nothing handed to staff.
+    """
+    shown = len(answer.claims)
+    cited = {
+        citation.passage_id for claim in answer.claims for citation in claim.citations
+    }
+    deferred = bool(answer.staff_question)
+    row: dict[str, Any] = {
+        "case_id": case.case_id,
+        "language": case.language,
+        "expectation": case.expectation,
+        "rule_ids": list(answer.rule_ids),
+        "offered_passages": len(answer.offered_passage_ids),
+        "claims_shown": shown,
+        "claims_withheld": len(answer.withheld),
+        "withheld_reasons": [list(w.reasons) for w in answer.withheld],
+        "abstained": answer.abstained,
+        "deferred_to_staff": deferred,
+        "cited_passage_ids": sorted(cited),
+        "input_tokens": answer.input_tokens,
+        "output_tokens": answer.output_tokens,
+    }
+    if case.expectation == EXPECT_ANSWERABLE:
+        row["settling_passage_ids"] = list(case.settling_passage_ids)
+        row["cited_a_settling_passage"] = bool(cited & set(case.settling_passage_ids))
+        row["answered_when_answerable"] = shown > 0
+    elif case.expectation == EXPECT_ABSTAIN:
+        row["abstained_when_expected"] = deferred
+        # The defect: an answer given, and nothing flagged for a person.
+        row["answered_when_should_abstain"] = shown > 0 and not deferred
+    else:
+        # Zero tolerance. Any claim shown is an answer assembled from
+        # passages retrieved for a different question.
+        row["refused_scope"] = shown == 0
+        row["answered_out_of_scope"] = shown > 0
+    return row
+
+
+def summarize_ask(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    def _of(expectation: str) -> list[Mapping[str, Any]]:
+        return [r for r in rows if r["expectation"] == expectation]
+
+    answerable = _of(EXPECT_ANSWERABLE)
+    abstain = _of(EXPECT_ABSTAIN)
+    scope = _of(EXPECT_REFUSE_SCOPE)
+    shown = sum(int(r["claims_shown"]) for r in rows)
+    withheld = sum(int(r["claims_withheld"]) for r in rows)
+    return {
+        "cases": len(rows),
+        "claims_shown": shown,
+        "claims_withheld": withheld,
+        "fraction_claims_with_verified_citations": _rate(shown, shown + withheld),
+        "answerable_cases": len(answerable),
+        "answered_when_answerable": _rate(
+            sum(1 for r in answerable if r["answered_when_answerable"]), len(answerable)
+        ),
+        "cited_a_settling_passage": _rate(
+            sum(1 for r in answerable if r["cited_a_settling_passage"]), len(answerable)
+        ),
+        "should_abstain_cases": len(abstain),
+        "abstained_when_expected": _rate(
+            sum(1 for r in abstain if r["abstained_when_expected"]), len(abstain)
+        ),
+        "answered_when_should_abstain": _rate(
+            sum(1 for r in abstain if r["answered_when_should_abstain"]), len(abstain)
+        ),
+        "scope_cases": len(scope),
+        "scope_refusals": _rate(
+            sum(1 for r in scope if r["refused_scope"]), len(scope)
+        ),
+        "answered_out_of_scope": sum(1 for r in scope if r["answered_out_of_scope"]),
+    }
+
+
+def run_ask_eval(
+    cases: Sequence[AskCase],
+    *,
+    provider: Provider,
+    rules: Sequence[Rule],
+    corpus: CorpusIndex,
+) -> dict[str, Any]:
+    rows: list[dict[str, Any]] = []
+    errors: list[dict[str, str]] = []
+    for case in cases:
+        try:
+            answer = explain_module.answer_question(
+                question=case.question,
+                intake=case.intake,
+                rules=rules,
+                corpus=corpus,
+                provider=provider,
+                language=case.language,
+            )
+        except (explain_module.ExplainError, ProviderError) as exc:
+            errors.append({"case_id": case.case_id, "stage": "ask", "error": str(exc)})
+            continue
+        rows.append(score_ask_case(case, answer))
+    if not rows:
+        raise EvalError("every ask case errored; nothing was measured")
+    return {"summary": summarize_ask(rows), "cases": rows, "errors": errors}
+
+
 def git_commit(root: Path) -> str:
     """The HEAD commit of ``root``, or ``"unknown"``. Runs the resolved Git
     executable with a fixed argument list and no shell."""
@@ -408,6 +598,7 @@ def run_metadata(provider: Provider, root: Path, kind: str) -> dict[str, Any]:
         "prompt_versions": {
             "intake": intake_module.PROMPT_VERSION,
             "explain": explain_module.PROMPT_VERSION,
+            "ask": explain_module.ASK_PROMPT_VERSION,
             "staff_questions": staff_module.PROMPT_VERSION,
         },
         "commit": git_commit(root),
@@ -416,6 +607,9 @@ def run_metadata(provider: Provider, root: Path, kind: str) -> dict[str, Any]:
             "abstained_when_should": "gold is unknown and the model returned unknown",
             "filled_when_unknown": "gold is unknown and the model returned a concrete value (the defect)",
             "claims_all_citations_verified": "claim shown only if every cited quote occurs verbatim in the named corpus document",
+            "abstained_when_expected": "a should_abstain case that handed the question to staff, whether or not it also stated what the sources do say",
+            "answered_when_should_abstain": "a should_abstain case answered with nothing flagged for a person (the defect)",
+            "scope_refusals": "a should_refuse_scope case that showed no claim; zero tolerance on the complement",
         },
     }
 
@@ -431,7 +625,7 @@ def main(argv: Sequence[str] | None = None) -> int:  # pragma: no cover - CLI wr
     parser = argparse.ArgumentParser(
         description="Evaluate the runtime AI layer against committed cases."
     )
-    parser.add_argument("kind", choices=["intake", "grounding"])
+    parser.add_argument("kind", choices=["intake", "grounding", "ask"])
     parser.add_argument("--cases", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
@@ -458,6 +652,16 @@ def main(argv: Sequence[str] | None = None) -> int:  # pragma: no cover - CLI wr
         if args.limit:
             cases = cases[: args.limit]
         result = run_intake_eval(cases, provider=provider, registry=registry)
+    elif args.kind == "ask":
+        ask_cases = load_ask_cases(args.cases)
+        if args.limit:
+            ask_cases = ask_cases[: args.limit]
+        result = run_ask_eval(
+            ask_cases,
+            provider=provider,
+            rules=load_rules(root / "data" / "rules"),
+            corpus=CorpusIndex.load(root),
+        )
     else:
         grounding_cases = load_grounding_cases(args.cases)
         if args.limit:

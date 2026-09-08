@@ -1,8 +1,9 @@
 # Runtime AI evaluation (ADR 0004)
 
-Two committed case sets and one harness, `python -m permit_pathways.ai.eval`.
-The scoring is model-independent; the model under test is whatever
-`PERMIT_AI_PROVIDER` / `PERMIT_AI_MODEL` select.
+Three committed case sets and one harness,
+`python -m permit_pathways.ai.eval`. The scoring is model-independent; the
+model under test is whatever `PERMIT_AI_PROVIDER` / `PERMIT_AI_MODEL`
+select.
 
 ## What is measured
 
@@ -33,9 +34,37 @@ claims generated, shown, withheld, and the fraction with verified citations.
 The same run drafts staff questions and reports what share carry a pointer
 that resolves to a matched rule or an unresolved fact.
 
+**Follow-up answering** (`ask-cases.json`, 44 questions over the same 8
+confirmed-fact intakes, 28 English and 16 Spanish). Each question carries a
+label saying what the offered passages can support, and the metric is
+grounding and *abstention* — not whether the answer is a correct reading of
+the law:
+
+| label | correct behaviour | the defect |
+| --- | --- | --- |
+| `answerable_from_passages` (23) | answer, citing one of the recorded settling passages | — |
+| `should_abstain` (10) | hand the question to staff, with or without stating what the sources *do* say | claims shown and nothing flagged for a person |
+| `should_refuse_scope` (11) | show no claim at all | any claim shown. **Zero tolerance** |
+
+`abstained_when_expected` deliberately means *deferred to staff*, not
+*silent*. The live behaviour this project has already seen for a fee question
+was a cited statement that the sources set no fee **plus** a staff question;
+that is a better answer than silence, and scoring it as a failure to abstain
+would push the model towards saying nothing.
+
+An `answerable_from_passages` case must record the passage ids that would
+settle it, and the loader refuses one that does not: a case with nothing
+recorded would score whatever the model did and call it right. A test
+additionally asserts that every recorded settling passage is one the
+retrieval actually offers for that question — otherwise the metric would be
+measuring the retrieval's silence while reading as a statement about the
+model.
+
 What these numbers do not measure: legal fidelity, whether a shown claim is
 a correct reading of the passage it cites, Spanish quality, or comprehension.
-A verified citation proves the passage exists and says those words.
+A verified citation proves the passage exists and says those words. The
+Spanish questions in `ask-cases.json` are machine-drafted and have not been
+read by a qualified speaker.
 
 ## Results
 
@@ -43,7 +72,15 @@ A verified citation proves the passage exists and says those words.
 `run.status` (`recorded_live_run` or `not_run`), provider, model, prompt
 versions, UTC date, and the Git commit the run used, then the per-case
 detail. `tests/test_ai_eval.py` rejects a result file that claims a number
-without that provenance. Numbers are never written by hand.
+without that provenance, and a `not_run` record may carry **no** numeric
+summary and no cases at all — a placeholder is a statement that nothing was
+measured, and a placeholder full of figures is that statement contradicting
+itself. Numbers are never written by hand.
+
+**No `ask` result is committed yet.** The case set, the scorer and the
+offline tests are in place; the numbers need one live run on a configured
+provider, and a file naming a model nothing has answered is exactly what the
+contract above refuses.
 
 ## Running
 

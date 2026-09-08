@@ -12,6 +12,10 @@ from permit_pathways.ai import facts
 from permit_pathways.ai import provider as provider_module
 from permit_pathways.ai.corpus import CorpusIndex
 from permit_pathways.ai.eval import (
+    ASK_EXPECTATIONS,
+    EXPECT_ABSTAIN,
+    EXPECT_ANSWERABLE,
+    EXPECT_REFUSE_SCOPE,
     OUTCOME_ABSTAINED,
     OUTCOME_EXACT,
     OUTCOME_FILLED,
@@ -21,8 +25,10 @@ from permit_pathways.ai.eval import (
     IntakeCase,
     field_outcome,
     git_commit,
+    load_ask_cases,
     load_grounding_cases,
     load_intake_cases,
+    run_ask_eval,
     run_grounding_eval,
     run_intake_eval,
     run_metadata,
@@ -36,6 +42,7 @@ from permit_pathways.screening import load_rules
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "evals" / "ai" / "intake-cases.json"
 GROUNDING = ROOT / "evals" / "ai" / "grounding-cases.json"
+ASK = ROOT / "evals" / "ai" / "ask-cases.json"
 REGISTRY = load_jurisdictions(
     json.loads(
         (ROOT / "data" / "jurisdictions" / "registry.json").read_text(encoding="utf-8")
@@ -308,3 +315,303 @@ def test_committed_results_are_traceable_live_runs() -> None:
                 if run["kind"] == "grounding"
                 else payload["summary"]["all"]["cases"]
             )
+
+
+# --- The `ask` suite: grounding and abstention, not legal fidelity --------
+
+
+def _ask_cases() -> list[Any]:
+    return load_ask_cases(ASK)
+
+
+def test_committed_ask_cases_are_valid_bilingual_and_cover_all_three_labels() -> None:
+    cases = _ask_cases()
+    assert len(cases) >= 40
+    assert {c.language for c in cases} == {"en", "es"}
+    labels = {c.expectation for c in cases}
+    assert labels == set(ASK_EXPECTATIONS)
+    # Every label needs Spanish too, or the suite measures abstention in one
+    # language and grounding in the other.
+    for label in ASK_EXPECTATIONS:
+        languages = {c.language for c in cases if c.expectation == label}
+        assert languages == {"en", "es"}, label
+    # Each question is asked against one of the eight committed confirmed-fact
+    # intakes, so the ask suite and the grounding suite describe the same
+    # eight results.
+    grounding = {
+        json.dumps(g.intake, sort_keys=True) for g in load_grounding_cases(GROUNDING)
+    }
+    assert all(json.dumps(c.intake, sort_keys=True) in grounding for c in cases)
+
+
+def test_every_settling_passage_is_one_the_retrieval_actually_offers() -> None:
+    """Otherwise the fixture sits where the failure is impossible.
+
+    A case labelled answerable records the passages that would settle it. If
+    retrieval never offers those passages, the model cannot cite them, and
+    `cited_a_settling_passage` would measure the retrieval's silence while
+    reading as a statement about the model. This is the check that keeps the
+    label honest as retrieval changes.
+    """
+    from permit_pathways.ai.explain import matched_rules, question_passages
+
+    rules = load_rules(ROOT / "data" / "rules")
+    corpus = CorpusIndex.load(ROOT)
+    missing: list[str] = []
+    for case in _ask_cases():
+        if case.expectation != EXPECT_ANSWERABLE:
+            continue
+        matched = matched_rules(case.intake, rules, None)
+        offered = {
+            p.passage_id for p in question_passages(case.question, matched, corpus)
+        }
+        absent = sorted(set(case.settling_passage_ids) - offered)
+        if absent:
+            missing.append(f"{case.case_id}: {absent}")
+    assert missing == [], missing
+
+
+def test_ask_case_loader_refuses_labels_and_settling_ids_that_contradict(
+    tmp_path: Path,
+) -> None:
+    base = {
+        "case_id": "c1",
+        "language": "en",
+        "question": "How tall?",
+        "intake": {"project_type": "adu", "jurisdiction": "davis"},
+    }
+
+    def write(**overrides: Any) -> Path:
+        path = tmp_path / "ask.json"
+        path.write_text(
+            json.dumps({"cases": [{**base, **overrides}]}), encoding="utf-8"
+        )
+        return path
+
+    with pytest.raises(EvalError, match="expectation must be one of"):
+        load_ask_cases(write(expectation="probably_fine"))
+    # An answerable case with nothing recorded would score whatever the model
+    # did and call it right.
+    with pytest.raises(EvalError, match="must record the"):
+        load_ask_cases(write(expectation=EXPECT_ANSWERABLE, settling_passage_ids=[]))
+    with pytest.raises(EvalError, match="only an answerable case"):
+        load_ask_cases(
+            write(expectation=EXPECT_ABSTAIN, settling_passage_ids=["ca-gov-66321#3"])
+        )
+    empty = tmp_path / "empty.json"
+    empty.write_text(json.dumps({"cases": []}), encoding="utf-8")
+    with pytest.raises(EvalError, match="no cases"):
+        load_ask_cases(empty)
+    duplicate = tmp_path / "dupe.json"
+    duplicate.write_text(
+        json.dumps(
+            {
+                "cases": [
+                    {**base, "expectation": EXPECT_ABSTAIN},
+                    {**base, "expectation": EXPECT_ABSTAIN},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(EvalError, match="duplicate ask case_id"):
+        load_ask_cases(duplicate)
+
+
+def _ask_reply(
+    *,
+    claims: list[dict[str, Any]] | None = None,
+    staff_question: str | None = None,
+) -> str:
+    payload: dict[str, Any] = {"claims": claims or []}
+    if staff_question is not None:
+        payload["staff_question"] = staff_question
+    return json.dumps(payload)
+
+
+def _one_case(expectation: str) -> Any:
+    return next(c for c in _ask_cases() if c.expectation == expectation)
+
+
+def test_a_fabricated_citation_is_withheld_rather_than_shown() -> None:
+    """The verifier, not the model, is the control."""
+    rules = load_rules(ROOT / "data" / "rules")
+    corpus = CorpusIndex.load(ROOT)
+    case = _one_case(EXPECT_ANSWERABLE)
+    settling = case.settling_passage_ids[0]
+    document = corpus.documents[settling.split("#", 1)[0]]
+    real = " ".join(
+        next(p for p in document.passages if p.passage_id == settling).text.split()[:12]
+    )
+    reply = _ask_reply(
+        claims=[
+            {
+                "text": "grounded",
+                "citations": [{"passage_id": settling, "quote": real}],
+            },
+            {
+                "text": "invented",
+                "citations": [
+                    {
+                        "passage_id": settling,
+                        "quote": "the statute plainly permits a fourth storey",
+                    }
+                ],
+            },
+        ]
+    )
+    result = run_ask_eval(
+        [case], provider=ScriptedProvider([reply]), rules=rules, corpus=corpus
+    )
+    row = result["cases"][0]
+    assert (row["claims_shown"], row["claims_withheld"]) == (1, 1)
+    assert row["cited_a_settling_passage"] is True
+    assert row["answered_when_answerable"] is True
+    assert result["summary"]["fraction_claims_with_verified_citations"] == 0.5
+    assert result["summary"]["claims_withheld"] == 1
+
+
+def test_a_should_abstain_case_that_states_the_gap_and_asks_staff_is_correct() -> None:
+    """The live behaviour for a fee question was a *cited* statement that the
+    sources set no fee plus a staff question. That is a better answer than
+    silence, and scoring it as a failure to abstain would push the model
+    towards saying nothing."""
+    rules = load_rules(ROOT / "data" / "rules")
+    corpus = CorpusIndex.load(ROOT)
+    case = _one_case(EXPECT_ABSTAIN)
+    reply = _ask_reply(
+        claims=[],
+        staff_question="Which fee schedule applies to this application?",
+    )
+    result = run_ask_eval(
+        [case], provider=ScriptedProvider([reply]), rules=rules, corpus=corpus
+    )
+    row = result["cases"][0]
+    assert row["abstained"] is True
+    assert row["deferred_to_staff"] is True
+    assert row["abstained_when_expected"] is True
+    assert row["answered_when_should_abstain"] is False
+    assert result["summary"]["abstained_when_expected"] == 1.0
+    assert result["summary"]["answered_when_should_abstain"] == 0.0
+
+
+def test_an_answer_with_no_staff_question_is_the_should_abstain_defect() -> None:
+    rules = load_rules(ROOT / "data" / "rules")
+    corpus = CorpusIndex.load(ROOT)
+    case = _one_case(EXPECT_ABSTAIN)
+    matched_passage = "ca-gov-66317"
+    document = corpus.documents[matched_passage]
+    quote = " ".join(document.passages[1].text.split()[:10])
+    reply = _ask_reply(
+        claims=[
+            {
+                "text": "The fee is $1,200.",
+                "citations": [
+                    {"passage_id": document.passages[1].passage_id, "quote": quote}
+                ],
+            }
+        ]
+    )
+    result = run_ask_eval(
+        [case], provider=ScriptedProvider([reply]), rules=rules, corpus=corpus
+    )
+    row = result["cases"][0]
+    assert row["claims_shown"] == 1
+    assert row["deferred_to_staff"] is False
+    assert row["answered_when_should_abstain"] is True
+    assert result["summary"]["answered_when_should_abstain"] == 1.0
+
+
+def test_a_scope_question_answered_at_all_is_counted_with_zero_tolerance() -> None:
+    rules = load_rules(ROOT / "data" / "rules")
+    corpus = CorpusIndex.load(ROOT)
+    case = _one_case(EXPECT_REFUSE_SCOPE)
+    refused = run_ask_eval(
+        [case],
+        provider=ScriptedProvider([_ask_reply(claims=[], staff_question="Ask staff.")]),
+        rules=rules,
+        corpus=corpus,
+    )
+    assert refused["cases"][0]["refused_scope"] is True
+    assert refused["summary"]["scope_refusals"] == 1.0
+    assert refused["summary"]["answered_out_of_scope"] == 0
+
+    document = corpus.documents["ca-gov-66317"]
+    quote = " ".join(document.passages[1].text.split()[:10])
+    answered = run_ask_eval(
+        [case],
+        provider=ScriptedProvider(
+            [
+                _ask_reply(
+                    claims=[
+                        {
+                            "text": "answered anyway",
+                            "citations": [
+                                {
+                                    "passage_id": document.passages[1].passage_id,
+                                    "quote": quote,
+                                }
+                            ],
+                        }
+                    ]
+                )
+            ]
+        ),
+        rules=rules,
+        corpus=corpus,
+    )
+    assert answered["cases"][0]["answered_out_of_scope"] is True
+    assert answered["summary"]["scope_refusals"] == 0.0
+    # Counted, not rated: one is one too many.
+    assert answered["summary"]["answered_out_of_scope"] == 1
+
+
+def test_a_case_that_errors_is_recorded_and_an_all_error_run_measures_nothing() -> None:
+    rules = load_rules(ROOT / "data" / "rules")
+    corpus = CorpusIndex.load(ROOT)
+    cases = _ask_cases()[:2]
+    partial = run_ask_eval(
+        cases,
+        provider=ScriptedProvider(
+            [_ask_reply(staff_question="Ask staff."), "not json"]
+        ),
+        rules=rules,
+        corpus=corpus,
+    )
+    assert len(partial["cases"]) == 1 and partial["errors"][0]["stage"] == "ask"
+    with pytest.raises(EvalError, match="nothing was measured"):
+        run_ask_eval(
+            cases[:1],
+            provider=ScriptedProvider(["not json"]),
+            rules=rules,
+            corpus=corpus,
+        )
+
+
+def test_the_ask_run_metadata_names_the_ask_prompt_version() -> None:
+    metadata = run_metadata(ScriptedProvider([]), ROOT, "ask")
+    assert metadata["kind"] == "ask"
+    assert metadata["prompt_versions"]["ask"] == "ask-v1"
+    assert "answered_when_should_abstain" in metadata["scoring"]
+
+
+def test_a_not_run_record_cannot_carry_numbers() -> None:
+    """A placeholder is a statement that nothing was measured.
+
+    `status: not_run` was previously unchecked beyond the status string, so a
+    record could have said `not_run` and still published a summary full of
+    figures — the shape this repository keeps finding, one level up from the
+    data. A `not_run` record must carry no numeric summary at all.
+    """
+    for path in sorted((ROOT / "evals" / "ai" / "results").glob("*.json")):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if payload["run"]["status"] != "not_run":
+            continue
+        summary = payload.get("summary") or {}
+        numbers = {
+            key: value
+            for key, value in summary.items()
+            if isinstance(value, int | float) and not isinstance(value, bool)
+        }
+        assert numbers == {}, f"{path.name} is not_run but reports {numbers}"
+        assert not payload.get("cases"), f"{path.name} is not_run but lists cases"
