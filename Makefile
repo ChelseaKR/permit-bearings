@@ -123,5 +123,8 @@ ai-eval:
 	PYTHONPATH=src .venv/bin/python -m permit_pathways.ai.eval grounding \
 		--cases evals/ai/grounding-cases.json \
 		--output evals/ai/results/$(AI_EVAL_PREFIX)-grounding.json
+	PYTHONPATH=src .venv/bin/python -m permit_pathways.ai.eval ask \
+		--cases evals/ai/ask-cases.json \
+		--output evals/ai/results/$(AI_EVAL_PREFIX)-ask.json
 
 verify: install require-node lint type test security bundle-check copy-check browser-test readability-check evidence-export-check

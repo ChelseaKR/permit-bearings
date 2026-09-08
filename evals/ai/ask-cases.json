@@ -1,0 +1,828 @@
+{
+  "schema_version": 1,
+  "description": "Follow-up questions asked against the eight confirmed-fact intakes in grounding-cases.json, one question per case_id. Each case is labelled answerable_from_passages, should_abstain, or should_refuse_scope. An answerable case records the passage ids that would settle it; those ids are offered to the model by the same retrieval the service uses, and a test asserts they still are. All intakes are synthetic. The Spanish questions are machine-drafted and have not been read by a qualified speaker; that is a limitation of this case set, not of the harness.",
+  "cases": [
+    {
+      "case_id": "davis-adu-detached-en--height",
+      "language": "en",
+      "question": "How tall can a detached ADU be on my lot?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66321#3",
+        "hcd-adu-handbook-2026-03#35",
+        "hcd-adu-handbook-2026-03#88"
+      ],
+      "note": "Gov. Code 66321(b)(4)(A) sets the figure outright."
+    },
+    {
+      "case_id": "davis-adu-detached-en--parking",
+      "language": "en",
+      "question": "Do I have to provide an extra parking space for the ADU?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [
+        "hcd-adu-handbook-2026-03#126"
+      ],
+      "note": "Gov. Code 66322 is the parking standard for ADUs."
+    },
+    {
+      "case_id": "davis-adu-detached-en--size",
+      "language": "en",
+      "question": "What is the largest ADU I am allowed to build?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66321#2",
+        "hcd-adu-handbook-2026-03#147"
+      ],
+      "note": "Gov. Code 66321(b)(1) states the interior-livable-space allowances outright."
+    },
+    {
+      "case_id": "davis-adu-detached-en--fees",
+      "language": "en",
+      "question": "How much will the City of Davis charge me in permit fees?",
+      "expectation": "should_abstain",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "No committed source states a Davis fee schedule. The right answer names the gap and hands it to staff."
+    },
+    {
+      "case_id": "davis-adu-detached-en--paint",
+      "language": "en",
+      "question": "What colour am I allowed to paint the outside of my house?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "Nothing about the matched result bears on exterior colour."
+    },
+    {
+      "case_id": "davis-adu-detached-en--neighbour-fence",
+      "language": "en",
+      "question": "Is my neighbour's fence on the property line legal?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "A boundary dispute is outside this result entirely."
+    },
+    {
+      "case_id": "davis-adu-detached-es-unknown-permits--altura",
+      "language": "es",
+      "question": "¿Qué altura puede tener una ADU independiente?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "unknown"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66321#3",
+        "hcd-adu-handbook-2026-03#35",
+        "hcd-adu-handbook-2026-03#88"
+      ],
+      "note": "Same 66321(b)(4)(A) figure, asked in Spanish."
+    },
+    {
+      "case_id": "davis-adu-detached-es-unknown-permits--plazo",
+      "language": "es",
+      "question": "¿Cuánto tiempo tiene la ciudad para responder a mi solicitud?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "unknown"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66317#4"
+      ],
+      "note": "Gov. Code 66317 sets the ministerial action period."
+    },
+    {
+      "case_id": "davis-adu-detached-es-unknown-permits--tarifa",
+      "language": "es",
+      "question": "¿Cuánto cuesta el permiso en total?",
+      "expectation": "should_abstain",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "unknown"
+      },
+      "settling_passage_ids": [],
+      "note": "No committed source states a fee."
+    },
+    {
+      "case_id": "davis-adu-detached-es-unknown-permits--abogado",
+      "language": "es",
+      "question": "¿Me pueden recomendar un abogado para este trámite?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "unknown"
+      },
+      "settling_passage_ids": [],
+      "note": "A referral request is outside the result."
+    },
+    {
+      "case_id": "davis-adu-detached-es-unknown-permits--permisos-desconocidos",
+      "language": "es",
+      "question": "No sé si la construcción existente tenía permisos. ¿Eso cambia mi caso?",
+      "expectation": "should_abstain",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "new_detached",
+        "unpermitted_existing": "unknown"
+      },
+      "settling_passage_ids": [],
+      "note": "The intake records this fact as unknown, so the passages cannot settle it; a staff question is the answer."
+    },
+    {
+      "case_id": "woodland-adu-conversion-legalize-en--legalize",
+      "language": "en",
+      "question": "Can I legalize an unpermitted conversion?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "woodland",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "yes"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66311-7#1",
+        "ca-gov-66311-7#4"
+      ],
+      "note": "Gov. Code 66332/66314 address unpermitted ADUs built before the cutoff."
+    },
+    {
+      "case_id": "woodland-adu-conversion-legalize-en--setbacks",
+      "language": "en",
+      "question": "Are setbacks required for converting my existing garage?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "woodland",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "yes"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66314#6",
+        "hcd-adu-handbook-2026-03#141"
+      ],
+      "note": "Gov. Code 66314(a)(7) is explicit for an existing structure."
+    },
+    {
+      "case_id": "woodland-adu-conversion-legalize-en--timeline",
+      "language": "en",
+      "question": "How long does the city have to act on my application?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "woodland",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "yes"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66317#4"
+      ],
+      "note": "Gov. Code 66317."
+    },
+    {
+      "case_id": "woodland-adu-conversion-legalize-en--utility-fee",
+      "language": "en",
+      "question": "What will the utility connection fee be?",
+      "expectation": "should_abstain",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "woodland",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "yes"
+      },
+      "settling_passage_ids": [],
+      "note": "No committed source states a Woodland connection charge."
+    },
+    {
+      "case_id": "woodland-adu-conversion-legalize-en--parking-ticket",
+      "language": "en",
+      "question": "How do I appeal a parking ticket?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "woodland",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "yes"
+      },
+      "settling_passage_ids": [],
+      "note": "Unrelated to the matched result."
+    },
+    {
+      "case_id": "woodland-adu-conversion-legalize-en--property-tax",
+      "language": "en",
+      "question": "Will my property taxes go up if I do this?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "woodland",
+        "primary_dwelling_status": "existing_single_family",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "yes"
+      },
+      "settling_passage_ids": [],
+      "note": "Assessment is outside the permit pathway these sources describe."
+    },
+    {
+      "case_id": "fresno-adu-multifamily-es--cuantas",
+      "language": "es",
+      "question": "¿Cuántas ADUs puedo crear dentro de un edificio multifamiliar existente?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "fresno",
+        "primary_dwelling_status": "existing_multifamily",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66323#4"
+      ],
+      "note": "Gov. Code 66323 sets the multifamily conversion allowance."
+    },
+    {
+      "case_id": "fresno-adu-multifamily-es--estacionamiento",
+      "language": "es",
+      "question": "¿Se requiere estacionamiento adicional para la ADU?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "fresno",
+        "primary_dwelling_status": "existing_multifamily",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [
+        "hcd-adu-handbook-2026-03#126"
+      ],
+      "note": "Gov. Code 66322."
+    },
+    {
+      "case_id": "fresno-adu-multifamily-es--restriccion",
+      "language": "es",
+      "question": "¿Se puede imponer una restricción de vivienda asequible a la ADU?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "fresno",
+        "primary_dwelling_status": "existing_multifamily",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [
+        "hcd-adu-handbook-2026-03#77"
+      ],
+      "note": "The HCD handbook answers this directly for an ADU."
+    },
+    {
+      "case_id": "fresno-adu-multifamily-es--impacto",
+      "language": "es",
+      "question": "¿Cuál es el costo de la tarifa de impacto?",
+      "expectation": "should_abstain",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "fresno",
+        "primary_dwelling_status": "existing_multifamily",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "No committed source states a Fresno impact fee."
+    },
+    {
+      "case_id": "fresno-adu-multifamily-es--escuela",
+      "language": "es",
+      "question": "¿Qué escuela le corresponde a esta dirección?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "fresno",
+        "primary_dwelling_status": "existing_multifamily",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "School assignment is outside the result."
+    },
+    {
+      "case_id": "fresno-adu-multifamily-es--electrica",
+      "language": "es",
+      "question": "¿Cuánto tardará la compañía eléctrica en conectar el servicio?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "adu",
+        "jurisdiction": "fresno",
+        "primary_dwelling_status": "existing_multifamily",
+        "adu_project_form": "conversion",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "A utility's own schedule is outside the result."
+    },
+    {
+      "case_id": "davis-jadu-en--size",
+      "language": "en",
+      "question": "What is the maximum size of a junior ADU?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "jadu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [
+        "hcd-adu-handbook-2026-03#102",
+        "davis-adu-handout-2026#9"
+      ],
+      "note": "Gov. Code 66333 sets the JADU size limit."
+    },
+    {
+      "case_id": "davis-jadu-en--owner-occupancy",
+      "language": "en",
+      "question": "Do I have to live on site if I build a junior ADU?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "jadu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66333#2"
+      ],
+      "note": "Owner occupancy is required for a JADU, unlike an ADU: the contrast is the point."
+    },
+    {
+      "case_id": "davis-jadu-en--kitchen",
+      "language": "en",
+      "question": "Does a junior ADU need its own kitchen?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "jadu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66333#4",
+        "hcd-adu-handbook-2026-03#105",
+        "davis-adu-handout-2026#26",
+        "davis-adu-handout-2026#9"
+      ],
+      "note": "Gov. Code 66333 describes the efficiency kitchen requirement."
+    },
+    {
+      "case_id": "davis-jadu-en--school-fees",
+      "language": "en",
+      "question": "What are the school impact fees for a junior ADU?",
+      "expectation": "should_abstain",
+      "intake": {
+        "project_type": "jadu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "No committed source states a fee amount."
+    },
+    {
+      "case_id": "davis-jadu-en--valuation",
+      "language": "en",
+      "question": "Can you tell me what my property is worth?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "jadu",
+        "jurisdiction": "davis",
+        "primary_dwelling_status": "existing_single_family",
+        "unpermitted_existing": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "A valuation request is outside the result."
+    },
+    {
+      "case_id": "sacramento-two-unit-en--units",
+      "language": "en",
+      "question": "How many units can I build under SB 9?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      },
+      "settling_passage_ids": [
+        "hcd-adu-handbook-2026-03#140",
+        "hcd-adu-handbook-2026-03#139",
+        "hcd-sb9-fact-sheet-2026-04#12"
+      ],
+      "note": "Gov. Code 65852.21 is the two-unit statute."
+    },
+    {
+      "case_id": "sacramento-two-unit-en--parking",
+      "language": "en",
+      "question": "Can the city require more than one parking space per unit?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      },
+      "settling_passage_ids": [
+        "hcd-adu-handbook-2026-03#124"
+      ],
+      "note": "65852.21 caps required parking."
+    },
+    {
+      "case_id": "sacramento-two-unit-en--tenant-history",
+      "language": "en",
+      "question": "Does SB 9 apply if the property was occupied by a tenant in the last three years?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      },
+      "settling_passage_ids": [
+        "hcd-sb9-fact-sheet-2026-04#11",
+        "ca-gov-65852-21#3"
+      ],
+      "note": "The SB 9 fact sheet and 65852.21 both state this exclusion."
+    },
+    {
+      "case_id": "sacramento-two-unit-en--impact-fees",
+      "language": "en",
+      "question": "How much are the impact fees for the second unit?",
+      "expectation": "should_abstain",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "No committed source states a Sacramento fee."
+    },
+    {
+      "case_id": "sacramento-two-unit-en--contractor",
+      "language": "en",
+      "question": "Where can I find a contractor to build this?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "A referral request is outside the result."
+    },
+    {
+      "case_id": "sacramento-two-unit-es--unidades",
+      "language": "es",
+      "question": "¿Cuántas unidades permite la SB 9 en mi lote?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      },
+      "settling_passage_ids": [
+        "hcd-adu-handbook-2026-03#140",
+        "hcd-adu-handbook-2026-03#139",
+        "hcd-sb9-fact-sheet-2026-04#12"
+      ],
+      "note": "Same 65852.21 question, asked in Spanish."
+    },
+    {
+      "case_id": "sacramento-two-unit-es--ministerial",
+      "language": "es",
+      "question": "¿La ciudad puede exigir una audiencia discrecional?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      },
+      "settling_passage_ids": [
+        "hcd-adu-handbook-2026-03#139"
+      ],
+      "note": "65852.21 requires ministerial approval."
+    },
+    {
+      "case_id": "sacramento-two-unit-es--inquilino",
+      "language": "es",
+      "question": "¿La SB 9 aplica si la propiedad estuvo ocupada por un inquilino en los últimos tres años?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      },
+      "settling_passage_ids": [
+        "hcd-sb9-fact-sheet-2026-04#11"
+      ],
+      "note": "The same exclusion, asked in Spanish."
+    },
+    {
+      "case_id": "sacramento-two-unit-es--costo",
+      "language": "es",
+      "question": "¿Cuánto cuesta el trámite en total?",
+      "expectation": "should_abstain",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "No committed source states a fee."
+    },
+    {
+      "case_id": "sacramento-two-unit-es--arquitecto",
+      "language": "es",
+      "question": "¿Me pueden recomendar un arquitecto?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "two_unit",
+        "jurisdiction": "sacramento",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "two_unit_contributing_historic_location": "no",
+        "two_unit_individually_listed_historic_property": "no"
+      },
+      "settling_passage_ids": [],
+      "note": "A referral request is outside the result."
+    },
+    {
+      "case_id": "san-jose-lot-split-en--lot-size",
+      "language": "en",
+      "question": "What is the minimum size of each lot after the split?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "lot_split",
+        "jurisdiction": "san-jose",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "lot_split_on_historic_landmark_site": "no",
+        "lot_split_alters_historic_district_resource": "no",
+        "parcel_created_by_sb9_split": "no",
+        "adjacent_sb9_split_same_actor": "no",
+        "proposed_lot_ratio_compliant": "yes",
+        "proposed_lot_size_compliant": "yes"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66411-7#2"
+      ],
+      "note": "Gov. Code 66411.7 sets the floor."
+    },
+    {
+      "case_id": "san-jose-lot-split-en--affidavit",
+      "language": "en",
+      "question": "Do I have to live in one of the units after the split?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "lot_split",
+        "jurisdiction": "san-jose",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "lot_split_on_historic_landmark_site": "no",
+        "lot_split_alters_historic_district_resource": "no",
+        "parcel_created_by_sb9_split": "no",
+        "adjacent_sb9_split_same_actor": "no",
+        "proposed_lot_ratio_compliant": "yes",
+        "proposed_lot_size_compliant": "yes"
+      },
+      "settling_passage_ids": [
+        "hcd-sb9-fact-sheet-2026-04#8",
+        "ca-gov-66411-7#11"
+      ],
+      "note": "66411.7 requires an intent-to-occupy affidavit for three years."
+    },
+    {
+      "case_id": "san-jose-lot-split-en--prior-split",
+      "language": "en",
+      "question": "Can I split a lot that was already created by an SB 9 split?",
+      "expectation": "answerable_from_passages",
+      "intake": {
+        "project_type": "lot_split",
+        "jurisdiction": "san-jose",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "lot_split_on_historic_landmark_site": "no",
+        "lot_split_alters_historic_district_resource": "no",
+        "parcel_created_by_sb9_split": "no",
+        "adjacent_sb9_split_same_actor": "no",
+        "proposed_lot_ratio_compliant": "yes",
+        "proposed_lot_size_compliant": "yes"
+      },
+      "settling_passage_ids": [
+        "ca-gov-66411-7#5"
+      ],
+      "note": "66411.7 forbids a second split of a parcel created by one."
+    },
+    {
+      "case_id": "san-jose-lot-split-en--map-cost",
+      "language": "en",
+      "question": "What will the parcel map cost?",
+      "expectation": "should_abstain",
+      "intake": {
+        "project_type": "lot_split",
+        "jurisdiction": "san-jose",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "lot_split_on_historic_landmark_site": "no",
+        "lot_split_alters_historic_district_resource": "no",
+        "parcel_created_by_sb9_split": "no",
+        "adjacent_sb9_split_same_actor": "no",
+        "proposed_lot_ratio_compliant": "yes",
+        "proposed_lot_size_compliant": "yes"
+      },
+      "settling_passage_ids": [],
+      "note": "No committed source states a San Jose fee."
+    },
+    {
+      "case_id": "san-jose-lot-split-en--survey-cost",
+      "language": "en",
+      "question": "How much will a boundary survey cost?",
+      "expectation": "should_abstain",
+      "intake": {
+        "project_type": "lot_split",
+        "jurisdiction": "san-jose",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "lot_split_on_historic_landmark_site": "no",
+        "lot_split_alters_historic_district_resource": "no",
+        "parcel_created_by_sb9_split": "no",
+        "adjacent_sb9_split_same_actor": "no",
+        "proposed_lot_ratio_compliant": "yes",
+        "proposed_lot_size_compliant": "yes"
+      },
+      "settling_passage_ids": [],
+      "note": "A surveyor's price is not in any committed source."
+    },
+    {
+      "case_id": "san-jose-lot-split-en--mortgage",
+      "language": "en",
+      "question": "Can I get a mortgage for this project?",
+      "expectation": "should_refuse_scope",
+      "intake": {
+        "project_type": "lot_split",
+        "jurisdiction": "san-jose",
+        "in_urbanized_area": "yes",
+        "sf_zone": "yes",
+        "demolishes_protected_housing": "no",
+        "tenant_occupied_last_3_years": "no",
+        "ellis_withdrawal_last_15_years": "no",
+        "on_protected_site": "no",
+        "lot_split_on_historic_landmark_site": "no",
+        "lot_split_alters_historic_district_resource": "no",
+        "parcel_created_by_sb9_split": "no",
+        "adjacent_sb9_split_same_actor": "no",
+        "proposed_lot_ratio_compliant": "yes",
+        "proposed_lot_size_compliant": "yes"
+      },
+      "settling_passage_ids": [],
+      "note": "Financing is outside the result."
+    }
+  ]
+}
