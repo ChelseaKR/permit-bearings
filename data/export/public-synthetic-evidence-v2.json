@@ -140,7 +140,7 @@
     {
       "path": "corpus/ordinances/SOURCES.json",
       "role": "public_source_index",
-      "raw_sha256": "sha256:a3f80495e81769e7031ab0dd80f861b921fb3465906afd15cb88882ff84a3cc1"
+      "raw_sha256": "sha256:6eef2e5d70172cbdc91c2c6cc827de6012b9341b01d189ec56a92477a62600f6"
     },
     {
       "path": "corpus/ordinances/san-diego.txt",

@@ -226,12 +226,91 @@ jobs:
       # downloaded is evidence about the network: it must not open an alert,
       # and it must not close one either, because nothing was learned about
       # the law in that run.
+      # The seven scanned ordinances were not watched by anything until now:
+      # every published conformance result says so in its own disclaimer. The
+      # instrument is a findings diff rather than a content hash, because
+      # municipal-code publishers reflow their markup — re-extracting all seven
+      # reproduced the committed text byte-for-byte zero times out of seven, so
+      # a hash watch would have reported every source as changed on its first
+      # run. See `src/permit_pathways/ordinance_watch.py`.
+      #
+      # This needs the locked environment: one of the seven is a PDF, and its
+      # text extractor is in the `ai` extra. The steps above deliberately run on
+      # the dependency-free core, so the install happens here rather than at the
+      # top of the job.
+      - name: Set up locked Python toolchain
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: false
+      - name: Install the locked environment
+        run: make install
+      - name: Re-read the scanned ordinances
+        id: ordinances
+        run: |
+          set +e
+          set -o pipefail
+          .venv/bin/python scripts/watch_ordinances.py | tee ordinances.txt
+          # PIPESTATUS[0] rather than $? : the pipeline's status is `tee`'s
+          # unless pipefail happens to be set, and the value being read here
+          # decides whether a stale published claim about a named city gets
+          # reported at all.
+          echo "exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+      # Exit 3 means a source was read and no longer flags what its published
+      # result says it flags. Exit 2 means a source could not be read, which is
+      # evidence about a publisher and never about the ordinance.
+      - name: Report a changed ordinance source
+        if: steps.ordinances.outputs.exit_code == '3'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: Scanned ordinance source changed
+        run: |
+          set -euo pipefail
+          body="$(printf 'A scanned ordinance no longer flags what its published result says it flags, as of %s.\n\nThis is a proposal, not an adoption. Re-retrieve the text into `corpus/ordinances/<slug>.txt`, re-record `watch.text_sha256` in `corpus/ordinances/SOURCES.json`, re-run `scripts/scan_ordinances.py <date>`, and say in the changelog what moved.\n\n```\n%s\n```\n\nRun: %s' \
+            "$(date -u +%F)" \
+            "$(cat ordinances.txt)" \
+            "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}")"
+          gh label create currency \
+            --color B60205 \
+            --description "Opened by the weekly source currency watch" \
+            >/dev/null 2>&1 || true
+          # An undated title, for the reason the two steps above carry: the
+          # condition stays true until a person re-adopts, and a dated title
+          # turns one unresolved condition into a weekly pile.
+          existing="$(gh issue list --state open --limit 1 --label currency \
+            --search "\"$TITLE\" in:title" \
+            --json number,createdAt --jq '.[0] | select(.) | "\(.number) \(.createdAt)"')"
+          if [ -n "$existing" ]; then
+            number="${existing%% *}"
+            opened="${existing##* }"
+            days="$(( ( $(date -u +%s) - $(date -u -d "$opened" +%s 2>/dev/null || printf '%s' "$(date -u +%s)") ) / 86400 ))"
+            gh issue comment "$number" \
+              --body "$(printf 'Still open after %s day(s).\n\n%s' "$days" "$body")"
+            echo "commented on existing ordinance issue #$number"
+          else
+            gh issue create --title "$TITLE" --label currency --body "$body"
+          fi
+      - name: Note ordinance sources that could not be re-read
+        if: steps.ordinances.outputs.exit_code == '2'
+        run: |
+          echo "::warning title=Ordinance sources unverifiable::One or more scanned ordinances could not be re-read this run, or the page served was not the chapter the source names. The committed text and its published result stand; nothing was concluded about the ordinance. See the run summary."
+      - name: Publish the ordinance watch to the run summary
+        if: always()
+        run: |
+          [ -f ordinances.txt ] || exit 0
+          {
+            echo "### Scanned ordinance watch"
+            echo
+            echo '```'
+            cat ordinances.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Close currency alerts that have cleared
-        if: ${{ always() && (steps.watch.outputs.exit_code == '0' || steps.letters.outputs.exit_code == '0') }}
+        if: ${{ always() && (steps.watch.outputs.exit_code == '0' || steps.letters.outputs.exit_code == '0' || steps.ordinances.outputs.exit_code == '0') }}
         env:
           GH_TOKEN: ${{ github.token }}
           WATCH_EXIT: ${{ steps.watch.outputs.exit_code }}
           LETTERS_EXIT: ${{ steps.letters.outputs.exit_code }}
+          ORDINANCES_EXIT: ${{ steps.ordinances.outputs.exit_code }}
         run: |
           set -euo pipefail
           run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
@@ -263,6 +342,11 @@ jobs:
           if [ "${LETTERS_EXIT:-}" = "0" ]; then
             close_cleared "HCD HAU letters dataset drifted" \
               "The committed dataset matches the dashboard again."
+          fi
+          if [ "${ORDINANCES_EXIT:-}" = "0" ]; then
+            close_cleared "Scanned ordinance source changed" \
+              "Every scanned ordinance was re-read and flags exactly what its published result says it flags." \
+              "--label currency"
           fi
           # The label keeps the class findable after a title edit.
           gh label create currency \

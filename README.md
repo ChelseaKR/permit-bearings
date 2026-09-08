@@ -681,8 +681,31 @@ basis and HCD precedent into the result. Because those strings are copies,
 the same corpus and fails when one no longer matches the checks that produced
 it; `make bundle-check` runs that gate, so a published result that disagrees
 with `data/conformance/checks.json` breaks the build instead of being served.
-A published result is point-in-time: it records the date the scan ran, and no
-source-currency watch monitors the scanned ordinance for later amendment.
+A published result is point-in-time: it records the date the scan ran, and
+nothing about that result changes on its own. What is no longer true is that
+the ordinance behind it goes unwatched. `make bundle-check` now also holds each
+committed ordinance text to a recorded SHA-256 and to a declared chapter
+identifier, so the bytes every finding is derived from cannot be edited
+unnoticed; and the weekly `Source currency watch` workflow re-reads all seven
+published sources and files one issue when a chapter stops flagging what its
+published result says it flags.
+
+That watch compares **findings, not content hashes**, and the reason is
+measured: re-extracting all seven sources reproduced the committed text
+byte-for-byte zero times out of seven, because municipal-code publishers reflow
+their markup, so a hash comparison would have called every source changed on
+its first run. It also refuses to conclude anything from a page that does not
+carry the chapter designation it claims to serve — one of the seven publisher
+URLs now answers `200` with a code-migration notice, and scanning that notice
+yields no findings at all.
+
+**The watch proposes; it never adopts.** Re-scanning an ordinance republishes a
+statement about a named city, so it is a person's decision: re-retrieve the
+text, re-record the digest, re-run the scanner, and say in the changelog what
+moved. The disclaimer on the published results is unchanged for the same
+reason — it will keep saying no watch monitors these sources until the
+scheduled watch has actually run, because machinery that has never executed is
+not machinery that works.
 
 The held-out evaluation contract is implemented as a validated
 `status: not_run` planning manifest in

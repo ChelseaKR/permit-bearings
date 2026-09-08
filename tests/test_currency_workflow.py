@@ -371,3 +371,76 @@ def test_close_step_closes_and_comments_when_the_watch_is_green(tmp_path):
     # Only the watch's alert clears; the letters condition is still drifted.
     assert "Source currency review needed" in calls
     assert "HCD HAU letters dataset drifted" not in calls
+
+
+# --- The scanned-ordinance watch -----------------------------------------
+#
+# The seven ordinance scans had no watch at all until this workflow gained
+# one, and a weekly schedule means nothing but a test that reads the file
+# will ever notice these steps being broken or deleted.
+
+
+def test_the_ordinance_watch_runs_before_anything_reads_its_verdict():
+    workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
+    watch_at = workflow.index("      - name: Re-read the scanned ordinances\n")
+    close_at = workflow.index("      - name: Close currency alerts that have cleared\n")
+    install_at = workflow.index("      - name: Install the locked environment\n")
+
+    # `steps.ordinances.outputs` is empty for any step that runs first, and an
+    # empty output compares unequal to every code, so a close step placed
+    # above the watch would silently stop closing.
+    assert install_at < watch_at < close_at
+
+
+def test_the_ordinance_watch_reads_the_scripts_exit_code_not_the_pipes():
+    # `python ... | tee` makes `$?` tee's. The value decides whether a stale
+    # published claim about a named city is reported at all.
+    step = _workflow_step(
+        WORKFLOW_PATH.read_text(encoding="utf-8"), "Re-read the scanned ordinances"
+    )
+    assert "${PIPESTATUS[0]}" in step
+    assert 'echo "exit_code=$?"' not in step
+
+
+def test_only_a_read_source_can_open_the_ordinance_alert():
+    workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
+    report = _workflow_step(workflow, "Report a changed ordinance source")
+    note = _workflow_step(workflow, "Note ordinance sources that could not be re-read")
+
+    # 3 is "read, and it no longer flags what we publish". 2 is "not read".
+    assert "steps.ordinances.outputs.exit_code == '3'" in report
+    assert "'2'" not in report
+    assert "steps.ordinances.outputs.exit_code == '2'" in note
+    assert "gh issue create" not in note
+
+
+def test_the_ordinance_alert_converges_on_one_undated_labelled_issue():
+    step = _workflow_step(
+        WORKFLOW_PATH.read_text(encoding="utf-8"), "Report a changed ordinance source"
+    )
+    assert "TITLE: Scanned ordinance source changed" in step
+    assert "--label currency" in step
+    assert "gh label create currency" in step
+    assert "gh issue list" in step
+    assert "createdAt" in step
+    assert "days" in step
+
+
+def test_a_clean_ordinance_run_closes_the_alert_it_opened():
+    step = _workflow_step(
+        WORKFLOW_PATH.read_text(encoding="utf-8"),
+        "Close currency alerts that have cleared",
+    )
+    assert "steps.ordinances.outputs.exit_code == '0'" in step
+    assert 'close_cleared "Scanned ordinance source changed"' in step
+
+
+def test_the_ordinance_alert_says_it_is_a_proposal_not_an_adoption():
+    # A watch that rewrote published findings about a named city on a cron
+    # would be the opposite of what this repository is for. The issue body is
+    # where that instruction reaches the person who acts on it.
+    step = _workflow_step(
+        WORKFLOW_PATH.read_text(encoding="utf-8"), "Report a changed ordinance source"
+    )
+    assert "proposal, not an adoption" in step
+    assert "scripts/scan_ordinances.py" in step
