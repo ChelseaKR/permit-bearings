@@ -9,6 +9,7 @@ from typing import Any
 import pytest
 
 from permit_pathways.ai import facts
+from permit_pathways.ai import provider as provider_module
 from permit_pathways.ai.corpus import CorpusIndex
 from permit_pathways.ai.eval import (
     OUTCOME_ABSTAINED,
@@ -294,7 +295,13 @@ def test_committed_results_are_traceable_live_runs() -> None:
         run = payload["run"]
         assert run["status"] in {"recorded_live_run", "not_run"}
         if run["status"] == "recorded_live_run":
-            assert run["provider"] in {"anthropic", "bedrock"}
+            # `local` joins the two hosted providers here because the service
+            # can now run against a self-hosted endpoint. Leaving it out would
+            # have made this contract reject the first honest local result,
+            # which is the opposite of what it is for. It stays an allowlist:
+            # a result naming a provider this package cannot build is a
+            # result nothing produced.
+            assert run["provider"] in set(provider_module.PROVIDER_NAMES)
             assert run["model"] and len(run["commit"]) == 40
             assert (
                 payload["summary"]["cases"]

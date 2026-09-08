@@ -39,6 +39,11 @@ published a versioned release.
     answer. A `usage` block the runtime omitted counts as zero rather than
     being invented; the budget counts requests, not tokens, so a missing
     count cannot buy anyone a larger allowance.
+  - The committed-results contract now accepts `local` beside the two hosted
+    providers. Leaving it out would have made that contract reject the first
+    honest local result, which is the opposite of what it is for; it stays an
+    allowlist, so a result naming a provider this package cannot build is
+    still refused.
   - `make ai-eval` runs both suites against `local`, and the output filename
     now survives a model name containing `:` or `/`. **No local result is
     committed**: running one needs a host with the runtime and the weights,
