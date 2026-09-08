@@ -25,7 +25,13 @@ from . import staff_questions as staff_module
 from .budget import Budget, BudgetExhausted, budget_from_env
 from .corpus import CorpusIndex
 from .intake import IntakeError
-from .provider import Provider, ProviderError, ProviderSettings, provider_from_settings
+from .provider import (
+    Provider,
+    ProviderError,
+    ProviderSettings,
+    provider_from_settings,
+    provider_kind,
+)
 
 DEFAULT_ORIGINS = ("http://localhost:8765", "http://127.0.0.1:8765", "null")
 DEFAULT_HOST = "127.0.0.1"
@@ -77,6 +83,11 @@ class ServiceContext:
             "status": "ok",
             "service": "permit-bearings-ai",
             "provider": self.provider.name,
+            # Where the applicant's words go, in one word, so a page can say
+            # it without having to know every provider name this package
+            # might grow. `local` means the text never leaves the host the
+            # operator runs.
+            "provider_kind": provider_kind(self.provider.name),
             "model": self.provider.model,
             "prompt_versions": {
                 "intake": intake_module.PROMPT_VERSION,

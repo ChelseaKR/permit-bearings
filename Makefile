@@ -109,7 +109,13 @@ serve-ai:
 # Live evaluation of the runtime AI layer; needs a configured provider.
 # Results are dated and name the provider/model so a committed number is
 # always traceable to one run (see evals/ai/README.md).
-AI_EVAL_PREFIX ?= $(shell date -u +%Y-%m-%d)-$(or $(PERMIT_AI_PROVIDER),anthropic)-$(subst .,-,$(or $(PERMIT_AI_MODEL),claude-sonnet-5))
+#
+# `:` and `/` are substituted as well as `.` because open-weight model names
+# carry them (`qwen2.5:14b`, `meta-llama/Llama-3.1-8B-Instruct`) and a `/`
+# would make the output path a directory that does not exist rather than a
+# file name.
+AI_EVAL_MODEL_SLUG = $(subst /,-,$(subst :,-,$(subst .,-,$(or $(PERMIT_AI_MODEL),claude-sonnet-5))))
+AI_EVAL_PREFIX ?= $(shell date -u +%Y-%m-%d)-$(or $(PERMIT_AI_PROVIDER),anthropic)-$(AI_EVAL_MODEL_SLUG)
 ai-eval:
 	PYTHONPATH=src .venv/bin/python -m permit_pathways.ai.eval intake \
 		--cases evals/ai/intake-cases.json \

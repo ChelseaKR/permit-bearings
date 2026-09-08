@@ -7,6 +7,51 @@ published a versioned release.
 
 ### Added
 
+- **A local-inference provider, so the applicant's own words can stay on the
+  operator's host.** `PERMIT_AI_PROVIDER=local` points the same runtime AI
+  service at an OpenAI-compatible chat-completions endpoint on localhost or
+  the jurisdiction's own network (`PERMIT_AI_LOCAL_URL`, a required
+  `PERMIT_AI_MODEL`, an optional `PERMIT_AI_LOCAL_API_KEY`), over plain HTTP
+  from the standard library. No second SDK, no streaming, no bundled weights
+  or runtime, and the Lambda deployment is unchanged (issue #138).
+  - **It removes a subprocessor, not a control.** Every guard the AI layer
+    rests on — allowed-value checks, verbatim quote binding, corpus
+    verification, withheld counts — runs in this service on the model's
+    output, above the provider interface, so it applies identically whichever
+    endpoint answered. A test runs the same fixed response through the
+    scripted provider and through a stub local endpoint and asserts the
+    extracted structure is equal except for the provider name, model, and
+    token usage; another asserts that a quote the applicant never wrote is
+    downgraded to `unknown` on the local path exactly as on the hosted one.
+  - `/health` now reports `provider_kind`, `hosted` or `local`, so a page can
+    label where the text goes without keeping a list of provider names in
+    step with this module.
+  - **No default model name, on purpose.** Every self-hosted runtime serves
+    something different, and a guessed default would reach the endpoint as a
+    request for a model it does not have — an error about the wrong thing, at
+    the first applicant request rather than at startup. `PERMIT_AI_LOCAL_URL`
+    is likewise validated at startup: HTTP(S) only, no inline credentials, no
+    fragment.
+  - An unreachable endpoint, an HTTP error, a truncated answer, a
+    content-filter stop, an empty completion and an HTML error page served
+    with HTTP 200 all raise `ProviderError`, which every endpoint already
+    turns into a 503, so the page stays static rather than showing a partial
+    answer. A `usage` block the runtime omitted counts as zero rather than
+    being invented; the budget counts requests, not tokens, so a missing
+    count cannot buy anyone a larger allowance.
+  - The committed-results contract now accepts `local` beside the two hosted
+    providers. Leaving it out would have made that contract reject the first
+    honest local result, which is the opposite of what it is for; it stays an
+    allowlist, so a result naming a provider this package cannot build is
+    still refused.
+  - `make ai-eval` runs both suites against `local`, and the output filename
+    now survives a model name containing `:` or `/`. **No local result is
+    committed**: running one needs a host with the runtime and the weights,
+    and a result naming a model nothing has answered is the placeholder this
+    directory's contract test exists to refuse. What a smaller open-weight
+    model costs in abstention and citation resolution is a measurement to
+    take, not an assumption to publish.
+
 - **Walking distance over an offline pedestrian network, reported beside the
   straight line.** Both transit standards are written in walking distance
   (§ 66322(a)(1): "within one-half mile walking distance of public transit")

@@ -88,6 +88,20 @@ Consequential choices:
   should move only against a live invocation. The credential comes only from
   the environment; no key is ever written to the repository or to a file the
   service creates.
+- **A third provider, `local`, changes the destination and nothing else.**
+  Both providers above send the applicant's own words to a third party, and
+  `docs/DATA-FLOW.md` records that as the one new data flow this ADR
+  introduced. A county whose counsel will not approve that flow otherwise has
+  no AI option at all. `PERMIT_AI_PROVIDER=local` points the same service at
+  an OpenAI-compatible chat endpoint the operator runs, over plain HTTP from
+  the standard library — no second SDK, no bundled weights or runtime. Every
+  control this ADR relies on is mechanical and sits above the provider
+  interface, so allowed-value checks, verbatim quote binding, corpus
+  verification and the withheld counts apply unchanged; `/health` reports
+  `provider_kind` so a page can say which destination is in use. What a
+  smaller open-weight model costs in abstention and citation resolution is
+  for the evaluation harness to answer, not for this decision to assume, and
+  no such run is recorded yet.
 - **No applicant data is stored or logged by the service.** The service keeps
   no request body, writes no applicant text to disk or logs, and returns
   nothing it did not compute for that request. The model provider's own
