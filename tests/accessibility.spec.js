@@ -149,6 +149,148 @@ async function expandDisclosureWithKeyboard(details, key = "Enter") {
   return summary;
 }
 
+// ---------------------------------------------------------------------------
+// The program attestation, and why it is not allowed to fail as accessibility
+// ---------------------------------------------------------------------------
+//
+// `data/availability/woodland-preapproved-adu-program.json` records that a person
+// opened the City of Woodland program page on `checked_on` and read what the
+// `excerpt` says. `recheck_due_on` is when that reading stops counting. The
+// browser resolves both against **UTC** today, deliberately, so Python and the
+// page cannot disagree near local midnight.
+//
+// Measured on `origin/main` @ b0fbd41b7 on 2026-09-09, with `recheck_due_on:
+// 2026-09-08` one day past: the suite reported **6 failures**, every one of them
+// `expect(locator).toBeVisible()` on `#journeyEntrySummary` or a sibling, and not
+// one of them naming a date, a file, or an attestation. Of those six, five assert
+// nothing whatsoever about the record:
+//
+//   * two are the only axe WCAG scans of the packet page (320px and 390px);
+//   * one is print-media isolation;
+//   * one is the Spanish `lang` handoff;
+//   * one is the evidence summary and its print action.
+//
+// So while the record sits outside its window the packet page is scanned by axe
+// **0 times out of 2** viewports, and the run says "toBeVisible() failed", which
+// reads as a WCAG regression and sends a reader into the CSS.
+//
+// The split below is therefore: the five accessibility tests run against a
+// fixture whose attestation window is anchored to the run's own UTC date, so they
+// measure accessibility; and the committed record's currency is asserted by one
+// test, first in the file, which names the file, the field, both dates and how
+// far past due it is. The fixture is a synthetic clock for a test browser. It is
+// not an attestation about the City of Woodland, and nothing it produces is
+// written to disk or published.
+
+const AVAILABILITY_RECORD_PATH = "data/availability/woodland-preapproved-adu-program.json";
+const AVAILABILITY_RECORD = JSON.parse(
+  readFileSync(resolve(__dirname, "..", AVAILABILITY_RECORD_PATH), "utf8"),
+);
+
+function todayUtcIso() {
+  // The same reading the page makes: UTC calendar date, never local.
+  return new Date().toISOString().slice(0, 10);
+}
+
+function isoDayOffset(iso, days) {
+  return new Date(Date.parse(`${iso}T00:00:00Z`) + days * 86400000)
+    .toISOString().slice(0, 10);
+}
+
+function attestationStatus(source = AVAILABILITY_RECORD.availability.source) {
+  const today = todayUtcIso();
+  const daysOverdue = Math.round(
+    (Date.parse(`${today}T00:00:00Z`)
+      - Date.parse(`${source.recheck_due_on}T00:00:00Z`)) / 86400000,
+  );
+  return {
+    checkedOn: source.checked_on,
+    current: daysOverdue <= 0,
+    daysOverdue,
+    recheckDueOn: source.recheck_due_on,
+    today,
+  };
+}
+
+// Only the two dates move, and only in memory. The excerpt, its sha256, the
+// label, the URL and every other field are the committed ones, so the fixture
+// still exercises the real fingerprint check rather than routing around it.
+function currentAvailabilityFixture() {
+  const data = structuredClone(DEMO_DATA);
+  const source = data.program_availability.availability.source;
+  const today = todayUtcIso();
+  source.checked_on = today;
+  // The page refuses a window wider than 31 days, so 30 is the widest that
+  // both passes and never needs a second thought.
+  source.recheck_due_on = isoDayOffset(today, 30);
+  return `/* test attestation-window fixture */\n${
+    DEMO_ASSIGNMENT}${JSON.stringify(data)};\n`;
+}
+
+async function serveCurrentAvailabilityFixture(page) {
+  const body = currentAvailabilityFixture();
+  await page.route("**/data/demo-data.js*", route => route.fulfill({
+    body,
+    contentType: "application/javascript; charset=utf-8",
+    status: 200,
+  }));
+}
+
+test("the committed program attestation is inside its recheck window", async ({
+  page,
+}) => {
+  // Runs first in the file on purpose: when this fails, the reason every packet
+  // page below it is closed has already been printed by name.
+  const status = attestationStatus();
+  const committed = AVAILABILITY_RECORD.availability.source;
+  expect(
+    DEMO_DATA.program_availability.availability.source,
+    `data/demo-data.js does not carry ${AVAILABILITY_RECORD_PATH}'s own source `
+    + "record; run `make demo-bundle` (scripts/build_demo_bundle.py). Until it "
+    + "does, this test vouches for a record the page does not serve.",
+  ).toEqual(committed);
+
+  expect(
+    status.current,
+    `${AVAILABILITY_RECORD_PATH} is outside its recheck window.\n`
+    + `  checked_on      ${status.checkedOn}\n`
+    + `  recheck_due_on  ${status.recheckDueOn}\n`
+    + `  today (UTC)     ${status.today}  (${status.daysOverdue} day(s) past due)\n`
+    + "\n"
+    + "This is not an accessibility failure and not a code regression: the same\n"
+    + "commit passes before the due date and fails after it. The packet journey\n"
+    + "is closed by design while the reading is stale, so #journeyEntrySummary\n"
+    + "is absent and every packet-page assertion below fails as a side effect.\n"
+    + "\n"
+    + "Renewing it means a person opening\n"
+    + `  ${committed.url}\n`
+    + `reading it, and attesting to what it says. Writing a later checked_on\n`
+    + "without that reading publishes an attestation nobody made. Do not move\n"
+    + "the date to make this test pass.",
+  ).toBe(true);
+
+  await page.goto("/check.html?sample=adu");
+  const notice = page.locator(".program-availability");
+  await expect(notice).toContainText(committed.excerpt);
+  await expect(notice).toContainText("Future-state simulation only");
+  await expect(notice).toContainText(formatAttestationDate(status.checkedOn));
+  await expect(notice).toContainText(formatAttestationDate(status.recheckDueOn));
+  await expect(
+    page.locator(`.program-availability a[href="${committed.url}"]`),
+  ).toBeVisible();
+  // The hold branch is what a stale record renders, and it must not be here.
+  await expect(page.locator(".program-availability-hold")).toHaveCount(0);
+});
+
+function formatAttestationDate(iso) {
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "long",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(new Date(`${iso}T00:00:00Z`));
+}
+
 for (const [path, currentMobileLabel] of Object.entries(pages)) {
   test(`${path} has no automated WCAG violations`, async ({ page }) => {
     await page.goto(path);
@@ -226,6 +368,9 @@ test("decorative illustrations decode and keep the tablet boundary first", async
 test("canonical journey gates the packet link on the editable applicability fact", async ({
   page,
 }) => {
+  // The gate's behaviour, not the attestation's currency: the committed record's
+  // own dates are asserted by the first test in this file.
+  await serveCurrentAvailabilityFixture(page);
   await openCanonicalJourney(page);
   const yes = page.locator(
     'input[name="journey_applicability"][value="yes"]',
@@ -247,12 +392,14 @@ test("canonical journey gates the packet link on the editable applicability fact
   await expect(page.locator(".program-availability")).toContainText(
     "Future-state simulation only",
   );
+  // The committed record's own dates are asserted by the first test in this
+  // file, against the file rather than against a fixture. What belongs here is
+  // that the notice states a reading and a due date at all, which is what makes
+  // the gate below legible to a reader.
   await expect(page.locator(".program-availability")).toContainText(
-    "Checked August 9, 2026",
+    /Checked \w+ \d{1,2}, \d{4}; recheck due\s+\w+ \d{1,2}, \d{4}\./,
   );
-  await expect(page.locator(".program-availability")).toContainText(
-    "recheck due September 8, 2026",
-  );
+  await expect(page.locator(".program-availability-hold")).toHaveCount(0);
   await expect(
     page.locator(`.program-availability a[href="${
       DEMO_DATA.program_availability.availability.source.url
@@ -324,6 +471,7 @@ test("valid journey presents a bounded portable evidence summary and print actio
       window.__permitBearingsPrintCalls += 1;
     };
   });
+  await serveCurrentAvailabilityFixture(page);
   await page.goto(VALID_PACKET_PATH);
 
   const summary = page.locator("#journeyEvidenceSummary");
@@ -411,6 +559,7 @@ test("print media isolates the evidence summary without horizontal overflow", as
   page,
 }) => {
   await page.setViewportSize({ width: 816, height: 1056 });
+  await serveCurrentAvailabilityFixture(page);
   await page.goto(VALID_PACKET_PATH);
   await expect(page.locator("#journeyEvidenceSummary")).toBeVisible();
   await page.emulateMedia({ media: "print" });
@@ -435,6 +584,7 @@ test("print media isolates the evidence summary without horizontal overflow", as
 test("Spanish journey handoff declares its language and preserves the English staff question", async ({
   page,
 }) => {
+  await serveCurrentAvailabilityFixture(page);
   await openCanonicalJourney(page);
   await page.locator("#langToggle").click();
 
@@ -512,6 +662,7 @@ for (const viewport of [
       width: viewport.width,
       height: viewport.height,
     });
+    await serveCurrentAvailabilityFixture(page);
     await page.goto(VALID_PACKET_PATH);
     await expect(page.locator("#journeyEntrySummary")).toBeVisible();
     await expect(page.locator("#readinessVerdictHeading")).toBeVisible();
@@ -524,6 +675,10 @@ test("populated applicant result reflows without automated WCAG violations", asy
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  // Without this the scan still runs -- over the hold branch, which has no radio
+  // group in it. It passes either way, and only one of the two is the page this
+  // test is named for.
+  await serveCurrentAvailabilityFixture(page);
   await openCanonicalJourney(page);
   await expectNoDocumentOverflow(page);
   await expectNoAutomatedWcagViolations(page);

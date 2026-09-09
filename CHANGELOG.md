@@ -383,6 +383,36 @@ published a versioned release.
 
 ### Fixed
 
+- **An expired attestation reported itself as six accessibility failures.**
+  `data/availability/woodland-preapproved-adu-program.json` carries
+  `recheck_due_on: 2026-09-08`, and the page resolves it against UTC today. At
+  `2026-09-09T00:00:00Z` the record fell outside its window, the packet journey
+  closed as designed, and `tests/accessibility.spec.js` reported **6 failures**
+  on the same commit that had passed eleven hours earlier — every one of them
+  `expect(locator).toBeVisible()` on `#journeyEntrySummary` or a sibling, none
+  of them naming a date, a file or an attestation. The gate was working; its
+  output sent a reader into the CSS.
+  - **Measured, and it is what picked the repair:** of the six, **five assert
+    nothing about the record** — the only two axe WCAG scans of the packet page
+    (320px and 390px), print-media isolation, the Spanish `lang` handoff, and
+    the evidence summary with its print action. So while the record is stale the
+    packet page is scanned by axe **0 times out of 2** viewports. It was not
+    only a mis-named failure; the accessibility gate had stopped examining.
+  - Those five now run against a fixture whose attestation window is anchored to
+    the run's own UTC date, so they measure accessibility. Only the two dates
+    move, and only in memory: the excerpt, its `sha256`, the label and the URL
+    stay the committed ones, so the page's own fingerprint check still runs.
+  - The committed record's currency is asserted by one test, first in the file,
+    which names the file, `checked_on`, `recheck_due_on`, today's UTC date, how
+    many days past due it is, and that renewal means a person opening the City
+    of Woodland page and attesting to what it says. **The date has not been
+    moved** — that would publish an attestation nobody made — so `main` stays
+    red until a human re-attests, now for one legible reason instead of six
+    misleading ones.
+  - It also refuses if `data/demo-data.js` no longer carries the record the JSON
+    file holds, because a fixture derived from a stale bundle would vouch for a
+    record the page does not serve.
+
 - The committed source-state receipt reported a withdrawn address as verified.
   `davis-adu-handout-2026` answers `HTTP 404 Not Found` at its published
   address, but `data/source-status/current.json` still carried the last
