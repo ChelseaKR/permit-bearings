@@ -197,8 +197,13 @@ function isoDayOffset(iso, days) {
     .toISOString().slice(0, 10);
 }
 
-function attestationStatus(source = AVAILABILITY_RECORD.availability.source) {
-  const today = todayUtcIso();
+// `today` is a parameter so both directions of the reading can be tested. The
+// page's own `dateIsNotPast` is `>=`, so a record is current *through* its due
+// date and stale the day after; that boundary is what the test below pins.
+function attestationStatus(
+  source = AVAILABILITY_RECORD.availability.source,
+  today = todayUtcIso(),
+) {
   const daysOverdue = Math.round(
     (Date.parse(`${today}T00:00:00Z`)
       - Date.parse(`${source.recheck_due_on}T00:00:00Z`)) / 86400000,
@@ -210,6 +215,24 @@ function attestationStatus(source = AVAILABILITY_RECORD.availability.source) {
     recheckDueOn: source.recheck_due_on,
     today,
   };
+}
+
+function attestationFailureMessage(status, source) {
+  return `${AVAILABILITY_RECORD_PATH} is outside its recheck window.\n`
+    + `  checked_on      ${status.checkedOn}\n`
+    + `  recheck_due_on  ${status.recheckDueOn}\n`
+    + `  today (UTC)     ${status.today}  (${status.daysOverdue} day(s) past due)\n`
+    + "\n"
+    + "This is not an accessibility failure and not a code regression: the same\n"
+    + "commit passes before the due date and fails after it. The packet journey\n"
+    + "is closed by design while the reading is stale, so #journeyEntrySummary\n"
+    + "is absent and every packet-page assertion below fails as a side effect.\n"
+    + "\n"
+    + "Renewing it means a person opening\n"
+    + `  ${source.url}\n`
+    + "reading it, and attesting to what it says. Writing a later checked_on\n"
+    + "without that reading publishes an attestation nobody made. Do not move\n"
+    + "the date to make this test pass.";
 }
 
 // Only the two dates move, and only in memory. The excerpt, its sha256, the
@@ -250,24 +273,7 @@ test("the committed program attestation is inside its recheck window", async ({
     + "does, this test vouches for a record the page does not serve.",
   ).toEqual(committed);
 
-  expect(
-    status.current,
-    `${AVAILABILITY_RECORD_PATH} is outside its recheck window.\n`
-    + `  checked_on      ${status.checkedOn}\n`
-    + `  recheck_due_on  ${status.recheckDueOn}\n`
-    + `  today (UTC)     ${status.today}  (${status.daysOverdue} day(s) past due)\n`
-    + "\n"
-    + "This is not an accessibility failure and not a code regression: the same\n"
-    + "commit passes before the due date and fails after it. The packet journey\n"
-    + "is closed by design while the reading is stale, so #journeyEntrySummary\n"
-    + "is absent and every packet-page assertion below fails as a side effect.\n"
-    + "\n"
-    + "Renewing it means a person opening\n"
-    + `  ${committed.url}\n`
-    + `reading it, and attesting to what it says. Writing a later checked_on\n`
-    + "without that reading publishes an attestation nobody made. Do not move\n"
-    + "the date to make this test pass.",
-  ).toBe(true);
+  expect(status.current, attestationFailureMessage(status, committed)).toBe(true);
 
   await page.goto("/check.html?sample=adu");
   const notice = page.locator(".program-availability");
@@ -280,6 +286,36 @@ test("the committed program attestation is inside its recheck window", async ({
   ).toBeVisible();
   // The hold branch is what a stale record renders, and it must not be here.
   await expect(page.locator(".program-availability-hold")).toHaveCount(0);
+});
+
+test("the recheck window is read inclusively, and only the day after refuses", async () => {
+  // The other half of the test above, and the reason it is not satisfied by a
+  // reading that refuses every record: with the committed record's own dates and
+  // a supplied `today`, the guard has to let two of these three through. Without
+  // this, "refuse when stale" is equally satisfied by "refuse always" -- which is
+  // the stricter-looking implementation, and would close the packet journey
+  // permanently while every message above still read as correct.
+  const source = AVAILABILITY_RECORD.availability.source;
+  const due = source.recheck_due_on;
+
+  expect(attestationStatus(source, isoDayOffset(due, -1)).current).toBe(true);
+  expect(attestationStatus(source, due).current).toBe(true);
+  expect(attestationStatus(source, isoDayOffset(due, 1)).current).toBe(false);
+
+  // Inclusive on the due date is not a preference: it is what the page does.
+  // `dateIsNotPast` in assets/demo.js is `>=`, so a reading that excluded the
+  // due date would close the journey a day before the page does and blame the
+  // record for a day it is still good for.
+  const demoSource = readFileSync(resolve(__dirname, "../assets/demo.js"), "utf8");
+  expect(demoSource).toContain("return Date.parse(`${value}T00:00:00Z`) >= todayUtc;");
+
+  const stale = attestationStatus(source, isoDayOffset(due, 3));
+  const message = attestationFailureMessage(stale, source);
+  expect(message).toContain(AVAILABILITY_RECORD_PATH);
+  expect(message).toContain(`recheck_due_on  ${due}`);
+  expect(message).toContain(`(3 day(s) past due)`);
+  expect(message).toContain(source.url);
+  expect(message).toContain("Do not move");
 });
 
 function formatAttestationDate(iso) {
