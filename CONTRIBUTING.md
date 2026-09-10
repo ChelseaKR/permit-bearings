@@ -63,3 +63,12 @@ Before opening a pull request:
 
 Do not include applicant PII, credentials, private permit files, or
 model-provider payloads. Report vulnerabilities through `SECURITY.md`.
+
+## Commercial solicitation
+
+Issues here are not open to bids. They are design records, written so a decision is
+reconstructable later, rather than scope documents for outside quoting. Unsolicited offers to
+implement one for a fee will be declined.
+
+Contributions through the normal fork-and-PR process are welcome, and `good first issue` is the
+place to start.
