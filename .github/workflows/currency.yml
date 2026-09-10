@@ -149,6 +149,39 @@ jobs:
           else
             gh issue create --title "$TITLE" --label currency --body "$body"
           fi
+      # Report-only, and deliberately not an issue. A program-availability
+      # reading is renewed by a person opening a city web page and attesting to
+      # what it says, which is a different owner from the data refresh the
+      # `Source currency review needed` issue is addressed to; which issue this
+      # should open, and whether it should ever propose a diff, are open
+      # questions on #164. What is settled is that the watch must stop
+      # reporting clean over a record it never examined, so the count is on the
+      # machine-readable line and a due reading is annotated on the run.
+      #
+      # `not_checked` is a real value here: it means this run could not read the
+      # records or could not find its own schedule. It is escalated rather than
+      # ignored, because it is the state that most looks like "nothing is due".
+      - name: Note program-availability readings about to lapse
+        if: always()
+        run: |
+          set -euo pipefail
+          [ -f report.txt ] || exit 0
+          signals="$(sed -n 's/^currency signals: //p' report.txt | tail -1)"
+          due="$(printf '%s' "$signals" | tr ' ' '\n' | sed -n 's/^program_availability_due=//p')"
+          records="$(printf '%s' "$signals" | tr ' ' '\n' | sed -n 's/^program_availability_records=//p')"
+          case "$due" in
+            "")
+              echo "::warning title=No program-availability signal::This harness printed no program_availability_due count. An older harness, or a run that died before printing." ;;
+            not_checked)
+              echo "::warning title=Program availability not checked::The watch could not read data/availability/ or could not derive its own schedule, so it cannot say whether a reading has lapsed. This is not the same as none being due." ;;
+            0)
+              echo "No program-availability reading lapses before the next watch (${records} record(s) examined)." ;;
+            *[!0-9]*)
+              echo "::error title=Unparseable currency signal::program_availability_due carried a value this step does not understand: '$due'" >&2
+              exit 1 ;;
+            *)
+              echo "::warning title=Program availability reading due::${due} of ${records} program-availability reading(s) lapse before the next watch. Renewal is a human attestation: open the recorded page, read it, and record what it says. See the run summary for the file and the date." ;;
+          esac
       - name: Note sources that could not be re-fetched
         if: steps.watch.outputs.exit_code == '2'
         run: |

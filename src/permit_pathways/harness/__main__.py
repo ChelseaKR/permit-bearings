@@ -41,9 +41,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ..dates import resolve_today
+from .availability import WATCH_WORKFLOW_PATH, availability_note, watch_availability
+from .availability import signal_values as availability_signal_values
 from .runner import verify_rules
 
 if TYPE_CHECKING:
+    from .runner import VerificationReport
     from .watch import UnverifiableSource, WatchResult
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -208,6 +211,61 @@ def _print_adopted_withdrawn_citations(args: argparse.Namespace) -> None:
         print("\n" + report)
 
 
+def _print_currency_signals(
+    report: VerificationReport,
+    *,
+    watch: WatchResult | None,
+    unverifiable: dict[str, UnverifiableSource],
+    as_of: date,
+) -> None:
+    """One machine-readable line, printed on every run including a clean one.
+
+    Exit 1 covers three conditions with different owners and different urgency,
+    and the scheduled workflow could previously only say that one of them
+    happened. A signal that appeared only on failure could not be used to detect
+    recovery either, so it is unconditional. See issue #70.
+
+    ``changed_sources`` and ``unverifiable_sources`` are answers only a fetch can
+    give. Without ``--fetch`` nothing was downloaded, so printing ``0`` for them
+    would publish "we checked and found none" for a check that never ran --
+    byte-identical to what a genuinely clean watch prints, and, since the
+    committed receipt can itself record a withdrawn address, flatly contradicted
+    by the report printed above it. They say ``not_checked`` instead.
+    ``stale_rules`` and ``golden_regressions`` come from the committed rule and
+    Golden records and are measured on every run, fetch or not.
+
+    ``data/availability/`` holds the one cadence in this repository shorter than
+    ``SOURCE_REVIEW_WINDOW_DAYS``, and until issue #164 nothing in this harness
+    read it: the run 33 hours before its first expiry exited 0 in 21 seconds.
+    Two numbers, always both -- a count of readings about to lapse says nothing
+    without the count of readings this run could examine, and a directory that
+    could not be read prints ``not_checked`` rather than ``0`` for both.
+    """
+
+    changed_signal = str(len(watch.changed)) if watch is not None else NOT_CHECKED
+    unverifiable_signal = str(len(unverifiable)) if watch is not None else NOT_CHECKED
+    availability = watch_availability(
+        ROOT / "data" / "availability",
+        today=as_of,
+        workflow_path=ROOT / WATCH_WORKFLOW_PATH,
+    )
+    availability_due, availability_records = availability_signal_values(
+        availability, not_checked=NOT_CHECKED
+    )
+    print(
+        "\ncurrency signals:"
+        f" changed_sources={changed_signal}"
+        f" stale_rules={len(report.stale)}"
+        f" golden_regressions={len(report.golden_failed)}"
+        f" unverifiable_sources={unverifiable_signal}"
+        f" program_availability_due={availability_due}"
+        f" program_availability_records={availability_records}"
+    )
+    availability_lines = availability_note(availability, today=as_of, root=ROOT)
+    if availability_lines:
+        print(availability_lines)
+
+
 def main(argv: list[str] | None = None, *, today: date | None = None) -> int:
     parser = argparse.ArgumentParser(prog="permit_pathways.harness")
     parser.add_argument("--rules", type=Path, default=DEFAULT_RULES)
@@ -350,27 +408,11 @@ def main(argv: list[str] | None = None, *, today: date | None = None) -> int:
         if report.automated_checks_pass
         else "REVIEW NEEDED — the automated queue is not empty",
     )
-    # One machine-readable line, printed on every run including a clean one.
-    # Exit 1 covers three conditions with different owners and different
-    # urgency, and the scheduled workflow could previously only say that one
-    # of them happened. A signal that appeared only on failure could not be
-    # used to detect recovery either, so it is unconditional. See issue #70.
-    # `changed_sources` and `unverifiable_sources` are answers only a fetch can
-    # give. Without `--fetch` nothing was downloaded, so printing `0` for them
-    # would publish "we checked and found none" for a check that never ran —
-    # byte-identical to what a genuinely clean watch prints, and, since the
-    # committed receipt can itself record a withdrawn address, flatly
-    # contradicted by the report printed above it. They say `not_checked`
-    # instead. `stale_rules` and `golden_regressions` come from the committed
-    # rule and Golden records and are measured on every run, fetch or not.
-    changed_signal = str(len(watch.changed)) if watch is not None else NOT_CHECKED
-    unverifiable_signal = str(len(unverifiable)) if watch is not None else NOT_CHECKED
-    print(
-        "\ncurrency signals:"
-        f" changed_sources={changed_signal}"
-        f" stale_rules={len(report.stale)}"
-        f" golden_regressions={len(report.golden_failed)}"
-        f" unverifiable_sources={unverifiable_signal}"
+    _print_currency_signals(
+        report,
+        watch=watch,
+        unverifiable=unverifiable,
+        as_of=as_of,
     )
     if unverifiable:
         print(_unverifiable_note(unverifiable))

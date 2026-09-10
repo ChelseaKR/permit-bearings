@@ -7,6 +7,51 @@ published a versioned release.
 
 ### Added
 
+- **The weekly currency watch now reads `data/availability/`, which it never
+  had.** `main` went red on 2026-09-09 with no commit behind it, because
+  `data/availability/woodland-preapproved-adu-program.json` passed its
+  `recheck_due_on` at 00:00 UTC. The product failing closed is correct. The
+  defect is that the instrument built to give notice reported clean 33 hours
+  earlier: the watch ran 2026-09-07T15:10Z, exited 0 in 21 seconds, and had
+  five signals none of which read that directory —
+  `grep -rn 'program_availability' src/permit_pathways/harness/` returned
+  nothing (issue #164).
+  - `currency signals:` gains `program_availability_due` and
+    `program_availability_records`. **Two numbers, always both**: a count of
+    readings about to lapse says nothing without the count of readings the run
+    could examine at all, and a directory that could not be read prints
+    `not_checked` for both rather than `0`. That is the same rule
+    `changed_sources` already follows one line over.
+  - **The lead time is derived, not chosen.** A watch cannot cover a deadline
+    that falls between two of its runs, so the notice reaches one interval
+    ahead — and that interval is read out of `.github/workflows/currency.yml`
+    by walking its own cron a year forward and taking the **longest** gap
+    between consecutive fires. Nothing hard-codes `7`; change the cron to
+    fortnightly and the notice widens with it. The longest gap rather than the
+    nominal one, because a Mon/Thu schedule's mean interval would miss every
+    deadline in the longer half of the week.
+  - The workflow annotates the run when a reading is due, and annotates
+    `not_checked` **as news** rather than letting it fall through to "nothing
+    is due" — that value is the one that most looks like a clean result.
+  - **Report-only.** The exit code does not move: the expiry itself is already
+    merge-blocking through the beta gate, and a lead-time warning that reddens
+    the build for a week before anything is wrong is a gate that cries wolf.
+    Whether it should also open an issue, and whether it should ever propose a
+    renewal diff, are the two questions #164 leaves to a person.
+  - `CONTRIBUTING.md` gains the renewal procedure, which existed nowhere: the
+    two files that must move together, the bundle rebuild, and the recompute.
+    It is not in `docs/BETA-OPERATIONS-RUNBOOK.md`, the obvious home, because
+    that document's bytes are bound by
+    `data/validation/beta-operations-readiness.json` and
+    `beta_gate_cli recompute` **refuses** to re-pin them. Writing the section
+    there turned 100 tests red. Editing that document is an attested act.
+  - The reader is deliberately a second, tolerant one rather than the product's
+    strict `load_program_availability`, which enforces a named policy and
+    raises — the right rules for deciding whether a packet may be built, and
+    the wrong ones for a watch that must be able to name the due date of a
+    record invalid for some other reason. A test holds the two readers to the
+    same two dates so the duplicate cannot drift.
+
 - **A watch over the seven scanned ordinances, and a gate over the bytes they
   were scanned from.** Every published conformance result names a real
   California city and says its ordinance carries specific defects, on the

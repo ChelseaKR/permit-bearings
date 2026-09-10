@@ -63,3 +63,56 @@ Before opening a pull request:
 
 Do not include applicant PII, credentials, private permit files, or
 model-provider payloads. Report vulnerabilities through `SECURITY.md`.
+
+## Renew a program-availability reading
+
+A record under `data/availability/` states that a person opened a
+jurisdiction's page on `checked_on` and read what its `excerpt` says.
+`recheck_due_on` is when that reading stops counting. Once it passes, the beta
+gate appends the blocker `reference_program_availability`, the packet journey
+renders its hold branch instead of the applicability radio group, and the
+flagship packet is locked. That is the designed behaviour: the product fails
+closed rather than publishing a reading nobody has confirmed. It also means
+`main` goes red on a calendar boundary with no commit behind it, which is what
+happened on 2026-09-09 (#164).
+
+**It is renewed by a person, not by a fetch.** `monitoring_status` is
+`manual_date_bound`. Writing a later `checked_on` without opening the page
+publishes an attestation nobody made, which is the one thing this record exists
+to prevent. Do not move the date to make a check pass.
+
+Advance notice: the weekly `Source currency watch` prints
+`program_availability_due=N program_availability_records=M` on its
+`currency signals:` line and annotates the run when a reading lapses before the
+next scheduled run. The lead time is derived from that workflow's own cron, so
+changing the schedule widens the notice with it.
+
+Steps, in order:
+
+1. Open the `source.url` recorded in the availability record and read the page.
+2. If the wording has changed, `excerpt` and `excerpt_sha256` change with it
+   (`excerpt_sha256` is `sha256:` plus the digest of the normalised excerpt --
+   `permit_pathways.program_availability.excerpt_fingerprint`). If the program
+   *status* has changed, this is no longer a date renewal: route it to
+   `content_source_owner` before editing anything.
+3. Update `data/availability/<record>.json`: `checked_on` to the date you read
+   the page, `recheck_due_on` no more than `MAX_RECHECK_INTERVAL_DAYS` (31)
+   after it.
+4. Update `answer_key.program_availability` in
+   `data/validation/woodland-flagship-gate.json` to match. These two files must
+   move together, and the beta gate compares them field for field
+   (`external gate.answer_key.program_availability`), so a half-renewal fails
+   loudly rather than half-applying.
+5. Rebuild the generated browser bundle: `python scripts/build_demo_bundle.py`.
+   `make bundle-check` runs the `--check` form and fails until you do.
+6. Recompute the prepared gate:
+   `python -m permit_pathways.beta_gate_cli recompute --write`.
+7. Run `make verify`. The checks that were failing are
+   `tests/test_beta_gate.py::test_cli_outputs_machine_readable_non_claim` and
+   six packet-page specs in `tests/accessibility.spec.js`.
+
+This lives here rather than in `docs/BETA-OPERATIONS-RUNBOOK.md`, which would
+be the obvious home, because that document's bytes are bound by
+`data/validation/beta-operations-readiness.json` and `beta_gate_cli recompute`
+**refuses** to re-pin them: `document_bindings[1].sha256: bound document bytes
+changed`. Editing the runbook is an attested act, not an editorial one.
