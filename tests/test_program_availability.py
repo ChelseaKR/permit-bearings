@@ -1,10 +1,16 @@
 import copy
 import json
-from datetime import date
+from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
 import pytest
+from tests.attestation_clock import (
+    ATTESTATION_RECORD,
+    attested_dates,
+    frozen_today,
+    pre_attestation_clock,
+)
 
 from permit_pathways.program_availability import (
     BOUNDARY,
@@ -25,8 +31,11 @@ from permit_pathways.program_availability import (
 )
 
 ROOT = Path(__file__).parent.parent
-RECORD = ROOT / "data" / "availability" / "woodland-preapproved-adu-program.json"
-TODAY = date(2026, 8, 9)
+RECORD = ATTESTATION_RECORD
+# Frozen to the committed attestation itself, so re-checking the page stays a
+# two-date edit instead of a sweep through every pinned clock in the suite.
+CHECKED_ON, RECHECK_DUE_ON = attested_dates()
+TODAY = frozen_today()
 
 
 def _payload() -> dict[str, Any]:
@@ -59,8 +68,11 @@ def test_committed_woodland_record_loads_with_exact_bounded_evidence() -> None:
     assert record.source.source_id == SOURCE_ID
     assert record.source.url == OFFICIAL_PROGRAM_URL
     assert record.source.label == "City of Woodland Preapproved ADU Plan Program"
-    assert record.source.checked_on == "2026-08-09"
-    assert record.source.recheck_due_on == "2026-09-08"
+    assert record.source.checked_on == CHECKED_ON.isoformat()
+    assert record.source.recheck_due_on == RECHECK_DUE_ON.isoformat()
+    # The attestation is renewed on a thirty-day cadence; the loader tolerates
+    # one more day than that, so assert the cadence the record is kept on.
+    assert (RECHECK_DUE_ON - CHECKED_ON).days == 30
     assert record.source.excerpt == OFFICIAL_EXCERPT
     assert record.source.excerpt_sha256 == excerpt_fingerprint(record.source.excerpt)
 
@@ -128,22 +140,26 @@ def test_malformed_and_non_object_payloads_are_rejected(tmp_path: Path) -> None:
         ("checked_on", "2026/08/09", "expected YYYY-MM-DD"),
         ("checked_on", "2026-02-30", "invalid ISO date"),
         ("recheck_due_on", "2026-09-31", "invalid ISO date"),
-        ("recheck_due_on", "2026-08-09", "must be after checked_on"),
-        ("recheck_due_on", "2026-08-08", "must be after checked_on"),
+        ("recheck_due_on", "same day as checked_on", "must be after checked_on"),
+        ("recheck_due_on", "the day before checked_on", "must be after checked_on"),
     ],
 )
 def test_bad_or_misordered_dates_are_rejected(
     tmp_path: Path, field: str, value: str, message: str
 ) -> None:
+    misorderings = {
+        "same day as checked_on": CHECKED_ON.isoformat(),
+        "the day before checked_on": (CHECKED_ON - timedelta(days=1)).isoformat(),
+    }
     payload = _payload()
-    payload["availability"]["source"][field] = value
+    payload["availability"]["source"][field] = misorderings.get(value, value)
     with pytest.raises(ValueError, match=message):
         load_program_availability(_write(tmp_path, payload), today=TODAY)
 
 
 def test_future_checked_on_is_rejected(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="future dates are not allowed"):
-        load_program_availability(RECORD, today=date(2026, 8, 8))
+        load_program_availability(RECORD, today=pre_attestation_clock())
 
 
 @pytest.mark.parametrize(
@@ -203,7 +219,9 @@ def test_excerpt_fingerprint_format_and_content_drift_are_rejected(
 
 def test_recheck_window_is_short_and_bounded(tmp_path: Path) -> None:
     payload = _payload()
-    payload["availability"]["source"]["recheck_due_on"] = "2026-09-10"
+    payload["availability"]["source"]["recheck_due_on"] = (
+        CHECKED_ON + timedelta(days=MAX_RECHECK_INTERVAL_DAYS + 1)
+    ).isoformat()
     with pytest.raises(
         ValueError,
         match=rf"within {MAX_RECHECK_INTERVAL_DAYS} days",
