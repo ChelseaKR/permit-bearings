@@ -10,10 +10,10 @@ import struct
 import subprocess
 import zipfile
 from dataclasses import replace
-from datetime import date
 from pathlib import Path
 
 import pytest
+from tests.attestation_clock import frozen_today
 
 import permit_pathways.evidence_export as evidence_export
 from permit_pathways.evidence_export import (
@@ -26,9 +26,13 @@ from permit_pathways.evidence_export import (
 from permit_pathways.evidence_export_cli import main as evidence_export_main
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-FREEZE_ID = "public-synthetic-evidence-freeze-2026-08-09"
-FREEZE_ON = "2026-08-09"
-AS_OF = date.fromisoformat(FREEZE_ON)
+# The archive carries the Woodland attestation, and `validate_restored_evidence`
+# replays every record against the manifest's own `frozen_on`. An archive
+# therefore cannot be frozen before the day that page was checked, so the
+# freeze is read from the record instead of written out here.
+AS_OF = frozen_today()
+FREEZE_ON = AS_OF.isoformat()
+FREEZE_ID = f"public-synthetic-evidence-freeze-{FREEZE_ON}"
 V1_PROFILE_PATH = Path("data/export/public-synthetic-evidence-v1.json")
 V2_PROFILE_PATH = Path("data/export/public-synthetic-evidence-v2.json")
 FROZEN_V1_PROFILE_SHA256 = (

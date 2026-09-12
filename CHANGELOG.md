@@ -5,6 +5,54 @@ published a versioned release.
 
 ## [Unreleased]
 
+### Changed
+
+- **The City of Woodland program page was re-checked on 2026-09-10, and the
+  suite can now accept a re-check.** The page has gained real program content
+  — the City is accepting designer submissions, with steps, a permit
+  checklist and fee rules — but under the **Preapproved ADU List** heading it
+  still reads *“Coming soon!”*. The recorded excerpt is unchanged and its
+  `sha256` still matches byte for byte, so `status: plans_not_listed` and
+  `mode: future_state_simulation` remain accurate and only `checked_on` and
+  `recheck_due_on` move.
+  - **The thirty-day recheck control had never once been satisfiable.** Test
+    files pinned a literal “today”, every one of them earlier than any date a
+    real renewal could carry, and `load_program_availability` refuses a record
+    whose `checked_on` is in its future. Moving the two dates on their own
+    turned **71 tests red with 27 errors**, against 1 failure on `main`, and
+    dropped coverage below its floor. A record that expires every thirty days
+    by design could not be renewed.
+  - `tests/attestation_clock.py` reads the attested dates out of the record,
+    and five suites now freeze their clocks from it: program availability, the
+    beta gate, the evidence export and its signatures, and the browser journey
+    contract. Renewing the attestation is a data edit again.
+  - **No gate was relaxed, and two controls say so.** The committed record
+    still blocks the beta gate on the first day past its recheck deadline and
+    not on the day before it; a check date in the gate's own future is still
+    refused; and the browser contract still withholds the packet handoff one
+    day past the deadline. The excerpt fingerprint is compared unchanged.
+  - **`make evidence-export-check` froze its disposable archive on a literal
+    `2026-08-09`.** The restore replays every record against the manifest's own
+    `frozen_on`, so that literal became earlier than the evidence the archive
+    carries the moment the page was re-checked, and the round trip would have
+    failed for a reason that has nothing to do with the export. It now freezes
+    on the run's own UTC date, read once so both builds inside the target
+    agree across a midnight boundary. The two documented example commands were
+    carrying the same literal and are fixed with it.
+  - **The record's bytes are pinned in four other artifacts and mirrored in a
+    fifth**, so the renewal carries that closure: `data/workflows/registry.json`,
+    the regenerated `data/demo-data.js`, the v2 export profile, the
+    `program_availability` block of `data/validation/woodland-flagship-gate.json`,
+    and, downstream of those, `data/validation/pilot-beta-gate.json` and
+    `_EXPORT_PROFILE_V2_SHA256` in `src/permit_pathways/beta_gate.py`
+    (`beta_gate_cli recompute --write` derives the last two). The frozen v1
+    export profile keeps its historical digests, as its own identity test
+    requires. **Thirteen prose sentences** across the README, `PROVENANCE.md`
+    and six documents state when the page was checked and move with it;
+    `docs/ACCESSIBILITY.md`'s own audit and axe-run dates and
+    `TEMPLATE_PUBLISHED_ON` share the date string, mean something else, and do
+    not move.
+
 ### Added
 
 - **A watch over the seven scanned ordinances, and a gate over the bytes they
@@ -382,6 +430,36 @@ published a versioned release.
     exactly, so a re-pin can never also reformat the file being reviewed.
 
 ### Fixed
+
+- **An expired attestation reported itself as six accessibility failures.**
+  `data/availability/woodland-preapproved-adu-program.json` carries
+  `recheck_due_on: 2026-09-08`, and the page resolves it against UTC today. At
+  `2026-09-09T00:00:00Z` the record fell outside its window, the packet journey
+  closed as designed, and `tests/accessibility.spec.js` reported **6 failures**
+  on the same commit that had passed eleven hours earlier — every one of them
+  `expect(locator).toBeVisible()` on `#journeyEntrySummary` or a sibling, none
+  of them naming a date, a file or an attestation. The gate was working; its
+  output sent a reader into the CSS.
+  - **Measured, and it is what picked the repair:** of the six, **five assert
+    nothing about the record** — the only two axe WCAG scans of the packet page
+    (320px and 390px), print-media isolation, the Spanish `lang` handoff, and
+    the evidence summary with its print action. So while the record is stale the
+    packet page is scanned by axe **0 times out of 2** viewports. It was not
+    only a mis-named failure; the accessibility gate had stopped examining.
+  - Those five now run against a fixture whose attestation window is anchored to
+    the run's own UTC date, so they measure accessibility. Only the two dates
+    move, and only in memory: the excerpt, its `sha256`, the label and the URL
+    stay the committed ones, so the page's own fingerprint check still runs.
+  - The committed record's currency is asserted by one test, first in the file,
+    which names the file, `checked_on`, `recheck_due_on`, today's UTC date, how
+    many days past due it is, and that renewal means a person opening the City
+    of Woodland page and attesting to what it says. **The date has not been
+    moved** — that would publish an attestation nobody made — so `main` stays
+    red until a human re-attests, now for one legible reason instead of six
+    misleading ones.
+  - It also refuses if `data/demo-data.js` no longer carries the record the JSON
+    file holds, because a fixture derived from a stale bundle would vouch for a
+    record the page does not serve.
 
 - The committed source-state receipt reported a withdrawn address as verified.
   `davis-adu-handout-2026` answers `HTTP 404 Not Found` at its published
