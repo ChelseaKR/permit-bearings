@@ -7,7 +7,9 @@ from typing import Any
 import pytest
 from tests.attestation_clock import (
     ATTESTATION_RECORD,
+    UnreadableAttestation,
     attested_dates,
+    expired_clock,
     frozen_today,
     pre_attestation_clock,
 )
@@ -155,6 +157,33 @@ def test_bad_or_misordered_dates_are_rejected(
     payload["availability"]["source"][field] = misorderings.get(value, value)
     with pytest.raises(ValueError, match=message):
         load_program_availability(_write(tmp_path, payload), today=TODAY)
+
+
+def test_a_clock_cannot_be_derived_from_an_attestation_that_cannot_be_read(
+    tmp_path: Path,
+) -> None:
+    """A guessed clock would leave the suite green over a record nobody read."""
+
+    with pytest.raises(UnreadableAttestation):
+        frozen_today(record=tmp_path / "not-a-file.json")
+
+    empty = tmp_path / "empty.json"
+    empty.write_text("{}", encoding="utf-8")
+    with pytest.raises(UnreadableAttestation):
+        frozen_today(record=empty)
+
+    no_window = _payload()
+    no_window["availability"]["source"]["recheck_due_on"] = CHECKED_ON.isoformat()
+    with pytest.raises(UnreadableAttestation, match="no window"):
+        frozen_today(record=_write(tmp_path, no_window))
+
+
+def test_a_derived_clock_past_the_recheck_deadline_is_refused() -> None:
+    """`not_before` may move a clock forward, never outside the window."""
+
+    assert frozen_today(not_before=RECHECK_DUE_ON) == RECHECK_DUE_ON
+    with pytest.raises(UnreadableAttestation, match="recheck deadline"):
+        frozen_today(not_before=expired_clock())
 
 
 def test_future_checked_on_is_rejected(tmp_path: Path) -> None:
