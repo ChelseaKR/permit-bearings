@@ -121,7 +121,7 @@ evidence.
 ### 2b. Bounded packet-presence sample (5 min)
 
 - Before following the packet link, show the strict program-availability
-  record. The official City of Woodland program page was checked 2026-08-09
+  record. The official City of Woodland program page was checked 2026-09-10
   and says **“Preapproved ADU List: Coming soon!”** No listed City plan was
   identified. Say plainly: “This flagship is a source-bound future-state
   simulation, not a currently usable preapproved plan or an applicant-ready

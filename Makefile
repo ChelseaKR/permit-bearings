@@ -61,17 +61,24 @@ browser-test:
 readability-check:
 	.venv/bin/python scripts/readability_gate.py
 
+# The archive carries the Woodland program-availability attestation, and the
+# restore validates every record against the manifest's own `frozen_on`. A
+# literal date here is a calendar bomb: the day that attestation is re-checked
+# it becomes earlier than the evidence it covers, and the round trip fails for
+# a reason that has nothing to do with the export. Freeze on the run date, read
+# once so both builds agree across a midnight boundary.
 evidence-export-check:
 	@set -eu; \
 		evidence_directory=$$(mktemp -d "$${TMPDIR:-/tmp}/permit-bearings-evidence-export.XXXXXX"); \
 		trap 'rm -rf "$$evidence_directory"' EXIT; \
 		repository_commit_sha=$$(git rev-parse HEAD); \
+		frozen_on=$$(date -u +%Y-%m-%d); \
 		archive="$$evidence_directory/public-synthetic-evidence.zip"; \
 		restored="$$evidence_directory/restored"; \
 		PYTHONPATH=src .venv/bin/python -m permit_pathways.evidence_export_cli build \
 			--output "$$archive" \
-			--freeze-id public-synthetic-evidence-freeze-2026-08-09 \
-			--frozen-on 2026-08-09 \
+			--freeze-id "public-synthetic-evidence-freeze-$$frozen_on" \
+			--frozen-on "$$frozen_on" \
 			--repository-commit-sha "$$repository_commit_sha" >/dev/null; \
 		PYTHONPATH=src .venv/bin/python -m permit_pathways.evidence_export_cli verify \
 			--archive "$$archive" >/dev/null; \
@@ -86,8 +93,8 @@ evidence-export-check:
 			> "$$evidence_directory/allowed_signers"; \
 		PYTHONPATH=src .venv/bin/python -m permit_pathways.evidence_export_cli build \
 			--output "$$signed" \
-			--freeze-id public-synthetic-evidence-freeze-2026-08-09 \
-			--frozen-on 2026-08-09 \
+			--freeze-id "public-synthetic-evidence-freeze-$$frozen_on" \
+			--frozen-on "$$frozen_on" \
 			--repository-commit-sha "$$repository_commit_sha" \
 			--sign-key "$$evidence_directory/key" >/dev/null; \
 		cmp -s "$$archive" "$$signed" || { \
