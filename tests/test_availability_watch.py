@@ -309,13 +309,19 @@ def test_the_watch_reports_the_committed_record_without_changing_the_exit_code()
     reversed, this test is where the reversal has to be recorded.
     """
 
-    today = date(2026, 9, 9)
+    # Read the day after the committed record lapses, derived from the record
+    # rather than written out. A literal here passes only while the committed
+    # reading happens to be near its deadline: `date(2026, 9, 9)` held while
+    # `recheck_due_on` was `2026-09-08` and went red the moment the attestation
+    # was renewed, for a reason about the fixture rather than about the watch.
+    committed = load_availability_records(AVAILABILITY_DIR)[0][0]
+    today = committed.recheck_due_on + timedelta(days=1)
     watch = watch_availability(AVAILABILITY_DIR, today=today, workflow_path=WORKFLOW)
 
     assert watch.lead_days == 7
     assert watch.checked is True
-    # The committed record is past due today, so this is a live assertion rather
-    # than a fixture: the notice fires against the tree as it stands.
+    # The committed record is past due on that day, so this is a live assertion
+    # rather than a fixture: the notice fires against the tree as it stands.
     assert len(watch.due) == 1
     note = availability_note(watch, today=today, root=ROOT)
     assert "data/availability/woodland-preapproved-adu-program.json" in note
