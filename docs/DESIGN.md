@@ -161,7 +161,7 @@ data-classification and export-profile decision.
 
 One bounded browser continuation is implemented for the canonical made-up
 Woodland sample as a **source-bound future-state simulation**. The City's
-official program page, checked 2026-08-09, says **“Preapproved ADU List: Coming
+official program page, checked 2026-09-10, says **“Preapproved ADU List: Coming
 soon!”**; no listed City plan was identified. The continuation is therefore
 not a currently usable preapproved-plan or applicant-ready workflow. It
 appears only while that sample remains active and unedited, its results exactly
@@ -259,7 +259,7 @@ portable records:
 
 Program availability is a separate, non-matching boundary.
 `data/availability/woodland-preapproved-adu-program.json` strictly records the
-official program URL, 2026-08-09 check date, exact excerpt and fingerprint,
+official program URL, 2026-09-10 check date, exact excerpt and fingerprint,
 `plans_not_listed` status, future-state boundary, and recheck deadline.
 `src/permit_pathways/program_availability.py` validates that schema but is
 isolated from deterministic screening and readiness evaluation, so it cannot
@@ -964,7 +964,7 @@ review, or beta evidence. The operator and maintenance contract is in
    rules and generic document hints, not a complete application checklist.
    Change one answer to show that the old result is invalidated until the form
    is submitted again. Restore the canonical sample and show the official-page
-   record: checked 2026-08-09, it says **“Preapproved ADU List: Coming soon!”**
+   record: checked 2026-09-10, it says **“Preapproved ADU List: Coming soon!”**
    State that this makes Woodland a source-bound future-state simulation, not
    a currently usable plan or applicant-ready workflow. A missing, malformed,
    or expired availability record blocks the handoff. The applicability

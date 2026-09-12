@@ -59,8 +59,19 @@ const canonicalWorkflowRegistry = bundle.workflow_registry;
 const canonicalWorkflowRegistryRaw = bundle.workflow_registry_raw;
 SOURCE_STATE = bundle.source_state;
 
+// Every clock this contract freezes is read from the attestation the bundle
+// carries, so re-checking the Woodland page stays a two-date edit in
+// `data/availability/woodland-preapproved-adu-program.json`.
+const ATTESTED_ON = canonicalProgramAvailability.availability.source.checked_on;
+const RECHECK_DUE_ON =
+  canonicalProgramAvailability.availability.source.recheck_due_on;
+function isoPlusDays(iso, days) {
+  const shifted = new Date(Date.parse(`${iso}T00:00:00Z`) + days * 86400000);
+  return shifted.toISOString().slice(0, 10);
+}
+
 const NativeDate = Date;
-let fixedNow = "2026-08-09T12:00:00Z";
+let fixedNow = `${ATTESTED_ON}T12:00:00Z`;
 class FixedDate extends NativeDate {
   constructor(...args) {
     super(...(args.length ? args : [fixedNow]));
@@ -217,13 +228,13 @@ genericAvailabilityPayload.availability.jurisdiction = secondWorkflow.jurisdicti
 genericAvailabilityPayload.availability.boundary =
   GENERIC_PROTOTYPE_AVAILABILITY_BOUNDARY;
 genericAvailabilityPayload.availability.source = {
-  checked_on: "2026-08-09",
+  checked_on: ATTESTED_ON,
   excerpt: GENERIC_PROTOTYPE_AVAILABILITY_EXCERPT,
   excerpt_sha256: await sha256TextFingerprint(
     GENERIC_PROTOTYPE_AVAILABILITY_EXCERPT,
   ),
   label: "City of Davis prototype program page",
-  recheck_due_on: "2026-09-08",
+  recheck_due_on: RECHECK_DUE_ON,
   source_id: `${secondWorkflow.program_id}-page`,
   url: `https://www.cityofdavis.org/${secondWorkflow.program_id}`,
 };
@@ -309,7 +320,9 @@ await expectAvailabilityRejection(
   },
 );
 await expectAvailabilityRejection("overlong recheck window", candidate => {
-  candidate.availability.source.recheck_due_on = "2026-10-09";
+  // One day past the thirty-one the browser and `program_availability.py`
+  // both allow between a check and its recheck deadline.
+  candidate.availability.source.recheck_due_on = isoPlusDays(ATTESTED_ON, 32);
 });
 
 async function expectJourneyRejection(label, mutate) {
@@ -660,14 +673,16 @@ check(
 noHref(missingProgram, "missing program status");
 PROGRAM_AVAILABILITY = canonicalAvailability;
 
-fixedNow = "2026-09-09T12:00:00Z";
+// The day after the attestation's own recheck deadline: the control that
+// proves an expired record still withholds the handoff.
+fixedNow = `${isoPlusDays(RECHECK_DUE_ON, 1)}T12:00:00Z`;
 const expiredProgram = handoff("yes");
 check(
   expiredProgram.status === "program_status_review_required",
   "expired program status unlocked handoff",
 );
 noHref(expiredProgram, "expired program status");
-fixedNow = "2026-08-09T12:00:00Z";
+fixedNow = `${ATTESTED_ON}T12:00:00Z`;
 
 SOURCE_STATE = {...bundle.source_state, changed_source_ids: ["ca-gov-66317"]};
 const committedRouteChange = handoff("yes");

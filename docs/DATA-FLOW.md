@@ -298,7 +298,7 @@ Static build bundle
     +--> Includes strict rule-verification ledger
     +--> Includes strict, date-bound program-availability record <---------+
     |                                                                    |
-    |     Official Woodland program page checked 2026-08-09              |
+    |     Official Woodland program page checked 2026-09-10              |
     |         |                                                          |
     |         +--> “Preapproved ADU List: Coming soon!”                  |
     |                     |                                              |
@@ -349,7 +349,7 @@ operations, not browser requests made on behalf of an applicant.
 
 Program availability is separate from the checklist. The official
 [Woodland Preapproved ADU Plan Program page](https://www.cityofwoodland.gov/1616/Preapproved-ADU-Plan-Program)
-was checked 2026-08-09 and says **“Preapproved ADU List: Coming soon!”** That
+was checked 2026-09-10 and says **“Preapproved ADU List: Coming soon!”** That
 manual, date-bound observation is recorded in
 `data/availability/woodland-preapproved-adu-program.json` with its excerpt
 fingerprint and recheck deadline. It is not inferred from the checklist and is

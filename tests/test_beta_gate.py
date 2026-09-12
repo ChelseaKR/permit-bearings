@@ -9,12 +9,19 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from tests.attestation_clock import (
+    expired_clock,
+    frozen_today,
+    pre_attestation_clock,
+    recheck_due_on,
+)
 
 import permit_pathways.beta_gate as beta_gate_module
 from permit_pathways.beta_gate import (
     CLAIM_BOUNDARY,
     DEFAULT_RECORD_PATH,
     EXPORT_BOUNDARY_CLAIM,
+    AggregateMismatch,
     artifact_set_fingerprint,
     load_beta_gate,
 )
@@ -22,10 +29,12 @@ from permit_pathways.beta_gate_cli import main
 
 ROOT = Path(__file__).resolve().parents[1]
 RECORD = ROOT / DEFAULT_RECORD_PATH
+ADOPTED_RECEIPT_CHECKED_AT = date(2026, 8, 31)
 # Must not precede the adopted receipt's `checked_at`: the gate refuses a
-# source-state date in its own future, so this fixture tracks the committed
-# receipt (2026-08-31) rather than the day the fixture was first written.
-TODAY = date(2026, 8, 31)
+# source-state date in its own future. It must not precede the Woodland
+# attestation either, and that date moves every time the page is re-checked,
+# so it is read from the record rather than written out here.
+TODAY = frozen_today(not_before=ADOPTED_RECEIPT_CHECKED_AT)
 
 
 def _payload() -> dict[str, Any]:
@@ -948,6 +957,55 @@ def test_export_gate_path_must_name_the_canonical_record(tmp_path: Path) -> None
             _write_record(tmp_path, payload),
             repository_root=ROOT,
             today=TODAY,
+        )
+
+
+def test_the_attestation_still_expires_the_day_after_its_recheck_deadline(
+    tmp_path: Path,
+) -> None:
+    """`TODAY` is read from the attestation, so prove the deadline still bites.
+
+    A clock derived from the record is only honest while the thirty-day
+    recheck control can still fire against it. This asserts it fires on the
+    first day past the deadline -- not at some far future where every other
+    source has gone stale too, which would prove nothing about this one.
+    """
+
+    last_current_day = recheck_due_on()
+    still_current = load_beta_gate(
+        RECORD,
+        repository_root=ROOT,
+        today=last_current_day,
+    )
+    assert "reference_program_availability" not in (
+        still_current.reference_currency_blocker_ids
+    )
+
+    expired = expired_clock()
+    with pytest.raises(AggregateMismatch) as mismatch:
+        load_beta_gate(RECORD, repository_root=ROOT, today=expired)
+    assert mismatch.value.expected["reference_currency_blocker_ids"] == [
+        "reference_program_availability"
+    ]
+
+    payload = _payload()
+    payload["aggregate"] = mismatch.value.expected
+    blocked = load_beta_gate(
+        _write_record(tmp_path, payload),
+        repository_root=ROOT,
+        today=expired,
+    )
+    assert blocked.reference_currency_blocker_ids == ("reference_program_availability",)
+
+
+def test_an_attestation_dated_after_the_clock_is_still_refused() -> None:
+    """The other half of the control: a check date in the gate's future."""
+
+    with pytest.raises(ValueError, match="future dates are not allowed"):
+        load_beta_gate(
+            RECORD,
+            repository_root=ROOT,
+            today=pre_attestation_clock(),
         )
 
 
