@@ -50,8 +50,8 @@ commit.
 PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli build \
   --profile-version 2 \
   --output /absolute/new/path/permit-bearings-evidence.zip \
-  --freeze-id public-synthetic-evidence-2026-08-09 \
-  --frozen-on 2026-08-09
+  --freeze-id "public-synthetic-evidence-$(date -u +%Y-%m-%d)" \
+  --frozen-on "$(date -u +%Y-%m-%d)"
 
 PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli verify \
   --archive /absolute/new/path/permit-bearings-evidence.zip
