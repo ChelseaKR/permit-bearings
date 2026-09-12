@@ -29,7 +29,7 @@ fixtures exist, the record refuses to lie about any of them. What does not exist
 is people.
 
 The Woodland flagship is the clearest case. The City's own program page,
-checked 2026-08-09, says *"Preapproved ADU List: Coming soon!"* No listed City
+checked 2026-09-10, says *"Preapproved ADU List: Coming soon!"* No listed City
 plan was identified, so the flagship is a **source-bound future-state
 simulation**, not a usable workflow. That is stated on the page, in the README,
 and in the evidence ledger. It is not a bug to be fixed in code.

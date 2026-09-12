@@ -39,7 +39,7 @@ pages load the generated `data/demo-data.js` bundle.
 A separate bounded sample compares a made-up Woodland packet inventory with
 25 source-bound items from one City preapproved ADU checklist. The City's
 [official program page](https://www.cityofwoodland.gov/1616/Preapproved-ADU-Plan-Program),
-checked 2026-08-09, says **“Preapproved ADU List: Coming soon!”** No listed
+checked 2026-09-10, says **“Preapproved ADU List: Coming soon!”** No listed
 City plan was identified. The flagship is therefore a **source-bound
 future-state simulation**, not a currently usable preapproved-plan workflow
 or applicant-ready service. Two fabricated parcel values are bound to the
@@ -187,8 +187,8 @@ PYTHONPATH=src python3 -m permit_pathways.beta_gate_cli recompute \
   --write                                       # re-derives the digests a source refresh moves
 PYTHONPATH=src python3 -m permit_pathways.evidence_export_cli build \
   --output /tmp/permit-bearings-evidence.zip \
-  --freeze-id public-synthetic-evidence-2026-08-09 \
-  --frozen-on 2026-08-09                       # committed public/synthetic data only
+  --freeze-id "public-synthetic-evidence-$(date -u +%Y-%m-%d)" \
+  --frozen-on "$(date -u +%Y-%m-%d)"           # committed public/synthetic data only
 make evidence-export-check                     # disposable build/verify/restore round trip
 node scripts/check_applicant_copy.mjs           # structural locale/pseudolocale contract
 python3 -m http.server 8765                         # full static showcase
@@ -519,7 +519,7 @@ and coverage profile do not change those boundaries.
    25 requirements from one City of Woodland checklist, source checked
    2026-07-29, for a simulated project that would use a City preapproved
    detached ADU plan. The checklist itself is not presented as inherently
-   dated. The official program page was separately checked 2026-08-09 and
+   dated. The official program page was separately checked 2026-09-10 and
    says **“Preapproved ADU List: Coming soon!”**; the sample is not evidence
    that a plan is currently available.
 3. `data/readiness/samples/woodland-preapproved-adu.json` supplies one made-up
