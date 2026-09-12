@@ -170,6 +170,8 @@ def test_harness_prints_one_machine_readable_signal_line(capsys):
         "stale_rules",
         "golden_regressions",
         "unverifiable_sources",
+        "program_availability_due",
+        "program_availability_records",
     }
     # The line is printed on a clean run too: a signal that only appears on
     # failure cannot be used to detect recovery.
@@ -179,12 +181,20 @@ def test_harness_prints_one_machine_readable_signal_line(capsys):
     # same string a watch that ran and found everything current prints, and
     # which would contradict the withdrawn-citation report above it whenever
     # the committed receipt records one.
-    assert signals == {
-        "changed_sources": "not_checked",
-        "stale_rules": "0",
-        "golden_regressions": "0",
-        "unverifiable_sources": "not_checked",
-    }
+    assert signals["changed_sources"] == "not_checked"
+    assert signals["unverifiable_sources"] == "not_checked"
+    assert signals["stale_rules"] == "0"
+    assert signals["golden_regressions"] == "0"
+    # The two availability counts are deliberately NOT pinned to a literal
+    # here. They are read off `data/availability/`, whose one record has a
+    # dated deadline, so a literal would make this test's verdict depend on
+    # the calendar — which is the exact shape that turned one lapsed reading
+    # into seven failures with no commit behind them (#164). What is pinned is
+    # that both are printed and that each is either a count or `not_checked`;
+    # `tests/test_availability_watch.py` pins the reading itself against
+    # injected dates.
+    for key in ("program_availability_due", "program_availability_records"):
+        assert signals[key].isdigit() or signals[key] == "not_checked", signals[key]
 
 
 def test_signal_line_does_not_report_a_fetch_count_without_a_fetch(capsys):
