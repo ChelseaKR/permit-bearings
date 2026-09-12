@@ -46,7 +46,7 @@
     {
       "artifact_id": "external_evidence_gate",
       "path": "data/validation/woodland-flagship-gate.json",
-      "sha256": "sha256:88f43375a80b0a0e02177e3605706c4e5251854cd00c94a0b18e42c773a33a7f"
+      "sha256": "sha256:b15bbe3c2cee5e7a2d768a1c1b5c34f0035959c485d2ee7e2170e51aefd7fcfc"
     },
     {
       "artifact_id": "heldout_evaluation",
@@ -235,7 +235,7 @@
       "problem_evidence",
       "review_levels"
     ],
-    "artifact_set_fingerprint": "sha256:8b80f0e8e1fb2bcf58218a9fa2fd5ed1a6116c3dc8a7698210b91e98c7e30a73",
+    "artifact_set_fingerprint": "sha256:fab11470d2649f2841c7347cef1d195783e5777fe4e7d7353d07afec34046ab0",
     "supports_tested_beta_claim": false,
     "supports_statewide_beta_claim": false,
     "supports_human_review_claim": false,

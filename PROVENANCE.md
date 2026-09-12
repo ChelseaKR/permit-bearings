@@ -39,7 +39,7 @@
   substantive content review.
 - **Woodland program availability:** the official
   [City of Woodland Preapproved ADU Plan Program page](https://www.cityofwoodland.gov/1616/Preapproved-ADU-Plan-Program)
-  was checked on 2026-08-09 and said **“Preapproved ADU List: Coming soon!”**
+  was checked on 2026-09-10 and said **“Preapproved ADU List: Coming soon!”**
   No listed City plan was identified. The exact excerpt fingerprint,
   `plans_not_listed` status, future-state boundary, and recheck deadline are
   recorded in `data/availability/woodland-preapproved-adu-program.json`. The

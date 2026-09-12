@@ -115,7 +115,7 @@ zero jurisdiction-approval counts remain visible. This is a status disclosure,
 not an accessibility or substantive-review approval.
 
 The packet sample is explicitly labeled as a source-bound future-state
-simulation because Woodland's official page checked 2026-08-09 says
+simulation because Woodland's official page checked 2026-09-10 says
 **“Preapproved ADU List: Coming soon!”** It is not presented as a currently
 usable plan or applicant-ready workflow. The page has one labeled main region
 and one page heading. Its made-up packet cover, finding counts, program-status

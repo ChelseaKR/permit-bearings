@@ -13,10 +13,11 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
+from tests.attestation_clock import frozen_today
 
 from permit_pathways.evidence_export import build_export, load_export_profile
 from permit_pathways.evidence_export_cli import main as evidence_export_main
@@ -30,9 +31,14 @@ from permit_pathways.evidence_signature import (
 )
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-FREEZE_ID = "public-synthetic-evidence-freeze-2026-08-09"
-FREEZE_ON = "2026-08-09"
-AS_OF = date.fromisoformat(FREEZE_ON)
+# The archive carries the Woodland attestation, and `validate_restored_evidence`
+# replays every record against the manifest's own `frozen_on`. An archive
+# therefore cannot be frozen before the day that page was checked, so the
+# freeze is read from the record instead of written out here.
+AS_OF = frozen_today()
+FREEZE_ON = AS_OF.isoformat()
+FREEZE_ID = f"public-synthetic-evidence-freeze-{FREEZE_ON}"
+OTHER_FREEZE_ON = (AS_OF + timedelta(days=1)).isoformat()
 SIGNER = "evidence-signing-test@example.invalid"
 OTHER_SIGNER = "someone-else@example.invalid"
 
@@ -285,12 +291,12 @@ def test_a_signature_from_another_freeze_does_not_transfer(
     other_manifest = build_export(
         committed_evidence_root,
         other,
-        freeze_id="public-synthetic-evidence-freeze-2026-08-10",
-        frozen_on="2026-08-10",
+        freeze_id=f"public-synthetic-evidence-freeze-{OTHER_FREEZE_ON}",
+        frozen_on=OTHER_FREEZE_ON,
         repository_commit_sha=_git(
             committed_evidence_root, "rev-parse", "HEAD"
         ).strip(),
-        today=date.fromisoformat("2026-08-10"),
+        today=date.fromisoformat(OTHER_FREEZE_ON),
     )
     shutil.copy2(sidecar_path(archive), sidecar_path(other))
     signers = _signers_file(tmp_path, "allowed_signers", [(SIGNER, signing_key)])
