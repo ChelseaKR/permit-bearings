@@ -105,11 +105,34 @@ Steps, in order:
    loudly rather than half-applying.
 5. Rebuild the generated browser bundle: `python scripts/build_demo_bundle.py`.
    `make bundle-check` runs the `--check` form and fails until you do.
-6. Recompute the prepared gate:
-   `python -m permit_pathways.beta_gate_cli recompute --write`.
-7. Run `make verify`. The checks that were failing are
-   `tests/test_beta_gate.py::test_cli_outputs_machine_readable_non_claim` and
-   six packet-page specs in `tests/accessibility.spec.js`.
+6. Re-pin the digests taken over the record's own bytes, which `recompute` does
+   not write: `artifacts.program_availability.sha256` in
+   `data/workflows/registry.json`. Leave it stale and step 7 refuses with
+   `registered fingerprint does not match` rather than half-applying.
+7. Recompute the prepared gate:
+   `python -m permit_pathways.beta_gate_cli recompute --write`. It writes the
+   v2 export profile's digests and the record's own pins, and **refuses**
+   `_EXPORT_PROFILE_V2_SHA256` in `src/permit_pathways/beta_gate.py` — that one
+   is the tamper-evidence anchor over the profile, so it prints the value and a
+   person writes it. Edit it, then run `recompute` again until it reports that
+   every pin already matches the tree. `_NOT_RUN_ARTIFACT_SHA256` beside it is
+   an immutable not-run ledger that `recompute` never touches at all: its
+   `external_evidence_gate` entry is the digest of
+   `data/validation/woodland-flagship-gate.json`, so step 4 moves it and only a
+   hand edit puts it back.
+8. The prose that states when the page was checked moves with it. `grep -rn`
+   the old date and read each hit: several documents carry the same date string
+   for a different reason (`docs/ACCESSIBILITY.md`'s own audit and axe-run
+   dates, `TEMPLATE_PUBLISHED_ON` in `local_source_onboarding.py`), and those
+   do not move.
+9. Run `make verify`, then `npm run test:a11y`. No test clock has to move with
+   the record: `tests/attestation_clock.py` derives the suite's frozen dates
+   from the record, and the packet-page specs run against a fixture anchored to
+   the run's own UTC date, with the committed record's currency asserted by one
+   test that names the file. Before that was true the renewal described here
+   reported **71 failures and 27 errors**, all of them about the fixtures
+   rather than about the page, and the thirty-day recheck had never once been
+   satisfiable.
 
 This lives here rather than in `docs/BETA-OPERATIONS-RUNBOOK.md`, which would
 be the obvious home, because that document's bytes are bound by
