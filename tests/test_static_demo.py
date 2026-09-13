@@ -3,6 +3,7 @@ import re
 import shutil
 import subprocess
 from datetime import date
+from html.parser import HTMLParser
 from io import BytesIO
 
 import pytest
@@ -24,6 +25,11 @@ from scripts.build_demo_bundle import (
     build_journey_payload,
     build_readiness_payload,
     encoded_coverage_index,
+)
+from scripts.build_structured_data import (
+    PAGE_TYPES,
+    render_page,
+    site_root_url,
 )
 
 
@@ -384,6 +390,224 @@ def test_every_static_page_names_itself_and_not_the_shared_origin():
         ), where
         assert meta("property", "og:type") == "website", where
         assert meta("property", "og:site_name") == "Permit Bearings", where
+
+
+class _PageReader(HTMLParser):
+    """Read a page's self-description and its JSON-LD blocks in one real parse.
+
+    A pattern match over the source is not enough here, in both directions. A
+    grep for `application/ld+json` scores `<input accept="application/ld+json">`
+    as structured data, and a grep shaped like `<script type="application/ld+json">`
+    misses a real block written with an extra space or a single-quoted attribute.
+    Only a parser gets both right, so the gate below uses one, and it is a
+    different reader from the one the generator uses: if
+    `scripts/build_structured_data.py` read a page wrongly, a gate that reused
+    its reader would agree with it and pass.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.language = ""
+        self.title = ""
+        self.description = ""
+        self.canonical = ""
+        self.blocks = []
+        self._in_title = False
+        self._script = None
+
+    def handle_starttag(self, tag, attrs):
+        values = {key.lower(): (value or "") for key, value in attrs}
+        if tag == "html":
+            self.language = values.get("lang", "").strip()
+        elif tag == "title":
+            self._in_title = True
+        elif tag == "meta" and values.get("name") == "description":
+            self.description = values.get("content", "").strip()
+        elif tag == "link" and values.get("rel") == "canonical":
+            self.canonical = values.get("href", "").strip()
+        elif (
+            tag == "script"
+            and values.get("type", "").strip().lower() == "application/ld+json"
+        ):
+            self._script = []
+
+    def handle_endtag(self, tag):
+        if tag == "title":
+            self._in_title = False
+        elif tag == "script" and self._script is not None:
+            self.blocks.append("".join(self._script))
+            self._script = None
+
+    def handle_data(self, data):
+        if self._in_title:
+            self.title += data
+        if self._script is not None:
+            self._script.append(data)
+
+
+def _read_page(path):
+    reader = _PageReader()
+    reader.feed(path.read_text(encoding="utf-8"))
+    reader.close()
+    return reader
+
+
+def _flatten(parsed):
+    """Every node in a block, whether it is one object, a list, or a @graph."""
+    nodes = parsed if isinstance(parsed, list) else [parsed]
+    flat = []
+    for node in nodes:
+        assert isinstance(node, dict), (
+            f"a JSON-LD block holds {type(node)}, not an object"
+        )
+        flat.append(node)
+        flat.extend(value for value in node.values() if isinstance(value, dict))
+    return flat
+
+
+def test_structured_data_is_declared_for_every_page_the_site_publishes():
+    """The generator's page list is the set of pages, not a subset someone kept.
+
+    The gate below can only fail over pages it knows about. A new public page
+    added beside these, with no node and no entry here, would otherwise
+    ship unmarked and every structured-data test would still pass.
+    """
+    published = sorted(path.name for path in ROOT.glob("*.html"))
+
+    assert published == sorted(PAGE_TYPES), (
+        "the site publishes pages the structured-data generator does not know: "
+        f"{sorted(set(published) - set(PAGE_TYPES))}"
+    )
+
+
+def test_every_static_page_carries_structured_data_that_agrees_with_itself():
+    """Each page carries exactly one JSON-LD node, built from that page's own head.
+
+    The site had no structured data at all, so nothing it published could be read
+    as a typed entity. The risk in adding some is not that it is missing but that
+    it drifts: a node repeating a title and a URL is a second copy of facts the
+    head already states, and the copy is what goes stale. So every value is
+    asserted equal to the page's own `<title>`, `<meta name="description">`,
+    `<link rel="canonical">` and `<html lang>` rather than to a literal here.
+    """
+    root_url = "https://chelseakr.github.io/permit-bearings/"
+    for name, expected_type in sorted(PAGE_TYPES.items()):
+        page = _read_page(ROOT / name)
+
+        assert len(page.blocks) == 1, (
+            f"{name} carries {len(page.blocks)} JSON-LD blocks, not exactly one"
+        )
+        try:
+            node = json.loads(page.blocks[0])
+        except json.JSONDecodeError as error:
+            raise AssertionError(
+                f"{name}: JSON-LD is not valid JSON: {error}"
+            ) from None
+
+        assert isinstance(node, dict), f"{name}: JSON-LD is not a single node"
+        assert node.get("@context") == "https://schema.org", (
+            f"{name}: @context is {node.get('@context')!r}"
+        )
+        assert node.get("@type") == expected_type, (
+            f"{name}: @type is {node.get('@type')!r}, not {expected_type!r}"
+        )
+
+        for field in ("name", "description", "url", "inLanguage", "image"):
+            value = node.get(field)
+            assert isinstance(value, str) and value.strip(), (
+                f"{name}: {field} is missing or empty"
+            )
+
+        # Each of these is the page's own statement about itself, read back out of
+        # the page by a parser that never saw the generator.
+        assert node["name"] == page.title.strip(), (
+            f"{name}: JSON-LD name {node['name']!r} is not the page title "
+            f"{page.title.strip()!r}"
+        )
+        assert node["description"] == page.description, (
+            f"{name}: JSON-LD description does not match the page's meta description"
+        )
+        assert node["url"] == page.canonical, (
+            f"{name}: JSON-LD url {node['url']!r} is not the canonical "
+            f"{page.canonical!r}"
+        )
+        assert node["inLanguage"] == page.language, (
+            f"{name}: JSON-LD inLanguage {node['inLanguage']!r} is not the page's "
+            f"lang {page.language!r}"
+        )
+
+        # The header calls the site a prototype on every page; so does the markup.
+        assert node.get("creativeWorkStatus") == "Prototype", (
+            f"{name}: creativeWorkStatus is {node.get('creativeWorkStatus')!r}"
+        )
+
+        part_of = node.get("isPartOf")
+        assert isinstance(part_of, dict), f"{name}: isPartOf is not a node"
+        assert part_of.get("@type") == "WebSite", f"{name}: isPartOf is not a WebSite"
+        assert part_of.get("name") == "Permit Bearings", f"{name}: isPartOf name"
+        assert part_of.get("url") == root_url, (
+            f"{name}: isPartOf url {part_of.get('url')!r} is not the site root"
+        )
+
+
+def test_structured_data_claims_no_dataset_and_no_official_standing():
+    """The markup describes pages and a browser tool; it claims nothing more.
+
+    Two families are excluded on purpose. A `Dataset`, `DataCatalog`,
+    `DataDownload` or DCAT descriptor would solicit dataset search engines and
+    open-data catalogues to harvest `corpus/` -- an unofficial mirror of statute
+    and CEQA documents -- as a published dataset, and a catalogue listing is far
+    harder to withdraw than a page. A `GovernmentService` or `LegalService` would
+    assert a standing this prototype explicitly disclaims: it is not an
+    eligibility determination and its bilingual explanations are review-pending
+    drafts.
+    """
+    forbidden_types = {
+        "Dataset",
+        "DataCatalog",
+        "DataDownload",
+        "DataFeed",
+        "GovernmentService",
+        "GovernmentOrganization",
+        "LegalService",
+        "Legislation",
+        "Service",
+    }
+    forbidden_keys = {"distribution", "dcat", "dct", "void", "measurementTechnique"}
+    for name in sorted(PAGE_TYPES):
+        page = _read_page(ROOT / name)
+        for raw in page.blocks:
+            assert "dcat:" not in raw and "void:" not in raw, (
+                f"{name}: JSON-LD carries harvest vocabulary"
+            )
+            for node in _flatten(json.loads(raw)):
+                assert node.get("@type") not in forbidden_types, (
+                    f"{name}: JSON-LD claims @type {node.get('@type')!r}"
+                )
+                overlap = forbidden_keys.intersection(node)
+                assert not overlap, (
+                    f"{name}: JSON-LD carries harvest properties {sorted(overlap)}"
+                )
+
+
+def test_committed_structured_data_matches_the_generator():
+    """The committed blocks are what the generator writes from the same heads.
+
+    `make bundle-check` runs `scripts/build_structured_data.py --check`, which
+    asserts this too. A hand-edit to a page's title that leaves the node behind
+    should fail in both places rather than in neither.
+    """
+    root_url = site_root_url()
+    stale = [
+        name
+        for name in sorted(PAGE_TYPES)
+        if (ROOT / name).read_text(encoding="utf-8") != render_page(name, root_url)
+    ]
+
+    assert not stale, (
+        f"structured data is stale for {stale}; regenerate with "
+        "`python scripts/build_structured_data.py`"
+    )
 
 
 def _webp_dimensions(asset):
