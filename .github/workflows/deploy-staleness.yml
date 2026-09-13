@@ -1,0 +1,181 @@
+# Is the site a visitor gets at chelseakr.github.io/permit-bearings the site this
+# repository has?
+#
+# Nothing here was asking. This site is published by GitHub's own legacy Jekyll build
+# from the committed root of `main` (`build_type: legacy`, `source.path: "/"`), so there is
+# no publisher workflow in this directory to watch, no run list to read, and no red run when
+# publishing stops. Elsewhere in this portfolio a site served a two-month-old build for 63
+# days with every gate green; the gates were not lying, they were not asked.
+#
+# This workflow publishes NOTHING and cannot: no `pages: write`, no `id-token: write`, no
+# deploy credential, and it dispatches nothing. Whether and when this site publishes is
+# GitHub's branch build and the owner's Pages setting; this file only reports the distance.
+#
+# What it measures is in `scripts/deploy_staleness.py`: the commit the newest *successful*
+# `github-pages` deployment was built from, against `origin/main`, comparing git object ids
+# across the paths a visitor actually receives rather than the whole published root. The
+# root is the whole repository here -- GitHub serves `/uv.lock` and
+# `/tests/accessibility.spec.js` -- so comparing it would report drift on a commit that only
+# edited a test. The reasoning, and the live HTTP probe it was verified against, are in that
+# module's docstring.
+#
+# The output is an issue, not a red run. A scheduled workflow that fails whenever a deploy
+# is overdue would sit red until someone publishes, and a check that is permanently red is a
+# check nobody reads. This run goes red only when the comparison cannot be made at all: no
+# github-pages deployment in the history, none that reports a successful status, a deployed
+# commit this clone does not contain, a history that has diverged, or a declared
+# visitor-visible path `main` no longer has. A detector that cannot tell must look broken
+# rather than report a comfortable zero.
+#
+# Every action is pinned to a full 40-character commit SHA already in use elsewhere in this
+# repository.
+name: Deploy staleness sentinel
+
+on:
+  schedule:
+    # Mondays, on a minute no other workflow in this repository or the neighbouring
+    # site repositories uses. GitHub rebuilds this site on every push to `main`, so the
+    # question is not "did it publish in the last hour" but "has it stopped"; weekly answers
+    # that, and asking hourly would only produce the same answer 168 times.
+    - cron: "53 16 * * 1"
+  workflow_dispatch:
+    inputs:
+      max_age_days:
+        description: "Days a visitor-visible difference may wait before this reports"
+        required: false
+        default: "14"
+        type: string
+
+# Least privilege at the workflow level; the one job grants itself what it needs.
+permissions: {}
+
+# This workflow writes: it files, updates or closes one issue. Never cancel a run mid-write,
+# and never let a manual dispatch race the Monday schedule onto the same issue.
+concurrency:
+  group: deploy-staleness
+  cancel-in-progress: false
+
+jobs:
+  report:
+    name: measure how far the live site is behind main
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read # the checkout, and the git history the comparison walks
+      deployments: read # which commit the published build was made from
+      issues: write # the report itself; nothing here writes anywhere else
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Required, not incidental. On a shallow clone an older deployed commit is simply
+          # absent, `git log <deployed>..origin/main` prints nothing, and the site reads as
+          # up to date. `scripts/deploy_staleness.py` refuses that case rather than reporting
+          # it as zero -- this is what keeps it from having to.
+          fetch-depth: 0
+          persist-credentials: false
+
+      # `scripts/deploy_staleness.py` imports only the standard library and nothing from this
+      # repository, so it needs no locked environment and cannot be broken by a dependency.
+      # It does need a modern interpreter, and pinning one here is cheaper than discovering
+      # on some future runner image that the sentinel stopped running.
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Measure the distance
+        id: measure
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MAX_AGE_DAYS: ${{ inputs.max_age_days || '14' }}
+          REPOSITORY: ${{ github.repository }}
+        # `|| true` so a refusal reaches the reporting step, which turns it into the red run
+        # with the reason attached, rather than ending the job here with no explanation.
+        run: |
+          set -euo pipefail
+          python3 scripts/deploy_staleness.py \
+            --repo "$REPOSITORY" \
+            --head origin/main \
+            --max-age-days "$MAX_AGE_DAYS" \
+            > "$RUNNER_TEMP/report.txt" 2> "$RUNNER_TEMP/error.txt" || true
+          cat "$RUNNER_TEMP/report.txt" "$RUNNER_TEMP/error.txt"
+
+      - name: Publish the measurement to the run summary
+        if: always()
+        run: |
+          set -euo pipefail
+          [ -f "$RUNNER_TEMP/report.txt" ] && [ -f "$RUNNER_TEMP/error.txt" ] || exit 0
+          {
+            echo "### Deploy staleness"
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/report.txt" "$RUNNER_TEMP/error.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: File, update or close the report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          MEASURED: ${{ steps.measure.outputs.measured }}
+          OVERDUE: ${{ steps.measure.outputs.overdue }}
+          # Undated and stable. A dated title turns one unresolved condition into a weekly
+          # pile of issues, which is how #63 and #65 happened here; the date and the run link
+          # go in the body instead. The label keeps the class findable after a title edit.
+          TITLE: The published site is behind main
+        run: |
+          set -euo pipefail
+
+          gh label create deploy-staleness \
+            --color 1D76DB \
+            --description "Opened by the weekly deploy staleness sentinel" \
+            >/dev/null 2>&1 || true
+
+          existing="$(gh issue list --repo "$REPOSITORY" --state open --limit 1 \
+            --label deploy-staleness --search "\"$TITLE\" in:title" \
+            --json number,createdAt --jq '.[0] | select(.) | "\(.number) \(.createdAt)"')"
+
+          # An empty `measured` is the refusal case as well as the crashed case: neither one
+          # may be read as "not overdue", because that branch closes the open issue.
+          if [ "$MEASURED" != "true" ]; then
+            echo "::error title=Deploy staleness unmeasurable::the comparison could not be made; see the report above"
+            exit 1
+          fi
+
+          if [ "$OVERDUE" != "true" ]; then
+            if [ -n "$existing" ]; then
+              gh issue close "${existing%% *}" --repo "$REPOSITORY" --reason completed \
+                --comment "The published site is no longer behind main. ${RUN_URL}"
+              echo "closed #${existing%% *}"
+            else
+              echo "not overdue; no open report to close"
+            fi
+            exit 0
+          fi
+
+          {
+            echo '```'
+            cat "$RUNNER_TEMP/report.txt"
+            echo '```'
+            echo
+            echo "GitHub publishes this site from the committed root of \`main\`; this"
+            echo "sentinel deploys nothing. If the distance is real, check the repository's"
+            echo "Pages build history for a build that did not publish."
+            echo
+            echo "Measured by \`scripts/deploy_staleness.py\` in ${RUN_URL}."
+          } > "$RUNNER_TEMP/body.md"
+
+          if [ -n "$existing" ]; then
+            number="${existing%% *}"
+            opened="${existing##* }"
+            days="$(( ( $(date -u +%s) - $(date -u -d "$opened" +%s 2>/dev/null || printf '%s' "$(date -u +%s)") ) / 86400 ))"
+            gh issue comment "$number" --repo "$REPOSITORY" \
+              --body "$(printf 'Still behind after %s day(s), as of %s.\n\n%s' \
+                "$days" "$(date -u +%F)" "$(cat "$RUNNER_TEMP/body.md")")"
+            echo "updated #$number"
+          else
+            gh issue create --repo "$REPOSITORY" --title "$TITLE" \
+              --label deploy-staleness --body-file "$RUNNER_TEMP/body.md"
+          fi
