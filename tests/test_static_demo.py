@@ -135,6 +135,7 @@ def test_static_pages_load_only_the_assets_they_need():
         "prepare.html",
         "review.html",
         "evidence.html",
+        "privacy.html",
     ):
         html = (ROOT / page_name).read_text(encoding="utf-8")
         style_match = re.search(
@@ -261,6 +262,7 @@ def test_static_pages_have_consistent_navigation_and_resolvable_links():
         ROOT / "prepare.html": 0,
         ROOT / "review.html": 2,
         ROOT / "evidence.html": 2,
+        ROOT / "privacy.html": 0,
     }
     expected_nav = [
         ("check.html", "Start"),
@@ -297,7 +299,7 @@ def test_static_pages_have_consistent_navigation_and_resolvable_links():
 def test_every_static_page_names_itself_and_not_the_shared_origin():
     """Every page carries a self-referencing canonical and a complete social card.
 
-    These five pages are served from `chelseakr.github.io`, an origin shared with five
+    These six pages are served from `chelseakr.github.io`, an origin shared with five
     other unrelated project sites, on a PATH rather than on a domain of their own. That
     makes the usual single-domain shorthands actively wrong here rather than merely
     sloppy: a canonical of "/" resolves to `https://chelseakr.github.io/`, which is not
@@ -311,7 +313,7 @@ def test_every_static_page_names_itself_and_not_the_shared_origin():
     bare URL with no card.
 
     Each assertion names the page, because a loop that fails without saying which of
-    five files broke is a loop that gets debugged by bisecting the directory.
+    six files broke is a loop that gets debugged by bisecting the directory.
     """
     card = "https://chelseakr.github.io/permit-bearings/assets/social-card.png"
     pages = {
@@ -322,6 +324,8 @@ def test_every_static_page_names_itself_and_not_the_shared_origin():
         ROOT / "review.html": "https://chelseakr.github.io/permit-bearings/review.html",
         ROOT
         / "evidence.html": "https://chelseakr.github.io/permit-bearings/evidence.html",
+        ROOT
+        / "privacy.html": "https://chelseakr.github.io/permit-bearings/privacy.html",
     }
     for path, url in pages.items():
         html = path.read_text(encoding="utf-8")
@@ -479,7 +483,9 @@ def test_public_brand_name_and_tagline_are_consistent():
         ROOT / "prepare.html",
         ROOT / "review.html",
         ROOT / "evidence.html",
+        ROOT / "privacy.html",
         ROOT / "assets" / "demo.js",
+        ROOT / "assets" / "analytics.js",
         ROOT / "demo" / "app.py",
         ROOT / "README.md",
         ROOT / "docs" / "PRODUCT-CONTEXT.md",
@@ -558,7 +564,9 @@ def test_public_interface_copy_uses_no_em_dashes():
         ROOT / "prepare.html",
         ROOT / "review.html",
         ROOT / "evidence.html",
+        ROOT / "privacy.html",
         ROOT / "assets" / "demo.js",
+        ROOT / "assets" / "analytics.js",
         ROOT / "demo" / "app.py",
     ]
     em_dash = chr(0x2014)

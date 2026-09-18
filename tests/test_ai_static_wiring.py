@@ -27,9 +27,17 @@ def test_check_page_names_the_service_once_and_allows_only_its_origin() -> None:
     allowed = connect.group(1).split()
     assert allowed[:3] == ["'self'", "http://127.0.0.1:8787", "http://localhost:8787"]
     # Every hosted candidate in the meta tag must be allowed by the CSP, and
-    # the CSP must not allow an origin the page does not name.
+    # the CSP must not allow an origin the page does not name. The Google
+    # Analytics origins (ADR 0008) are the only other entries, and they are
+    # checked exactly in tests/test_analytics.py.
     hosted = {c for c in candidates if c.startswith("https://")}
-    assert set(allowed[3:]) == hosted
+    google_analytics = {
+        "https://*.google-analytics.com",
+        "https://*.analytics.google.com",
+        "https://www.googletagmanager.com",
+    }
+    assert set(allowed[3:]) - google_analytics == hosted
+    assert set(allowed[3:]) & google_analytics == google_analytics
     server = (ROOT / "demo" / "app.py").read_text(encoding="utf-8")
     assert "connect-src 'self' http://127.0.0.1:8787 http://localhost:8787" in server
     for other in ("index.html", "prepare.html", "review.html", "evidence.html"):
