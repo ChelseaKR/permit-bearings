@@ -5,7 +5,7 @@ extract with pdftotext first) and record provenance in
 corpus/ordinances/SOURCES.json. Results land at
 data/conformance/results/<slug>.json plus an index the demo site reads.
 
-The published per-slug result denormalises each matched check's title,
+The published per-slug result denormalizes each matched check's title,
 state_law and hcd_precedent out of data/conformance/checks.json, so editing
 a check without rescanning leaves a dated, jurisdiction-named artifact that
 disagrees with the checks that produced it. ``--check`` re-derives every

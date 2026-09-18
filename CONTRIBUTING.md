@@ -80,7 +80,7 @@ jurisdiction's page on `checked_on` and read what its `excerpt` says.
 `recheck_due_on` is when that reading stops counting. Once it passes, the beta
 gate appends the blocker `reference_program_availability`, the packet journey
 renders its hold branch instead of the applicability radio group, and the
-flagship packet is locked. That is the designed behaviour: the product fails
+flagship packet is locked. That is the designed behavior: the product fails
 closed rather than publishing a reading nobody has confirmed. It also means
 `main` goes red on a calendar boundary with no commit behind it, which is what
 happened on 2026-09-09 (#164).
@@ -100,7 +100,7 @@ Steps, in order:
 
 1. Open the `source.url` recorded in the availability record and read the page.
 2. If the wording has changed, `excerpt` and `excerpt_sha256` change with it
-   (`excerpt_sha256` is `sha256:` plus the digest of the normalised excerpt --
+   (`excerpt_sha256` is `sha256:` plus the digest of the normalized excerpt --
    `permit_pathways.program_availability.excerpt_fingerprint`). If the program
    *status* has changed, this is no longer a date renewal: route it to
    `content_source_owner` before editing anything.

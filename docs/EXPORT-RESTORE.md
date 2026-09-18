@@ -204,5 +204,5 @@ new profile version. It stops before two things on purpose:
   diff — so a refresh is two passes, with the attestation between them.
 - **The immutable not-run planning ledgers** (`_NOT_RUN_ARTIFACT_SHA256`). If
   one of those changed, the command refuses outright and writes nothing.
-  Their independent raw bytes are what stops a favourable nested result being
+  Their independent raw bytes are what stops a favorable nested result being
   rewritten together with its digest.

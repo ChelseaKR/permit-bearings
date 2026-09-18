@@ -553,7 +553,7 @@ def test_an_exception_removing_every_service_states_itself_and_finds_nothing(tmp
     assert "removes service SUMMER" in summary
 
 
-def test_an_exception_adding_service_on_an_excluded_day_is_honoured(tmp_path):
+def test_an_exception_adding_service_on_an_excluded_day_is_honored(tmp_path):
     files = _seasonal_feed(
         {"calendar_dates.txt": "service_id,date,exception_type\nSUMMER,20260620,1\n"}
     )
@@ -728,7 +728,7 @@ from permit_pathways.transit import (  # noqa: E402
     COVERAGE_COMPLETE,
     COVERAGE_UNKNOWN,
     FeedCoverage,
-    _normalise_operator,
+    _normalize_operator,
     assess_coverage,
     feed_agencies,
     load_feeds,
@@ -1127,19 +1127,19 @@ def test_the_committed_snapshot_blanks_an_agency_only_on_planned_rows():
 def test_operator_names_match_across_punctuation_but_never_fuzzily():
     # A false match invents coverage the run does not have; a false miss only
     # over-reports incompleteness. The comparison is aimed away from the first.
-    assert _normalise_operator(
+    assert _normalize_operator(
         "Capitol Corridor Joint-Powers Authority"
-    ) == _normalise_operator("capitol corridor joint powers authority")
-    assert _normalise_operator("Yolo  County  Transportation") == (
+    ) == _normalize_operator("capitol corridor joint powers authority")
+    assert _normalize_operator("Yolo  County  Transportation") == (
         "yolo county transportation"
     )
     # An abbreviation does not fold into its expansion. That is the safe
     # direction: it can only report the screen as more bounded than it is.
-    assert _normalise_operator("Capitol Corridor J.P.A.") == "capitol corridor j p a"
-    assert _normalise_operator("Capitol Corridor J.P.A.") != _normalise_operator(
+    assert _normalize_operator("Capitol Corridor J.P.A.") == "capitol corridor j p a"
+    assert _normalize_operator("Capitol Corridor J.P.A.") != _normalize_operator(
         "Capitol Corridor JPA"
     )
-    assert _normalise_operator("AC Transit") != _normalise_operator(
+    assert _normalize_operator("AC Transit") != _normalize_operator(
         "Alameda-Contra Costa Transit District"
     )
 

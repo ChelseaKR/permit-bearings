@@ -429,7 +429,7 @@ def test_cli_verify_without_a_signers_file_still_passes_an_unsigned_archive(
     assert payload["tree_fingerprint"]
 
 
-def test_cli_restore_honours_the_same_authenticity_demand(
+def test_cli_restore_honors_the_same_authenticity_demand(
     committed_evidence_root: Path,
     signing_key: Path,
     tmp_path: Path,
@@ -508,7 +508,7 @@ def test_a_signed_statement_that_names_a_different_package_does_not_verify(
     signing_key: Path,
     tmp_path: Path,
 ) -> None:
-    # The manifest cross-check is defence in depth and unreachable for a
+    # The manifest cross-check is defense in depth and unreachable for a
     # well-formed archive -- the manifest is *inside* the archive, so a matching
     # digest already implies a matching manifest. Exercised directly so it is
     # not a branch that cannot fail: hand the same archive a manifest it does

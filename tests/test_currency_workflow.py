@@ -251,7 +251,7 @@ requires_bash = pytest.mark.skipif(
 
 
 @requires_bash
-def test_alert_creates_one_undated_labelled_issue_when_none_is_open(
+def test_alert_creates_one_undated_labeled_issue_when_none_is_open(
     alert_script, tmp_path
 ):
     completed, calls = _execute(
@@ -414,7 +414,7 @@ def test_only_a_read_source_can_open_the_ordinance_alert():
     assert "gh issue create" not in note
 
 
-def test_the_ordinance_alert_converges_on_one_undated_labelled_issue():
+def test_the_ordinance_alert_converges_on_one_undated_labeled_issue():
     step = _workflow_step(
         WORKFLOW_PATH.read_text(encoding="utf-8"), "Report a changed ordinance source"
     )

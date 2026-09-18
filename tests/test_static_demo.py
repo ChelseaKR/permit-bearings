@@ -340,7 +340,7 @@ def test_every_static_page_names_itself_and_not_the_shared_origin():
         canonical = re.search(r'<link rel="canonical" href="([^"]*)">', html)
         assert canonical, f"{where} has no canonical URL"
         assert canonical.group(1) == url, (
-            f"{where} canonicalises to {canonical.group(1)!r}, not {url!r}"
+            f"{where} canonicalizes to {canonical.group(1)!r}, not {url!r}"
         )
 
         def meta(attribute, name, *, page=html, where=where):
@@ -555,8 +555,8 @@ def test_structured_data_claims_no_dataset_and_no_official_standing():
 
     Two families are excluded on purpose. A `Dataset`, `DataCatalog`,
     `DataDownload` or DCAT descriptor would solicit dataset search engines and
-    open-data catalogues to harvest `corpus/` -- an unofficial mirror of statute
-    and CEQA documents -- as a published dataset, and a catalogue listing is far
+    open-data catalogs to harvest `corpus/` -- an unofficial mirror of statute
+    and CEQA documents -- as a published dataset, and a catalog listing is far
     harder to withdraw than a page. A `GovernmentService` or `LegalService` would
     assert a standing this prototype explicitly disclaims: it is not an
     eligibility determination and its bilingual explanations are review-pending

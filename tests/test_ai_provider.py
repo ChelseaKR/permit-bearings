@@ -103,7 +103,7 @@ def test_the_bedrock_default_is_a_model_this_account_can_invoke() -> None:
     invokable from this project's AWS account: `InvokeModel` answers
     `403 anthropic.claude-sonnet-5 is not available for this account`
     (verified live 2026-09-02), while the entitlement API reports it
-    authorised. Bedrock is the path every committed result under
+    authorized. Bedrock is the path every committed result under
     `evals/ai/results/` actually ran on, so a Bedrock default that 403s makes
     the documented `PERMIT_AI_PROVIDER=bedrock` invocation fail with no model
     override. The Anthropic-API default is ADR 0004's settled choice and is

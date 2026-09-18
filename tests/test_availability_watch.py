@@ -2,7 +2,7 @@
 
 Issue #164. `main` went red on 2026-09-09 with no commit behind it, because
 `data/availability/woodland-preapproved-adu-program.json` passed its
-`recheck_due_on` at 00:00 UTC. That behaviour is correct -- the product fails
+`recheck_due_on` at 00:00 UTC. That behavior is correct -- the product fails
 closed. The defect is that the instrument built to give notice reported clean 33
 hours earlier: none of the harness's five signals read `data/availability/` at
 all, so a directory it never opened was reported as nothing to report.

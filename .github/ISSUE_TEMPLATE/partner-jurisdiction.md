@@ -79,7 +79,7 @@ not a commitment to use anything.
 
 - **A permit type or workflow that causes you the most rework:**
 - **What applicants get wrong most often:**
-- **Who in your organisation would need to be asked:**
+- **Who in your organization would need to be asked:**
 
 ## If you are not the right person
 

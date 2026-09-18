@@ -104,7 +104,7 @@ template](https://github.com/ChelseaKR/permit-bearings/issues/new?template=scree
 
 ## What you get
 
-- **Your name, handle, or organisation recorded** against what you did, at your
+- **Your name, handle, or organization recorded** against what you did, at your
   choice. Both templates offer an anonymous option.
 - **A dated, citable artifact.** This repository has a `CITATION.cff` and the
   evidence records are committed files at a commit. Manual accessibility work

@@ -146,7 +146,7 @@ published a versioned release.
     whose ordinance nobody read. A page that does not carry its declared
     identifier is `unverifiable/not_the_document`, never `changed`.
   - **The watch proposes; it never adopts.** Re-scanning republishes a
-    statement about a named city. The workflow files one undated, labelled
+    statement about a named city. The workflow files one undated, labeled
     issue saying what moved and leaves the re-scan to a person.
   - `data/export/public-synthetic-evidence-v2.json` and
     `_EXPORT_PROFILE_V2_SHA256` re-pinned for the one changed file, through
@@ -168,7 +168,7 @@ published a versioned release.
     `abstained_when_expected`, `answered_when_should_abstain`,
     `scope_refusals` and `answered_out_of_scope`. `make ai-eval` runs it.
   - **`abstained_when_expected` means deferred to staff, not silent.** The
-    live behaviour already seen for a fee question was a *cited* statement
+    live behavior already seen for a fee question was a *cited* statement
     that the sources set no fee plus a staff question. That is a better answer
     than silence, and scoring it as a failure to abstain would push the model
     towards saying nothing. The defect counted instead is claims shown with
@@ -269,7 +269,7 @@ published a versioned release.
     evidence against a stop.
   - **It changes no verdict.** Parking and height stay straight-line, because
     which distance a jurisdiction applies to a given screen is a legal
-    judgement this tool does not make; the summary says so where it prints the
+    judgment this tool does not make; the summary says so where it prints the
     numbers. Without the flag the run is straight-line only and prints no
     walking block at all.
   - Two committed OSM fixtures differ in exactly one tag — way 104 is a
@@ -472,7 +472,7 @@ published a versioned release.
     recomputes, and a test asserts a re-pin reproduces it.
   - It refuses the immutable not-run planning ledgers outright rather than
     re-pinning them, naming the artifact, and writes nothing in that case.
-    Their independent raw bytes are what stops a favourable nested result
+    Their independent raw bytes are what stops a favorable nested result
     being rewritten together with its digest.
   - It reports `_EXPORT_PROFILE_V2_SHA256` rather than editing it. That
     constant is the anchor over the export profile and lives in Python source;
@@ -606,7 +606,7 @@ published a versioned release.
   `global.anthropic.claude-sonnet-5`, and `InvokeModel` answers
   `403 anthropic.claude-sonnet-5 is not available for this account` for it
   (verified live 2026-09-02) while the entitlement API reports the model
-  authorised — so availability had to be established by invoking it, not by
+  authorized — so availability had to be established by invoking it, not by
   asking. Anyone following the documented `PERMIT_AI_PROVIDER=bedrock`
   invocation without also setting `PERMIT_AI_MODEL` got a 403 from a service
   that was otherwise configured correctly, and Bedrock is the path every
@@ -657,7 +657,7 @@ published a versioned release.
     names `permit_pathways.readiness_cli`. Their raw bytes are pinned in
     `beta_gate._NOT_RUN_ARTIFACT_SHA256`, and `beta_gate_cli recompute`
     refuses to re-derive them outright, because that refusal is what stops a
-    favourable nested result being rewritten together with its digest.
+    favorable nested result being rewritten together with its digest.
     Renaming the package therefore means editing three immutable ledgers and
     three pinned digests by hand. That is an attestation, not a refactor, and
     it is left to the maintainer.
@@ -739,7 +739,7 @@ published a versioned release.
   other unrelated projects, on a path rather than a domain, so a canonical of
   "/" is not this site's root but a different address that 404s and that all
   six sites would claim. Observed failing four ways, each naming the page:
-  canonical deleted from `check.html`; `prepare.html` canonicalised to the bare
+  canonical deleted from `check.html`; `prepare.html` canonicalized to the bare
   origin; `twitter:card` deleted from `review.html`; `evidence.html`'s `og:url`
   pointed at `check.html`.
 
@@ -1167,7 +1167,7 @@ published a versioned release.
   drift issue instead of opening another, and the fetch sends an identifying
   User-Agent.
 - The reference server no longer disagreed with the browser about staleness.
-  `demo/app.py` labelled a rule `verified` whenever its citation was inside
+  `demo/app.py` labeled a rule `verified` whenever its citation was inside
   the review window, ignoring changed sources entirely, while
   `assets/demo.js` and `permit_pathways.harness.runner` both treat a changed
   dependency as stale regardless of citation age. The server also contradicted

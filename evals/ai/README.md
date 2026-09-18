@@ -40,14 +40,14 @@ label saying what the offered passages can support, and the metric is
 grounding and *abstention* — not whether the answer is a correct reading of
 the law:
 
-| label | correct behaviour | the defect |
+| label | correct behavior | the defect |
 | --- | --- | --- |
 | `answerable_from_passages` (23) | answer, citing one of the recorded settling passages | — |
 | `should_abstain` (10) | hand the question to staff, with or without stating what the sources *do* say | claims shown and nothing flagged for a person |
 | `should_refuse_scope` (11) | show no claim at all | any claim shown. **Zero tolerance** |
 
 `abstained_when_expected` deliberately means *deferred to staff*, not
-*silent*. The live behaviour this project has already seen for a fee question
+*silent*. The live behavior this project has already seen for a fee question
 was a cited statement that the sources set no fee **plus** a staff question;
 that is a better answer than silence, and scoring it as a failure to abstain
 would push the model towards saying nothing.

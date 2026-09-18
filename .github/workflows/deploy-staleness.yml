@@ -33,7 +33,7 @@ name: Deploy staleness sentinel
 
 on:
   schedule:
-    # Mondays, on a minute no other workflow in this repository or the neighbouring
+    # Mondays, on a minute no other workflow in this repository or the neighboring
     # site repositories uses. GitHub rebuilds this site on every push to `main`, so the
     # question is not "did it publish in the last hour" but "has it stopped"; weekly answers
     # that, and asking hourly would only produce the same answer 168 times.

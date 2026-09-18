@@ -34,7 +34,7 @@ settled choice and stays the default for a deployer with ordinary API access.
 The same model is not invokable on Bedrock from this project's AWS account:
 ``InvokeModel`` answers ``403 anthropic.claude-sonnet-5 is not available for
 this account``, verified live on 2026-09-02, and the entitlement API reporting
-it authorised does not change that. Bedrock is the path every live evaluation
+it authorized does not change that. Bedrock is the path every live evaluation
 in ``evals/ai/results/`` actually ran on, so its default has to be a model
 that answers. Change either one only against a live invocation, never against
 an availability listing.

@@ -405,7 +405,7 @@ test("decorative illustrations decode and keep the tablet boundary first", async
 test("canonical journey gates the packet link on the editable applicability fact", async ({
   page,
 }) => {
-  // The gate's behaviour, not the attestation's currency: the committed record's
+  // The gate's behavior, not the attestation's currency: the committed record's
   // own dates are asserted by the first test in this file.
   await serveCurrentAvailabilityFixture(page);
   await openCanonicalJourney(page);

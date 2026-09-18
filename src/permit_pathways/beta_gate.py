@@ -2954,7 +2954,7 @@ def load_beta_gate(
 #
 #   * ``_NOT_RUN_ARTIFACT_SHA256`` — the immutable not-run planning ledgers.
 #     Re-pinning these is refused outright.  Their independent raw bytes are
-#     what stops a coordinated rewrite of a favourable nested result, and a
+#     what stops a coordinated rewrite of a favorable nested result, and a
 #     tool that re-derived them would hand exactly that back.
 #   * ``_EXPORT_PROFILE_V2_SHA256`` — a constant in this module.  It is
 #     reported, never edited, so moving the tamper-evidence anchor over the
@@ -3039,7 +3039,7 @@ class RecomputeProposal:
 
 
 def _canonical_json_bytes(payload: dict[str, Any]) -> bytes:
-    """Serialise in the committed two-space form, key order preserved."""
+    """Serialize in the committed two-space form, key order preserved."""
 
     return (json.dumps(payload, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
 
@@ -3047,7 +3047,7 @@ def _canonical_json_bytes(payload: dict[str, Any]) -> bytes:
 def _reserialisable(raw: bytes, payload: dict[str, Any], field: str) -> None:
     """Refuse to rewrite a file this module cannot reproduce byte for byte.
 
-    A re-pin must change only the digests it re-derived.  If re-serialising the
+    A re-pin must change only the digests it re-derived.  If re-serializing the
     untouched payload does not reproduce the committed bytes, writing would
     also reformat the file, and the reviewer of the diff could no longer see
     at a glance that nothing else moved.
@@ -3148,7 +3148,7 @@ def _recompute_binding_pins(
         raise ValueError(
             "immutable not-run planning ledgers changed and will not be re-pinned: "
             + ", ".join(sorted(frozen))
-            + ". Schema v1 pins their raw bytes so a favourable nested result "
+            + ". Schema v1 pins their raw bytes so a favorable nested result "
             "cannot be rewritten together with its digest; recording executed "
             "evidence needs a separately reviewed execution schema, not a "
             "re-pin. Restore the committed bytes, or change the schema."
@@ -3220,7 +3220,7 @@ def recompute_beta_gate(
     """Re-derive the mechanical pins over the current tree, without writing.
 
     Returns bytes to write plus the field-by-field diff to review.  It cannot
-    turn a ``not_run`` record into a favourable one: the immutable ledgers are
+    turn a ``not_run`` record into a favorable one: the immutable ledgers are
     refused, the export profile's membership is untouched, and the aggregate
     is whatever ``load_beta_gate`` recomputes.
     """

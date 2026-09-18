@@ -198,7 +198,7 @@ def _source_state_variant(
         observation["reason"] = None
         # This source is withdrawn in the committed receipt, so it arrives
         # carrying `unverifiable_kind`. A fetched observation may not have one,
-        # and the loader rejects it, so drop it when synthesising a fetch.
+        # and the loader rejects it, so drop it when synthesizing a fetch.
         observation.pop("unverifiable_kind", None)
         state["changed_source_ids"] = [source_id]
         unverifiable_ids = set()

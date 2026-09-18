@@ -26,7 +26,7 @@ in the repository, with no fetching required. The seven scanned here are a
 convenience sample from that list plus the existing San Diego entry, chosen
 because their current ADU chapter is served as plain HTML by a publisher whose
 robots.txt permits retrieval. They are not a random or representative sample,
-and the counts below do not generalise to the other 534 entries.
+and the counts below do not generalize to the other 534 entries.
 
 ## What was fetched, and how
 

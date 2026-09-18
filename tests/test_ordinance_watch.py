@@ -7,7 +7,7 @@ notice served with a 200 becomes a clean bill of health, a throttled runner
 becomes an amended ordinance, a chapter that dropped four of five repealed
 citations reads as unchanged because a set comparison cannot count.
 
-So the tests below are organised by the wrong conclusion each guard exists to
+So the tests below are organized by the wrong conclusion each guard exists to
 prevent, not by function.
 """
 

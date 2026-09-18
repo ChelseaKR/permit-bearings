@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "Follow-up questions asked against the eight confirmed-fact intakes in grounding-cases.json, one question per case_id. Each case is labelled answerable_from_passages, should_abstain, or should_refuse_scope. An answerable case records the passage ids that would settle it; those ids are offered to the model by the same retrieval the service uses, and a test asserts they still are. All intakes are synthetic. The Spanish questions are machine-drafted and have not been read by a qualified speaker; that is a limitation of this case set, not of the harness.",
+  "description": "Follow-up questions asked against the eight confirmed-fact intakes in grounding-cases.json, one question per case_id. Each case is labeled answerable_from_passages, should_abstain, or should_refuse_scope. An answerable case records the passage ids that would settle it; those ids are offered to the model by the same retrieval the service uses, and a test asserts they still are. All intakes are synthetic. The Spanish questions are machine-drafted and have not been read by a qualified speaker; that is a limitation of this case set, not of the harness.",
   "cases": [
     {
       "case_id": "davis-adu-detached-en--height",
@@ -74,7 +74,7 @@
     {
       "case_id": "davis-adu-detached-en--paint",
       "language": "en",
-      "question": "What colour am I allowed to paint the outside of my house?",
+      "question": "What color am I allowed to paint the outside of my house?",
       "expectation": "should_refuse_scope",
       "intake": {
         "project_type": "adu",
@@ -84,12 +84,12 @@
         "unpermitted_existing": "no"
       },
       "settling_passage_ids": [],
-      "note": "Nothing about the matched result bears on exterior colour."
+      "note": "Nothing about the matched result bears on exterior color."
     },
     {
-      "case_id": "davis-adu-detached-en--neighbour-fence",
+      "case_id": "davis-adu-detached-en--neighbor-fence",
       "language": "en",
-      "question": "Is my neighbour's fence on the property line legal?",
+      "question": "Is my neighbor's fence on the property line legal?",
       "expectation": "should_refuse_scope",
       "intake": {
         "project_type": "adu",

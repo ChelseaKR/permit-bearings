@@ -208,7 +208,7 @@ def test_the_rest_of_the_repository_does_not(path: str) -> None:
 
     The legacy Jekyll build copies everything whose name does not start with
     `.` or `_`, so `/tests/accessibility.spec.js`, `/uv.lock` and
-    `/scripts/build_demo_bundle.py` all answer 200. That mirror is an artefact
+    `/scripts/build_demo_bundle.py` all answer 200. That mirror is an artifact
     of the default build, not a surface: no page links them and nothing fetches
     them. Counting them is what would make this sentinel report drift on a
     commit that only touched a test, and a sentinel that fires on every commit

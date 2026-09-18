@@ -60,7 +60,7 @@ function allowedValues(demo, name) {
  * The vm context has its own `Array` and `Object` prototypes, so a value it
  * returns is never reference-equal to a host-realm literal under
  * `deepStrictEqual`. Round-tripping through JSON re-creates the structure in
- * this realm, and it also proves the payload is JSON-serialisable, which it
+ * this realm, and it also proves the payload is JSON-serializable, which it
  * has to be for the disclosure to render it.
  */
 function plain(value) {

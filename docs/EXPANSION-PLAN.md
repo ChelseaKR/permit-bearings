@@ -101,7 +101,7 @@ dependency after all. `pedestrian.py` measures the walk over an OSM extract
 the operator supplies as a file, with the graph rules recorded in ADR 0007;
 `transit.py --pedestrian-network` reports it beside the straight line. It
 changes no verdict, because which of the two distances a jurisdiction applies
-is not this tool's judgement. A stop the extract cannot measure is reported
+is not this tool's judgment. A stop the extract cannot measure is reported
 with the reason — outside the extract, too far from any path, or in a
 component the site cannot reach — and never with the straight line standing
 in for it.
@@ -190,11 +190,11 @@ start without it.
 ### Phase 5: one pilot jurisdiction's parcel-aware ADU readiness packet
 
 **Blocked on a jurisdiction sponsor.** `AGENTS.md` priority 2, and the single largest capability gap: "Application
-completeness" is the one row in the capability matrix labelled bare `Planned`.
+completeness" is the one row in the capability matrix labeled bare `Planned`.
 
 `docs/PRODUCT-CONTEXT.md` specifies the target output in detail: retrieved and
-applicant-asserted parcel facts labelled by source, a requirement manifest
-separating required from conditional from not applicable, findings labelled
+applicant-asserted parcel facts labeled by source, a requirement manifest
+separating required from conditional from not applicable, findings labeled
 present, missing, conflicting, or needs staff review with document and page
 evidence, a cited remedy for each incomplete item, the relevant clocks, and an
 exportable evidence manifest carrying source versions, hashes, verification
@@ -245,8 +245,8 @@ entirely from data already in the repository, with nothing to fetch.
 It ships as a read-only CLI rather than a page.
 `docs/PRODUCT-CONTEXT.md` says not to add demo modules until the applicant
 journey reads as one coherent flow, and whether it does is the owner's
-judgement, not this plan's. A CLI adds no step to the applicant journey and
-leaves that judgement where it belongs.
+judgment, not this plan's. A CLI adds no step to the applicant journey and
+leaves that judgment where it belongs.
 
 ### Phase 8: bounded Scenario B comment resolution
 
