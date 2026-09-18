@@ -389,15 +389,25 @@ def test_no_or_malformed_id_loads_nothing_and_offers_no_control(value: str) -> N
 
 
 class _ScriptTags(HTMLParser):
-    """Count <script> elements that carry no src, whatever their case or spacing."""
+    """Count <script> elements that carry no src, whatever their case or spacing.
+
+    One inline form is not script: a ``type="application/ld+json"`` block is a
+    data block, which the browser never executes and which ``script-src`` does
+    not govern. The structured-data blocks on every page are that, and only
+    that exact type is exempt; any other ``type`` still counts.
+    """
 
     def __init__(self) -> None:
         super().__init__()
         self.inline = 0
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag == "script" and not any(name == "src" for name, _ in attrs):
-            self.inline += 1
+        if tag != "script" or any(name == "src" for name, _ in attrs):
+            return
+        kind = next((value for name, value in attrs if name == "type"), None)
+        if (kind or "").strip().lower() == "application/ld+json":
+            return
+        self.inline += 1
 
 
 def _inline_scripts(html: str) -> int:
@@ -444,8 +454,11 @@ def test_negative_control_the_inline_script_check_sees_any_case() -> None:
         "<script>gtag()</script>",
         "<SCRIPT>gtag()</SCRIPT>",
         "<Script type=module>1</Script>",
+        '<script type="text/javascript">gtag()</script>',
+        '<script type="application/json">{}</script>',
     ):
         assert _inline_scripts(inline) == 1, inline
+    assert _inline_scripts('<script type="application/ld+json">{}</script>') == 0
 
 
 def test_every_public_page_csp_admits_exactly_the_ga_origins() -> None:
