@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; form-action 'self'; base-uri 'none'">
 <title>Evidence &amp; updates | Permit Bearings</title>
 <meta name="description" content="Inspect the prototype’s committed source-watch snapshot, rule dependencies, regression cases, external-evidence gate, known gaps, and change rehearsal.">
 <link rel="canonical" href="https://chelseakr.github.io/permit-bearings/evidence.html">
@@ -25,7 +25,8 @@
 <meta name="twitter:image:alt" content="Permit Bearings public prototype for California ADU, JADU, and SB 9 permitting">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/california-design-system.css?v=20260809b">
-<link rel="stylesheet" href="assets/site.css?v=20260810a">
+<link rel="stylesheet" href="assets/site.css?v=20260917a">
+<script src="assets/analytics.js?v=20260917a" defer></script>
 </head>
 <body data-page="evidence">
 <div id="skip-to-content">
@@ -312,11 +313,16 @@
     <div class="footer-links">
       <a href="check.html">Check a project</a>
       <a href="review.html">Review local rules</a>
+      <a href="privacy.html">Privacy and analytics</a>
+    </div>
+    <div class="analytics-choice" data-analytics-choice hidden>
+      <button type="button" class="link-button ca-button">Opt out of analytics</button>
+      <span role="status"></span>
     </div>
   </div>
 </footer>
 
-<script src="data/demo-data.js?v=20260810a" defer></script>
-<script src="assets/demo.js?v=20260810a" defer></script>
+<script src="data/demo-data.js?v=20260917a" defer></script>
+<script src="assets/demo.js?v=20260917a" defer></script>
 </body>
 </html>

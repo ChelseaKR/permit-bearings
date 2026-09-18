@@ -1,13 +1,16 @@
 # Current prototype data flow
 
-Status: 2026-08-21. This describes the executable repository and public demo,
-not a production deployment or a compliance assessment.
+Status: 2026-08-21, updated 2026-09-17 for ADR 0008. This describes the
+executable repository and public demo, not a production deployment or a
+compliance assessment.
 
 ## Boundary summary
 
-The public static site has no accounts, uploads, telemetry, applicant-data
-store, parcel connection, or permitting-system integration, and makes no
-model call on its own. ADR 0004 directs a separate optional AI service; its
+The public static site has no accounts, uploads, applicant-data store, parcel
+connection, or permitting-system integration, and makes no model call on its
+own. Its one telemetry path is Google Analytics 4 page analytics on the
+production host, recorded in "Google Analytics path (ADR 0008)" below; it
+never carries project answers or pasted text. ADR 0004 directs a separate optional AI service; its
 data flow is recorded in "Optional runtime AI service path" below. The applicant routing form keeps submitted facts only in current
 page memory. The route-to-packet link contains only a public journey ID and
 version; it carries no project facts. The packet-presence page uses a
@@ -68,6 +71,39 @@ accepts no applicant field or document; it replays committed synthetic data.
 Adding an address, APN, contact, permit number, upload, free text, identity,
 persistence, telemetry, runtime network/model request, or writeback changes
 this flow and requires a new ADR and approvals before implementation.
+
+The public prototype at `chelseakr.github.io/permit-bearings/` also loads
+Google Analytics 4 page analytics (ADR 0008). `assets/analytics.js` is bound to
+that host and path, so a beta served from a selected partner host loads
+nothing from Google, and the diagram above holds for it.
+
+## Google Analytics path (ADR 0008)
+
+```text
+Public page on https://chelseakr.github.io/permit-bearings/
+    |
+    +--> assets/analytics.js (first-party, same CSP as every other script)
+            loads nothing when: no ID, another host or path, GPC, Do Not
+            Track, or the footer opt-out flag is "1"
+            reads: the opt-out flag in localStorage
+                   ("permit-bearings:analytics-opt-out"), nothing else
+            never reads: forms, intake answers, pasted text, AI assistance
+    |
+    v
+Google LLC (US): gtag.js + GA4 property 554878769
+    page_location = origin + path (no query string, no fragment)
+    page_referrer = referring origin only
+    Consent Mode v2: ad signals denied everywhere; analytics storage denied
+    in the EEA, UK and CH (cookieless pings), granted elsewhere (_ga cookies)
+    Google signals and ad personalization off; 14-month retention
+```
+
+Fields: page address (origin and path), page title, referring origin, browser,
+device, screen size, language, and an approximate location Google derives from
+the IP address, plus the stream's enhanced-measurement events (scrolls,
+outbound clicks, file downloads). Purpose: counting which public pages are
+used. Access: the repository owner's GA4 property; no jurisdiction or partner
+system receives it. `privacy.html` states the same thing for visitors.
 
 “No storage” means no application-managed applicant record and no
 applicant-answer submission. It is not a claim that the network or host has no
@@ -524,8 +560,11 @@ application, controls printing or Save as PDF. Print media hides the remaining
 site and detailed packet surfaces. Invalid, direct, or availability-blocked
 entry never reveals this summary.
 
-The browser does not send the synthetic facts to a server or model. It does
-not use local storage, session storage, cookies, or an upload control. A user
+The browser does not send the synthetic facts to a server or model. The
+handoff does not use local storage, session storage, cookies, or an upload
+control. The site-wide analytics loader (ADR 0008) is separate: it reads only
+its opt-out flag, and the Google Analytics cookies it may lead to never carry
+the synthetic facts. A user
 may choose to follow the official checklist or parcel-metadata link. The
 handoff is therefore replay of one public made-up future-state record, not
 continuity for a real applicant case or a currently usable City plan. Choosing

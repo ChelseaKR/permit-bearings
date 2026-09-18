@@ -99,7 +99,10 @@ session:
    ID, and source-snapshot receipt; record a passing result on or after the
    freeze date.
 7. Confirm that no telemetry, account, upload, external model call, or
-   participant-data store is active.
+   participant-data store is active. The public URL runs Google Analytics 4
+   page analytics (ADR 0008), which never receives answers or pasted text;
+   either tell participants and point them to `privacy.html`, or run the
+   session in a browser that sends Global Privacy Control.
 
 Do not test a moving branch, local working tree, pull-request preview, or a
 deployment that differs from the locked SHA. If a blocking content defect or

@@ -165,6 +165,7 @@ VISITOR_SURFACE = (
     "evidence.html",
     "prepare.html",
     "review.html",
+    "privacy.html",
     "assets",
     "corpus",
     "data",

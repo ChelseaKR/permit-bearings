@@ -16,6 +16,7 @@ const pages = [
   { label: "evidence.html", url: "evidence.html" },
   { label: "check.html", url: "check.html" },
   { label: "check-sample", url: "check.html?sample=adu" },
+  { label: "privacy.html", url: "privacy.html" },
 ];
 const minimums = {
   accessibility: 1,
