@@ -7,7 +7,7 @@ written contract. That is risk 7 in ``docs/PRODUCT-CONTEXT.md`` (cross-runtime
 drift), and it is why a third system consuming a result had no way to check what
 it was being handed.
 
-This module holds two things and no behaviour of its own:
+This module holds two things and no behavior of its own:
 
 * **The result envelope.** A screening result is not a list of rules. It is a
   list of rules *plus the boundary it was computed inside*: which rule set,
@@ -125,7 +125,7 @@ def validate_facts_document(document: Any) -> dict[str, Any]:
 
     Fails closed. An unknown field name and an unknown value are both errors
     naming the field and what it accepts, because the alternative -- ignoring
-    what it does not recognise -- silently screens a different project than the
+    what it does not recognize -- silently screens a different project than the
     one described.
     """
     if not isinstance(document, dict):
@@ -141,7 +141,7 @@ def validate_facts_document(document: Any) -> dict[str, Any]:
 def _check_required_fields(document: dict[str, Any]) -> tuple[list[str], str | None]:
     """The two fields that are not rule facts, plus the project type to screen as.
 
-    Returns ``None`` for the project type when it is missing or unrecognised, so
+    Returns ``None`` for the project type when it is missing or unrecognized, so
     the per-fact applicability check below skips rather than reporting every
     field as inapplicable to a type that was never valid.
     """

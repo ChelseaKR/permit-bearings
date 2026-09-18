@@ -895,7 +895,7 @@ check. `recompute` therefore takes every derived value back from
 `load_beta_gate` itself, which is the authority on all of them, rather than
 deriving any of them independently.
 
-It cannot make the gate say anything more favourable. Schema v1's fixed
+It cannot make the gate say anything more favorable. Schema v1's fixed
 aggregate — `not_run`, zero prepared gates, every stronger-claim boolean false
 — is what the validator recomputes, so a re-pin reproduces it. Export profile
 membership is only ever updated in place. Two things are deliberately outside

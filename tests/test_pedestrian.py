@@ -408,7 +408,7 @@ def test_a_snap_tie_breaks_on_the_lower_node_id(tmp_path: Path) -> None:
     assert network.snap(LAT0, LON0) == (3, pytest.approx(300, abs=1))
 
 
-def test_the_same_extract_measures_the_same_metres_in_separate_processes() -> None:
+def test_the_same_extract_measures_the_same_meters_in_separate_processes() -> None:
     """Across processes, not twice in one: a determinism claim tested inside
     one interpreter proves only that the code is not random."""
     script = (

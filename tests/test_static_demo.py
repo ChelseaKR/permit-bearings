@@ -334,7 +334,7 @@ def test_every_static_page_names_itself_and_not_the_shared_origin():
         canonical = re.search(r'<link rel="canonical" href="([^"]*)">', html)
         assert canonical, f"{where} has no canonical URL"
         assert canonical.group(1) == url, (
-            f"{where} canonicalises to {canonical.group(1)!r}, not {url!r}"
+            f"{where} canonicalizes to {canonical.group(1)!r}, not {url!r}"
         )
 
         def meta(attribute, name, *, page=html, where=where):

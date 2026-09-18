@@ -47,7 +47,7 @@ COMMIT_SHA = "e67094951f97a0f84797a38efc59d9f23c517d9a"
 RUN_URL = "https://github.com/ChelseaKR/permit-bearings/actions/runs/33407059344"
 
 # The one rule whose own citation URL is a city handout rather than a
-# statute, which is exactly the kind of address that gets reorganised away.
+# statute, which is exactly the kind of address that gets reorganized away.
 WITHDRAWN_SOURCE_ID = "davis-adu-handout-2026"
 WITHDRAWN_RULE_ID = "davis-local-adu-process"
 
@@ -292,7 +292,7 @@ def test_an_unverifiable_row_without_a_kind_is_refused(tmp_path):
         load_source_state_snapshot(_write(tmp_path, payload), SOURCES, RULES, GOLDEN)
 
 
-def test_an_unrecognised_kind_is_refused(tmp_path):
+def test_an_unrecognized_kind_is_refused(tmp_path):
     payload = _payload("not_found")
     _observation(payload)["unverifiable_kind"] = "probably_fine"
 
@@ -487,7 +487,7 @@ check(
 );
 check(
   !sourceStateObservationIsValid({...base, unverifiable_kind: "fine"}, source),
-  "an unrecognised kind was accepted",
+  "an unrecognized kind was accepted",
 );
 const fetched = {
   ...base, observed_sha256: "a".repeat(64), reason: null, status: "unchanged",

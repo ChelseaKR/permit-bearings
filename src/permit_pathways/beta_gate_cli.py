@@ -4,7 +4,7 @@
 record and the v2 export profile pin, so that two ordinary maintenance acts —
 refreshing a public source snapshot and adopting a source-watch receipt — stop
 requiring a hand-edit of a tamper-evidence anchor.  It is deliberately unable
-to make the gate say anything more favourable: the immutable not-run ledgers
+to make the gate say anything more favorable: the immutable not-run ledgers
 are refused, the export profile's membership is untouched, the aggregate is
 whatever the validator recomputes, and the one anchor that lives in Python
 source is reported for a person to re-pin rather than rewritten here.

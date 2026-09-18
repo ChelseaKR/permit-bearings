@@ -102,7 +102,7 @@ PUBLISHED_SOURCE_FIELDS = ("title", "url", "retrieved", "note")
 
 @dataclass(frozen=True, slots=True)
 class OrdinanceSource:
-    """One watched ordinance: where it came from and how to recognise it."""
+    """One watched ordinance: where it came from and how to recognize it."""
 
     slug: str
     url: str

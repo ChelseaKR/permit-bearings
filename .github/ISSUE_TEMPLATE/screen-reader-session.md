@@ -60,7 +60,7 @@ matter. So does the device, for the reflow and touch questions.
 Describe what you did and what you heard or saw, in order. Quote what was
 announced where you can, including the parts that were wrong.
 
-Please do NOT tell us whether the page conforms to anything. That judgement
+Please do NOT tell us whether the page conforms to anything. That judgment
 belongs to the record and to whoever signs it, and a report that leads with
 "looks fine" is a report that gets nodded through. Say what happened.
 -->
@@ -93,13 +93,13 @@ answering if you got to them:
    if that framing is audible only to a sighted reader, that is a serious
    finding.
 3. Did anything read as more certain than it is? The explanations are
-   AI-assisted and review-pending drafts and are labelled as such.
+   AI-assisted and review-pending drafts and are labeled as such.
 
 ## How you want to be credited
 
-- **Name, handle, or organisation to record:**
+- **Name, handle, or organization to record:**
 - [ ] Record me by name
-- [ ] Record a handle or an organisation instead
+- [ ] Record a handle or an organization instead
 - [ ] Do not record me
 
 <!-- Nobody will push you to be named. See docs/HELP-WANTED.md for the open

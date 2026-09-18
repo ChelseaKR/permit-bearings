@@ -190,7 +190,7 @@ def _cron_fires_on(expression: str, day: date) -> bool:
     Only the three date fields decide this; the minute and hour fields decide
     *when* on that day, which the gap between calendar days does not depend on.
     GitHub's cron follows the POSIX rule that a day-of-month and a day-of-week
-    restriction are ORed when both are restricted, and that is honoured here
+    restriction are ORed when both are restricted, and that is honored here
     because getting it backwards makes a fortnightly schedule read as daily.
     """
 

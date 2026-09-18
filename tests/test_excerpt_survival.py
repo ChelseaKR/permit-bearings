@@ -410,7 +410,7 @@ def test_a_receipt_claiming_survival_for_an_unchanged_source_is_rejected(tmp_pat
 def _synthetic_receipt(tmp_path: Path, survival: list[dict] | None) -> tuple:
     """A real receipt for a real changed source, written by the real builder.
 
-    Mutating the committed receipt to fake a changed source desynchronises its
+    Mutating the committed receipt to fake a changed source desynchronizes its
     dependency-impact arrays, and the loader rightly rejects that before it
     ever looks at excerpt survival. Building the snapshot properly keeps the
     entry under test the only thing in question.

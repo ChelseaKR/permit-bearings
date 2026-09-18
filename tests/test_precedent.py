@@ -3,7 +3,7 @@
 The risk in this module is not that it computes the wrong count. It is that a
 reader takes a list of letters for a compliance finding, or takes an absent
 row for evidence of compliance. `docs/PRODUCT-CONTEXT.md` names both, so the
-boundary language is tested as behaviour rather than left to prose.
+boundary language is tested as behavior rather than left to prose.
 """
 
 from __future__ import annotations

@@ -7,7 +7,7 @@
  * link or as text (ADR 0005). Both are duplicated between `assets/demo.js`,
  * `demo/app.py`, and the Python harness. `tests/test_source_review_window.py`
  * already pins the 180-day constant across all four; these tests pin the
- * behaviour built on top of it, in the runtime a visitor actually runs.
+ * behavior built on top of it, in the runtime a visitor actually runs.
  */
 
 import { strict as assert } from "node:assert";

@@ -9,7 +9,7 @@
  * handler on `check.html`, where nothing was executing it.
  *
  * These tests drive that handler through the stubbed page and assert the
- * conservative behaviour, so the browser cannot start showing a date the
+ * conservative behavior, so the browser cannot start showing a date the
  * Python module withholds.
  */
 

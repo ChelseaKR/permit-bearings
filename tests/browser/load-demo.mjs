@@ -7,7 +7,7 @@
  * matcher, the staleness rule, the ordinance scanner, and the review clocks,
  * and it is the code a visitor actually runs. A port kept in a test would
  * prove nothing about what is deployed. `tests/test_conformance_browser_parity.py`
- * already makes that argument for the scanner; this module generalises it so
+ * already makes that argument for the scanner; this module generalizes it so
  * the rest of the file can be reached the same way.
  *
  * How: the file is a browser script with top-level DOM access, so it is

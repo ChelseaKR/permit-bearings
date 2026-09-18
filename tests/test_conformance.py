@@ -112,7 +112,7 @@ def test_committed_scan_results_are_valid(checks):
 def test_no_published_finding_disagrees_with_the_check_that_produced_it(checks):
     """No published text may disagree with `checks.json`.
 
-    Each result denormalises `title`, `state_law` and `hcd_precedent` out of
+    Each result denormalizes `title`, `state_law` and `hcd_precedent` out of
     the check it matched. Editing a check without rescanning leaves a dated,
     jurisdiction-named artifact stating something the checks no longer say —
     which is what happened between 2026-07-27 and 2026-07-28, and what the
@@ -138,7 +138,7 @@ def test_no_published_finding_disagrees_with_the_check_that_produced_it(checks):
 
 
 def test_published_scan_artifacts_match_a_fresh_scan():
-    """The whole artifact, not just its denormalised strings.
+    """The whole artifact, not just its denormalized strings.
 
     `--check` is the gate wired into `make bundle-check`; this runs the same
     derivation under pytest so the parity failure is visible in the test run

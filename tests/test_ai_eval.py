@@ -347,7 +347,7 @@ def test_committed_ask_cases_are_valid_bilingual_and_cover_all_three_labels() ->
 def test_every_settling_passage_is_one_the_retrieval_actually_offers() -> None:
     """Otherwise the fixture sits where the failure is impossible.
 
-    A case labelled answerable records the passages that would settle it. If
+    A case labeled answerable records the passages that would settle it. If
     retrieval never offers those passages, the model cannot cite them, and
     `cited_a_settling_passage` would measure the retrieval's silence while
     reading as a statement about the model. This is the check that keeps the
@@ -454,7 +454,7 @@ def test_a_fabricated_citation_is_withheld_rather_than_shown() -> None:
                 "citations": [
                     {
                         "passage_id": settling,
-                        "quote": "the statute plainly permits a fourth storey",
+                        "quote": "the statute plainly permits a fourth story",
                     }
                 ],
             },
@@ -472,7 +472,7 @@ def test_a_fabricated_citation_is_withheld_rather_than_shown() -> None:
 
 
 def test_a_should_abstain_case_that_states_the_gap_and_asks_staff_is_correct() -> None:
-    """The live behaviour for a fee question was a *cited* statement that the
+    """The live behavior for a fee question was a *cited* statement that the
     sources set no fee plus a staff question. That is a better answer than
     silence, and scoring it as a failure to abstain would push the model
     towards saying nothing."""

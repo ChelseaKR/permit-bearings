@@ -779,7 +779,7 @@ def test_outbound_requests_and_citation_metadata_name_this_repository():
     other not-run planning ledgers name module paths the same way. Their raw
     bytes are pinned in `beta_gate._NOT_RUN_ARTIFACT_SHA256`, which
     `beta_gate_cli recompute` refuses to re-derive — that refusal is what
-    stops a favourable nested result being rewritten together with its
+    stops a favorable nested result being rewritten together with its
     digest. Moving the import package therefore requires editing three
     immutable ledgers and three pinned digests by hand, which is an
     attestation and not a refactor. See the rename issue.

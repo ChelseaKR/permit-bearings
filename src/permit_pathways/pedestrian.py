@@ -53,7 +53,7 @@ Determinism
 
 Node ids, way order and edge order are read in file order and the search is
 a plain Dijkstra over integer-keyed adjacency, so the same extract yields the
-same metre count on every run and on every machine. The extract's SHA-256 and
+same meter count on every run and on every machine. The extract's SHA-256 and
 its bounds travel with the result, so a number can always be traced to the
 file it came from.
 
@@ -86,7 +86,7 @@ from xml.etree.ElementTree import iterparse  # nosec B405
 EARTH_RADIUS_M = 6_371_008.8
 #: Default limit on how far a point may be from the nearest walkable node
 #: before the measurement is withheld. 100 m is roughly a city block: far
-#: enough to attach a stop set back from the kerb, near enough that attaching
+#: enough to attach a stop set back from the curb, near enough that attaching
 #: it does not silently invent a path across a parcel.
 DEFAULT_SNAP_MAX_M = 100.0
 
@@ -209,7 +209,7 @@ class PedestrianNetwork:
 
     #: Node id -> (lat, lon), in file order.
     nodes: dict[int, tuple[float, float]]
-    #: Node id -> ((neighbour, metres), ...), in file order.
+    #: Node id -> ((neighbor, meters), ...), in file order.
     edges: dict[int, tuple[tuple[int, float], ...]]
     bounds: NetworkBounds
     source_path: str
@@ -262,13 +262,13 @@ class PedestrianNetwork:
             seen.add(node)
             if node == goal:
                 return cost
-            for neighbour, length in self.edges.get(node, ()):
-                if neighbour in seen:
+            for neighbor, length in self.edges.get(node, ()):
+                if neighbor in seen:
                     continue
                 candidate = cost + length
-                if candidate < best.get(neighbour, math.inf):
-                    best[neighbour] = candidate
-                    heapq.heappush(queue, (candidate, neighbour))
+                if candidate < best.get(neighbor, math.inf):
+                    best[neighbor] = candidate
+                    heapq.heappush(queue, (candidate, neighbor))
         return None
 
     def distances_from(self, start: int) -> dict[int, float]:
@@ -286,13 +286,13 @@ class PedestrianNetwork:
             if node in seen:
                 continue
             seen.add(node)
-            for neighbour, length in self.edges.get(node, ()):
-                if neighbour in seen:
+            for neighbor, length in self.edges.get(node, ()):
+                if neighbor in seen:
                     continue
                 candidate = cost + length
-                if candidate < best.get(neighbour, math.inf):
-                    best[neighbour] = candidate
-                    heapq.heappush(queue, (candidate, neighbour))
+                if candidate < best.get(neighbor, math.inf):
+                    best[neighbor] = candidate
+                    heapq.heappush(queue, (candidate, neighbor))
         return {node: cost for node, cost in best.items() if node in seen}
 
     def walk(
@@ -350,8 +350,8 @@ class PedestrianNetwork:
                     )
                 )
                 continue
-            metres = reachable.get(destination[0])
-            if metres is None:
+            meters = reachable.get(destination[0])
+            if meters is None:
                 results.append(
                     WalkResult(
                         straight, None, STATUS_DISCONNECTED, site[1], destination[1]
@@ -365,7 +365,7 @@ class PedestrianNetwork:
             results.append(
                 WalkResult(
                     straight,
-                    site[1] + metres + destination[1],
+                    site[1] + meters + destination[1],
                     STATUS_MEASURED,
                     site[1],
                     destination[1],

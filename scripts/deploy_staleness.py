@@ -66,7 +66,7 @@ report drift on a test-only commit -- the cry-wolf failure the subtree rule
 exists to avoid.
 
 So the instrument is kept and its subject is narrowed. Jekyll mirroring
-`tests/` and `pyproject.toml` into the site is an artefact of the default
+`tests/` and `pyproject.toml` into the site is an artifact of the default
 build, not a surface anyone reaches: no page links them, no script fetches them,
 and no visitor arrives at `/uv.lock`. `VISITOR_SURFACE` below is the set of
 paths a visitor actually receives, and the comparison is a per-path object-id

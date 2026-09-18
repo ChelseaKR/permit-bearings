@@ -100,7 +100,7 @@ stops inside the radius, and reports one of three states:
 Only ``complete`` lets a feed-derived screen report a negative; the other two
 report ``unknown``, for the same reason an unresolved calendar does. Two
 limits are deliberate and stated rather than papered over. First, agency
-names are matched exactly after case and punctuation normalisation and never
+names are matched exactly after case and punctuation normalization and never
 fuzzily: a false match would turn ``bounded`` into ``complete`` and
 manufacture certainty, while a false miss only over-reports incompleteness,
 so the failure is aimed at the safe side. Second, the statewide dataset lists
@@ -893,7 +893,7 @@ def load_hq_stops(path: Path) -> list[HQStop]:
     return out
 
 
-def _normalise_operator(name: str) -> str:
+def _normalize_operator(name: str) -> str:
     """Fold an agency name for comparison: case, punctuation and spacing only.
 
     Deliberately not fuzzy. A false *match* would turn ``bounded`` into
@@ -1022,13 +1022,13 @@ def assess_coverage(
         else:
             unnamed += 1
     supplied = tuple(dict.fromkeys(operators_supplied))
-    supplied_folded = {_normalise_operator(name) for name in supplied}
+    supplied_folded = {_normalize_operator(name) for name in supplied}
     missing = tuple(
         sorted(
             {
                 agency
                 for agency in listed_named
-                if _normalise_operator(agency) not in supplied_folded
+                if _normalize_operator(agency) not in supplied_folded
             }
         )
     )
@@ -1098,7 +1098,7 @@ class Determination:
     #: pedestrian network was supplied. Empty means none was: the run is
     #: straight-line only and says so, rather than reporting zero walks.
     walking: tuple[StopWalk, ...] = ()
-    #: The extract those walks came from — name, SHA-256, bounds — so a metre
+    #: The extract those walks came from — name, SHA-256, bounds — so a meter
     #: count can be traced to a file. ``None`` with no network.
     network: dict[str, Any] | None = None
 
@@ -1288,7 +1288,7 @@ def determine(
     ``network``, when supplied, measures the walking distance to every stop
     inside the straight-line radius and reports it alongside. It changes no
     verdict: both standards are written in walking distance, but which of the
-    two numbers a jurisdiction applies to a given screen is a judgement this
+    two numbers a jurisdiction applies to a given screen is a judgment this
     module does not make. Left ``None``, the result carries no walking fields
     at all rather than empty ones.
     """
@@ -1320,10 +1320,10 @@ def determine(
     for stop, miles in with_dist if feed_counts else []:
         if miles > HALF_MILE:
             break
-        # Defence in depth, and currently unreachable in effect: a stop whose
+        # Defense in depth, and currently unreachable in effect: a stop whose
         # feed did not resolve carries no routes and no rail or ferry flag, so
         # it cannot reach either branch below anyway. No test can fail on this
-        # line, which is why it is labelled rather than counted as a guard. The
+        # line, which is why it is labeled rather than counted as a guard. The
         # gate that does bite is on the parking screen further down, where an
         # unread feed's stop would otherwise be public transit near the site.
         if not stop.headways_measured:
@@ -1518,7 +1518,7 @@ def main() -> int:
         "--snap-max-meters",
         type=float,
         default=None,
-        metavar="METRES",
+        metavar="METERS",
         help=(
             "How far a site or stop may sit from the nearest walkable node "
             "before the walking distance is withheld as `snap_too_far` "

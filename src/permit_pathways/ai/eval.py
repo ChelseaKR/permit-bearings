@@ -13,7 +13,7 @@ Two measurements, both model-independent in their scoring:
   that resolve verbatim against the committed corpus, and how many were
   withheld.
 * **Follow-up answering (`ask`)** — one question per case against the same
-  confirmed-fact intakes, each labelled with what the passages can support.
+  confirmed-fact intakes, each labeled with what the passages can support.
   The metric is grounding and *abstention*, not legal fidelity. Three labels:
 
   ``answerable_from_passages``  the offered passages settle it, and the case
@@ -463,7 +463,7 @@ def score_ask_case(case: AskCase, answer: explain_module.Answer) -> dict[str, An
     """Score one answered question against what the passages can support.
 
     `deferred_to_staff` is what a `should_abstain` case needs, and it is
-    deliberately not the same thing as `abstained`. The live behaviour this
+    deliberately not the same thing as `abstained`. The live behavior this
     project has already seen for a fee question was a *cited* statement that
     the sources set no fee, plus a staff question — which is a better answer
     than silence and must not be scored as a failure to abstain. What must
