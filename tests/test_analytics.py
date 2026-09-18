@@ -18,6 +18,7 @@ import os
 import re
 import shutil
 import subprocess
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
@@ -387,6 +388,25 @@ def test_no_or_malformed_id_loads_nothing_and_offers_no_control(value: str) -> N
 # --- the pages ---------------------------------------------------------------
 
 
+class _ScriptTags(HTMLParser):
+    """Count <script> elements that carry no src, whatever their case or spacing."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.inline = 0
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "script" and not any(name == "src" for name, _ in attrs):
+            self.inline += 1
+
+
+def _inline_scripts(html: str) -> int:
+    parser = _ScriptTags()
+    parser.feed(html)
+    parser.close()
+    return parser.inline
+
+
 def _csp(html: str) -> dict[str, list[str]]:
     found = re.search(
         r'<meta http-equiv="Content-Security-Policy" content="([^"]+)">', html
@@ -411,11 +431,21 @@ def test_every_public_page_loads_the_loader_once_in_its_head() -> None:
         versions.add(tags[0])
         assert html.index("assets/analytics.js") < html.index("</head>"), page
         # The CSP forbids inline script, and nothing else may load Google.
-        assert re.search(r"<script(?![^>]*\bsrc=)[^>]*>", html) is None, page
+        assert _inline_scripts(html) == 0, page
         body = re.sub(r'<meta http-equiv="Content-Security-Policy"[^>]+>', "", html)
         assert "googletagmanager" not in body, page
         assert "google-analytics" not in body, page
     assert len(versions) == 1
+
+
+def test_negative_control_the_inline_script_check_sees_any_case() -> None:
+    assert _inline_scripts('<script src="assets/analytics.js" defer></script>') == 0
+    for inline in (
+        "<script>gtag()</script>",
+        "<SCRIPT>gtag()</SCRIPT>",
+        "<Script type=module>1</Script>",
+    ):
+        assert _inline_scripts(inline) == 1, inline
 
 
 def test_every_public_page_csp_admits_exactly_the_ga_origins() -> None:
