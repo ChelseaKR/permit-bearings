@@ -555,8 +555,8 @@ def test_structured_data_claims_no_dataset_and_no_official_standing():
 
     Two families are excluded on purpose. A `Dataset`, `DataCatalog`,
     `DataDownload` or DCAT descriptor would solicit dataset search engines and
-    open-data catalogues to harvest `corpus/` -- an unofficial mirror of statute
-    and CEQA documents -- as a published dataset, and a catalogue listing is far
+    open-data catalogs to harvest `corpus/` -- an unofficial mirror of statute
+    and CEQA documents -- as a published dataset, and a catalog listing is far
     harder to withdraw than a page. A `GovernmentService` or `LegalService` would
     assert a standing this prototype explicitly disclaims: it is not an
     eligibility determination and its bilingual explanations are review-pending

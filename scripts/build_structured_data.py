@@ -24,9 +24,9 @@ and whose JSON-LD have drifted apart fails in two places rather than none.
 
 What is deliberately not emitted: nothing here describes `corpus/`, the
 mirrored statute and CEQA text, or the rules derived from them. A `Dataset` or
-`DataDownload` descriptor would invite dataset crawlers and open-data catalogues
+`DataDownload` descriptor would invite dataset crawlers and open-data catalogs
 to index an unofficial mirror of a government agency's documents as though it
-were a published dataset, and a catalogue listing is far harder to withdraw than
+were a published dataset, and a catalog listing is far harder to withdraw than
 a page. The nodes below describe the pages and the browser tool, and claim
 nothing about official status, approval, or eligibility.
 """
@@ -175,7 +175,7 @@ def build_node(name: str, head: PageHead, root_url: str) -> dict[str, object]:
 
 
 def render_block(node: dict[str, object]) -> str:
-    """Serialise a node as an embeddable JSON-LD block.
+    """Serialize a node as an embeddable JSON-LD block.
 
     `<` is escaped so no value can ever close the script element early; today no
     value contains one, which is exactly when the guard is cheap to add.
