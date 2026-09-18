@@ -352,8 +352,9 @@ program-availability record. Only a current, well-formed record and an
 explicit matching applicability answer expose
 `prepare.html?journey=<public-id>&version=<version>`; the other answers preserve
 the not-applicable boundary or exact staff question. The URL contains no
-project answers, and the browser uses no local or session storage, cookies, or
-server-side applicant record. This is a future-state simulation URL, not
+project answers, and the handoff uses no local or session storage, cookies, or
+server-side applicant record. (The site-wide Google Analytics loader, ADR 0008,
+is separate and never carries project answers.) This is a future-state simulation URL, not
 evidence that the City has listed or preapproved a plan.
 
 `prepare.html` accepts exactly the supported journey ID and version and reruns

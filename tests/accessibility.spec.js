@@ -21,6 +21,7 @@ const pages = {
   "/review.html": "For staff",
   "/evidence.html": "Sources & limits",
   "/check.html": "Start",
+  "/privacy.html": null,
 };
 
 const DEMO_ASSIGNMENT = "globalThis.PERMIT_PATHWAYS_DEMO_DATA=";
@@ -1467,4 +1468,40 @@ test("AI assistance stays inert until requested and degrades to the static form 
   await page.locator("#langToggle").click();
   await expect(page.locator("#aiAssistHeading")).toHaveText("Describa su proyecto con sus propias palabras");
   await expectNoDocumentOverflow(page);
+});
+
+// ADR 0008: the footer's "Opt out of analytics" control. The pages are served
+// from 127.0.0.1 here, so Google Analytics itself never loads; the control is
+// still wired, which is what lets axe check the real, visible button.
+test("the analytics opt-out control is visible, remembered, and loads nothing from Google", async ({
+  page,
+}) => {
+  const google = [];
+  page.on("request", request => {
+    if (/google/.test(new URL(request.url()).hostname)) google.push(request.url());
+  });
+  await page.goto("/privacy.html");
+  const choice = page.locator("[data-analytics-choice]");
+  const button = choice.getByRole("button");
+  await expect(button).toBeVisible();
+  await expect(button).toHaveText("Opt out of analytics");
+  await expectNoAutomatedWcagViolations(page);
+
+  await button.click();
+  await expect(button).toHaveText("Opt back in");
+  await expect(choice.getByRole("status")).toContainText("Opted out.");
+  expect(await page.evaluate(() => localStorage.getItem("permit-bearings:analytics-opt-out")))
+    .toBe("1");
+
+  await page.goto("/index.html");
+  await expect(page.locator("[data-analytics-choice]").getByRole("button"))
+    .toHaveText("Opt back in");
+  expect(await page.evaluate(() => typeof window.dataLayer)).toBe("undefined");
+
+  await page.locator("[data-analytics-choice]").getByRole("button").click();
+  await expect(page.locator("[data-analytics-choice]").getByRole("button"))
+    .toHaveText("Opt out of analytics");
+  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
+  await expectNoAutomatedWcagViolations(page);
+  expect(google).toEqual([]);
 });

@@ -171,8 +171,10 @@ def test_a_deployment_with_no_statuses_at_all_is_not_the_live_commit() -> None:
         "evidence.html",
         "prepare.html",
         "review.html",
+        "privacy.html",
         "assets/site.css",
         "assets/demo.js",
+        "assets/analytics.js",
         "assets/illustrations/permit-pathway-hero.webp",
         "data/demo-data.js",
         "data/rules/statewide.json",
@@ -225,8 +227,20 @@ def test_every_local_reference_the_shipped_pages_make_is_inside_the_surface() ->
     JavaScript, and any site-relative path that escapes `VISITOR_SURFACE` fails
     this test rather than disappearing from the measurement.
     """
-    pages = ["index.html", "check.html", "evidence.html", "prepare.html", "review.html"]
-    scripts = ["assets/demo.js", "assets/ai.js", "data/demo-data.js"]
+    pages = [
+        "index.html",
+        "check.html",
+        "evidence.html",
+        "prepare.html",
+        "review.html",
+        "privacy.html",
+    ]
+    scripts = [
+        "assets/demo.js",
+        "assets/ai.js",
+        "assets/analytics.js",
+        "data/demo-data.js",
+    ]
 
     referenced: set[str] = set()
     for page in pages:
@@ -304,7 +318,7 @@ def clone(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     _git(root, "init", "-b", "main")
     _git(root, "config", "user.email", "sentinel@example.test")
     _git(root, "config", "user.name", "sentinel")
-    for page in ("index", "check", "evidence", "prepare", "review"):
+    for page in ("index", "check", "evidence", "prepare", "review", "privacy"):
         _write(root, f"{page}.html", f"<!doctype html><title>{page}</title>")
     _write(root, "assets/site.css", "body{color:#000}")
     _write(root, "corpus/leginfo/gov-66314.html", "<p>statute</p>")

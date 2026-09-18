@@ -3127,6 +3127,21 @@ tr:last-child td {
   min-height: 44px;
 }
 
+/* The "Opt out of analytics" control (assets/analytics.js, ADR 0008). */
+.analytics-choice {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1rem;
+  grid-column: 1 / -1;
+}
+
+.analytics-choice button.link-button {
+  align-items: center;
+  display: inline-flex;
+  min-height: 44px;
+}
+
 .visually-hidden {
   border: 0;
   clip: rect(0 0 0 0);

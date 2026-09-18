@@ -20,6 +20,7 @@ PUBLIC_PAGES = (
     "prepare.html",
     "review.html",
     "evidence.html",
+    "privacy.html",
 )
 
 
