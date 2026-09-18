@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; form-action 'self'; base-uri 'none'">
 <title>Permit Bearings | Get your bearings before you file</title>
 <meta name="description" content="Follow a made-up Woodland detached ADU from project facts to a candidate route, reported packet gaps, official sources, and questions for staff.">
 <link rel="canonical" href="https://chelseakr.github.io/permit-bearings/">
@@ -25,7 +25,8 @@
 <meta name="twitter:image:alt" content="Permit Bearings public prototype for California ADU, JADU, and SB 9 permitting">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/california-design-system.css?v=20260809b">
-<link rel="stylesheet" href="assets/site.css?v=20260810a">
+<link rel="stylesheet" href="assets/site.css?v=20260917a">
+<script src="assets/analytics.js?v=20260917a" defer></script>
 </head>
 <body data-page="home">
 <div id="skip-to-content">
@@ -181,6 +182,11 @@
     <div class="footer-links">
       <a href="evidence.html">Methods and limits</a>
       <a href="https://github.com/ChelseaKR/permit-bearings">Source code</a>
+      <a href="privacy.html">Privacy and analytics</a>
+    </div>
+    <div class="analytics-choice" data-analytics-choice hidden>
+      <button type="button" class="link-button ca-button">Opt out of analytics</button>
+      <span role="status"></span>
     </div>
   </div>
 </footer>

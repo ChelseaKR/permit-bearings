@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' http://127.0.0.1:8787 http://localhost:8787 https://tb4ekoqybhbxbrbn447ln5ad3e0arlwx.lambda-url.us-west-2.on.aws; form-action 'self'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; script-src 'self' https://www.googletagmanager.com; connect-src 'self' http://127.0.0.1:8787 http://localhost:8787 https://tb4ekoqybhbxbrbn447ln5ad3e0arlwx.lambda-url.us-west-2.on.aws https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; form-action 'self'; base-uri 'none'">
 <meta name="permit-ai-service" content="http://127.0.0.1:8787,https://tb4ekoqybhbxbrbn447ln5ad3e0arlwx.lambda-url.us-west-2.on.aws">
 <title>Check a project | Permit Bearings</title>
 <meta name="description" content="Use structured project facts to see candidate California ADU, JADU, and SB 9 permit routes, cited sources, and questions for local staff.">
@@ -26,7 +26,8 @@
 <meta name="twitter:image:alt" content="Permit Bearings public prototype for California ADU, JADU, and SB 9 permitting">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/california-design-system.css?v=20260809b">
-<link rel="stylesheet" href="assets/site.css?v=20260810a">
+<link rel="stylesheet" href="assets/site.css?v=20260917a">
+<script src="assets/analytics.js?v=20260917a" defer></script>
 </head>
 <body data-page="project">
 <div id="skip-to-content">
@@ -208,12 +209,17 @@
     <div class="footer-links">
       <a href="evidence.html">Methods and limits</a>
       <a href="review.html">Review local rules</a>
+      <a href="privacy.html">Privacy and analytics</a>
+    </div>
+    <div class="analytics-choice" data-analytics-choice hidden>
+      <button type="button" class="link-button ca-button">Opt out of analytics</button>
+      <span role="status"></span>
     </div>
   </div>
 </footer>
 
-<script src="data/demo-data.js?v=20260810a" defer></script>
-<script src="assets/demo.js?v=20260810a" defer></script>
-<script src="assets/ai.js?v=20260810a" defer></script>
+<script src="data/demo-data.js?v=20260917a" defer></script>
+<script src="assets/demo.js?v=20260917a" defer></script>
+<script src="assets/ai.js?v=20260917a" defer></script>
 </body>
 </html>

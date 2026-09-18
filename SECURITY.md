@@ -1,8 +1,10 @@
 # Security policy
 
 Permit Bearings is a pre-release public-sector prototype. The public static
-demo has no accounts, uploads, telemetry, or applicant-data store, and makes
-no model call on its own. The Python reference server accepts a request only
+demo has no accounts, uploads, or applicant-data store, and makes no model
+call on its own. Its pages load Google Analytics 4 page analytics on the
+production host only (ADR 0008); GA receives page addresses without query
+strings or fragments and never receives project answers or pasted text. The Python reference server accepts a request only
 long enough to render a response and does not persist it. ADR 0004 directs an
 optional runtime AI service that, when it is running and the applicant opts
 in, sends the applicant's project description and confirmed facts to a model

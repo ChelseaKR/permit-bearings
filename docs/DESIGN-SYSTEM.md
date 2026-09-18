@@ -108,7 +108,7 @@ aligned.
 
 ## Verification and change control
 
-Static contract tests check that all five public pages load the compatibility
+Static contract tests check that all six public pages load the compatibility
 stylesheet before product styles, expose the same bypass-link structure, and
 use the selected semantic structures for their applicable controls and
 content. Browser accessibility, reflow, print, and performance checks exercise

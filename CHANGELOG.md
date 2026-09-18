@@ -55,6 +55,18 @@ published a versioned release.
 
 ### Added
 
+- **Google Analytics 4 on the public pages (ADR 0008).** Every public page
+  loads `assets/analytics.js`, which loads GA4 (`G-9FJBLEN2ZJ`) only on
+  `https://chelseakr.github.io/permit-bearings/`, and not under Global Privacy
+  Control, Do Not Track, or the new footer "Opt out of analytics" control
+  (remembered in localStorage as `permit-bearings:analytics-opt-out`). Consent
+  Mode v2 denies the three ad signals everywhere and analytics storage in the
+  EEA, UK and Switzerland; Google signals and ad personalization are off; the
+  page address is sent without its query string or fragment. A new
+  `privacy.html` describes it, the CSP admits the minimum GA origins, and the
+  "no tracking" claims in the README, `SECURITY.md`, `docs/DATA-FLOW.md` and the
+  repository description were corrected. ADR 0002 and the beta runbook are
+  hash-bound by the beta ledger, so ADR 0008 amends them without editing them.
 - **The weekly currency watch now reads `data/availability/`, which it never
   had.** `main` went red on 2026-09-09 with no commit behind it, because
   `data/availability/woodland-preapproved-adu-program.json` passed its
