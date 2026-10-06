@@ -272,7 +272,7 @@ jobs:
       # the dependency-free core, so the install happens here rather than at the
       # top of the job.
       - name: Set up locked Python toolchain
-        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
           enable-cache: false
       - name: Install the locked environment
