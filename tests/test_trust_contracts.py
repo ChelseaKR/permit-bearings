@@ -805,21 +805,22 @@ def test_outbound_requests_and_citation_metadata_name_this_repository():
 
 
 def test_the_old_distribution_name_survives_only_where_naming_it_is_the_point():
-    """Nothing published still carries `permit-pathways`, with four exceptions.
+    """Nothing published still carries `permit-pathways`, with two exceptions.
 
     Listing the exceptions one by one, rather than allowing them by pattern,
-    is what makes adding a fifth a decision somebody has to write down:
+    is what makes adding a third a decision somebody has to write down:
 
     * `CHANGELOG.md` — a historical record. Several entries are *about* the
       rename; rewriting them would make the history describe a name that was
       not in force at the time.
     * the 2026-08-15 ordinance-scan finding — it records the `User-Agent` that
       scan actually sent. That is a measurement, not a current claim.
-    * `.github/workflows/standards.yml` and the CI/CD row of the README's
-      conformance table — both explain why the standards pin is a commit
-      rather than a tag: `v2.0.0` of the private baseline keys this
-      repository under its old GitHub name, and that sentence is only true
-      with the old name in it.
+
+    `.github/workflows/standards.yml` and the CI/CD row of the README's
+    conformance table were exceptions until 2026-10-05: both explained why
+    the standards pin was a commit rather than a tag, which needed the old
+    name in the sentence. The pin is the `v3.0.1` tag now, so neither names
+    it, and both are checked like any other file.
 
     This file is excluded because it has to write both names down to compare
     them. The import package is checked separately, in the test above.
@@ -828,9 +829,7 @@ def test_the_old_distribution_name_survives_only_where_naming_it_is_the_point():
     import subprocess
 
     allowed = {
-        ".github/workflows/standards.yml",
         "CHANGELOG.md",
-        "README.md",
         "docs/findings/2026-08-15-multi-jurisdiction-adu-ordinance-scan.md",
         "tests/test_trust_contracts.py",
     }

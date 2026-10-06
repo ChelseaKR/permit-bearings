@@ -28,20 +28,14 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ChelseaKR/portfolio-standards
-          # portfolio-standards PR #97 merged on 2026-09-06 as 553909b, which
-          # is this pin: the squash commit on that repository's default branch
-          # carrying the applicability key rename for this repo's GitHub
-          # rename. The previous pin, 9ef3ba1, was an intermediate commit on
-          # PR #97's head branch; once that branch is deleted the commit
-          # becomes unreachable and this required check fails on an unchanged
-          # repository, so a merged commit is pinned instead.
-          #
-          # Still a commit rather than a released tag: the newest tag, v2.0.0,
-          # predates the rename and keys this repository as `permit-pathways`,
-          # which the checker resolves by checkout basename. Pinning to it
-          # would fall to the `restricted` publication default and fail. Re-pin
-          # to a tag once one is cut after 553909b; see issue #74.
-          ref: 553909b463b7cf22569d7c56ce83a3e05d40a155
+          # A released tag. Until 2026-10-05 this was a commit on the standards
+          # default branch (553909b, the merge of portfolio-standards PR #97),
+          # because every tag before v3.0.0 keyed this repository under its old
+          # GitHub name and pinning one would have failed this check on an
+          # unchanged repository (issue #74). v3.0.1 carries the current key.
+          # .standards-version records the same tag, and the freshness step
+          # refuses a drift between the two.
+          ref: v3.0.1
           ssh-key: ${{ secrets.STANDARDS_DEPLOY_KEY }}
           path: .standards
           persist-credentials: false
@@ -51,8 +45,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Check standards freshness
-        run: python3 .standards/automation/check_staleness.py --standards-dir .standards
+      - name: Check the recorded pin and standards freshness
+        run: |
+          set -euo pipefail
+          test "$(cat .standards-version)" = "v3.0.1"
+          python3 .standards/automation/check_staleness.py --standards-dir .standards
 
       - name: Check standards version pins
         run: python3 .standards/automation/check_versions.py --standards-dir .standards

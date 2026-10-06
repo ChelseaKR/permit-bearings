@@ -111,8 +111,8 @@ which needs a second dataset this phase deliberately did not introduce.
 
 ### Phase 2: make the gate's scope equal its wording
 
-**Built, except the standards pin.** Issue #73, with issue #74 settled as far
-as it can be from inside this repository.
+**Built.** Issue #73; issue #74 was settled on 2026-10-05 when the pin moved
+to the released tag `v3.0.1`.
 
 `make verify` is presented as local-equivalent verification. Its scope is
 `src/`. Roughly 6,300 lines across `assets/demo.js`, `demo/app.py`, and
@@ -302,7 +302,7 @@ worse than an honest gap.
 | Phase | Status | What blocks it, and what would unblock it |
 |---|---|---|
 | 1. Source semantics in derived determinations | **Built** (PR #102) | Nothing. Three sibling transit corrections in `docs/PRODUCT-CONTEXT.md` risk 5 remain open and need a routing dependency or a feed-currency model. |
-| 2. Gate scope equals its wording | **Built except the standards pin** (PR #103) | The pin needs `portfolio-standards` PR #97 to merge and a tag to be cut. `v2.0.0` keys this repository under its old name and its checker resolves by checkout basename, so pinning to the tag would fail a required check on an unchanged repository. That is a merge decision in another repository. No `.standards-version` was written, because it could only name an unmerged branch commit and DOC-01 asks for a released tag. |
+| 2. Gate scope equals its wording | **Built** (PR #103; the pin moved to the `v3.0.1` tag on 2026-10-05) | Nothing. `v3.0.1` keys this repository under its current name, so the pin is a released tag and `.standards-version` records it. |
 | 3. Currency automation that converges | **Built** (PR #104) | Nothing. |
 | 4. First promotion past `machine_linked` | **Blocked** | A named reviewer who is a currently attested member of the `rule-content-reviewer` role, with a dated conflict-of-interest attestation. The ledger, the dual fingerprint binding, the five demotion triggers, and the roster gate are all built and tested. The roster has zero members by design and cannot be filled from inside the repository: inventing a reviewer is the one thing this project must never do. Unblocked by one person agreeing to review one rule and being recorded in `reviewer-roster.json`. |
 | 5. Pilot parcel-aware readiness packet | **Blocked** | A jurisdiction sponsor, an active permit subtype, an authoritative local source package, and staff willing to review disagreements. Woodland is a future-state simulation because the official program page says the preapproved plan list is coming soon. Unblocked by a jurisdiction saying yes. |
