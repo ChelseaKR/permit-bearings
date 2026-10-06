@@ -7,6 +7,16 @@ published a versioned release.
 
 ### Changed
 
+- **The standards pin moved from commit `553909b` to the released tag
+  `v3.0.1`.** Every tag before `v3.0.0` keyed this repository as
+  `permit-pathways`, so the `Standards` workflow had pinned a merge commit on
+  the standards default branch and issue #74 waited on a tag cut after it.
+  `v3.0.1` (2026-10-02) carries the current key, so the pin is a tag again,
+  `.standards-version` records it, and the workflow refuses a drift between
+  the two. The move also clears the freshness check, red since 2026-10-01
+  because the pinned commit's documents were last verified 2026-06-21, past
+  the 92-day cadence.
+
 - **The City of Woodland program page was re-checked on 2026-09-10, and the
   suite can now accept a re-check.** The page has gained real program content
   — the City is accepting designer submissions, with steps, a permit
