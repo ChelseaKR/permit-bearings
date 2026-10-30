@@ -1,7 +1,15 @@
 {
-  "$comment": "SEC-43 (SECURITY-AND-SUPPLY-CHAIN-STANDARD §6.6): every third-party script a page of this site may load. Held by tests/test_third_party_scripts.py, which checks every committed HTML page's <script src> and the one script assets/analytics.js injects at runtime against this list. A change to what the site loads, or to what a vendor receives, is an ADR (see docs/adr/0008-google-analytics-4-on-the-public-pages.md), not only a new digest.",
+  "$comment": "SEC-43 (SECURITY-AND-SUPPLY-CHAIN-STANDARD §6.6): every third-party script a page of this site may load. Held by tests/test_third_party_scripts.py, which checks every public page's <script src> and the one script assets/analytics.js injects at runtime against this list. archived_source_copies are publisher pages kept as evidence, not site pages; the standards check skips them for the reason given. A change to what the site loads, or to what a vendor receives, is an ADR (see docs/adr/0008-google-analytics-4-on-the-public-pages.md), not only a new digest.",
   "privacy_page": "privacy.html",
-  "first_party_hosts": ["chelseakr.github.io"],
+  "first_party_hosts": [
+    "chelseakr.github.io"
+  ],
+  "archived_source_copies": {
+    "paths": [
+      "corpus/**"
+    ],
+    "reason": "corpus/ holds publishers' pages (California statute pages from leginfo and a City of Woodland CEQA notice) archived byte for byte so every citation can be re-verified, and the immutable v1 public evidence export pins them by path and bytes. They are evidence, not pages of this site: no page links to them, and their scripts are the publishers' own."
+  },
   "scripts": [
     {
       "vendor": "Google Analytics",
