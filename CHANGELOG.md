@@ -7,6 +7,20 @@ published a versioned release.
 
 ### Changed
 
+- **The City of Woodland program page was re-checked on 2026-10-29.** The
+  reading had lapsed on 2026-10-10, which put `reference_program_availability`
+  back on the beta gate and turned `main` red. The page is unchanged in
+  substance: the City still says it is accepting designer submissions, and
+  under the **Preapproved ADU List** heading it still reads *“Coming soon!”*.
+  The excerpt's `sha256` still matches byte for byte, so
+  `status: plans_not_listed` and `mode: future_state_simulation` stand, and
+  only `checked_on` (2026-10-29) and `recheck_due_on` (2026-11-28) move. The
+  closure follows CONTRIBUTING's renewal steps: the flagship gate's
+  `program_availability` mirror, the registry pin, the rebuilt bundle, the
+  not-run ledger digest and the export-profile anchor (both written by hand,
+  as the tool requires), the recomputed prepared gate, and the thirteen prose
+  sentences that state the check date.
+
 - **The standards pin moved from commit `553909b` to the released tag
   `v3.0.1`.** Every tag before `v3.0.0` keyed this repository as
   `permit-pathways`, so the `Standards` workflow had pinned a merge commit on

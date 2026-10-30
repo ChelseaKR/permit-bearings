@@ -30,7 +30,7 @@
     {
       "path": "PROVENANCE.md",
       "role": "provenance",
-      "raw_sha256": "sha256:c8b19da2a891c9997e4a5364eb35085f3716407e1e46de18b65a3cc0e6bb5e29"
+      "raw_sha256": "sha256:750aa31890f988d5cf142a68aa7ee96eaaecd5a77fb48ec441a867362b6563ed"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -165,7 +165,7 @@
     {
       "path": "data/availability/woodland-preapproved-adu-program.json",
       "role": "availability_record",
-      "raw_sha256": "sha256:743c11c6765e27f3b4616d313f3e77917519db9bbb552fa30879188530667d14"
+      "raw_sha256": "sha256:19f992ff7b0b9ecfb37d9e5a9329be367ce4798d679a50e1fb2034e1c3a765d2"
     },
     {
       "path": "data/conformance/checks.json",
@@ -190,7 +190,7 @@
     {
       "path": "data/demo-data.js",
       "role": "derived_browser_bundle",
-      "raw_sha256": "sha256:788be61a7fface21868bb22b7fead6b9200b6f5e46d27f9e85fcccc9c75aa1e6"
+      "raw_sha256": "sha256:174d09fc947bb35fa251f2a2056e3b36882c7943dbfa1e4285b1021821225d2b"
     },
     {
       "path": "data/explanations/plain-language.json",
@@ -296,7 +296,7 @@
     {
       "path": "data/validation/woodland-flagship-gate.json",
       "role": "flagship_gate",
-      "raw_sha256": "sha256:b15bbe3c2cee5e7a2d768a1c1b5c34f0035959c485d2ee7e2170e51aefd7fcfc"
+      "raw_sha256": "sha256:b81e7c47a693361c1d0e946de67c9f1599b62e29f7e61f453cd6222e1b0d72e9"
     },
     {
       "path": "data/validation/woodland-manual-evidence.json",
@@ -316,7 +316,7 @@
     {
       "path": "data/workflows/registry.json",
       "role": "workflow_registry",
-      "raw_sha256": "sha256:c89c3ff5bfc2e60db7eb4d3bc29b4af2062ca7d38ecd4e43677913579d496458"
+      "raw_sha256": "sha256:b390d285dc0b1f6ea12e0db9f4f5fe106645ba6f3d029a73ab924fc90146db9a"
     }
   ],
   "public_state_assertions": [
