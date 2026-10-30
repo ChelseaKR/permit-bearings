@@ -7,6 +7,17 @@ published a versioned release.
 
 ### Changed
 
+- **Browser quality and three standards controls are green again.** The npm
+  lockfile moves `puppeteer-core` to 25.16.0 (within lighthouse's range), which
+  clears the high-severity zod advisory GHSA-mrhx-c7xc-m3w5. The standards
+  controls scored from 2026-10-19 are addressed where they can be in this
+  repository: codespell runs in the Standards workflow and ADR prose is in
+  American English (DOC-22), `CONTRACTS.md` lists the identifiers other systems
+  depend on (DOC-23), the public pages pass html-validate and the published
+  schemas are checked by `jsonschema` (CQ-49), and `third-party-scripts.json`
+  lists the one third-party script the site loads (SEC-43). SEC-43 still flags
+  the archived publisher HTML under `corpus/`, and SEC-44 (IaC drift for
+  `deploy/ai-service`) still fails; both need an owner decision.
 - **The City of Woodland program page was re-checked on 2026-10-29.** The
   reading had lapsed on 2026-10-10, which put `reference_program_availability`
   back on the beta gate and turned `main` red. The page is unchanged in

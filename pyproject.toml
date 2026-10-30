@@ -27,6 +27,7 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
   "bandit>=1.8",
+  "jsonschema>=4.23",
   "mypy>=1.18",
   "pip-audit>=2.10",
   "pytest>=8",

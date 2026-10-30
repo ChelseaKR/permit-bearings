@@ -1,0 +1,15 @@
+# American English exceptions for this repository (DOCUMENTATION-STANDARD.md
+# §11, DOC-22). codespell reads this file on its own. The conformance check
+# supplies the dictionary (en-GB_to_en-US) and the word pattern on the command
+# line, so an entry here can record an exception but cannot swap either one.
+# Every entry names the exception it falls under.
+[codespell]
+# Verbatim third-party source text. corpus/ holds ordinance and agency text
+# exactly as each publisher wrote it (San Diego's "acknowledgements", Folsom's
+# "judgement", HCD's letters). Quotes are verified verbatim against it, so
+# correcting a spelling there would misquote the publisher.
+skip = corpus/*
+# GitHub Actions' `cancelled()` status function, a name GitHub defines
+# (.github/workflows/accessibility-performance.yml, and the test that holds
+# that workflow's step conditions, tests/test_browser_quality_workflow.py).
+ignore-regex = \bcancelled\(\)

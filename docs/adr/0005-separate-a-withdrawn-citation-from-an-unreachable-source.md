@@ -42,7 +42,7 @@ one level down.
 Every unverifiable observation carries a `kind`.
 
 - `transport` — no authoritative answer arrived: DNS, TLS, timeout, reset,
-  5xx, throttling, a 403 refusal, a WAF block. Unchanged behaviour. Reported
+  5xx, throttling, a 403 refusal, a WAF block. Unchanged behavior. Reported
   as a run fact, marks nothing, and keeps the retry budget.
 - `not_found` — the server answered HTTP 404 or 410 about that exact address.
   Retries stop after the first attempt, because asking again cannot change an
@@ -76,7 +76,7 @@ honestly is not one to render.
   time.
 - **Treat a 404 as `changed`.** It is not. The retained copy and its recorded
   hash still stand, no new text was read, and staling nineteen rules because a
-  city reorganised a website would be a false claim about the law.
+  city reorganized a website would be a false claim about the law.
 - **Fail the build on a withdrawn citation.** Rejected. The maintainer may
   not be able to fix it in the same run, as this change's own author could
   not. It is reported loudly instead. What does fail closed is the schema: an

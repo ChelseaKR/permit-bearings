@@ -83,7 +83,7 @@ Consequential choices:
   model: this project's AWS account cannot invoke `claude-sonnet-5` on
   Bedrock, where `InvokeModel` answers `403 anthropic.claude-sonnet-5 is not
   available for this account` while the entitlement API reports it
-  authorised. Bedrock is the path every recorded evaluation in
+  authorized. Bedrock is the path every recorded evaluation in
   `evals/ai/results/` ran on, so the two defaults differ on purpose and each
   should move only against a live invocation. The credential comes only from
   the environment; no key is ever written to the repository or to a file the
