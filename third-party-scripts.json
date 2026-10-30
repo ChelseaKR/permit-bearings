@@ -1,0 +1,25 @@
+{
+  "$comment": "SEC-43 (SECURITY-AND-SUPPLY-CHAIN-STANDARD §6.6): every third-party script a page of this site may load. Held by tests/test_third_party_scripts.py, which checks every public page's <script src> and the one script assets/analytics.js injects at runtime against this list. archived_source_copies are publisher pages kept as evidence, not site pages; the standards check skips them for the reason given. A change to what the site loads, or to what a vendor receives, is an ADR (see docs/adr/0008-google-analytics-4-on-the-public-pages.md), not only a new digest.",
+  "privacy_page": "privacy.html",
+  "first_party_hosts": [
+    "chelseakr.github.io"
+  ],
+  "archived_source_copies": {
+    "paths": [
+      "corpus/**"
+    ],
+    "reason": "corpus/ holds publishers' pages (California statute pages from leginfo and a City of Woodland CEQA notice) archived byte for byte so every citation can be re-verified, and the immutable v1 public evidence export pins them by path and bytes. They are evidence, not pages of this site: no page links to them, and their scripts are the publishers' own."
+  },
+  "scripts": [
+    {
+      "vendor": "Google Analytics",
+      "src": "https://www.googletagmanager.com/gtag/js?id=G-9FJBLEN2ZJ",
+      "text": "<script async=\"\" src=\"https://www.googletagmanager.com/gtag/js?id=G-9FJBLEN2ZJ\"></script>",
+      "sha256": "07274c44126beecded54b812fa08736a7c041c7949c1fc52b789dc038267d1f7",
+      "position": "head",
+      "purpose": "Count page views on the public pages (ADR 0008).",
+      "loaded_by": "assets/analytics.js, which appends this element to <head> at runtime. It is never in the served HTML.",
+      "loads_only_when": "the page is served over HTTPS from chelseakr.github.io under /permit-bearings/, the browser sends neither Global Privacy Control nor Do Not Track, and the visitor has not used the footer opt-out."
+    }
+  ]
+}

@@ -54,6 +54,16 @@ jobs:
       - name: Check standards version pins
         run: python3 .standards/automation/check_versions.py --standards-dir .standards
 
+      # DOC-22 (American English) runs codespell over this repository's
+      # tracked files. Without it the control reports that it could not run,
+      # which is a failure, not a pass. Hash-pinned by the standards repo, no
+      # dependencies (the step the standards ci-fetch template carries).
+      - name: Install codespell for the American English control (DOC-22)
+        run: >-
+          python3 -m pip install --quiet --disable-pip-version-check
+          --require-hashes --no-deps
+          -r .standards/automation/requirements-codespell.txt
+
       - name: Check repository conformance
         env:
           GH_TOKEN: ${{ github.token }}

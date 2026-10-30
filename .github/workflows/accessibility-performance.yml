@@ -50,3 +50,9 @@ jobs:
       - name: Run Lighthouse budgets
         if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.chromium.outcome == 'success' }}
         run: npm run test:perf
+      # CQ-49: the six public pages are checked against the HTML spec, not
+      # only against axe and Lighthouse. Rules and their reasons are in
+      # .htmlvalidate.json.
+      - name: Validate the public pages' HTML
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.chromium.outcome == 'success' }}
+        run: npm run test:html

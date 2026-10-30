@@ -40,7 +40,7 @@ called. The consequences that matter: the run is reproducible, it works in a
 jurisdiction with no outbound network access, there is no third party in the
 data path, and there is no per-query cost or rate limit to design around.
 
-The extract's SHA-256 and its bounds travel with the result, so a metre count
+The extract's SHA-256 and its bounds travel with the result, so a meter count
 can always be traced to the file it came from.
 
 **PBF is not supported.** Reading it requires a compiled library, and adding
@@ -75,7 +75,7 @@ A way is **never** walkable when:
 Every edge is undirected. `oneway` restricts vehicles; a one-way street is
 walkable in both directions.
 
-Two secondary classes are deliberately *not* modelled, and the omission is
+Two secondary classes are deliberately *not* modeled, and the omission is
 recorded rather than hidden: crossing legality (an unsignalised crossing of a
 `primary` is walkable in this graph, and may not be advisable) and grade
 separation beyond what the tags say. Both would need data the extract does
@@ -105,7 +105,7 @@ been easiest to introduce.
 
 Both distances are reported; the parking and height verdicts stay
 straight-line. Which distance a jurisdiction applies to a given screen is a
-legal judgement this tool does not make, and quietly switching the verdict to
+legal judgment this tool does not make, and quietly switching the verdict to
 the walking number would be making it. The summary says so where it prints
 the numbers.
 
@@ -115,11 +115,11 @@ the numbers.
   now visible as such, which is the point.
 - Results depend on the supplied extract, so the extract's digest and bounds
   are part of the result. Two runs over different extracts are two different
-  measurements and are labelled as such.
+  measurements and are labeled as such.
 - The graph is only as good as the mapping. An unmapped footpath reads as a
   longer walk, and this direction of error is the safe one: it never turns a
   long walk into a short one.
-- A snap limit is a judgement. 100 m is roughly a city block — far enough to
+- A snap limit is a judgment. 100 m is roughly a city block — far enough to
   attach a stop set back from the kerb, near enough that attaching it does
   not invent a path across a parcel. Raising it does not improve the
   measurement; it widens what the tool is willing to assume.
