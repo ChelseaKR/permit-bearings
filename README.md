@@ -43,7 +43,7 @@ pages load the generated `data/demo-data.js` bundle.
 A separate bounded sample compares a made-up Woodland packet inventory with
 25 source-bound items from one City preapproved ADU checklist. The City's
 [official program page](https://www.cityofwoodland.gov/1616/Preapproved-ADU-Plan-Program),
-checked 2026-09-10, says **“Preapproved ADU List: Coming soon!”** No listed
+checked 2026-10-29, says **“Preapproved ADU List: Coming soon!”** No listed
 City plan was identified. The flagship is therefore a **source-bound
 future-state simulation**, not a currently usable preapproved-plan workflow
 or applicant-ready service. Two fabricated parcel values are bound to the
@@ -523,7 +523,7 @@ and coverage profile do not change those boundaries.
    25 requirements from one City of Woodland checklist, source checked
    2026-07-29, for a simulated project that would use a City preapproved
    detached ADU plan. The checklist itself is not presented as inherently
-   dated. The official program page was separately checked 2026-09-10 and
+   dated. The official program page was separately checked 2026-10-29 and
    says **“Preapproved ADU List: Coming soon!”**; the sample is not evidence
    that a plan is currently available.
 3. `data/readiness/samples/woodland-preapproved-adu.json` supplies one made-up
