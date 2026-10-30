@@ -13,7 +13,7 @@
         },
         "program_availability": {
           "path": "data/availability/woodland-preapproved-adu-program.json",
-          "sha256": "743c11c6765e27f3b4616d313f3e77917519db9bbb552fa30879188530667d14"
+          "sha256": "19f992ff7b0b9ecfb37d9e5a9329be367ce4798d679a50e1fb2034e1c3a765d2"
         },
         "readiness_evidence": {
           "path": "data/readiness/generated/woodland-preapproved-adu-evidence.json"
